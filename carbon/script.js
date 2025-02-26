@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = `id-toc-link-${index + 1}`;
 
       // Store the id as a data attribute instead of href
-      newCell.setAttribute("data-target", id);
+      newCell.setAttribute("data-toc-target", id);
       // Remove href to prevent default behavior
       newCell.removeAttribute("href");
 
