@@ -77,12 +77,12 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         const targetH2 = document.getElementById(id);
         if (targetH2) {
-          const offset = 100; // Adjust based on your header height
+          const offset = 200;
           const targetPosition =
             targetH2.getBoundingClientRect().top + window.pageYOffset - offset;
           window.scrollTo({
             top: targetPosition,
-            behavior: "smooth", // This adds the smooth motion effect
+            behavior: "smooth",
           });
         }
       });
