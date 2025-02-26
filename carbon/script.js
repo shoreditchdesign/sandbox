@@ -70,12 +70,24 @@ document.addEventListener("DOMContentLoaded", function () {
       const textElement = newCell.querySelector("[data-toc-text]");
       const id = `id-toc-link-${index + 1}`;
 
-      // Update href - this will use native browser scroll behavior
+      // Update href for fallback
       newCell.setAttribute("href", `#${id}`);
 
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
+
+      // Add click handler for JavaScript scrolling
+      newCell.addEventListener("click", (e) => {
+        e.preventDefault();
+        const offset = 100; // Adjust this value based on your header height
+        const targetPosition =
+          h2.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: "smooth",
+        });
+      });
 
       tocWrapper.appendChild(newCell);
     });
