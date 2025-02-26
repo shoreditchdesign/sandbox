@@ -124,13 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
 (function () {
   document.addEventListener("DOMContentLoaded", () => {
     const cards = document.querySelectorAll("[data-marquee-card]");
-
-    // Function to handle opening a card and closing others
-    const openCard = (card) => {
+    cards.forEach((card) => {
       const bgLayer = card.querySelector("[data-marquee-bg]");
       const textLayer = card.querySelector("[data-marquee-text]");
       const easeDuration =
         parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
+
+      gsap.set(textLayer, { opacity: 0 });
       const initialWidth = card.offsetWidth;
       const getHoverWidth = () => {
         const currentHeight = card.offsetHeight;
@@ -150,83 +150,23 @@ document.addEventListener("DOMContentLoaded", () => {
           ease: "power2.inOut",
         }),
       };
-
-      const targetWidth = getHoverWidth();
-      quickAnims.width(targetWidth);
-      quickAnims.bg(0);
-      quickAnims.textOpacity(1);
-      card.setAttribute("data-marquee-state", "hover");
-
-      // Close other cards
-      cards.forEach((otherCard) => {
-        if (otherCard !== card) {
-          const bgLayer = otherCard.querySelector("[data-marquee-bg]");
-          const textLayer = otherCard.querySelector("[data-marquee-text]");
-          const initialWidth = otherCard.offsetWidth;
-          const quickAnims = {
-            width: gsap.quickTo(otherCard, "width", {
-              duration: easeDuration,
-              ease: "power2.inOut",
-            }),
-            bg: gsap.quickTo(bgLayer, "opacity", {
-              duration: easeDuration,
-              ease: "power2.inOut",
-            }),
-            textOpacity: gsap.quickTo(textLayer, "opacity", {
-              duration: easeDuration,
-              ease: "power2.inOut",
-            }),
-          };
-
+      const setState = {
+        hover: () => {
+          const targetWidth = getHoverWidth();
+          quickAnims.width(targetWidth);
+          quickAnims.bg(0);
+          quickAnims.textOpacity(1);
+          card.setAttribute("data-marquee-state", "hover");
+        },
+        default: () => {
           quickAnims.width(initialWidth);
           quickAnims.bg(1);
           quickAnims.textOpacity(0);
-          otherCard.setAttribute("data-marquee-state", "default");
-        }
-      });
-    };
-
-    const closeCard = (card) => {
-      const bgLayer = card.querySelector("[data-marquee-bg]");
-      const textLayer = card.querySelector("[data-marquee-text]");
-      const easeDuration =
-        parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
-      const initialWidth = card.offsetWidth;
-
-      const quickAnims = {
-        width: gsap.quickTo(card, "width", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        bg: gsap.quickTo(bgLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        textOpacity: gsap.quickTo(textLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
+          card.setAttribute("data-marquee-state", "default");
+        },
       };
-
-      quickAnims.width(initialWidth);
-      quickAnims.bg(1);
-      quickAnims.textOpacity(0);
-      card.setAttribute("data-marquee-state", "default");
-    };
-
-    cards.forEach((card) => {
-      card.addEventListener("click", () => {
-        if (card.getAttribute("data-marquee-state") === "default") {
-          openCard(card);
-        } else {
-          closeCard(card);
-        }
-      });
+      card.addEventListener("mouseenter", setState.hover);
+      card.addEventListener("mouseleave", setState.default);
     });
-
-    // Logic to open the first card and close the rest on page load
-    if (cards.length > 0) {
-      openCard(cards[0]); // Open the first card using the shared function
-    }
   });
 })();
