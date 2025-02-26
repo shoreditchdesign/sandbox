@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = `id-toc-link-${index + 1}`;
 
       // Update href for fallback
-      newCell.setAttribute("href", `#${id}`);
+      //newCell.setAttribute("href", `#${id}`);
 
       if (textElement) {
         textElement.textContent = h2.textContent;
