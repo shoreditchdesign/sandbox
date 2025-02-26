@@ -84,17 +84,3 @@ document.addEventListener("DOMContentLoaded", function () {
     templateCell.remove();
   });
 });
-
-// Active state tracking
-window.addEventListener("scroll", () => {
-  const h2s = document.querySelectorAll("[data-toc-body] h2");
-  const tocCells = document.querySelectorAll("[data-toc-cell]");
-
-  h2s.forEach((h2, index) => {
-    const rect = h2.getBoundingClientRect();
-    if (rect.top <= 150 && rect.bottom >= 150) {
-      tocCells.forEach((cell) => cell.classList.remove("active"));
-      tocCells[index + 1]?.classList.add("active");
-    }
-  });
-});
