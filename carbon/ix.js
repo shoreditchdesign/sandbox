@@ -1,3 +1,4 @@
+// Excerpt from:
 console.log("ix deployed");
 
 // Marquee Cards
@@ -122,8 +123,26 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 (function () {
+  function openCard(card, initialWidth, getHoverWidth, quickAnims) {
+    const targetWidth = getHoverWidth();
+    quickAnims.width(targetWidth);
+    quickAnims.bg(0);
+    quickAnims.textOpacity(1);
+    card.setAttribute("data-marquee-state", "hover");
+  }
+
+  function closeCard(card, initialWidth, quickAnims) {
+    quickAnims.width(initialWidth);
+    quickAnims.bg(1);
+    quickAnims.textOpacity(0);
+    card.setAttribute("data-marquee-state", "default");
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const cards = document.querySelectorAll("[data-marquee-card]");
+    const firstCard = cards[0]; // Store the first card
+    let firstClonedCard;
+
     cards.forEach((card) => {
       const bgLayer = card.querySelector("[data-marquee-bg]");
       const textLayer = card.querySelector("[data-marquee-text]");
@@ -150,23 +169,51 @@ document.addEventListener("DOMContentLoaded", () => {
           ease: "power2.inOut",
         }),
       };
-      const setState = {
-        hover: () => {
-          const targetWidth = getHoverWidth();
-          quickAnims.width(targetWidth);
-          quickAnims.bg(0);
-          quickAnims.textOpacity(1);
-          card.setAttribute("data-marquee-state", "hover");
-        },
-        default: () => {
-          quickAnims.width(initialWidth);
-          quickAnims.bg(1);
-          quickAnims.textOpacity(0);
-          card.setAttribute("data-marquee-state", "default");
-        },
-      };
-      card.addEventListener("mouseenter", setState.hover);
-      card.addEventListener("mouseleave", setState.default);
+
+      card.addEventListener("mouseenter", () =>
+        openCard(card, initialWidth, getHoverWidth, quickAnims),
+      );
+      card.addEventListener("mouseleave", () =>
+        closeCard(card, initialWidth, quickAnims),
+      );
+
+      // Find the first cloned card after marquee setup
+      if (
+        !firstClonedCard &&
+        card.closest("[data-marquee-wrap]") &&
+        card !== firstCard
+      ) {
+        firstClonedCard = card;
+      }
     });
+
+    // Open the first card after all cards have been processed and the marquee is set up
+    if (firstClonedCard) {
+      const bgLayer = firstClonedCard.querySelector("[data-marquee-bg]");
+      const textLayer = firstClonedCard.querySelector("[data-marquee-text]");
+      const easeDuration =
+        parseFloat(firstClonedCard.getAttribute("data-marquee-ease")) || 0.4;
+
+      const initialWidth = firstClonedCard.offsetWidth;
+      const getHoverWidth = () => {
+        const currentHeight = firstClonedCard.offsetHeight;
+        return (currentHeight * 16) / 9;
+      };
+      const quickAnims = {
+        width: gsap.quickTo(firstClonedCard, "width", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+        bg: gsap.quickTo(bgLayer, "opacity", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+        textOpacity: gsap.quickTo(textLayer, "opacity", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+      };
+      openCard(firstClonedCard, initialWidth, getHoverWidth, quickAnims);
+    }
   });
 })();
