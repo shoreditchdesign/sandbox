@@ -70,18 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
       const textElement = newCell.querySelector("[data-toc-text]");
       const id = `id-toc-link-${index + 1}`;
 
-      // Update href
+      // Update href - this will use native browser scroll behavior
       newCell.setAttribute("href", `#${id}`);
 
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
-
-      // Add click handler with offset
-      newCell.addEventListener("click", (e) => {
-        e.preventDefault();
-        scrollToH2(h2);
-      });
 
       tocWrapper.appendChild(newCell);
     });
@@ -91,19 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Scroll function with offset
-function scrollToH2(h2) {
-  const offset = 100; // Adjust based on your header height
-  const elementPosition = h2.getBoundingClientRect().top;
-  const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-  window.scrollTo({
-    top: offsetPosition,
-    behavior: "smooth",
-  });
-}
-
-// Optional: Active state tracking
+// Active state tracking
 window.addEventListener("scroll", () => {
   const h2s = document.querySelectorAll("[data-toc-body] h2");
   const tocCells = document.querySelectorAll("[data-toc-cell]");
