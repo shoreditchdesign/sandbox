@@ -1,3 +1,5 @@
+console.log("motion deployed");
+
 // Conversion Pop-up
 gsap.registerPlugin(ScrollTrigger);
 
