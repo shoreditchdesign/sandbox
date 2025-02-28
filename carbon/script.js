@@ -1,5 +1,34 @@
 console.log("script deployed");
 
+//Brand styles
+
+document.querySelectorAll(".c-br_brand-card").forEach((element) => {
+  const cardMap = {
+    Culture: "u-card-pink",
+    Underwriting: "u-card-purple",
+    Technology: "u-card-green",
+    Complementary: "u-card-blue",
+  };
+
+  const brandValue = element.getAttribute("data-brand-map");
+  if (brandValue && cardMap[brandValue]) {
+    element.classList.add(cardMap[brandValue]);
+  }
+});
+
+document.querySelectorAll(".c-br_brand-stroke").forEach((element) => {
+  const strokeMap = {
+    Culture: "u-stroke-pink",
+    Underwriting: "u-stroke-purple",
+    Technology: "u-stroke-green",
+  };
+
+  const brandValue = element.getAttribute("data-brand-map");
+  if (brandValue && strokeMap[brandValue]) {
+    element.classList.add(strokeMap[brandValue]);
+  }
+});
+
 //Announcemenet Banner
 
 document
