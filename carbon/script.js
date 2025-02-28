@@ -29,6 +29,20 @@ document.querySelectorAll(".c-br_brand-stroke").forEach((element) => {
   }
 });
 
+document.querySelectorAll(".c-br_brand-motif").forEach((element) => {
+  const motifMap = {
+    Culture: "u-motif-pink",
+    Underwriting: "u-motif-purple",
+    Technology: "u-motif-green",
+    Complementary: "u-motif-blue",
+  };
+
+  const brandValue = element.getAttribute("data-brand-map");
+  if (brandValue && motifMap[brandValue]) {
+    element.classList.add(motifMap[brandValue]);
+  }
+});
+
 //Announcemenet Banner
 
 document
