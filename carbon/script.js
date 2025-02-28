@@ -172,7 +172,7 @@ var mySwiper = new Swiper("#benefits-swiper", {
     992: {
       slidesPerView: 3.2,
       slidesPerGroup: 1,
-      spaceBetween: 32,
+      spaceBetween: 16,
     },
   },
 });
