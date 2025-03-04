@@ -43,6 +43,20 @@ document.querySelectorAll(".c-br_brand-motif").forEach((element) => {
   }
 });
 
+document.querySelectorAll(".c-sw_card").forEach((element) => {
+  const motifMap = {
+    Culture: "u-motif-pink",
+    Underwriting: "u-motif-purple",
+    Technology: "u-motif-green",
+    Complementary: "u-motif-blue",
+  };
+
+  const brandValue = element.getAttribute("data-brand-map");
+  if (brandValue && motifMap[brandValue]) {
+    element.classList.add(motifMap[brandValue]);
+  }
+});
+
 document.querySelectorAll(".d-nw_cta-wrap").forEach((element) => {
   const brandMap = {
     Culture: "u-motif-pink",
