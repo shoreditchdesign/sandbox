@@ -54,6 +54,12 @@ document.querySelectorAll(".c-sw_card").forEach((element) => {
   const brandValue = element.getAttribute("data-brand-map");
   if (brandValue && swiperMap[brandValue]) {
     element.classList.add(swiperMap[brandValue]);
+  } else {
+    console.log(
+      `Class allocation failed for element:`,
+      element,
+      `Reason: ${!brandValue ? "No brand value found" : 'No matching class in swiperMap for "' + brandValue + '"'}`,
+    );
   }
 });
 
