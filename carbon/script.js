@@ -44,7 +44,7 @@ document.querySelectorAll(".c-br_brand-motif").forEach((element) => {
 });
 
 document.querySelectorAll(".c-sw_card").forEach((element) => {
-  const motifMap = {
+  const swiperMap = {
     Culture: "u-motif-pink",
     Underwriting: "u-motif-purple",
     Technology: "u-motif-green",
@@ -52,8 +52,8 @@ document.querySelectorAll(".c-sw_card").forEach((element) => {
   };
 
   const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && motifMap[brandValue]) {
-    element.classList.add(motifMap[brandValue]);
+  if (brandValue && swiperMap[brandValue]) {
+    element.classList.add(swiperMap[brandValue]);
   }
 });
 
