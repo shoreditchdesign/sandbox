@@ -43,6 +43,19 @@ document.querySelectorAll(".c-br_brand-motif").forEach((element) => {
   }
 });
 
+document.querySelectorAll(".d-nw_cta-wrap").forEach((element) => {
+  const brandMap = {
+    Culture: "u-motif-pink",
+    Underwriting: "u-motif-purple",
+    Technology: "u-motif-green",
+  };
+
+  const brandValue = element.getAttribute("data-brand-map");
+  if (brandValue && brandMap[brandValue]) {
+    element.classList.add(brandMap[brandValue]);
+  }
+});
+
 //Announcemenet Banner
 
 document
