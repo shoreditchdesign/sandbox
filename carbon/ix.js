@@ -275,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial styles
     gsap.set(content, { display: "none", opacity: 0 });
     gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
-    console.log(`Card #${index} - Initial styles set`);
 
     // Create quickTo function for the overlay height
     const animateHeight = gsap.quickTo(overlay, "height", {
