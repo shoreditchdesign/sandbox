@@ -217,3 +217,96 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 })();
+
+// Team Card Hover Animation
+
+// Import GSAP (assuming you've already included it in your project)
+// If not, add: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Select all card elements
+  const cards = document.querySelectorAll(".s-ab5_card");
+
+  // Setup for each card
+  cards.forEach((card) => {
+    const overlay = card.querySelector(".s-ab5_overlay");
+    const content = card.querySelector(".s-ab5_content");
+
+    // Initial state
+    let initialOverlayHeight;
+    let finalOverlayHeight;
+
+    // Function to calculate heights
+    const calculateHeights = () => {
+      initialOverlayHeight = parseFloat(
+        window.getComputedStyle(overlay).height,
+      );
+      finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
+    };
+
+    // Calculate on page load
+    calculateHeights();
+
+    // Set initial styles
+    gsap.set(content, { display: "none", opacity: 0 });
+    gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
+
+    // Create quickTo function for the overlay height
+    // This optimizes the animation and prevents stuttering on rapid hover events
+    const animateHeight = gsap.quickTo(overlay, "height", {
+      duration: 0.4,
+      ease: "power2.out",
+    });
+
+    // Create quickTo function for content opacity
+    const animateOpacity = gsap.quickTo(content, "opacity", {
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    // Mouse enter handler
+    card.addEventListener("mouseenter", () => {
+      // Animate overlay height using quickTo
+      animateHeight(finalOverlayHeight);
+
+      // Show content and animate opacity
+      gsap.set(content, { display: "flex" });
+      animateOpacity(1);
+
+      // Set overflow to scroll
+      gsap.delayedCall(0.3, () => {
+        gsap.set(overlay, { overflowY: "scroll" });
+      });
+    });
+
+    // Mouse leave handler
+    card.addEventListener("mouseleave", () => {
+      // Reset overflow immediately
+      gsap.set(overlay, { overflowY: "hidden" });
+
+      // Animate overlay back to initial height using quickTo
+      animateHeight(initialOverlayHeight);
+
+      // Fade out content
+      animateOpacity(0);
+
+      // Hide content after fade completes
+      gsap.delayedCall(0.3, () => {
+        gsap.set(content, { display: "none" });
+      });
+    });
+
+    // Window resize handler
+    window.addEventListener("resize", () => {
+      // Recalculate heights when window is resized
+      calculateHeights();
+
+      // Reset overlay height if not in hover state
+      if (!card.matches(":hover")) {
+        gsap.set(overlay, { height: initialOverlayHeight });
+      } else {
+        gsap.set(overlay, { height: finalOverlayHeight });
+      }
+    });
+  });
+});
