@@ -220,9 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Team Card Hover Animation
 
-// Import GSAP (assuming you've already included it in your project)
-// If not, add: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM content loaded - initializing card animations");
 
@@ -236,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const overlay = card.querySelector(".s-ab5_overlay");
     const content = card.querySelector(".s-ab5_content");
+    const button = card.querySelector(".s-ab5_btn");
 
     // Check if elements exist
     if (!overlay) {
@@ -250,8 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       return;
     }
+    if (!button) {
+      console.error(`Card #${index} is missing button element (.s-ab5_btn)`);
+      return;
+    }
 
     console.log(`Card #${index} - found all required elements`);
+
+    // Track open/closed state
+    let isOpen = false;
 
     // Initial state
     let initialOverlayHeight;
@@ -275,6 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial styles
     gsap.set(content, { display: "none", opacity: 0 });
     gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
+    console.log(`Card #${index} - Initial styles set`);
 
     // Create quickTo function for the overlay height
     const animateHeight = gsap.quickTo(overlay, "height", {
@@ -290,10 +296,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log(`Card #${index} - quickTo functions created`);
 
-    // Mouse enter handler
-    card.addEventListener("mouseenter", () => {
+    // Function to open the card
+    const openCard = () => {
+      if (isOpen) return;
+
       console.log(
-        `Card #${index} - MOUSE ENTER - animating to height: ${finalOverlayHeight}px`,
+        `Card #${index} - OPENING - animating to height: ${finalOverlayHeight}px`,
       );
 
       // Animate overlay height using quickTo
@@ -309,12 +317,16 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(overlay, { overflowY: "scroll" });
         console.log(`Card #${index} - Overflow set to scroll`);
       });
-    });
 
-    // Mouse leave handler
-    card.addEventListener("mouseleave", () => {
+      isOpen = true;
+    };
+
+    // Function to close the card
+    const closeCard = () => {
+      if (!isOpen) return;
+
       console.log(
-        `Card #${index} - MOUSE LEAVE - animating to height: ${initialOverlayHeight}px`,
+        `Card #${index} - CLOSING - animating to height: ${initialOverlayHeight}px`,
       );
 
       // Reset overflow immediately
@@ -332,6 +344,21 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(content, { display: "none" });
         console.log(`Card #${index} - Content display set to none`);
       });
+
+      isOpen = false;
+    };
+
+    // Button click handler
+    button.addEventListener("click", () => {
+      console.log(
+        `Card #${index} - Button clicked, current state: ${isOpen ? "open" : "closed"}`,
+      );
+
+      if (isOpen) {
+        closeCard();
+      } else {
+        openCard();
+      }
     });
 
     // Window resize handler
@@ -341,14 +368,16 @@ document.addEventListener("DOMContentLoaded", () => {
       // Recalculate heights when window is resized
       calculateHeights();
 
-      // Reset overlay height if not in hover state
-      if (!card.matches(":hover")) {
-        gsap.set(overlay, { height: initialOverlayHeight });
-        console.log(`Card #${index} - Reset to initial height after resize`);
-      } else {
+      // Update current state if needed
+      if (isOpen) {
         gsap.set(overlay, { height: finalOverlayHeight });
         console.log(
-          `Card #${index} - Set to final height after resize (hover active)`,
+          `Card #${index} - Updated to new final height after resize (card is open)`,
+        );
+      } else {
+        gsap.set(overlay, { height: initialOverlayHeight });
+        console.log(
+          `Card #${index} - Updated to new initial height after resize (card is closed)`,
         );
       }
     });
