@@ -220,12 +220,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Team Card Hover Animation
 
+// Import GSAP (assuming you've already included it in your project)
+// If not, add: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM content loaded - initializing card animations");
 
   // Select all card elements
   const cards = document.querySelectorAll(".s-ab5_card");
   console.log(`Found ${cards.length} cards on the page`);
+
+  // Track currently open card
+  let currentlyOpenCard = null;
 
   // Setup for each card
   cards.forEach((card, index) => {
@@ -300,6 +306,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const openCard = () => {
       if (isOpen) return;
 
+      // If another card is open, close it first
+      if (currentlyOpenCard && currentlyOpenCard !== card) {
+        console.log(
+          `Closing previously open card before opening Card #${index}`,
+        );
+        currentlyOpenCard.closeCard();
+      }
+
       console.log(
         `Card #${index} - OPENING - animating to height: ${finalOverlayHeight}px`,
       );
@@ -319,6 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       isOpen = true;
+      currentlyOpenCard = card;
     };
 
     // Function to close the card
@@ -346,7 +361,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       isOpen = false;
+      if (currentlyOpenCard === card) {
+        currentlyOpenCard = null;
+      }
     };
+
+    // Attach the functions to the card object so they can be called externally
+    card.openCard = openCard;
+    card.closeCard = closeCard;
 
     // Button click handler
     button.addEventListener("click", () => {
