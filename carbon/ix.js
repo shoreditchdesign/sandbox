@@ -224,13 +224,34 @@ document.addEventListener("DOMContentLoaded", () => {
 // If not, add: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM content loaded - initializing card animations");
+
   // Select all card elements
   const cards = document.querySelectorAll(".s-ab5_card");
+  console.log(`Found ${cards.length} cards on the page`);
 
   // Setup for each card
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
+    console.log(`Setting up card #${index}`);
+
     const overlay = card.querySelector(".s-ab5_overlay");
     const content = card.querySelector(".s-ab5_content");
+
+    // Check if elements exist
+    if (!overlay) {
+      console.error(
+        `Card #${index} is missing overlay element (.s-ab5_overlay)`,
+      );
+      return;
+    }
+    if (!content) {
+      console.error(
+        `Card #${index} is missing content element (.s-ab5_content)`,
+      );
+      return;
+    }
+
+    console.log(`Card #${index} - found all required elements`);
 
     // Initial state
     let initialOverlayHeight;
@@ -242,6 +263,10 @@ document.addEventListener("DOMContentLoaded", () => {
         window.getComputedStyle(overlay).height,
       );
       finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
+      console.log(`Card #${index} - Heights calculated:`, {
+        initialOverlayHeight,
+        finalOverlayHeight,
+      });
     };
 
     // Calculate on page load
@@ -250,9 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial styles
     gsap.set(content, { display: "none", opacity: 0 });
     gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
+    console.log(`Card #${index} - Initial styles set`);
 
     // Create quickTo function for the overlay height
-    // This optimizes the animation and prevents stuttering on rapid hover events
     const animateHeight = gsap.quickTo(overlay, "height", {
       duration: 0.4,
       ease: "power2.out",
@@ -264,25 +289,38 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: "power2.out",
     });
 
+    console.log(`Card #${index} - quickTo functions created`);
+
     // Mouse enter handler
     card.addEventListener("mouseenter", () => {
+      console.log(
+        `Card #${index} - MOUSE ENTER - animating to height: ${finalOverlayHeight}px`,
+      );
+
       // Animate overlay height using quickTo
       animateHeight(finalOverlayHeight);
 
       // Show content and animate opacity
       gsap.set(content, { display: "flex" });
       animateOpacity(1);
+      console.log(`Card #${index} - Content display set to flex`);
 
       // Set overflow to scroll
       gsap.delayedCall(0.3, () => {
         gsap.set(overlay, { overflowY: "scroll" });
+        console.log(`Card #${index} - Overflow set to scroll`);
       });
     });
 
     // Mouse leave handler
     card.addEventListener("mouseleave", () => {
+      console.log(
+        `Card #${index} - MOUSE LEAVE - animating to height: ${initialOverlayHeight}px`,
+      );
+
       // Reset overflow immediately
       gsap.set(overlay, { overflowY: "hidden" });
+      console.log(`Card #${index} - Overflow set to hidden`);
 
       // Animate overlay back to initial height using quickTo
       animateHeight(initialOverlayHeight);
@@ -293,20 +331,29 @@ document.addEventListener("DOMContentLoaded", () => {
       // Hide content after fade completes
       gsap.delayedCall(0.3, () => {
         gsap.set(content, { display: "none" });
+        console.log(`Card #${index} - Content display set to none`);
       });
     });
 
     // Window resize handler
     window.addEventListener("resize", () => {
+      console.log(`Card #${index} - WINDOW RESIZE detected`);
+
       // Recalculate heights when window is resized
       calculateHeights();
 
       // Reset overlay height if not in hover state
       if (!card.matches(":hover")) {
         gsap.set(overlay, { height: initialOverlayHeight });
+        console.log(`Card #${index} - Reset to initial height after resize`);
       } else {
         gsap.set(overlay, { height: finalOverlayHeight });
+        console.log(
+          `Card #${index} - Set to final height after resize (hover active)`,
+        );
       }
     });
+
+    console.log(`Card #${index} - All event listeners attached`);
   });
 });
