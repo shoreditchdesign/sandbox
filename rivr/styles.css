@@ -1,0 +1,15 @@
+.swiper-prev.is-disabled,
+.swiper-next.is-disabled {
+    opacity: 20% !important;
+    cursor: not-allowed;
+}
+
+/* Ensure drag handle starts from left */
+.swiper-drag-wrapper {
+    position: relative;
+}
+
+.swiper-drag {
+    position: absolute;
+    left: 0; /* Initial position at left */
+}
