@@ -1,11 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const component = document.getElementById("swiper-component");
-
   if (component) {
-    let loopMode = false;
-    if (component.getAttribute("loop-mode") === "true") {
-      loopMode = true;
-    }
+    // Force loop mode to false for finite swiper
+    const loopMode = false;
 
     let sliderDuration = 300;
     if (component.getAttribute("slider-duration") !== undefined) {
@@ -13,18 +10,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const swiperElement = document.getElementById("swiper");
-
     const swiper = new Swiper(swiperElement, {
       speed: sliderDuration,
       autoHeight: false,
-      centeredSlides: loopMode,
+      centeredSlides: false, // Don't center - align to left
       followFinger: true,
       freeMode: false,
-      slideToClickedSlide: false,
+      slideToClickedSlide: true, // Allow clicking on slides to navigate
       slidesPerView: 1,
       spaceBetween: "4%",
       rewind: false,
-      loop: loopMode,
+      loop: false, // Set to false for finite swiper
       direction: "horizontal",
       mousewheel: {
         forceToAxis: true,
@@ -50,11 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
           spaceBetween: "2%",
         },
       },
-
       navigation: {
         nextEl: "#swiper-next",
         prevEl: "#swiper-prev",
-        disabledClass: "is-disabled",
+        disabledClass: "is-disabled", // Will be applied at start/end
       },
       scrollbar: {
         el: "#swiper-drag-wrapper",
@@ -62,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
         dragClass: "swiper-drag",
         snapOnRelease: true,
         dragSize: "auto",
-        dragStartPositionRatio: 0,
       },
       slideActiveClass: "is-active",
       slideDuplicateActiveClass: "is-active",
