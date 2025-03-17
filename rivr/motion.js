@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
       start: "top 80%", // Trigger when the top of the grid is 80% from the top of the viewport
       once: true, // Only trigger once
       toggleActions: "play none none none",
-      markers: true, // Add visible markers to see trigger points
+      markers: false, // Add visible markers to see trigger points
       onEnter: () => console.log("ScrollTrigger entered - animation starting"),
       onLeaveBack: () => console.log("ScrollTrigger left backwards"),
       onLeave: () => console.log("ScrollTrigger left forwards"),
