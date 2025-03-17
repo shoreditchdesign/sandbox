@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Changed from jQuery selector to document.querySelectorAll for vanilla JS
-  document.querySelectorAll("#swiper-component").forEach(function (component) {
+  const component = document.getElementById("swiper-component");
+
+  if (component) {
     let loopMode = false;
     if (component.getAttribute("loop-mode") === "true") {
       loopMode = true;
@@ -11,8 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sliderDuration = +component.getAttribute("slider-duration");
     }
 
-    // Changed selector to find swiper element within the component
-    const swiperElement = component.querySelector("#swiper");
+    const swiperElement = document.getElementById("swiper");
 
     const swiper = new Swiper(swiperElement, {
       speed: sliderDuration,
@@ -24,7 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
       slidesPerView: 1,
       spaceBetween: "4%",
       rewind: false,
-      loop: loopMode, // Added explicit loop setting based on attribute
+      loop: loopMode,
+      direction: "horizontal",
       mousewheel: {
         forceToAxis: true,
       },
@@ -49,23 +50,22 @@ document.addEventListener("DOMContentLoaded", function () {
           spaceBetween: "2%",
         },
       },
-      // Removed pagination config since there's no .swiper-bullet-wrapper in your HTML
 
       navigation: {
-        // Changed to use direct ID selectors matching your HTML
         nextEl: "#swiper-next",
         prevEl: "#swiper-prev",
         disabledClass: "is-disabled",
       },
       scrollbar: {
-        // Changed to use direct ID selector matching your HTML
         el: "#swiper-drag-wrapper",
         draggable: true,
         dragClass: "swiper-drag",
         snapOnRelease: true,
+        dragSize: "auto",
+        dragStartPositionRatio: 0,
       },
       slideActiveClass: "is-active",
       slideDuplicateActiveClass: "is-active",
     });
-  });
+  }
 });
