@@ -17,10 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("ScrollTrigger plugin is loaded correctly");
   }
 
-  // Register ScrollTrigger plugin
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Find the grid element
+  // Find the grid element - using the correct class from your HTML
   const grid = document.querySelector(".s-hm8_grid");
   console.log("Looking for grid element .s-hm8_grid");
 
@@ -31,25 +28,29 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Grid element found:", grid);
   }
 
-  // Get all image elements
-  const images = Array.from(grid.querySelectorAll(".s-hm6-uimage"));
-  console.log("Looking for image elements .s-hm6-uimage inside grid");
+  // Get all image elements - using the correct structure from your HTML
+  // Looking for .s-hm8_image instead of .s-hm6-uimage
+  const imageContainers = Array.from(grid.querySelectorAll(".s-hm8_image"));
+  console.log("Looking for image containers .s-hm8_image inside grid");
 
-  if (!images.length) {
+  if (!imageContainers.length) {
     console.error(
-      "No image elements found within the grid - nothing to animate",
+      "No image containers found within the grid - nothing to animate",
     );
     return;
   } else {
-    console.log(`Found ${images.length} image elements to animate:`, images);
+    console.log(
+      `Found ${imageContainers.length} image containers to animate:`,
+      imageContainers,
+    );
   }
 
-  // Set initial state - all images invisible
-  gsap.set(images, { autoAlpha: 0 });
-  console.log("Set initial state: all images invisible");
+  // Set initial state - all image containers invisible
+  gsap.set(imageContainers, { autoAlpha: 0 });
+  console.log("Set initial state: all image containers invisible");
 
   // Randomize the array order
-  const randomizedImages = [...images].sort(() => Math.random() - 0.5);
+  const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
   console.log("Randomized image order for animation");
 
   // Create the animation
