@@ -8,3 +8,14 @@ document
       currentState === "open" ? "closed" : "open",
     );
   });
+
+document
+  .querySelector('[data-nav-element="toggle"]')
+  .addEventListener("click", () => {
+    const toggle = document.querySelector('[data-nav-element="toggle"]');
+    const currentState = toggle.getAttribute("data-toggle-state");
+    toggle.setAttribute(
+      "data-toggle-state",
+      currentState === "open" ? "closed" : "open",
+    );
+  });
