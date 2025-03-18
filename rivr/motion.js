@@ -1,90 +1,115 @@
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, initializing animation...");
+// GSAP Navbar Slide
+document.addEventListener("DOMContentLoaded", () => {
+  const showAnim = gsap
+    .from(".c-navbar", {
+      yPercent: -100,
+      paused: true,
+      duration: 0.2,
+    })
+    .progress(1);
 
-  // Check if GSAP is loaded
-  if (typeof gsap === "undefined") {
-    console.error("GSAP library is required for this animation");
-    return;
-  } else {
-    console.log("GSAP is loaded correctly");
-  }
-
-  // Check if ScrollTrigger plugin is loaded
-  if (typeof ScrollTrigger === "undefined") {
-    console.error("GSAP ScrollTrigger plugin is required for this animation");
-    return;
-  } else {
-    console.log("ScrollTrigger plugin is loaded correctly");
-  }
-
-  // Find the grid element - using the correct class from your HTML
-  const grid = document.querySelector(".s-hm8_grid");
-  console.log("Looking for grid element .s-hm8_grid");
-
-  if (!grid) {
-    console.error("Grid element .s-hm8_grid not found - animation cannot run");
-    return;
-  } else {
-    console.log("Grid element found:", grid);
-  }
-
-  // Get all image elements - using the correct structure from your HTML
-  // Looking for .s-hm8_image instead of .s-hm6-uimage
-  const imageContainers = Array.from(grid.querySelectorAll(".s-hm8_image"));
-  console.log("Looking for image containers .s-hm8_image inside grid");
-
-  if (!imageContainers.length) {
-    console.error(
-      "No image containers found within the grid - nothing to animate",
-    );
-    return;
-  } else {
-    console.log(
-      `Found ${imageContainers.length} image containers to animate:`,
-      imageContainers,
-    );
-  }
-
-  // Set initial state - all image containers invisible
-  gsap.set(imageContainers, { autoAlpha: 0 });
-  console.log("Set initial state: all image containers invisible");
-
-  // Randomize the array order
-  const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
-  console.log("Randomized image order for animation");
-
-  // Create the animation
-  console.log("Creating ScrollTrigger animation");
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: grid,
-      start: "top 80%", // Trigger when the top of the grid is 80% from the top of the viewport
-      once: true, // Only trigger once
-      toggleActions: "play none none none",
-      markers: false, // Add visible markers to see trigger points
-      onEnter: () => console.log("ScrollTrigger entered - animation starting"),
-      onLeaveBack: () => console.log("ScrollTrigger left backwards"),
-      onLeave: () => console.log("ScrollTrigger left forwards"),
+  ScrollTrigger.create({
+    start: "top top",
+    end: "max",
+    onUpdate: (self) => {
+      self.direction === -1 ? showAnim.play() : showAnim.reverse();
     },
   });
 
-  // Add staggered animation with randomized order
+  setTimeout(() => {
+    gsap.set(".c-navbar", { yPercent: 0 });
+  }, 10);
+});
+
+//GSAP for Headings
+window.addEventListener("DOMContentLoaded", (event) => {
+  setTimeout(() => {
+    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
+      console.error("GSAP or SplitType is not loaded.");
+      return;
+    }
+    document.querySelectorAll("h1, h2").forEach((element) => {
+      element.setAttribute("data-stagger-fade", "");
+    });
+    const splitLines = new SplitType("[data-stagger-fade]", {
+      tagName: "span",
+    });
+    document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("line-wrapper");
+      line.parentNode.insertBefore(wrapper, line);
+      wrapper.appendChild(line);
+    });
+    document.querySelectorAll("[data-stagger-fade]").forEach((element) => {
+      const tl = gsap.timeline({ paused: true });
+      tl.from(element.querySelectorAll(".line"), {
+        y: "200%",
+        opacity: 0,
+        duration: 0.5,
+        ease: "power1.out",
+        stagger: 0.1,
+      });
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 80%",
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+        once: true,
+      });
+    });
+    function splitRevert() {
+      document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+        const wrapper = line.parentNode;
+        wrapper.replaceWith(...wrapper.childNodes);
+      });
+      splitLines.revert();
+    }
+    gsap.set("[data-stagger-fade]", { opacity: 1 });
+  }, 100);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined") {
+    return;
+  }
+
+  if (typeof ScrollTrigger === "undefined") {
+    return;
+  }
+
+  const grid = document.querySelector(".s-hm8_grid");
+  if (!grid) {
+    return;
+  }
+
+  const imageContainers = Array.from(grid.querySelectorAll(".s-hm8_image"));
+  if (!imageContainers.length) {
+    return;
+  }
+
+  gsap.set(imageContainers, { autoAlpha: 0 });
+
+  const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: grid,
+      start: "top 80%",
+      once: true,
+      toggleActions: "play none none none",
+      markers: false,
+    },
+  });
+
   tl.to(randomizedImages, {
     duration: 0.8,
     autoAlpha: 1,
     ease: "power2.out",
     stagger: {
       each: 0.15,
-      from: "random", // Start the stagger from a random position
+      from: "random",
     },
-    onStart: () => console.log("Animation started"),
-    onComplete: () =>
-      console.log("Animation completed - all images should be visible now"),
   });
 
-  console.log("Animation setup complete - waiting for scroll trigger");
-
-  // Force refresh ScrollTrigger to ensure it's working
   ScrollTrigger.refresh();
-  console.log("ScrollTrigger refreshed");
 });
