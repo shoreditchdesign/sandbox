@@ -113,3 +113,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
   ScrollTrigger.refresh();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined") {
+    return;
+  }
+
+  const swiperWrapper = document.querySelector(".swiper-wrapper");
+  if (!swiperWrapper) {
+    return;
+  }
+
+  const cards = Array.from(swiperWrapper.children);
+  if (!cards.length) {
+    return;
+  }
+
+  // Set initial state - hidden and shifted down
+  gsap.set(cards, {
+    autoAlpha: 0,
+    y: 30,
+  });
+
+  // Create animation with staggered timing
+  gsap.to(cards, {
+    duration: 0.8,
+    autoAlpha: 1,
+    y: 0,
+    ease: "power2.out",
+    stagger: 0.15, // 0.15 second delay between each card
+    delay: 0.3, // Initial delay before animation starts
+  });
+});
