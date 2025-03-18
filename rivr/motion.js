@@ -28,7 +28,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    document.querySelectorAll("h1, h2").forEach((element) => {
+    document.querySelectorAll("h1, h2, p").forEach((element) => {
       element.setAttribute("data-stagger-fade", "");
     });
     const splitLines = new SplitType("[data-stagger-fade]", {
