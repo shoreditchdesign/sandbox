@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     });
     document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
       const wrapper = document.createElement("div");
-      wrapper.classList.add("line-wrapper");
+      wrapper.classList.add("u-line-mask");
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
