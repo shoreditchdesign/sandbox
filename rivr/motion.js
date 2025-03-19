@@ -432,10 +432,26 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${singleElements.length} single elements to animate`);
+  console.log(`Found ${singleElements.length} potential elements to animate`);
 
-  // Process each element
-  singleElements.forEach((element, index) => {
+  // Filter elements that don't have data-motion-state="blocked"
+  const animatableElements = Array.from(singleElements).filter((element) => {
+    const motionState = element.getAttribute("data-motion-state");
+    const isBlocked = motionState === "blocked";
+
+    if (isBlocked) {
+      console.log("Element skipped due to blocked state:", element);
+    }
+
+    return !isBlocked;
+  });
+
+  console.log(
+    `${animatableElements.length} elements will be animated (after filtering blocked states)`,
+  );
+
+  // Process each eligible element
+  animatableElements.forEach((element, index) => {
     try {
       // Set initial state - invisible and slightly moved down
       gsap.set(element, {
