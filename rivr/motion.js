@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-  }, 500); // Wait 500ms for images to be properly loaded
+  }, 0); // Wait 500ms for images to be properly loaded
 });
 
 //GSAP for Objects
@@ -467,6 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add the animation
       tl.to(element, {
         opacity: 1,
+        delay: 0.2,
         y: 0,
         duration: 0.5,
         ease: "power2.out",
