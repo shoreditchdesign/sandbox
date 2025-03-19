@@ -28,18 +28,41 @@ window.addEventListener("DOMContentLoaded", (event) => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
+
+    // Add data attribute to target elements
     document.querySelectorAll("h1, h2, p").forEach((element) => {
       element.setAttribute("data-stagger-fade", "");
     });
+
+    // Split text by LINES ONLY
     const splitLines = new SplitType("[data-stagger-fade]", {
+      types: "lines", // Explicitly specify ONLY lines (not words or chars)
       tagName: "span",
     });
+
+    // Optional debugging to confirm only lines are created
+    console.log(
+      "Lines created:",
+      document.querySelectorAll("[data-stagger-fade] .line").length,
+    );
+    console.log(
+      "Words created:",
+      document.querySelectorAll("[data-stagger-fade] .word").length,
+    ); // Should be 0
+    console.log(
+      "Chars created:",
+      document.querySelectorAll("[data-stagger-fade] .char").length,
+    ); // Should be 0
+
+    // Create wrappers for each line
     document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("u-line-mask");
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
+
+    // Create animations
     document.querySelectorAll("[data-stagger-fade]").forEach((element) => {
       const tl = gsap.timeline({ paused: true });
       tl.from(element.querySelectorAll(".line"), {
@@ -49,6 +72,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         ease: "power1.out",
         stagger: 0.1,
       });
+
       ScrollTrigger.create({
         trigger: element,
         start: "top 80%",
@@ -57,6 +81,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
         once: true,
       });
     });
+
+    // Function to revert split
     function splitRevert() {
       document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
         const wrapper = line.parentNode;
@@ -64,6 +90,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
       });
       splitLines.revert();
     }
+
+    // Ensure elements are visible
     gsap.set("[data-stagger-fade]", { opacity: 1 });
   }, 100);
 });
