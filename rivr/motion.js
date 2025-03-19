@@ -329,73 +329,85 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Register ScrollTrigger plugin to be safe
+  // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
 
-  // Target all elements with data-motion-element="cards" attribute
-  const cardContainers = document.querySelectorAll(
-    '[data-motion-element="cards"]',
-  );
+  // Wait a moment to ensure everything is loaded
+  setTimeout(() => {
+    // Target all elements with data-motion-element="cards" attribute
+    const cardContainers = document.querySelectorAll(
+      '[data-motion-element="cards"]',
+    );
 
-  // Debug: Check if elements exist
-  if (!cardContainers || cardContainers.length === 0) {
-    console.error('Could not find elements with data-motion-element="cards"');
-    return;
-  }
+    if (!cardContainers || cardContainers.length === 0) {
+      console.error('Could not find elements with data-motion-element="cards"');
+      return;
+    }
 
-  console.log(`Found ${cardContainers.length} card containers to animate`);
+    console.log(`Found ${cardContainers.length} card containers to animate`);
 
-  // Process each card container
-  cardContainers.forEach((container, containerIndex) => {
-    try {
-      // Get all direct children
-      const cardElements = container.children;
+    // Process each card container
+    cardContainers.forEach((container, containerIndex) => {
+      try {
+        // Get all direct children
+        const cardElements = Array.from(container.children);
 
-      if (!cardElements || cardElements.length === 0) {
-        console.error(`Container ${containerIndex + 1} has no child elements`);
-        return;
-      }
+        if (!cardElements || cardElements.length === 0) {
+          console.error(
+            `Container ${containerIndex + 1} has no child elements`,
+          );
+          return;
+        }
 
-      console.log(
-        `Container ${containerIndex + 1}: Found ${cardElements.length} card elements`,
-      );
+        console.log(
+          `Container ${containerIndex + 1}: Found ${cardElements.length} card elements`,
+        );
 
-      // Set initial state - invisible and slightly moved down
-      gsap.set(cardElements, {
-        opacity: 0,
-        y: 30,
-        scale: 0.95,
-      });
+        // Set initial state - all cards invisible
+        gsap.set(cardElements, {
+          opacity: 0,
+          y: 30,
+          scale: 0.95,
+        });
 
-      // Create the scroll-triggered animation
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: container,
-            start: "top 75%", // Start when top of container reaches 75% of viewport
-            end: "top 40%", // End when top of container reaches 40% of viewport
-            scrub: false, // No scrub for smoother animation
-            markers: false, // Enable for debugging
-            once: true, // Only play once
-            onEnter: () =>
-              console.log(
-                `Container ${containerIndex + 1} animation triggered`,
-              ),
-          },
-        })
-        .to(cardElements, {
+        // Create the animation timeline (paused until scrolled to)
+        const tl = gsap.timeline({
+          paused: true,
+          onComplete: () =>
+            console.log(
+              `Animation completed for container ${containerIndex + 1}`,
+            ),
+        });
+
+        // Add the staggered animation
+        tl.to(cardElements, {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.5, // Base animation duration
-          stagger: 0.15, // Delay between each card animation (in seconds)
-          ease: "power2.out", // Easing function for smooth animation
+          duration: 0.5,
+          stagger: 0.15,
+          ease: "power2.out",
         });
-    } catch (error) {
-      console.error(
-        `Error in card animation setup for container ${containerIndex + 1}:`,
-        error,
-      );
-    }
-  });
+
+        // Create ScrollTrigger
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top 75%", // Start when the top of the container reaches 75% of viewport
+          markers: false, // Set to true for debugging
+          onEnter: () => {
+            console.log(
+              `Container ${containerIndex + 1} entered viewport, playing animation`,
+            );
+            tl.play(0); // Play from the beginning
+          },
+          // Deliberately NOT using onRefresh to avoid playing for elements already in view
+        });
+      } catch (error) {
+        console.error(
+          `Error in card animation setup for container ${containerIndex + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 200);
 });
