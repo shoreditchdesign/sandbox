@@ -236,3 +236,90 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }, 500); // Wait 500ms for everything to be properly loaded
 });
+
+//GSAP fpr Images
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and ScrollTrigger are loaded
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+
+  // Register ScrollTrigger plugin to be safe
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Wait a moment to ensure images are loaded
+  setTimeout(() => {
+    // Target all elements with data-motion-element="image" attribute
+    const imageContainers = document.querySelectorAll(
+      '[data-motion-element="image"]',
+    );
+
+    // Debug: Check if elements exist
+    if (!imageContainers || imageContainers.length === 0) {
+      console.error('Could not find elements with data-motion-element="image"');
+      return;
+    }
+
+    console.log(`Found ${imageContainers.length} image containers to animate`);
+
+    // Process each image container
+    imageContainers.forEach((container, index) => {
+      try {
+        // Find the first child (the image)
+        const imageElement = container.children[0];
+
+        if (!imageElement) {
+          console.error(`Container ${index + 1} has no child elements`);
+          return;
+        }
+
+        // Store the original dimensions
+        const originalHeight = imageElement.offsetHeight;
+        const originalWidth = imageElement.offsetWidth;
+
+        console.log(
+          `Image ${index + 1}: Original height is ${originalHeight}px`,
+        );
+
+        // Create a wrapper to control the reveal
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.width = "100%";
+        wrapper.style.height = "auto";
+
+        // Move the image into the wrapper
+        container.appendChild(wrapper);
+        wrapper.appendChild(imageElement);
+
+        // Set initial state - height 0
+        gsap.set(wrapper, {
+          height: 0,
+        });
+
+        // Create the scroll-triggered animation
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: container,
+              start: "top 85%", // Start when top of container reaches 85% of viewport
+              end: "top 50%", // End when top of container reaches 50% of viewport
+              scrub: false, // No scrub for smoother animation
+              markers: false, // Enable for debugging
+              once: true, // Only play once
+            },
+          })
+          .to(wrapper, {
+            height: originalHeight,
+            duration: 1.2, // Animation duration in seconds
+            ease: "power2.out", // Easing function for smooth reveal
+          });
+      } catch (error) {
+        console.error(
+          `Error in image animation setup for element ${index + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 500); // Wait 500ms for images to be properly loaded
+});
