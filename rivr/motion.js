@@ -75,7 +75,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
       ScrollTrigger.create({
         trigger: element,
-        start: "top 80%",
+        start: "top 90%",
         onEnter: () => tl.play(),
         onEnterBack: () => tl.play(),
         once: true,
@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
           .timeline({
             scrollTrigger: {
               trigger: container,
-              start: "top 85%", // Start when top of container reaches 85% of viewport
+              start: "top 80%", // Start when top of container reaches 85% of viewport
               end: "top 50%", // End when top of container reaches 50% of viewport
               scrub: false, // No scrub for smoother animation
               markers: false, // Enable for debugging
@@ -391,7 +391,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create ScrollTrigger
         ScrollTrigger.create({
           trigger: container,
-          start: "top 75%", // Start when the top of the container reaches 75% of viewport
+          start: "top 70%", // Start when the top of the container reaches 75% of viewport
           markers: false, // Set to true for debugging
           onEnter: () => {
             console.log(
