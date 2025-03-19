@@ -1,3 +1,8 @@
+window.intercomSettings = {
+  api_base: "https://api-iam.intercom.io",
+  app_id: "jey3sjgt",
+};
+
 document
   .querySelector('[data-nav-element="menu"]')
   .addEventListener("click", () => {
