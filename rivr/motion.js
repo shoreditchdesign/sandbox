@@ -68,6 +68,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   }, 100);
 });
 
+//GSAP for Fading Grid
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {
     return;
@@ -114,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ScrollTrigger.refresh();
 });
 
+//GSAP for Swiper
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {
     return;
@@ -146,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP for Test Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
@@ -165,52 +168,53 @@ document.addEventListener("DOMContentLoaded", function () {
   // Set initial opacity for all words
   gsap.set(splitText.words, {
     opacity: 0.5,
-    // Adding a subtle 3D perspective for a nicer effect
-    y: "20px",
+    y: "20px", // Adding a subtle 3D perspective for a nicer effect
   });
 
-  // Create ScrollTrigger animation
-  splitText.words.forEach((word, index) => {
-    gsap.to(word, {
-      scrollTrigger: {
-        trigger: textElement,
-        start: "top 80%", // When the top of the element hits 80% from the top of viewport
-        end: "top 20%", // When the top of the element hits 20% from the top of viewport
-        scrub: true, // Smooth scrubbing effect that ties animation progress to scroll position
-        markers: false, // Set to true for debugging
-        // Stagger the word reveals by calculating different progress points
-        onUpdate: (self) => {
-          // Calculate when this specific word should be revealed
-          // This creates a word-by-word reveal effect
-          const wordProgress = index / splitText.words.length;
-
-          // If scroll progress passes the threshold for this word, add active class
-          if (self.progress >= wordProgress) {
-            if (!word.classList.contains("active")) {
-              gsap.to(word, {
-                opacity: 1,
-                y: "0px",
-                duration: 0.4,
-                ease: "power2.out",
-                onComplete: () => {
-                  word.classList.add("active");
-                },
-              });
-            }
-          } else {
-            // If we scroll back up, remove active class
-            if (word.classList.contains("active")) {
-              word.classList.remove("active");
-              gsap.to(word, {
-                opacity: 0.5,
-                y: "20px",
-                duration: 0.3,
-                ease: "power2.in",
-              });
-            }
-          }
-        },
+  // Create ScrollTrigger animation with timeline and stagger
+  // This approach is more performant than creating individual ScrollTriggers
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: textElement,
+      start: "top 80%", // When the top of the element hits 80% from the top of viewport
+      end: "bottom 20%", // When the bottom of the element hits 20% from the top of viewport
+      scrub: 0.5, // Smoothed scrubbing effect (0.5 seconds of smoothing)
+      markers: false, // Set to true for debugging
+      onLeave: () => {
+        // Ensure all words are visible when scrolled past
+        gsap.to(splitText.words, {
+          opacity: 1,
+          y: 0,
+          className: "+=active",
+          duration: 0.4,
+          ease: "power2.out",
+          stagger: 0,
+        });
       },
-    });
+      onEnterBack: () => {
+        // Reset animation when scrolling back to the top
+        gsap.to(splitText.words.slice().reverse(), {
+          opacity: 0.5,
+          y: "20px",
+          className: "-=active",
+          duration: 0.3,
+          ease: "power2.in",
+          stagger: 0.03,
+        });
+      },
+    },
   });
+
+  // Add the main animation to the timeline with stagger
+  tl.to(splitText.words, {
+    opacity: 1,
+    y: 0,
+    className: "+=active",
+    stagger: 0.05, // Time between each word animation
+    ease: "power2.out",
+    duration: 0.4,
+  });
+
+  // For better performance, we're using a single timeline instead of
+  // creating individual scroll triggers for each word
 });
