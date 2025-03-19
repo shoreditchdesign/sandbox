@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
         start: "top 80%", // When the top of the element hits 80% from the top of viewport
         end: "top 20%", // When the top of the element hits 20% from the top of viewport
         scrub: true, // Smooth scrubbing effect that ties animation progress to scroll position
-        markers: false, // Set to true for debugging
+        markers: true, // Set to true for debugging
         // Stagger the word reveals by calculating different progress points
         onUpdate: (self) => {
           // Calculate when this specific word should be revealed
