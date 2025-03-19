@@ -145,3 +145,72 @@ document.addEventListener("DOMContentLoaded", function () {
     delay: 0.3, // Initial delay before animation starts
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Register ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Target the text element
+  const textElement = document.querySelector(".s-hm2_text");
+
+  // Make sure the element exists
+  if (!textElement) return;
+
+  // Initialize SplitType to split the text into words
+  const splitText = new SplitType(textElement, {
+    types: "words",
+    tagName: "span",
+  });
+
+  // Set initial opacity for all words
+  gsap.set(splitText.words, {
+    opacity: 0.5,
+    // Adding a subtle 3D perspective for a nicer effect
+    y: "20px",
+  });
+
+  // Create ScrollTrigger animation
+  splitText.words.forEach((word, index) => {
+    gsap.to(word, {
+      scrollTrigger: {
+        trigger: textElement,
+        start: "top 80%", // When the top of the element hits 80% from the top of viewport
+        end: "top 20%", // When the top of the element hits 20% from the top of viewport
+        scrub: true, // Smooth scrubbing effect that ties animation progress to scroll position
+        markers: false, // Set to true for debugging
+        // Stagger the word reveals by calculating different progress points
+        onUpdate: (self) => {
+          // Calculate when this specific word should be revealed
+          // This creates a word-by-word reveal effect
+          const wordProgress = index / splitText.words.length;
+
+          // If scroll progress passes the threshold for this word, add active class
+          if (self.progress >= wordProgress) {
+            if (!word.classList.contains("active")) {
+              gsap.to(word, {
+                opacity: 1,
+                y: "0px",
+                duration: 0.4,
+                ease: "power2.out",
+                onComplete: () => {
+                  word.classList.add("active");
+                },
+              });
+            }
+          } else {
+            // If we scroll back up, remove active class
+            if (word.classList.contains("active")) {
+              word.classList.remove("active");
+              gsap.to(word, {
+                opacity: 0.5,
+                y: "20px",
+                duration: 0.3,
+                ease: "power2.in",
+              });
+            }
+          }
+        },
+      },
+    });
+  });
+});
