@@ -147,30 +147,45 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM Content Loaded - Starting text reveal animation setup");
+
   // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
+  console.log("ScrollTrigger plugin registered");
 
   // Target the text element
   const textElement = document.querySelector(".s-hm2_text");
+  console.log("Targeting text element:", textElement);
 
   // Make sure the element exists
-  if (!textElement) return;
+  if (!textElement) {
+    console.log("Text element not found - exiting animation setup");
+    return;
+  }
 
   // Initialize SplitType to split the text into words
+  console.log("Initializing SplitType to split text into words");
   const splitText = new SplitType(textElement, {
     types: "words",
     tagName: "span",
   });
+  console.log("SplitType created with", splitText.words.length, "words");
 
   // Set initial opacity for all words
+  console.log("Setting initial state for all words");
   gsap.set(splitText.words, {
     opacity: 0.5,
     // Adding a subtle 3D perspective for a nicer effect
     y: "20px",
   });
+  console.log("Initial word states set - opacity: 0.5, y: 20px");
 
   // Create ScrollTrigger animation
+  console.log("Creating ScrollTrigger animations for each word");
   splitText.words.forEach((word, index) => {
+    console.log(
+      `Setting up word ${index + 1}/${splitText.words.length}: "${word.textContent}"`,
+    );
     gsap.to(word, {
       scrollTrigger: {
         trigger: textElement,
@@ -183,10 +198,16 @@ document.addEventListener("DOMContentLoaded", function () {
           // Calculate when this specific word should be revealed
           // This creates a word-by-word reveal effect
           const wordProgress = index / splitText.words.length;
+          console.log(
+            `Word "${word.textContent}" - Progress: ${self.progress.toFixed(2)}, Threshold: ${wordProgress.toFixed(2)}`,
+          );
 
           // If scroll progress passes the threshold for this word, add active class
           if (self.progress >= wordProgress) {
             if (!word.classList.contains("active")) {
+              console.log(
+                `Activating word "${word.textContent}" - animation starting`,
+              );
               gsap.to(word, {
                 opacity: 1,
                 y: "0px",
@@ -194,18 +215,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 ease: "power2.out",
                 onComplete: () => {
                   word.classList.add("active");
+                  console.log(
+                    `Word "${word.textContent}" - active class added, animation complete`,
+                  );
                 },
               });
             }
           } else {
             // If we scroll back up, remove active class
             if (word.classList.contains("active")) {
+              console.log(
+                `Deactivating word "${word.textContent}" - reversing animation`,
+              );
               word.classList.remove("active");
               gsap.to(word, {
                 opacity: 0.5,
                 y: "0px",
                 duration: 0.3,
                 ease: "power2.in",
+                onComplete: () => {
+                  console.log(
+                    `Word "${word.textContent}" - deactivation complete`,
+                  );
+                },
               });
             }
           }
@@ -213,4 +245,5 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     });
   });
+  console.log("Word animations setup complete");
 });
