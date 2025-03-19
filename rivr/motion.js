@@ -366,8 +366,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state - all cards invisible
         gsap.set(cardElements, {
           opacity: 0,
-          y: 30,
-          scale: 0.95,
+          y: 20,
+          scale: 0.1,
         });
 
         // Create the animation timeline (paused until scrolled to)
