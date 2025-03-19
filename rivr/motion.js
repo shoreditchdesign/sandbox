@@ -146,120 +146,33 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM Content Loaded - Starting text reveal animation setup");
+// Initialize SplitType to split text into words
+const textElement = document.querySelector(".s-hm2_text");
+const splitText = new SplitType(textElement, {
+  types: "words",
+  tagName: "span",
+});
 
-  // Register ScrollTrigger plugin
-  gsap.registerPlugin(ScrollTrigger);
-  console.log("ScrollTrigger plugin registered");
+// Create the scroll-triggered animation
+gsap
+  .timeline({
+    scrollTrigger: {
+      trigger: textElement,
+      start: "top 80%", // Starts when the top of the text hits 80% of viewport
+      end: "bottom 20%", // Ends when the bottom of the text hits 20% of viewport
+      scrub: true, // Ties animation progress to scroll position
+      // markers: true, // Uncomment for debugging
+    },
+  })
+  .to(splitText.words, {
+    opacity: 1,
+    className: "+=active", // Adds the 'active' class
+    stagger: 0.05, // Time between each word animation
+    ease: "power2.out", // Subtle easing for smooth animation
+    duration: 0.5,
+  });
 
-  // Target the text element
-  const textElement = document.querySelector(".s-hm2_text");
-  console.log("Targeting text element:", textElement);
-
-  // Debug the content
-  console.log("Original content:", textElement.textContent);
-
-  // Check if SplitType is available
-  if (typeof SplitType === "undefined") {
-    console.error("SplitType library is not loaded! Loading it dynamically...");
-
-    // Attempt to load SplitType dynamically
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/split-type@0.3.3/umd/index.min.js";
-    script.onload = initializeSplitAndAnimation;
-    script.onerror = () => console.error("Failed to load SplitType library!");
-    document.head.appendChild(script);
-    return;
-  } else {
-    initializeSplitAndAnimation();
-  }
-
-  function initializeSplitAndAnimation() {
-    console.log("Initializing split and animation");
-
-    // Manually split the text into words
-    const originalText = textElement.textContent.trim();
-    const words = originalText.split(/\s+/);
-    console.log("Text split into", words.length, "words:", words);
-
-    // Clear the text element
-    textElement.innerHTML = "";
-
-    // Create spans for each word
-    words.forEach((word) => {
-      const wordSpan = document.createElement("span");
-      wordSpan.className = "word";
-      wordSpan.textContent = word;
-      wordSpan.style.opacity = "0.5";
-      wordSpan.style.display = "inline-block";
-      wordSpan.style.transform = "translateY(20px)";
-      textElement.appendChild(wordSpan);
-      // Add a space after each word (except the last one)
-      textElement.appendChild(document.createTextNode(" "));
-    });
-
-    // Select all the word spans
-    const wordElements = textElement.querySelectorAll(".word");
-    console.log("Created", wordElements.length, "word elements");
-
-    // Create the ScrollTrigger animation
-    console.log("Setting up ScrollTrigger for each word");
-    wordElements.forEach((word, index) => {
-      console.log(
-        `Setting up word ${index + 1}/${wordElements.length}: "${word.textContent}"`,
-      );
-
-      gsap.to(word, {
-        scrollTrigger: {
-          trigger: textElement,
-          start: "top 80%", // When the top of the element hits 80% from the top of viewport
-          end: "top 20%", // When the top of the element hits 20% from the top of viewport
-          scrub: 0.5, // Smooth scrubbing effect
-          markers: true, // Set to true for debugging, false for production
-          onUpdate: (self) => {
-            // Calculate when this specific word should be revealed
-            const wordThreshold = index / (wordElements.length - 1);
-
-            // Only log occasionally to prevent console flooding
-            if (Math.random() < 0.05) {
-              console.log(
-                `Word "${word.textContent}" - Scroll: ${self.progress.toFixed(2)}, Threshold: ${wordThreshold.toFixed(2)}`,
-              );
-            }
-
-            // If scroll progress passes the threshold for this word, reveal it
-            if (self.progress >= wordThreshold) {
-              if (!word.classList.contains("active")) {
-                console.log(`Activating word "${word.textContent}"`);
-                gsap.to(word, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.4,
-                  ease: "power2.out",
-                  onComplete: () => {
-                    word.classList.add("active");
-                  },
-                });
-              }
-            } else {
-              // If we scroll back up, hide the word again
-              if (word.classList.contains("active")) {
-                console.log(`Deactivating word "${word.textContent}"`);
-                word.classList.remove("active");
-                gsap.to(word, {
-                  opacity: 0.5,
-                  y: 20,
-                  duration: 0.3,
-                  ease: "power2.in",
-                });
-              }
-            }
-          },
-        },
-      });
-    });
-
-    console.log("Animation setup complete");
-  }
+// Make sure all words start with opacity 0.5 (in case CSS isn't set)
+gsap.set(splitText.words, {
+  opacity: 0.5,
 });
