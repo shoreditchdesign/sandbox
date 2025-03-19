@@ -157,25 +157,66 @@ document.addEventListener("DOMContentLoaded", function () {
   const textElement = document.querySelector(".s-hm2_text");
   console.log("Targeting text element:", textElement);
 
+  // Debug the HTML content
+  console.log("HTML content of text element:", textElement.innerHTML);
+  console.log("Text content of text element:", textElement.textContent);
+
   // Make sure the element exists
   if (!textElement) {
     console.log("Text element not found - exiting animation setup");
     return;
   }
 
-  // Initialize SplitType to split the text into words
-  console.log("Initializing SplitType to split text into words");
+  // Try a different approach with SplitType
+  console.log("Initializing SplitType with more specific settings");
   const splitText = new SplitType(textElement, {
     types: "words",
     tagName: "span",
+    // Force splitting all text nodes
+    splitClass: "split-word",
+    wordClass: "word",
+    absolute: false,
   });
-  console.log("SplitType created with", splitText.words.length, "words");
+
+  console.log("SplitType result:", splitText);
+  console.log("Words created:", splitText.words ? splitText.words.length : 0);
+
+  // If SplitType didn't work properly, try a manual split
+  if (!splitText.words || splitText.words.length <= 1) {
+    console.log("SplitType didn't split properly, trying manual split");
+
+    // Clear existing content
+    const originalText = textElement.textContent.trim();
+    textElement.innerHTML = "";
+
+    // Split text manually and create word spans
+    const words = originalText.split(/\s+/);
+    console.log("Manually split into words:", words);
+
+    // Create spans for each word
+    words.forEach((word) => {
+      const wordSpan = document.createElement("span");
+      wordSpan.className = "word";
+      wordSpan.textContent = word;
+      textElement.appendChild(wordSpan);
+      textElement.appendChild(document.createTextNode(" ")); // Add space between words
+    });
+
+    // Re-select the word elements
+    splitText.words = textElement.querySelectorAll(".word");
+    console.log("Manually created word elements:", splitText.words.length);
+  }
+
+  // If we still don't have words, exit
+  if (!splitText.words || splitText.words.length === 0) {
+    console.log("No words to animate - exiting animation setup");
+    return;
+  }
 
   // Set initial opacity for all words
   console.log("Setting initial state for all words");
   gsap.set(splitText.words, {
     opacity: 0.5,
-    // Adding a subtle 3D perspective for a nicer effect
     y: "20px",
   });
   console.log("Initial word states set - opacity: 0.5, y: 20px");
@@ -186,18 +227,17 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(
       `Setting up word ${index + 1}/${splitText.words.length}: "${word.textContent}"`,
     );
+
     gsap.to(word, {
       scrollTrigger: {
         trigger: textElement,
         start: "top 80%", // When the top of the element hits 80% from the top of viewport
         end: "top 20%", // When the top of the element hits 20% from the top of viewport
-        scrub: true, // Smooth scrubbing effect that ties animation progress to scroll position
+        scrub: 0.5, // Smooth scrubbing effect with a slight delay for better feel
         markers: true, // Set to true for debugging
-        // Stagger the word reveals by calculating different progress points
         onUpdate: (self) => {
-          // Calculate when this specific word should be revealed
-          // This creates a word-by-word reveal effect
-          const wordProgress = index / splitText.words.length;
+          // Calculate when this specific word should be revealed based on its position in the text
+          const wordProgress = index / (splitText.words.length - 1);
           console.log(
             `Word "${word.textContent}" - Progress: ${self.progress.toFixed(2)}, Threshold: ${wordProgress.toFixed(2)}`,
           );
@@ -230,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
               word.classList.remove("active");
               gsap.to(word, {
                 opacity: 0.5,
-                y: "0px",
+                y: "20px",
                 duration: 0.3,
                 ease: "power2.in",
                 onComplete: () => {
