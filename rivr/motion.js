@@ -410,3 +410,68 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }, 200);
 });
+
+//GSAP for single elememts
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and ScrollTrigger are loaded
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+
+  // Register ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Target all elements with data-motion-element="single" attribute
+  const singleElements = document.querySelectorAll(
+    '[data-motion-element="single"]',
+  );
+
+  if (!singleElements || singleElements.length === 0) {
+    console.error('Could not find elements with data-motion-element="single"');
+    return;
+  }
+
+  console.log(`Found ${singleElements.length} single elements to animate`);
+
+  // Process each element
+  singleElements.forEach((element, index) => {
+    try {
+      // Set initial state - invisible and slightly moved down
+      gsap.set(element, {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+      });
+
+      // Create the animation timeline (paused until scrolled to)
+      const tl = gsap.timeline({
+        paused: true,
+      });
+
+      // Add the animation
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+
+      // Create ScrollTrigger
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 80%", // Start when the top of the element reaches 80% of viewport
+        markers: false, // Set to true for debugging
+        onEnter: () => {
+          tl.play(0); // Play from the beginning
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error in animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
+});
