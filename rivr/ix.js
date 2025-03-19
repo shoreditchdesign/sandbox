@@ -33,17 +33,17 @@ document.addEventListener("DOMContentLoaded", function () {
         // mobile landscape
         480: {
           slidesPerView: 1,
-          spaceBetween: "4%",
+          spaceBetween: "8px",
         },
         // tablet
         768: {
           slidesPerView: 2,
-          spaceBetween: "4%",
+          spaceBetween: "16px",
         },
         // desktop
         992: {
           slidesPerView: 3,
-          spaceBetween: "2%",
+          spaceBetween: "16px",
         },
       },
       navigation: {
