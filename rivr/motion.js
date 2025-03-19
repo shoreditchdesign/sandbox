@@ -143,39 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
   ScrollTrigger.refresh();
 });
 
-//GSAP for Swiper
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof gsap === "undefined") {
-    return;
-  }
-
-  const swiperWrapper = document.querySelector(".swiper-wrapper");
-  if (!swiperWrapper) {
-    return;
-  }
-
-  const cards = Array.from(swiperWrapper.children);
-  if (!cards.length) {
-    return;
-  }
-
-  // Set initial state - hidden and shifted down
-  gsap.set(cards, {
-    autoAlpha: 0,
-    y: 30,
-  });
-
-  // Create animation with staggered timing
-  gsap.to(cards, {
-    duration: 0.8,
-    autoAlpha: 1,
-    y: 0,
-    ease: "power2.out",
-    stagger: 0.15, // 0.15 second delay between each card
-    delay: 0.3, // Initial delay before animation starts
-  });
-});
-
 //GSAP for Text Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and plugins are loaded
@@ -352,4 +319,83 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }, 500); // Wait 500ms for images to be properly loaded
+});
+
+//GSAP for Objects
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and ScrollTrigger are loaded
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+
+  // Register ScrollTrigger plugin to be safe
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Target all elements with data-motion-element="cards" attribute
+  const cardContainers = document.querySelectorAll(
+    '[data-motion-element="cards"]',
+  );
+
+  // Debug: Check if elements exist
+  if (!cardContainers || cardContainers.length === 0) {
+    console.error('Could not find elements with data-motion-element="cards"');
+    return;
+  }
+
+  console.log(`Found ${cardContainers.length} card containers to animate`);
+
+  // Process each card container
+  cardContainers.forEach((container, containerIndex) => {
+    try {
+      // Get all direct children
+      const cardElements = container.children;
+
+      if (!cardElements || cardElements.length === 0) {
+        console.error(`Container ${containerIndex + 1} has no child elements`);
+        return;
+      }
+
+      console.log(
+        `Container ${containerIndex + 1}: Found ${cardElements.length} card elements`,
+      );
+
+      // Set initial state - invisible and slightly moved down
+      gsap.set(cardElements, {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+      });
+
+      // Create the scroll-triggered animation
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: container,
+            start: "top 75%", // Start when top of container reaches 75% of viewport
+            end: "top 40%", // End when top of container reaches 40% of viewport
+            scrub: false, // No scrub for smoother animation
+            markers: false, // Enable for debugging
+            once: true, // Only play once
+            onEnter: () =>
+              console.log(
+                `Container ${containerIndex + 1} animation triggered`,
+              ),
+          },
+        })
+        .to(cardElements, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5, // Base animation duration
+          stagger: 0.15, // Delay between each card animation (in seconds)
+          ease: "power2.out", // Easing function for smooth animation
+        });
+    } catch (error) {
+      console.error(
+        `Error in card animation setup for container ${containerIndex + 1}:`,
+        error,
+      );
+    }
+  });
 });
