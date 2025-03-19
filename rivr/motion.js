@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Test Reveal
+//GSAP for Text Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and plugins are loaded
   if (
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state of all words
         gsap.set(splitText.words, {
           opacity: 0.5,
-          y: "20px",
+          y: "0px",
           ease: "power2.out",
         });
 
