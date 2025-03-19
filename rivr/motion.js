@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
               word.classList.remove("active");
               gsap.to(word, {
                 opacity: 0.5,
-                y: "20px",
+                y: "0px",
                 duration: 0.3,
                 ease: "power2.in",
               });
