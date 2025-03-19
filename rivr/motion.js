@@ -440,8 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Set initial state - invisible and slightly moved down
       gsap.set(element, {
         opacity: 0,
-        y: 30,
-        scale: 0.95,
+        y: 20,
       });
 
       // Create the animation timeline (paused until scrolled to)
@@ -453,7 +452,6 @@ document.addEventListener("DOMContentLoaded", function () {
       tl.to(element, {
         opacity: 1,
         y: 0,
-        scale: 1,
         duration: 0.5,
         ease: "power2.out",
       });
