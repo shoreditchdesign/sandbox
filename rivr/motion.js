@@ -234,7 +234,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP fpr Images
 document.addEventListener("DOMContentLoaded", function () {
-  // Make sure GSAP and ScrollTrigger are loaded
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
@@ -289,9 +288,10 @@ document.addEventListener("DOMContentLoaded", function () {
         container.appendChild(curtain);
         curtain.appendChild(imageElement);
 
-        // Set initial state - curtain height 0
+        // Set initial state - curtain height 0 and opacity 0
         gsap.set(curtain, {
           height: 0,
+          opacity: 0,
         });
 
         // Create the scroll-triggered animation
@@ -308,6 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
           })
           .to(curtain, {
             height: finalHeight,
+            opacity: 1,
             duration: 1.2, // Animation duration in seconds
             ease: "power2.out", // Easing function for smooth reveal
           });
