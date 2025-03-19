@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Process each image container
     imageContainers.forEach((container, index) => {
       try {
-        // Find the first child (the image)
+        // Find the child element (the image)
         const imageElement = container.children[0];
 
         if (!imageElement) {
@@ -274,26 +274,28 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
-        // Store the original dimensions
-        const originalHeight = imageElement.offsetHeight;
-        const originalWidth = imageElement.offsetWidth;
+        // Get the original height of the container
+        const finalHeight = container.offsetHeight;
 
-        console.log(
-          `Image ${index + 1}: Original height is ${originalHeight}px`,
-        );
+        console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
 
-        // Create a wrapper to control the reveal
-        const wrapper = document.createElement("div");
-        wrapper.style.overflow = "hidden";
-        wrapper.style.width = "100%";
-        wrapper.style.height = "auto";
+        // Set the container's height explicitly to prevent layout shifts
+        container.style.height = `${finalHeight}px`;
+        container.style.overflow = "hidden";
 
-        // Move the image into the wrapper
-        container.appendChild(wrapper);
-        wrapper.appendChild(imageElement);
+        // Create a curtain wrapper
+        const curtain = document.createElement("div");
+        curtain.setAttribute("data-motion-element", "curtain");
+        curtain.style.overflow = "hidden";
+        curtain.style.width = "100%";
+        curtain.style.position = "relative";
 
-        // Set initial state - height 0
-        gsap.set(wrapper, {
+        // Move the image into the curtain
+        container.appendChild(curtain);
+        curtain.appendChild(imageElement);
+
+        // Set initial state - curtain height 0
+        gsap.set(curtain, {
           height: 0,
         });
 
@@ -309,8 +311,8 @@ document.addEventListener("DOMContentLoaded", function () {
               once: true, // Only play once
             },
           })
-          .to(wrapper, {
-            height: originalHeight,
+          .to(curtain, {
+            height: finalHeight,
             duration: 1.2, // Animation duration in seconds
             ease: "power2.out", // Easing function for smooth reveal
           });
