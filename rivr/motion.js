@@ -150,71 +150,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Test Reveal
 document.addEventListener("DOMContentLoaded", function () {
-  // Register ScrollTrigger plugin
-  gsap.registerPlugin(ScrollTrigger);
+  // Make sure GSAP and plugins are loaded
+  if (
+    typeof gsap === "undefined" ||
+    typeof ScrollTrigger === "undefined" ||
+    typeof SplitType === "undefined"
+  ) {
+    console.error(
+      "Required libraries (GSAP, ScrollTrigger, or SplitType) are not loaded",
+    );
+    return;
+  }
 
-  // Target the text element
-  const textElement = document.querySelector(".s-hm2_text");
+  // Wait a moment to ensure the DOM is fully processed
+  setTimeout(() => {
+    // Target elements with data-motion-text="reveal" attribute
+    const textElements = document.querySelectorAll(
+      '[data-motion-text="reveal"]',
+    );
 
-  // Make sure the element exists
-  if (!textElement) return;
+    // Debug: Check if elements exist
+    if (!textElements || textElements.length === 0) {
+      console.error('Could not find elements with data-motion-text="reveal"');
+      return;
+    }
 
-  // Initialize SplitType to split the text into words
-  const splitText = new SplitType(textElement, {
-    types: "words",
-    tagName: "span",
-  });
+    console.log(
+      `Found ${textElements.length} text elements with data-motion-text="reveal"`,
+    );
 
-  // Set initial opacity for all words
-  gsap.set(splitText.words, {
-    opacity: 0.5,
-    y: "20px", // Adding a subtle 3D perspective for a nicer effect
-  });
-
-  // Create ScrollTrigger animation with timeline and stagger
-  // This approach is more performant than creating individual ScrollTriggers
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: textElement,
-      start: "top 80%", // When the top of the element hits 80% from the top of viewport
-      end: "bottom 20%", // When the bottom of the element hits 20% from the top of viewport
-      scrub: 0.5, // Smoothed scrubbing effect (0.5 seconds of smoothing)
-      markers: false, // Set to true for debugging
-      onLeave: () => {
-        // Ensure all words are visible when scrolled past
-        gsap.to(splitText.words, {
-          opacity: 1,
-          y: 0,
-          className: "+=active",
-          duration: 0.4,
-          ease: "power2.out",
-          stagger: 0,
+    // Process each element
+    textElements.forEach((textElement, elementIndex) => {
+      try {
+        // Initialize SplitType to split the text into words
+        const splitText = new SplitType(textElement, {
+          types: "words",
+          tagName: "span",
         });
-      },
-      onEnterBack: () => {
-        // Reset animation when scrolling back to the top
-        gsap.to(splitText.words.slice().reverse(), {
+
+        // Debug: Check if words were created
+        if (!splitText.words || splitText.words.length === 0) {
+          console.error(
+            "SplitType did not create any word elements for",
+            textElement,
+          );
+          return;
+        }
+
+        console.log(
+          `Element ${elementIndex + 1}: Split into ${splitText.words.length} words`,
+        );
+
+        // Set initial state of all words
+        gsap.set(splitText.words, {
           opacity: 0.5,
           y: "20px",
-          className: "-=active",
-          duration: 0.3,
-          ease: "power2.in",
-          stagger: 0.03,
+          ease: "power2.out",
         });
-      },
-    },
-  });
 
-  // Add the main animation to the timeline with stagger
-  tl.to(splitText.words, {
-    opacity: 1,
-    y: 0,
-    className: "+=active",
-    stagger: 0.05, // Time between each word animation
-    ease: "power2.out",
-    duration: 0.4,
-  });
+        // Create the scroll-triggered animation
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: textElement,
+            start: "top 80%", // Start when top of text reaches 80% of viewport
+            end: "bottom 20%", // End when bottom of text reaches 20% of viewport
+            scrub: 0.5, // Smooth scrubbing effect
+            markers: false, // Enable for debugging
+          },
+        });
 
-  // For better performance, we're using a single timeline instead of
-  // creating individual scroll triggers for each word
+        // Add the animation to the timeline
+        tl.to(splitText.words, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.05,
+          ease: "power2.out",
+          className: "+=active",
+        });
+      } catch (error) {
+        console.error(
+          `Error in text animation setup for element ${elementIndex + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 500); // Wait 500ms for everything to be properly loaded
 });
