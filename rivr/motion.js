@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
         gsap.set(cardElements, {
           opacity: 0,
           y: 20,
-          scale: 0.1,
+          scale: 1,
         });
 
         // Create the animation timeline (paused until scrolled to)
