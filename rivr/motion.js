@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state - curtain height 0 and opacity 0
         gsap.set(curtain, {
           height: 0,
-          opacity: 0,
+          opacity: 0.8,
         });
 
         // Create the scroll-triggered animation
