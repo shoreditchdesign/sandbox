@@ -489,13 +489,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Wait a moment to ensure everything is loaded
   setTimeout(() => {
-    // Target all elements with data-motion-element="cards" attribute
+    // Target all elements with data-motion-element="objects" attribute
     const cardContainers = document.querySelectorAll(
-      '[data-motion-element="cards"]',
+      '[data-motion-element="objects"]',
     );
 
     if (!cardContainers || cardContainers.length === 0) {
-      console.error('Could not find elements with data-motion-element="cards"');
+      console.error(
+        'Could not find elements with data-motion-element="objects"',
+      );
       return;
     }
 
