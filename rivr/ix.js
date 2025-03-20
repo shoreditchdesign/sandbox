@@ -234,19 +234,8 @@ function handleAccordionClick(event) {
   console.log("Accordion clicked, current state:", toggleState);
 
   if (toggleState === "closed") {
-    // Close all siblings
-    const siblingToggles = getSiblingToggles(toggle);
-    console.log("Attempting to close siblings. Found:", siblingToggles.length);
-
-    siblingToggles.forEach((siblingToggle) => {
-      const siblingState = siblingToggle.getAttribute("data-toggle-state");
-      console.log("Sibling state:", siblingState);
-
-      if (siblingState === "open") {
-        console.log("Closing sibling:", siblingToggle);
-        closeAccordion(siblingToggle);
-      }
-    });
+    // Close all other accordions in all components
+    closeAllOtherAccordions(toggle);
 
     // Open this accordion
     openAccordion(toggle);
@@ -256,14 +245,17 @@ function handleAccordionClick(event) {
   }
 }
 
-function getSiblingToggles(toggle) {
-  const parent = toggle.parentNode;
-  const allToggles = Array.from(parent.querySelectorAll("[data-faq-toggle]"));
-  const siblings = allToggles.filter((sibling) => sibling !== toggle);
+function closeAllOtherAccordions(currentToggle) {
+  // Find all open accordions across all components
+  const allOpenToggles = document.querySelectorAll(
+    '[data-faq-toggle][data-toggle-state="open"]',
+  );
 
-  console.log("Parent element:", parent);
-  console.log("All toggles found:", allToggles.length);
-  console.log("Sibling toggles found:", siblings.length);
+  console.log("Found", allOpenToggles.length, "open accordions to close");
 
-  return siblings;
+  allOpenToggles.forEach((toggle) => {
+    if (toggle !== currentToggle) {
+      closeAccordion(toggle);
+    }
+  });
 }
