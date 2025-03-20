@@ -10,7 +10,6 @@ document
     );
   });
 
-//Check Pushæ
 //Navigation Bar Dropdown
 document
   .querySelector('[data-nav-element="toggle"]')
@@ -44,6 +43,7 @@ document
     }
   });
 
+//Swiper Component
 document.addEventListener("DOMContentLoaded", function () {
   const component = document.getElementById("swiper-component");
   if (component) {
@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//Blog Articles Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
   const categoryFilters = document.querySelectorAll(
@@ -235,8 +236,14 @@ function handleAccordionClick(event) {
   if (toggleState === "closed") {
     // Close all siblings
     const siblingToggles = getSiblingToggles(toggle);
+    console.log("Attempting to close siblings. Found:", siblingToggles.length);
+
     siblingToggles.forEach((siblingToggle) => {
-      if (siblingToggle.getAttribute("data-toggle-state") === "open") {
+      const siblingState = siblingToggle.getAttribute("data-toggle-state");
+      console.log("Sibling state:", siblingState);
+
+      if (siblingState === "open") {
+        console.log("Closing sibling:", siblingToggle);
         closeAccordion(siblingToggle);
       }
     });
@@ -251,6 +258,12 @@ function handleAccordionClick(event) {
 
 function getSiblingToggles(toggle) {
   const parent = toggle.parentNode;
-  const siblings = Array.from(parent.querySelectorAll("[data-faq-toggle]"));
-  return siblings.filter((sibling) => sibling !== toggle);
+  const allToggles = Array.from(parent.querySelectorAll("[data-faq-toggle]"));
+  const siblings = allToggles.filter((sibling) => sibling !== toggle);
+
+  console.log("Parent element:", parent);
+  console.log("All toggles found:", allToggles.length);
+  console.log("Sibling toggles found:", siblings.length);
+
+  return siblings;
 }
