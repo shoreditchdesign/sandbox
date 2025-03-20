@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
           scrollTrigger: {
             trigger: textElement,
             start: startTrigger, // Use the custom offset or default 80%
-            end: "bottom 20%", // End when bottom of text reaches 20% of viewport
+            end: "bottom 5%", // End when bottom of text reaches 5% of viewport
             scrub: 0.5, // Smooth scrubbing effect
             markers: false, // Enable for debugging
           },
