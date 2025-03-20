@@ -110,69 +110,48 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-//Table of Contents
-console.log("generating table of content");
-
 document.addEventListener("DOMContentLoaded", function () {
-  const richTextBodies = document.querySelectorAll("[data-toc-body]");
-  let allH2s = [];
+  // Get all filter elements
+  const filterElements = document.querySelectorAll("[data-cmsfilter-element]");
+  const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
 
-  richTextBodies.forEach((body) => {
-    const h2s = body.querySelectorAll("h2");
-    allH2s = [...allH2s, ...h2s];
-  });
+  // Add click event listeners to all filter elements
+  filterElements.forEach((filter) => {
+    filter.addEventListener("click", function () {
+      // Handle the clicked filter
+      handleFilterClick(this);
 
-  allH2s.forEach((h2, index) => {
-    const id = `id-toc-link-${index + 1}`;
-    h2.setAttribute("id", id);
-  });
+      // Check if any category filters are active
+      const anyActiveCategories = Array.from(filterElements).some(
+        (el) =>
+          el.getAttribute("data-cmsfilter-element") !== "all" &&
+          el.classList.contains("is-active"),
+      );
 
-  const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
-
-  tocWrappers.forEach((tocWrapper) => {
-    const templateCell = tocWrapper.querySelector("[data-toc-cell]");
-
-    if (!templateCell || allH2s.length === 0) {
-      tocWrapper.style.display = "none";
-      return;
-    }
-
-    const existingCells = tocWrapper.querySelectorAll("[data-toc-cell]");
-    existingCells.forEach((cell, index) => {
-      if (index !== 0) cell.remove();
-    });
-
-    allH2s.forEach((h2, index) => {
-      const newCell = templateCell.cloneNode(true);
-      const textElement = newCell.querySelector("[data-toc-text]");
-      const id = `id-toc-link-${index + 1}`;
-
-      // Store the id as a data attribute instead of href
-      newCell.setAttribute("data-toc-target", id);
-      // Remove href to prevent default behavior
-      newCell.removeAttribute("href");
-
-      if (textElement) {
-        textElement.textContent = h2.textContent;
+      // Manage the "all" filter's active class
+      if (anyActiveCategories) {
+        // If any category is active, remove is-active from "all"
+        allFilter.classList.remove("is-active");
+      } else {
+        // If no categories are active, ensure "all" is active
+        allFilter.classList.add("is-active");
       }
+    });
+  });
 
-      newCell.addEventListener("click", (e) => {
-        e.preventDefault();
-        const targetH2 = document.getElementById(id);
-        if (targetH2) {
-          const offset = 200;
-          const targetPosition =
-            targetH2.getBoundingClientRect().top + window.scrollY - offset;
-          window.scrollTo({
-            top: targetPosition,
-            behavior: "smooth",
-          });
+  // Function to handle individual filter click
+  function handleFilterClick(clickedFilter) {
+    // If clicking the "all" filter, deactivate all category filters
+    if (clickedFilter.getAttribute("data-cmsfilter-element") === "all") {
+      filterElements.forEach((el) => {
+        if (el.getAttribute("data-cmsfilter-element") !== "all") {
+          el.classList.remove("is-active");
         }
       });
-
-      tocWrapper.appendChild(newCell);
-    });
-
-    templateCell.remove();
-  });
+      clickedFilter.classList.add("is-active");
+    } else {
+      // Toggle the is-active class on the clicked category filter
+      clickedFilter.classList.toggle("is-active");
+    }
+  }
 });
