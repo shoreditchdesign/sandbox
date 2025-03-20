@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  gsap.set(imageContainers, { autoAlpha: 0 });
+  gsap.set(imageContainers, { autoAlpha: 0, y: 20 });
 
   const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
 
@@ -133,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
   tl.to(randomizedImages, {
     duration: 0.8,
     autoAlpha: 1,
+    y: 0,
     ease: "power2.out",
     stagger: {
       each: 0.15,
