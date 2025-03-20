@@ -209,3 +209,50 @@ var mySwiper = new Swiper("#benefits-swiper", {
     },
   },
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
+  const categoryFilters = document.querySelectorAll(
+    '[data-cmsfilter-element]:not([data-cmsfilter-element="all"])',
+  );
+
+  // Add a direct click handler for the all filter to ensure it becomes active when clicked
+  allFilter.addEventListener(
+    "click",
+    function () {
+      // Ensure "all" is active when clicked
+      if (!allFilter.classList.contains("is-active")) {
+        allFilter.classList.add("is-active");
+      }
+
+      // Optional: Deactivate all categories when "all" is clicked
+      categoryFilters.forEach((el) => el.classList.remove("is-active"));
+    },
+    true,
+  ); // Using capture phase to try to run before other handlers
+
+  // Set up a MutationObserver to watch for class changes on categories
+  const observer = new MutationObserver(function (mutations) {
+    // Process mutations to check if any category became active
+    const categoryMutations = mutations.filter(
+      (m) => m.target !== allFilter && m.attributeName === "class",
+    );
+
+    if (categoryMutations.length > 0) {
+      // Check if any category has the is-active class
+      const anyActiveCategories = Array.from(categoryFilters).some((el) =>
+        el.classList.contains("is-active"),
+      );
+
+      // If any category is active, remove is-active from "all"
+      if (anyActiveCategories && allFilter.classList.contains("is-active")) {
+        allFilter.classList.remove("is-active");
+      }
+    }
+  });
+
+  // Observe category filters for class changes
+  categoryFilters.forEach((el) => {
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+  });
+});
