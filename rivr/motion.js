@@ -274,6 +274,14 @@ window.addEventListener("DOMContentLoaded", (event) => {
       const bgElement = card.querySelector("[data-hover-bg]");
       const arrowElement = card.querySelector("[data-hover-arrow]");
 
+      // Skip if required elements are missing
+      if (!bgElement || !arrowElement) {
+        console.warn(
+          `Card ${card.id || "unnamed"} is missing required elements`,
+        );
+        return;
+      }
+
       console.log(`Setting up card: ${card.id || "unnamed card"}`);
 
       // Store initial and target heights
@@ -281,8 +289,12 @@ window.addEventListener("DOMContentLoaded", (event) => {
       const initialHeight = parentHeight * 0.7; // 70% of parent height
       const targetHeight = parentHeight; // 100% of parent height
 
+      console.log(
+        `Card dimensions - Parent: ${parentHeight}px, Initial: ${initialHeight}px`,
+      );
+
       // Set initial height
-      gsap.set(card, { height: initialHeight });
+      gsap.set(card, { height: initialHeight, overflow: "hidden" });
 
       // Create quickTo animations for smooth transitions
       const arrowOpacity = gsap.quickTo(arrowElement, "opacity", {
@@ -297,6 +309,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
         duration: 0.3,
         ease: "power2.inOut",
       });
+
+      console.log("QuickTo animations created for", card.id || "unnamed card");
 
       // Create text animation timeline for each text element
       const textTimelines = [];
@@ -334,7 +348,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
       // Set initial properties
       gsap.set(arrowElement, { opacity: 0 });
       gsap.set(bgElement, { opacity: 0 });
-      gsap.set(textElements.querySelectorAll(".line"), { y: 0, opacity: 1 });
+
+      // Handle text elements properly (textElements is a NodeList, not a single element)
+      textElements.forEach((textElement) => {
+        gsap.set(textElement.querySelectorAll(".line"), { y: 0, opacity: 1 });
+      });
     });
 
     // Function to revert split if needed (for cleanup)
