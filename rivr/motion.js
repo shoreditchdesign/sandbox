@@ -239,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards
-// Card Hover Animation
 window.addEventListener("DOMContentLoaded", (event) => {
   setTimeout(() => {
     // Check if required libraries exist
@@ -634,6 +633,7 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger: element,
         start: "top 80%", // Start when the top of the element reaches 80% of viewport
         markers: false, // Set to true for debugging
+        once: true, // Set replay to false by using once: true
         onEnter: () => {
           tl.play(0); // Play from the beginning
         },
