@@ -111,26 +111,40 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Get all filter elements
-  const filterElements = document.querySelectorAll("[data-cmsfilter-element]");
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
+  const categoryFilters = document.querySelectorAll(
+    '[data-cmsfilter-element]:not([data-cmsfilter-element="all"])',
+  );
 
-  // Add click event listeners to all filter elements
-  filterElements.forEach((filter) => {
-    filter.addEventListener("click", function () {
-      const isAllFilter = this.getAttribute("data-cmsfilter-element") === "all";
-      const isCategoryFilter = !isAllFilter;
+  // Set up a MutationObserver to watch for class changes
+  const observer = new MutationObserver(function (mutations) {
+    // Check if any category has the is-active class
+    const anyActiveCategories = Array.from(categoryFilters).some((el) =>
+      el.classList.contains("is-active"),
+    );
 
-      if (isAllFilter) {
-        // If clicking on "all", make sure it's active
-        this.classList.add("is-active");
-      } else if (
-        isCategoryFilter &&
-        allFilter.classList.contains("is-active")
-      ) {
-        // If clicking on a category and "all" is active, deactivate "all"
-        allFilter.classList.remove("is-active");
-      }
-    });
+    // If any category is active, remove is-active from "all"
+    if (anyActiveCategories) {
+      allFilter.classList.remove("is-active");
+    }
+
+    // Handle clicks on "all" - we need to watch when it gets active
+    if (
+      mutations.some(
+        (m) =>
+          m.target === allFilter &&
+          m.attributeName === "class" &&
+          allFilter.classList.contains("is-active"),
+      )
+    ) {
+      // If "all" becomes active, deactivate all categories
+      categoryFilters.forEach((el) => el.classList.remove("is-active"));
+    }
+  });
+
+  // Observe all filter elements for class changes
+  const elements = [allFilter, ...categoryFilters];
+  elements.forEach((el) => {
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
 });
