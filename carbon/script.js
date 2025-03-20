@@ -221,12 +221,12 @@ document.addEventListener("DOMContentLoaded", function () {
     "click",
     function () {
       // Ensure "all" is active when clicked
-      if (!allFilter.classList.contains("is-active")) {
-        allFilter.classList.add("is-active");
+      if (!allFilter.classList.contains("active")) {
+        allFilter.classList.add("active");
       }
 
       // Optional: Deactivate all categories when "all" is clicked
-      categoryFilters.forEach((el) => el.classList.remove("is-active"));
+      categoryFilters.forEach((el) => el.classList.remove("active"));
     },
     true,
   ); // Using capture phase to try to run before other handlers
@@ -239,14 +239,14 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (categoryMutations.length > 0) {
-      // Check if any category has the is-active class
+      // Check if any category has the active class
       const anyActiveCategories = Array.from(categoryFilters).some((el) =>
-        el.classList.contains("is-active"),
+        el.classList.contains("active"),
       );
 
-      // If any category is active, remove is-active from "all"
-      if (anyActiveCategories && allFilter.classList.contains("is-active")) {
-        allFilter.classList.remove("is-active");
+      // If any category is active, remove active from "all"
+      if (anyActiveCategories && allFilter.classList.contains("active")) {
+        allFilter.classList.remove("active");
       }
     }
   });
