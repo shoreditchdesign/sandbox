@@ -118,40 +118,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add click event listeners to all filter elements
   filterElements.forEach((filter) => {
     filter.addEventListener("click", function () {
-      // Handle the clicked filter
-      handleFilterClick(this);
+      const isAllFilter = this.getAttribute("data-cmsfilter-element") === "all";
+      const isCategoryFilter = !isAllFilter;
 
-      // Check if any category filters are active
-      const anyActiveCategories = Array.from(filterElements).some(
-        (el) =>
-          el.getAttribute("data-cmsfilter-element") !== "all" &&
-          el.classList.contains("is-active"),
-      );
-
-      // Manage the "all" filter's active class
-      if (anyActiveCategories) {
-        // If any category is active, remove is-active from "all"
+      if (isAllFilter) {
+        // If clicking on "all", make sure it's active
+        this.classList.add("is-active");
+      } else if (
+        isCategoryFilter &&
+        allFilter.classList.contains("is-active")
+      ) {
+        // If clicking on a category and "all" is active, deactivate "all"
         allFilter.classList.remove("is-active");
-      } else {
-        // If no categories are active, ensure "all" is active
-        allFilter.classList.add("is-active");
       }
     });
   });
-
-  // Function to handle individual filter click
-  function handleFilterClick(clickedFilter) {
-    // If clicking the "all" filter, deactivate all category filters
-    if (clickedFilter.getAttribute("data-cmsfilter-element") === "all") {
-      filterElements.forEach((el) => {
-        if (el.getAttribute("data-cmsfilter-element") !== "all") {
-          el.classList.remove("is-active");
-        }
-      });
-      clickedFilter.classList.add("is-active");
-    } else {
-      // Toggle the is-active class on the clicked category filter
-      clickedFilter.classList.toggle("is-active");
-    }
-  }
 });
