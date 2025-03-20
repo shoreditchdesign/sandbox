@@ -37,3 +37,19 @@ window.intercomSettings = {
     }
   }
 })();
+
+document.addEventListener("DOMContentLoaded", function () {
+  const tocBodyElements = document.querySelectorAll("[data-toc-body]");
+
+  tocBodyElements.forEach(function (tocBody) {
+    const childElements = tocBody.children;
+
+    Array.from(childElements).forEach(function (child) {
+      child.setAttribute("data-stagger-block", "");
+    });
+
+    console.log(
+      `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
+    );
+  });
+});
