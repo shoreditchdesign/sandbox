@@ -199,11 +199,16 @@ document.addEventListener("DOMContentLoaded", function () {
           ease: "power2.out",
         });
 
+        // Get offset value from data attribute or use default 80%
+        const offsetValue =
+          textElement.getAttribute("data-motion-offset") || "80";
+        const startTrigger = `top ${offsetValue}%`;
+
         // Create the scroll-triggered animation
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: textElement,
-            start: "top 80%", // Start when top of text reaches 80% of viewport
+            start: startTrigger, // Use the custom offset or default 80%
             end: "bottom 20%", // End when bottom of text reaches 20% of viewport
             scrub: 0.5, // Smooth scrubbing effect
             markers: false, // Enable for debugging
