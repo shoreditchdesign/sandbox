@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     }
     // Ensure elements are visible
     gsap.set("[data-stagger-fade]", { opacity: 1 });
-  }, 100);
+  }, 0);
 });
 
 //GSAP for Fading Grid
