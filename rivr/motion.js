@@ -238,6 +238,137 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 500); // Wait 500ms for everything to be properly loaded
 });
 
+//GSAP for Cards
+// Card Hover Animation
+window.addEventListener("DOMContentLoaded", (event) => {
+  setTimeout(() => {
+    // Check if required libraries exist
+    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
+      console.error("GSAP or SplitType is not loaded.");
+      return;
+    }
+
+    console.log("Setting up card hover animations");
+
+    // Set up text splitting for hover hide effect
+    const splitTextLines = new SplitType("[data-hover-text]", {
+      types: "lines", // Explicitly specify ONLY lines
+      tagName: "span",
+    });
+
+    console.log("Text split into lines completed");
+
+    // Create wrappers for each line - these act as masks
+    document.querySelectorAll("[data-hover-text] .line").forEach((line) => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("u-line-mask");
+      wrapper.style.overflow = "hidden"; // Ensure the mask hides overflowing content
+      line.parentNode.insertBefore(wrapper, line);
+      wrapper.appendChild(line);
+    });
+
+    // Set up hover interactions for cards
+    document.querySelectorAll("[data-hover-card]").forEach((card) => {
+      // Get associated elements
+      const textElements = card.querySelectorAll("[data-hover-text]");
+      const bgElement = card.querySelector("[data-hover-bg]");
+      const arrowElement = card.querySelector("[data-hover-arrow]");
+
+      console.log(`Setting up card: ${card.id || "unnamed card"}`);
+
+      // Store initial and target heights
+      const parentHeight = card.parentElement.offsetHeight;
+      const initialHeight = parentHeight * 0.7; // 70% of parent height
+      const targetHeight = parentHeight; // 100% of parent height
+
+      // Set initial height
+      gsap.set(card, { height: initialHeight });
+
+      // Create quickTo animations for smooth transitions
+      const arrowOpacity = gsap.quickTo(arrowElement, "opacity", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      const bgOpacity = gsap.quickTo(bgElement, "opacity", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      const cardHeight = gsap.quickTo(card, "height", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+
+      // Create text animation timeline for each text element
+      const textTimelines = [];
+
+      textElements.forEach((textElement) => {
+        const tl = gsap.timeline({ paused: true });
+        tl.to(textElement.querySelectorAll(".line"), {
+          y: "20px", // Move down to hide behind mask
+          duration: 0.3,
+          ease: "power2.inOut",
+          stagger: 0.05,
+        });
+        textTimelines.push(tl);
+      });
+
+      // Add hover event listeners
+      card.addEventListener("mouseenter", () => {
+        console.log(`Card hover started: ${card.id || "unnamed card"}`);
+        card.classList.add("active");
+        arrowOpacity(1);
+        bgOpacity(1);
+        cardHeight(targetHeight);
+        textTimelines.forEach((tl) => tl.play());
+      });
+
+      card.addEventListener("mouseleave", () => {
+        console.log(`Card hover ended: ${card.id || "unnamed card"}`);
+        card.classList.remove("active");
+        arrowOpacity(0);
+        bgOpacity(0);
+        cardHeight(initialHeight);
+        textTimelines.forEach((tl) => tl.reverse());
+      });
+
+      // Set initial properties
+      gsap.set(arrowElement, { opacity: 0 });
+      gsap.set(bgElement, { opacity: 0 });
+      gsap.set(textElements.querySelectorAll(".line"), { y: 0, opacity: 1 });
+    });
+
+    // Function to revert split if needed (for cleanup)
+    function revertSplitText() {
+      document.querySelectorAll("[data-hover-text] .line").forEach((line) => {
+        const wrapper = line.parentNode;
+        wrapper.replaceWith(...wrapper.childNodes);
+      });
+      splitTextLines.revert();
+    }
+
+    // Listen for window resize to recalculate heights
+    window.addEventListener(
+      "resize",
+      _.debounce(() => {
+        console.log("Window resized, recalculating card heights");
+        document.querySelectorAll("[data-hover-card]").forEach((card) => {
+          const parentHeight = card.parentElement.offsetHeight;
+          const initialHeight = parentHeight * 0.7;
+
+          // Check if card is currently hovered/active
+          if (card.classList.contains("active")) {
+            gsap.set(card, { height: parentHeight });
+          } else {
+            gsap.set(card, { height: initialHeight });
+          }
+        });
+      }, 250),
+    );
+
+    console.log("Card hover animations setup complete");
+  }, 0);
+});
+
 //GSAP fpr Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
