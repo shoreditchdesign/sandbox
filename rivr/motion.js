@@ -454,8 +454,8 @@ document.addEventListener("DOMContentLoaded", function () {
           .timeline({
             scrollTrigger: {
               trigger: container,
-              start: "top 80%", // Start when top of container reaches 85% of viewport
-              end: "top 50%", // End when top of container reaches 50% of viewport
+              start: "top 500%", // Start when top of container reaches 85% of viewport
+              end: "top 20%", // End when top of container reaches 50% of viewport
               scrub: false, // No scrub for smoother animation
               markers: false, // Enable for debugging
               once: true, // Only play once
