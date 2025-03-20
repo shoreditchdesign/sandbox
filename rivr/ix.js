@@ -116,35 +116,43 @@ document.addEventListener("DOMContentLoaded", function () {
     '[data-cmsfilter-element]:not([data-cmsfilter-element="all"])',
   );
 
-  // Set up a MutationObserver to watch for class changes
+  // Add a direct click handler for the all filter to ensure it becomes active when clicked
+  allFilter.addEventListener(
+    "click",
+    function () {
+      // Ensure "all" is active when clicked
+      if (!allFilter.classList.contains("is-active")) {
+        allFilter.classList.add("is-active");
+      }
+
+      // Optional: Deactivate all categories when "all" is clicked
+      categoryFilters.forEach((el) => el.classList.remove("is-active"));
+    },
+    true,
+  ); // Using capture phase to try to run before other handlers
+
+  // Set up a MutationObserver to watch for class changes on categories
   const observer = new MutationObserver(function (mutations) {
-    // Check if any category has the is-active class
-    const anyActiveCategories = Array.from(categoryFilters).some((el) =>
-      el.classList.contains("is-active"),
+    // Process mutations to check if any category became active
+    const categoryMutations = mutations.filter(
+      (m) => m.target !== allFilter && m.attributeName === "class",
     );
 
-    // If any category is active, remove is-active from "all"
-    if (anyActiveCategories) {
-      allFilter.classList.remove("is-active");
-    }
+    if (categoryMutations.length > 0) {
+      // Check if any category has the is-active class
+      const anyActiveCategories = Array.from(categoryFilters).some((el) =>
+        el.classList.contains("is-active"),
+      );
 
-    // Handle clicks on "all" - we need to watch when it gets active
-    if (
-      mutations.some(
-        (m) =>
-          m.target === allFilter &&
-          m.attributeName === "class" &&
-          allFilter.classList.contains("is-active"),
-      )
-    ) {
-      // If "all" becomes active, deactivate all categories
-      categoryFilters.forEach((el) => el.classList.remove("is-active"));
+      // If any category is active, remove is-active from "all"
+      if (anyActiveCategories && allFilter.classList.contains("is-active")) {
+        allFilter.classList.remove("is-active");
+      }
     }
   });
 
-  // Observe all filter elements for class changes
-  const elements = [allFilter, ...categoryFilters];
-  elements.forEach((el) => {
+  // Observe category filters for class changes
+  categoryFilters.forEach((el) => {
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
 });
