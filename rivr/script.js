@@ -41,15 +41,25 @@ window.intercomSettings = {
 document.addEventListener("DOMContentLoaded", function () {
   const tocBodyElements = document.querySelectorAll("[data-toc-body]");
 
+  if (tocBodyElements.length === 0) {
+    console.log("No elements with [data-toc-body] found");
+    return;
+  }
+
   tocBodyElements.forEach(function (tocBody) {
     const childElements = tocBody.children;
 
-    Array.from(childElements).forEach(function (child) {
-      child.setAttribute("data-stagger-block", "");
-    });
+    if (childElements.length === 0) {
+      console.log("No children found for a data-toc-body element");
+    } else {
+      Array.from(childElements).forEach(function (child) {
+        child.setAttribute("data-stagger-block", "");
+        console.log("Added data-stagger-block to element:", child);
+      });
 
-    console.log(
-      `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
-    );
+      console.log(
+        `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
+      );
+    }
   });
 });
