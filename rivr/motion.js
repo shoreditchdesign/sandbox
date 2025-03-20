@@ -139,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ScrollTrigger.refresh();
 });
 
+//GSAP for Text Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and plugins are loaded
   if (
@@ -151,20 +152,24 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     return;
   }
+
   // Wait a moment to ensure the DOM is fully processed
   setTimeout(() => {
     // Target elements with data-motion-text="reveal" attribute
     const textElements = document.querySelectorAll(
       '[data-motion-text="reveal"]',
     );
+
     // Debug: Check if elements exist
     if (!textElements || textElements.length === 0) {
       console.error('Could not find elements with data-motion-text="reveal"');
       return;
     }
+
     console.log(
       `Found ${textElements.length} text elements with data-motion-text="reveal"`,
     );
+
     // Process each element
     textElements.forEach((textElement, elementIndex) => {
       try {
@@ -173,6 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
           types: "words",
           tagName: "span",
         });
+
         // Debug: Check if words were created
         if (!splitText.words || splitText.words.length === 0) {
           console.error(
@@ -181,17 +187,19 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           return;
         }
+
         console.log(
           `Element ${elementIndex + 1}: Split into ${splitText.words.length} words`,
         );
-        // Set initial state of all words
+
+        // Set initial state of all words - maintaining the 0.5 opacity
         gsap.set(splitText.words, {
-          opacity: 0.5,
+          opacity: 0.5, // Match the CSS opacity
           y: "0px",
           ease: "power2.out",
         });
 
-        // Reset the parent element's opacity to 1 now that children have opacity set
+        // Set parent back to full opacity since children now have the opacity
         gsap.set(textElement, {
           opacity: 1,
         });
@@ -200,17 +208,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const offsetValue =
           textElement.getAttribute("data-motion-offset") || "80";
         const startTrigger = `top ${offsetValue}%`;
+
         // Create the scroll-triggered animation
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: textElement,
-            start: startTrigger, // Use the custom offset or default 80%
-            end: "bottom 5%", // End when bottom of text reaches 5% of viewport
-            scrub: 0.5, // Smooth scrubbing effect
-            markers: false, // Enable for debugging
+            start: startTrigger,
+            end: "bottom 5%",
+            scrub: 0.5,
+            markers: false,
           },
         });
-        // Add the animation to the timeline
+
+        // Add the animation to the timeline - animate from 0.5 to 1
         tl.to(splitText.words, {
           opacity: 1,
           y: 0,
@@ -225,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-  }, 0); // Wait 500ms for everything to be properly loaded
+  }, 500); // Wait 500ms for everything to be properly loaded
 });
 
 //GSAP fpr Images
