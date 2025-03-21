@@ -877,10 +877,9 @@ document.addEventListener("DOMContentLoaded", function () {
       container.appendChild(curtain);
       curtain.appendChild(imageElement);
 
-      // Set initial state - curtain height 0 and opacity 0.4
+      // Set initial state - curtain height 0
       gsap.set(curtain, {
         height: 0,
-        opacity: 0.4,
       });
 
       // Find corresponding scroll unit
@@ -896,7 +895,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const tl = gsap.timeline({ paused: true });
       tl.to(curtain, {
         height: finalHeight,
-        opacity: 1,
         duration: 1.2,
         ease: "power2.out",
       });
