@@ -876,7 +876,7 @@ function setupChapterScrollTriggers() {
   chapterIndexes.sort();
 
   chapterIndexes.forEach((index) => {
-    const zIndex = parseInt(index) * 10;
+    const zIndex = parseInt(index) * 2;
     document
       .querySelectorAll(
         `[data-seq-index='${index}'][data-motion-seq='section']`,
