@@ -944,6 +944,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log(`Found ${contentBlocks.length} content blocks to animate`);
 
+  // Get all sequence indexes and sort them
+  const seqIndexes = [];
+  contentBlocks.forEach((block) => {
+    const index = block.getAttribute("data-seq-index");
+    if (!seqIndexes.includes(index)) {
+      seqIndexes.push(index);
+    }
+  });
+  seqIndexes.sort((a, b) => parseInt(a) - parseInt(b));
+
   // Initialize all content blocks (except first)
   contentBlocks.forEach((block) => {
     const seqIndex = block.getAttribute("data-seq-index");
@@ -966,14 +976,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Create animations for each content block
-  contentBlocks.forEach((block) => {
-    const seqIndex = block.getAttribute("data-seq-index");
-    const scrollUnit = document.querySelector(
+  seqIndexes.forEach((seqIndex, i) => {
+    const block = document.querySelector(
+      `[data-seq-index='${seqIndex}'][data-motion-seq='content']`,
+    );
+    const currentScrollUnit = document.querySelector(
       `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
     );
 
-    if (!scrollUnit) {
-      console.error(`No scroll unit found for content block ${seqIndex}`);
+    if (!block || !currentScrollUnit) {
+      console.error(`Missing elements for chapter ${seqIndex}`);
       return;
     }
 
@@ -985,28 +997,35 @@ document.addEventListener("DOMContentLoaded", function () {
       ease: "power1.out",
     });
 
-    // Create ScrollTrigger for entry
-    ScrollTrigger.create({
-      trigger: scrollUnit,
-      start: "top 70%", // Delay entry until 40% of section is visible
-      markers: false,
-      onEnter: () => {
-        if (seqIndex !== "1") {
-          // Skip first one as it's already visible
-          entryTimeline.play();
-          console.log(`Content block ${seqIndex} entry triggered`);
-        }
-      },
-      onLeaveBack: () => {
-        if (seqIndex !== "1") {
-          entryTimeline.reverse();
-          console.log(`Content block ${seqIndex} entry reversed`);
-        }
-      },
-    });
+    // If not the first chapter, trigger entry based on PREVIOUS scroll unit
+    if (seqIndex !== "1") {
+      const prevIndex = seqIndexes[i - 1];
+      const prevScrollUnit = document.querySelector(
+        `[data-seq-index='${prevIndex}'][data-motion-seq='scroll']`,
+      );
+
+      if (prevScrollUnit) {
+        // Create ScrollTrigger for entry based on PREVIOUS scroll unit
+        ScrollTrigger.create({
+          trigger: prevScrollUnit,
+          start: "bottom 40%", // When previous unit is 60% scrolled out
+          markers: false,
+          onEnter: () => {
+            entryTimeline.play();
+            console.log(
+              `Content block ${seqIndex} entry triggered by previous scroll unit`,
+            );
+          },
+          onLeaveBack: () => {
+            entryTimeline.reverse();
+            console.log(`Content block ${seqIndex} entry reversed`);
+          },
+        });
+      }
+    }
 
     // Create exit animation (if not the last block)
-    if (parseInt(seqIndex) < contentBlocks.length) {
+    if (i < seqIndexes.length - 1) {
       const exitTimeline = gsap.timeline({ paused: true });
       exitTimeline.to(block, {
         opacity: 0,
@@ -1014,14 +1033,16 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power1.in",
       });
 
-      // Create ScrollTrigger for exit
+      // Create ScrollTrigger for exit based on CURRENT scroll unit
       ScrollTrigger.create({
-        trigger: scrollUnit,
-        start: "top 90%", // Start exit SOONER (when just 5% of section remains visible)
+        trigger: currentScrollUnit,
+        start: "bottom 60%", // When 40% of current unit remains visible
         markers: false,
         onEnter: () => {
           exitTimeline.play();
-          console.log(`Content block ${seqIndex} exit triggered`);
+          console.log(
+            `Content block ${seqIndex} exit triggered by current scroll unit`,
+          );
         },
         onLeaveBack: () => {
           exitTimeline.reverse();
