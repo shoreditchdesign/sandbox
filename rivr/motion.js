@@ -988,7 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create ScrollTrigger for entry
     ScrollTrigger.create({
       trigger: scrollUnit,
-      start: "top 60%", // Delay entry until 40% of section is visible
+      start: "top 40%", // Delay entry until 40% of section is visible
       markers: false,
       onEnter: () => {
         if (seqIndex !== "1") {
@@ -1017,7 +1017,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Create ScrollTrigger for exit
       ScrollTrigger.create({
         trigger: scrollUnit,
-        start: "bottom 5%", // Start exit SOONER (when just 5% of section remains visible)
+        start: "bottom 60%", // Start exit SOONER (when just 5% of section remains visible)
         markers: false,
         onEnter: () => {
           exitTimeline.play();
