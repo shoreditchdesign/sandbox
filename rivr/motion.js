@@ -646,74 +646,123 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards (Features Sequence)
-document.addEventListener("DOMContentLoaded", function () {
-  initCardAnimations();
-});
-
-function initCardAnimations() {
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
+// Feature Scroll Sequence Animation
+function initFeatureScrollSequence() {
+  if (!gsap || !ScrollTrigger || !SplitType) {
+    console.error("Required libraries not loaded");
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Card animations initializing");
 
-  // Set initial state for all cards
-  const cardGroups = document.querySelectorAll("[data-motion-seq='cards']");
-  if (!cardGroups.length) {
-    console.error("No card groups found with [data-motion-seq='cards']");
+  initializeFirstChapter();
+  setupChapterScrollTriggers();
+
+  console.log("Feature scroll sequence initialized");
+}
+
+function initializeFirstChapter() {
+  gsap.set(
+    "[data-seq-index='1'][data-motion-seq='heading'], [data-seq-index='1'][data-motion-seq='text']",
+    {
+      opacity: 0,
+    },
+  );
+
+  const firstImage = document.querySelector(
+    "[data-seq-index='1'][data-motion-seq='image']",
+  );
+  if (firstImage) {
+    setupImageContainer(firstImage);
+    gsap.set(firstImage.querySelector("[data-motion-element='curtain']"), {
+      height: 0,
+      opacity: 0.4,
+    });
+  }
+
+  gsap.set("[data-seq-index='1'][data-motion-seq='cards']", {
+    y: "100%",
+    opacity: 0,
+  });
+
+  document
+    .querySelector("[data-seq-index='1'][data-motion-seq='cell']")
+    ?.classList.add("active");
+}
+
+function createTextEntryAnimation(element) {
+  prepareTextElement(element);
+
+  const tl = gsap.timeline();
+  tl.from(element.querySelectorAll(".line"), {
+    y: "20%",
+    opacity: 0,
+    duration: 0.5,
+    ease: "power1.out",
+    stagger: 0.1,
+  });
+
+  return tl;
+}
+
+function createTextExitAnimation(element) {
+  const tl = gsap.timeline();
+  tl.to(element.querySelectorAll(".line"), {
+    y: "-20%",
+    opacity: 0,
+    duration: 0.5,
+    ease: "power1.in",
+    stagger: 0.1,
+  });
+
+  return tl;
+}
+
+function setupImageContainer(container) {
+  if (container.querySelector("[data-motion-element='curtain']")) {
     return;
   }
 
-  console.log(`Found ${cardGroups.length} card groups to animate`);
+  const image = container.children[0];
+  if (!image) {
+    console.error("Image container has no child");
+    return;
+  }
 
-  // Initialize all card groups to be hidden initially
-  cardGroups.forEach((cardGroup) => {
-    gsap.set(cardGroup, {
-      y: "100%",
-      opacity: 0,
-    });
-    console.log(
-      `Card group ${cardGroup.getAttribute("data-seq-index")} initialized`,
-    );
-  });
+  const height = container.offsetHeight;
+  container.style.height = `${height}px`;
+  container.style.overflow = "hidden";
 
-  // Create scroll animations for each card group
-  cardGroups.forEach((cardGroup) => {
-    const seqIndex = cardGroup.getAttribute("data-seq-index");
-    const scrollUnit = document.querySelector(
-      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
-    );
+  const curtain = document.createElement("div");
+  curtain.setAttribute("data-motion-element", "curtain");
+  curtain.style.overflow = "hidden";
+  curtain.style.width = "100%";
+  curtain.style.position = "relative";
 
-    if (!scrollUnit) {
-      console.error(`No scroll unit found for card group ${seqIndex}`);
-      return;
-    }
+  container.appendChild(curtain);
+  curtain.appendChild(image);
 
-    const cardAnimation = createCardAnimation(cardGroup);
-    cardAnimation.pause();
-
-    ScrollTrigger.create({
-      trigger: scrollUnit,
-      start: "top 80%",
-      end: "top 20%",
-      markers: false,
-      onEnter: () => {
-        cardAnimation.play();
-        console.log(`Card group ${seqIndex} animation played`);
-      },
-      onLeaveBack: () => {
-        cardAnimation.reverse();
-        console.log(`Card group ${seqIndex} animation reversed`);
-      },
-    });
-  });
+  console.log(`Image container setup: height ${height}px`);
 }
 
-function createCardAnimation(cardGroup) {
-  const tl = gsap.timeline();
+function createImageRevealAnimation(container) {
+  setupImageContainer(container);
+  const curtain = container.querySelector("[data-motion-element='curtain']");
+  const height = container.offsetHeight;
 
+  const tl = gsap.timeline();
+  tl.to(curtain, {
+    height: height,
+    opacity: 1,
+    duration: 1.2,
+    ease: "power2.out",
+  });
+
+  return tl;
+}
+
+function createCardRevealAnimation(cardGroup) {
+  const tl = gsap.timeline();
   tl.to(cardGroup, {
     y: 0,
     opacity: 1,
@@ -723,3 +772,173 @@ function createCardAnimation(cardGroup) {
 
   return tl;
 }
+
+function updateNavCells(fromIndex, toIndex) {
+  document
+    .querySelector(`[data-seq-index='${fromIndex}'][data-motion-seq='cell']`)
+    ?.classList.remove("active");
+  document
+    .querySelector(`[data-seq-index='${toIndex}'][data-motion-seq='cell']`)
+    ?.classList.add("active");
+  console.log(`Nav updated: ${fromIndex} -> ${toIndex}`);
+}
+
+function buildEntryTimeline(chapterIndex) {
+  const tl = gsap.timeline();
+
+  const heading = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='heading']`,
+  );
+  const textBlock = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='text']`,
+  );
+  const imageContainer = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='image']`,
+  );
+  const cardGroup = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='cards']`,
+  );
+
+  if (heading) {
+    tl.add(createTextEntryAnimation(heading), 0);
+  }
+
+  if (textBlock) {
+    tl.add(createTextEntryAnimation(textBlock), 0.2);
+  }
+
+  if (imageContainer) {
+    tl.add(createImageRevealAnimation(imageContainer), 0.4);
+  }
+
+  if (cardGroup) {
+    tl.add(createCardRevealAnimation(cardGroup), 0.6);
+  }
+
+  return tl;
+}
+
+function buildExitTimeline(chapterIndex) {
+  const tl = gsap.timeline();
+
+  const heading = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='heading']`,
+  );
+  const textBlock = document.querySelector(
+    `[data-seq-index='${chapterIndex}'][data-motion-seq='text']`,
+  );
+
+  if (heading) {
+    tl.add(createTextExitAnimation(heading), 0);
+  }
+
+  if (textBlock) {
+    tl.add(createTextExitAnimation(textBlock), 0.1);
+  }
+
+  return tl;
+}
+
+function prepareTextElement(element) {
+  if (element.getAttribute("data-text-prepared") === "true") {
+    return;
+  }
+
+  const splitText = new SplitType(element, {
+    types: "lines",
+    tagName: "span",
+  });
+
+  element.querySelectorAll(".line").forEach((line) => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("u-line-mask");
+    line.parentNode.insertBefore(wrapper, line);
+    wrapper.appendChild(line);
+  });
+
+  element.setAttribute("data-text-prepared", "true");
+  console.log(
+    `Text element prepared: ${element.textContent.substring(0, 20)}...`,
+  );
+}
+
+function setupChapterScrollTriggers() {
+  const chapterIndexes = [];
+  document.querySelectorAll("[data-seq-index]").forEach((el) => {
+    const index = el.getAttribute("data-seq-index");
+    if (!chapterIndexes.includes(index)) {
+      chapterIndexes.push(index);
+    }
+  });
+
+  console.log(`Found ${chapterIndexes.length} chapters to animate`);
+
+  chapterIndexes.sort();
+
+  chapterIndexes.forEach((index) => {
+    const zIndex = parseInt(index) * 2;
+    document
+      .querySelectorAll(
+        `[data-seq-index='${index}'][data-motion-seq='section']`,
+      )
+      .forEach((section) => {
+        section.style.zIndex = zIndex;
+      });
+  });
+
+  chapterIndexes.forEach((index) => {
+    const scrollUnit = document.querySelector(
+      `[data-seq-index='${index}'][data-motion-seq='scroll']`,
+    );
+    if (!scrollUnit) {
+      console.error(`No scroll unit found for chapter ${index}`);
+      return;
+    }
+
+    const entryTimeline = buildEntryTimeline(index);
+    entryTimeline.pause();
+
+    ScrollTrigger.create({
+      trigger: scrollUnit,
+      start: "top 90%",
+      end: "top 10%",
+      markers: false,
+      onEnter: () => {
+        if (parseInt(index) > 1) {
+          updateNavCells(parseInt(index) - 1, index);
+        }
+        entryTimeline.play();
+        console.log(`Chapter ${index} entry triggered`);
+      },
+      onLeaveBack: () => {
+        entryTimeline.reverse();
+        if (parseInt(index) > 1) {
+          updateNavCells(index, parseInt(index) - 1);
+        }
+        console.log(`Chapter ${index} entry reversed`);
+      },
+    });
+
+    if (parseInt(index) < chapterIndexes.length) {
+      const exitTimeline = buildExitTimeline(index);
+      exitTimeline.pause();
+
+      ScrollTrigger.create({
+        trigger: scrollUnit,
+        start: "bottom 90%",
+        end: "bottom 10%",
+        markers: false,
+        onEnter: () => {
+          exitTimeline.play();
+          console.log(`Chapter ${index} exit triggered`);
+        },
+        onLeaveBack: () => {
+          exitTimeline.reverse();
+          console.log(`Chapter ${index} exit reversed`);
+        },
+      });
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initFeatureScrollSequence);
