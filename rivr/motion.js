@@ -717,3 +717,107 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+//GSAP for Navigation (Features Sequence)
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  console.log("Nav animations initializing");
+
+  // Get all nav cells
+  const navCells = document.querySelectorAll("[data-motion-seq='cell']");
+  if (!navCells.length) {
+    console.error("No nav cells found with [data-motion-seq='cell']");
+    return;
+  }
+
+  console.log(`Found ${navCells.length} nav cells`);
+
+  // Initialize first cell as active
+  const firstCell = document.querySelector(
+    "[data-seq-index='1'][data-motion-seq='cell']",
+  );
+  if (firstCell) {
+    firstCell.classList.add("active");
+    console.log("First nav cell initialized as active");
+  } else {
+    console.error("First nav cell not found");
+  }
+
+  // Setup scroll triggers for all cells except the first one
+  navCells.forEach((cell) => {
+    const seqIndex = cell.getAttribute("data-seq-index");
+    if (seqIndex === "1") return; // Skip first cell
+
+    const scrollUnit = document.querySelector(
+      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+    );
+    if (!scrollUnit) {
+      console.error(`No scroll unit found for nav cell ${seqIndex}`);
+      return;
+    }
+
+    // Create ScrollTrigger for this nav cell
+    ScrollTrigger.create({
+      trigger: scrollUnit,
+      start: "top 90%", // Activate when scroll unit is 10% in view
+      markers: false,
+      onEnter: () => {
+        // Remove active class from previous cell
+        const prevIndex = parseInt(seqIndex) - 1;
+        const prevCell = document.querySelector(
+          `[data-seq-index='${prevIndex}'][data-motion-seq='cell']`,
+        );
+        if (prevCell) {
+          prevCell.classList.remove("active");
+        }
+
+        // Add active class to current cell
+        cell.classList.add("active");
+        console.log(`Nav updated: ${prevIndex} -> ${seqIndex}`);
+      },
+      onLeaveBack: () => {
+        // Remove active class from current cell
+        cell.classList.remove("active");
+
+        // Add active class to previous cell
+        const prevIndex = parseInt(seqIndex) - 1;
+        const prevCell = document.querySelector(
+          `[data-seq-index='${prevIndex}'][data-motion-seq='cell']`,
+        );
+        if (prevCell) {
+          prevCell.classList.add("active");
+        }
+        console.log(`Nav reversed: ${seqIndex} -> ${prevIndex}`);
+      },
+    });
+
+    // Add click functionality to nav cells
+    cell.addEventListener("click", () => {
+      const scrollTo = document.querySelector(
+        `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+      );
+      if (scrollTo) {
+        scrollTo.scrollIntoView({ behavior: "smooth" });
+        console.log(`Nav click: scrolling to ${seqIndex}`);
+      }
+    });
+  });
+
+  // Add click functionality to first cell
+  if (firstCell) {
+    firstCell.addEventListener("click", () => {
+      const scrollTo = document.querySelector(
+        "[data-seq-index='1'][data-motion-seq='scroll']",
+      );
+      if (scrollTo) {
+        scrollTo.scrollIntoView({ behavior: "smooth" });
+        console.log("Nav click: scrolling to 1");
+      }
+    });
+  }
+});
