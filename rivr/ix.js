@@ -63,6 +63,7 @@ document
       }, 10);
     }
   });
+
 //Swiper Component
 document.addEventListener("DOMContentLoaded", function () {
   const component = document.getElementById("swiper-component");
