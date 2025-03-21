@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('[data-nav-element="wrap"]') ||
         document.querySelector('[data-nav-element="navbar"]') ||
         document.querySelector(".c-navbar");
-      const drawer = document.querySelector('[data-nav-element="drawer"]');
+      const drawer = document.querySelector('[data-nav-element="dropdown"]');
 
       // Store initial values on first click
       if (initialWrapHeight === null) {
