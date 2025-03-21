@@ -925,203 +925,109 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Text (Features Section)
 document.addEventListener("DOMContentLoaded", function () {
-  if (
-    typeof gsap === "undefined" ||
-    typeof ScrollTrigger === "undefined" ||
-    typeof SplitType === "undefined"
-  ) {
-    console.error(
-      "Required libraries (GSAP, ScrollTrigger or SplitType) not loaded",
-    );
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Text animations initializing");
+  console.log("Content block animations initializing");
 
-  // Find all heading and text elements
-  const textElements = document.querySelectorAll(
-    "[data-motion-seq='heading'], [data-motion-seq='text']",
+  // Find all content blocks
+  const contentBlocks = document.querySelectorAll(
+    "[data-motion-seq='content']",
   );
-  if (!textElements.length) {
-    console.error(
-      "No text elements found with [data-motion-seq='heading'] or [data-motion-seq='text']",
-    );
+  if (!contentBlocks.length) {
+    console.error("No content blocks found with [data-motion-seq='content']");
     return;
   }
 
-  console.log(`Found ${textElements.length} text elements to animate`);
+  console.log(`Found ${contentBlocks.length} content blocks to animate`);
 
-  // Prepare all text elements (split into lines and create masks)
-  textElements.forEach((element) => {
-    prepareTextElement(element);
-  });
+  // Initialize all content blocks (except first)
+  contentBlocks.forEach((block) => {
+    const seqIndex = block.getAttribute("data-seq-index");
 
-  // Group elements by chapter (seq-index)
-  const chapterElements = {};
-  textElements.forEach((element) => {
-    const seqIndex = element.getAttribute("data-seq-index");
-    if (!chapterElements[seqIndex]) {
-      chapterElements[seqIndex] = [];
+    // Set z-index
+    const zIndex = parseInt(seqIndex) * 2;
+    block.style.zIndex = zIndex;
+
+    // Set initial state (first block visible, others hidden)
+    if (seqIndex !== "1") {
+      gsap.set(block, { opacity: 0 });
+      console.log(
+        `Content block ${seqIndex} initialized with opacity 0 and z-index ${zIndex}`,
+      );
+    } else {
+      console.log(
+        `Content block ${seqIndex} initialized as visible with z-index ${zIndex}`,
+      );
     }
-    chapterElements[seqIndex].push(element);
   });
 
-  // Create entry and exit animations for each chapter
-  Object.keys(chapterElements).forEach((seqIndex) => {
-    const elements = chapterElements[seqIndex];
+  // Create animations for each content block
+  contentBlocks.forEach((block) => {
+    const seqIndex = block.getAttribute("data-seq-index");
     const scrollUnit = document.querySelector(
       `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
     );
 
     if (!scrollUnit) {
-      console.error(`No scroll unit found for chapter ${seqIndex}`);
+      console.error(`No scroll unit found for content block ${seqIndex}`);
       return;
     }
 
-    // Set z-index for text elements
-    elements.forEach((element) => {
-      const zIndex = parseInt(seqIndex) * 2;
-      element.style.zIndex = zIndex;
-    });
-
-    // Create entry timeline
+    // Create entry animation
     const entryTimeline = gsap.timeline({ paused: true });
-
-    // Add animations for each element with slight offset
-    elements.forEach((element, i) => {
-      const elementType = element.getAttribute("data-motion-seq");
-      const delay = i * 0.15; // Stagger between heading and text
-
-      entryTimeline.to(
-        element.querySelectorAll(".line"),
-        {
-          y: "0%",
-          opacity: 1,
-          duration: 0.5,
-          ease: "power1.out",
-          stagger: 0.1,
-        },
-        delay,
-      );
-
-      console.log(
-        `Added entry animation for ${elementType} in chapter ${seqIndex}`,
-      );
+    entryTimeline.to(block, {
+      opacity: 1,
+      duration: 0.8,
+      ease: "power1.out",
     });
 
-    // Create exit timeline (if not the last chapter)
-    const exitTimeline = gsap.timeline({ paused: true });
-
-    elements.forEach((element, i) => {
-      const elementType = element.getAttribute("data-motion-seq");
-      const delay = i * 0.1; // Slightly quicker exit stagger
-
-      exitTimeline.to(
-        element.querySelectorAll(".line"),
-        {
-          y: "-20%", // Exit in opposite direction
-          opacity: 0,
-          duration: 0.4, // Slightly faster exit
-          ease: "power1.in",
-          stagger: 0.08,
-        },
-        delay,
-      );
-
-      console.log(
-        `Added exit animation for ${elementType} in chapter ${seqIndex}`,
-      );
-    });
-
-    // Entry scroll trigger
+    // Create ScrollTrigger for entry
     ScrollTrigger.create({
       trigger: scrollUnit,
-      start: "top 85%",
-      end: "top 15%",
+      start: "top 90%", // 10% visible
       markers: false,
       onEnter: () => {
-        entryTimeline.play();
-        console.log(`Chapter ${seqIndex} text entry triggered`);
+        if (seqIndex !== "1") {
+          // Skip first one as it's already visible
+          entryTimeline.play();
+          console.log(`Content block ${seqIndex} entry triggered`);
+        }
       },
       onLeaveBack: () => {
-        entryTimeline.reverse();
-        console.log(`Chapter ${seqIndex} text entry reversed`);
+        if (seqIndex !== "1") {
+          entryTimeline.reverse();
+          console.log(`Content block ${seqIndex} entry reversed`);
+        }
       },
     });
 
-    // Exit scroll trigger (if not the last chapter)
-    if (parseInt(seqIndex) < Object.keys(chapterElements).length) {
+    // Create exit animation (if not the last block)
+    if (parseInt(seqIndex) < contentBlocks.length) {
+      const exitTimeline = gsap.timeline({ paused: true });
+      exitTimeline.to(block, {
+        opacity: 0,
+        duration: 0.6,
+        ease: "power1.in",
+      });
+
+      // Create ScrollTrigger for exit
       ScrollTrigger.create({
         trigger: scrollUnit,
-        start: "bottom 80%", // Slightly earlier than entry of next
-        end: "bottom 20%",
+        start: "bottom 90%", // When bottom is 10% from leaving viewport
         markers: false,
         onEnter: () => {
           exitTimeline.play();
-          console.log(`Chapter ${seqIndex} text exit triggered`);
+          console.log(`Content block ${seqIndex} exit triggered`);
         },
         onLeaveBack: () => {
           exitTimeline.reverse();
-          console.log(`Chapter ${seqIndex} text exit reversed`);
+          console.log(`Content block ${seqIndex} exit reversed`);
         },
-      });
-    }
-  });
-
-  // Initialize first chapter text to be visible
-  const firstChapterElements = chapterElements["1"] || [];
-  firstChapterElements.forEach((element) => {
-    gsap.set(element.querySelectorAll(".line"), {
-      y: "0%",
-      opacity: 1,
-    });
-    console.log(
-      `First chapter ${element.getAttribute("data-motion-seq")} initialized as visible`,
-    );
-  });
-
-  // Initialize all other chapter texts to be hidden
-  Object.keys(chapterElements).forEach((seqIndex) => {
-    if (seqIndex !== "1") {
-      const elements = chapterElements[seqIndex];
-      elements.forEach((element) => {
-        gsap.set(element.querySelectorAll(".line"), {
-          y: "20%", // Initial position for entry animation
-          opacity: 0,
-        });
-        console.log(
-          `Chapter ${seqIndex} ${element.getAttribute("data-motion-seq")} initialized as hidden`,
-        );
       });
     }
   });
 });
-
-// Helper function to prepare text element with SplitType
-function prepareTextElement(element) {
-  // Skip if already prepared
-  if (element.getAttribute("data-text-prepared") === "true") {
-    return;
-  }
-
-  // Split text into lines
-  const splitText = new SplitType(element, {
-    types: "lines",
-    tagName: "span",
-  });
-
-  // Create wrappers for each line
-  element.querySelectorAll(".line").forEach((line) => {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("u-line-mask");
-    line.parentNode.insertBefore(wrapper, line);
-    wrapper.appendChild(line);
-  });
-
-  // Mark as prepared
-  element.setAttribute("data-text-prepared", "true");
-  console.log(
-    `Text element prepared with ${element.querySelectorAll(".line").length} lines`,
-  );
-}
