@@ -988,7 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create ScrollTrigger for entry
     ScrollTrigger.create({
       trigger: scrollUnit,
-      start: "top 80%", // 20% visible - later entry point to avoid overlap
+      start: "top 60%", // Delay entry until 40% of section is visible
       markers: false,
       onEnter: () => {
         if (seqIndex !== "1") {
@@ -1017,7 +1017,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Create ScrollTrigger for exit
       ScrollTrigger.create({
         trigger: scrollUnit,
-        start: "bottom 60%", // Earlier exit point to avoid overlap with next section's entry
+        start: "bottom 95%", // Start exit SOONER (when just 5% of section remains visible)
         markers: false,
         onEnter: () => {
           exitTimeline.play();
