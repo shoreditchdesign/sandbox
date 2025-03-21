@@ -19,7 +19,17 @@ document
   .addEventListener("click", () => {
     // Get all required elements
     const toggle = document.querySelector('[data-nav-element="toggle"]');
-    const wrap = document.querySelector('[data-nav-element="wrap"]');
+    // Check if wrap element exists, if not, look for navbar or other parent container
+    let wrap = document.querySelector('[data-nav-element="wrap"]');
+    if (!wrap) {
+      console.log("Wrap element not found, trying navbar instead");
+      wrap = document.querySelector('[data-nav-element="navbar"]');
+      if (!wrap) {
+        console.log("Navbar not found either, trying c-navbar class");
+        wrap = document.querySelector(".c-navbar");
+      }
+    }
+    console.log("Target element for animation:", wrap);
     const drawer = document.querySelector('[data-nav-element="drawer"]');
 
     // Calculate drawer height
@@ -42,25 +52,47 @@ document
     if (newState === "open") {
       // Opening the drawer
       console.log("Opening drawer");
+      // Force repaint to ensure height is applied properly
+      wrap.style.display = "block";
       wrap.style.height = initialWrapHeight + "px";
       wrap.style.overflow = "hidden";
 
+      // Force browser to recognize the style changes before transition
+      wrap.getBoundingClientRect();
+
+      wrap.style.transition = "height 0.3s ease";
+      wrap.style.height = initialWrapHeight + drawerHeight + "px";
+      console.log("New wrap height:", initialWrapHeight + drawerHeight);
+
+      // Verify height change
       setTimeout(() => {
-        wrap.style.transition = "height 0.3s ease";
-        wrap.style.height = initialWrapHeight + drawerHeight + "px";
-        console.log("New wrap height:", initialWrapHeight + drawerHeight);
-      }, 10);
+        console.log(
+          "Actual element height after transition:",
+          wrap.offsetHeight,
+        );
+      }, 350);
     } else {
       // Closing the drawer
       console.log("Closing drawer");
       wrap.style.height = initialWrapHeight + drawerHeight + "px";
       wrap.style.overflow = "hidden";
-      wrap.style.transition = "height 0.3s ease";
 
+      // Force browser to recognize the style changes before transition
+      wrap.getBoundingClientRect();
+
+      wrap.style.transition = "height 0.3s ease";
       setTimeout(() => {
         wrap.style.height = initialWrapHeight + "px";
         console.log("Reverting to initial height:", initialWrapHeight);
       }, 10);
+
+      // Verify height change
+      setTimeout(() => {
+        console.log(
+          "Actual element height after transition:",
+          wrap.offsetHeight,
+        );
+      }, 350);
     }
   });
 
