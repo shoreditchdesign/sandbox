@@ -931,20 +931,20 @@ document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
   console.log("Content block animations initializing");
 
-  // Find all content blocks
-  const contentBlocks = document.querySelectorAll(
-    "[data-motion-seq='content']",
+  // Find all heading blocks
+  const headingBlocks = document.querySelectorAll(
+    "[data-motion-seq='heading']",
   );
-  if (!contentBlocks.length) {
-    console.error("No content blocks found with [data-motion-seq='content']");
+  if (!headingBlocks.length) {
+    console.error("No heading blocks found with [data-motion-seq='heading']");
     return;
   }
 
-  console.log(`Found ${contentBlocks.length} content blocks to animate`);
+  console.log(`Found ${headingBlocks.length} heading blocks to animate`);
 
   // Get all sequence indexes and sort them
   const seqIndexes = [];
-  contentBlocks.forEach((block) => {
+  headingBlocks.forEach((block) => {
     const index = block.getAttribute("data-seq-index");
     if (!seqIndexes.includes(index)) {
       seqIndexes.push(index);
@@ -952,8 +952,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   seqIndexes.sort((a, b) => parseInt(a) - parseInt(b));
 
-  // Initialize all content blocks (except first)
-  contentBlocks.forEach((block) => {
+  // Initialize all heading blocks (except first)
+  headingBlocks.forEach((block) => {
     const seqIndex = block.getAttribute("data-seq-index");
 
     // Set z-index
@@ -964,19 +964,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (seqIndex !== "1") {
       gsap.set(block, { opacity: 0 });
       console.log(
-        `Content block ${seqIndex} initialized with opacity 0 and z-index ${zIndex}`,
+        `Heading block ${seqIndex} initialized with opacity 0 and z-index ${zIndex}`,
       );
     } else {
       console.log(
-        `Content block ${seqIndex} initialized as visible with z-index ${zIndex}`,
+        `Heading block ${seqIndex} initialized as visible with z-index ${zIndex}`,
       );
     }
   });
 
-  // Create animations for each content block
+  // Create animations for each heading block
   seqIndexes.forEach((seqIndex, i) => {
     const block = document.querySelector(
-      `[data-seq-index='${seqIndex}'][data-motion-seq='content']`,
+      `[data-seq-index='${seqIndex}'][data-motion-seq='heading']`,
     );
     const currentScrollUnit = document.querySelector(
       `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
@@ -1011,12 +1011,12 @@ document.addEventListener("DOMContentLoaded", function () {
           onEnter: () => {
             entryTimeline.play();
             console.log(
-              `Content block ${seqIndex} entry triggered by previous scroll unit`,
+              `Heading block ${seqIndex} entry triggered by previous scroll unit`,
             );
           },
           onLeaveBack: () => {
             entryTimeline.reverse();
-            console.log(`Content block ${seqIndex} entry reversed`);
+            console.log(`Heading block ${seqIndex} entry reversed`);
           },
         });
       }
@@ -1039,12 +1039,12 @@ document.addEventListener("DOMContentLoaded", function () {
         onEnter: () => {
           exitTimeline.play();
           console.log(
-            `Content block ${seqIndex} exit triggered by current scroll unit`,
+            `Heading block ${seqIndex} exit triggered by current scroll unit`,
           );
         },
         onLeaveBack: () => {
           exitTimeline.reverse();
-          console.log(`Content block ${seqIndex} exit reversed`);
+          console.log(`Heading block ${seqIndex} exit reversed`);
         },
       });
     }
