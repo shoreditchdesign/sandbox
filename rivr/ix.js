@@ -11,15 +11,15 @@ document
   });
 
 //Navigation Bar Dropdown
-// Store the initial navbar height
-let initialNavbarHeight = null;
+// Store the initial wrap height
+let initialWrapHeight = null;
 
 document
   .querySelector('[data-nav-element="toggle"]')
   .addEventListener("click", () => {
     // Get all required elements
     const toggle = document.querySelector('[data-nav-element="toggle"]');
-    const navbar = document.querySelector('[data-nav-element="navbar"]');
+    const wrap = document.querySelector('[data-nav-element="wrap"]');
     const drawer = document.querySelector('[data-nav-element="drawer"]');
 
     // Calculate drawer height
@@ -30,10 +30,10 @@ document
     const currentState = toggle.getAttribute("data-toggle-state");
     const newState = currentState === "open" ? "closed" : "open";
 
-    // Store initial navbar height if not already stored
-    if (initialNavbarHeight === null) {
-      initialNavbarHeight = navbar.offsetHeight;
-      console.log("Initial navbar height:", initialNavbarHeight);
+    // Store initial wrap height if not already stored
+    if (initialWrapHeight === null) {
+      initialWrapHeight = wrap.offsetHeight;
+      console.log("Initial wrap height:", initialWrapHeight);
     }
 
     // Set toggle state
@@ -42,24 +42,24 @@ document
     if (newState === "open") {
       // Opening the drawer
       console.log("Opening drawer");
-      navbar.style.height = initialNavbarHeight + "px";
-      navbar.style.overflow = "hidden";
+      wrap.style.height = initialWrapHeight + "px";
+      wrap.style.overflow = "hidden";
 
       setTimeout(() => {
-        navbar.style.transition = "height 0.3s ease";
-        navbar.style.height = initialNavbarHeight + drawerHeight + "px";
-        console.log("New navbar height:", initialNavbarHeight + drawerHeight);
+        wrap.style.transition = "height 0.3s ease";
+        wrap.style.height = initialWrapHeight + drawerHeight + "px";
+        console.log("New wrap height:", initialWrapHeight + drawerHeight);
       }, 10);
     } else {
       // Closing the drawer
       console.log("Closing drawer");
-      navbar.style.height = initialNavbarHeight + drawerHeight + "px";
-      navbar.style.overflow = "hidden";
-      navbar.style.transition = "height 0.3s ease";
+      wrap.style.height = initialWrapHeight + drawerHeight + "px";
+      wrap.style.overflow = "hidden";
+      wrap.style.transition = "height 0.3s ease";
 
       setTimeout(() => {
-        navbar.style.height = initialNavbarHeight + "px";
-        console.log("Reverting to initial height:", initialNavbarHeight);
+        wrap.style.height = initialWrapHeight + "px";
+        console.log("Reverting to initial height:", initialWrapHeight);
       }, 10);
     }
   });
