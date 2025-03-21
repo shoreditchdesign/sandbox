@@ -669,7 +669,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const seqIndex = cardGroup.getAttribute("data-seq-index");
     gsap.set(cardGroup, {
       y: "100%",
-      opacity: 0,
     });
 
     // Set z-index based on sequence index
@@ -695,9 +694,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const tl = gsap.timeline({ paused: true });
     tl.to(cardGroup, {
       y: 0,
-      opacity: 1,
       duration: 0.8,
-      ease: "back.out(1.2)",
+      ease: "power2.inOut",
     });
 
     // Create ScrollTrigger
