@@ -821,3 +821,104 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+//GSAP for Images (Features Section)
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  console.log("Image animations initializing");
+
+  // Get all image containers
+  const imageContainers = document.querySelectorAll(
+    "[data-motion-seq='image']",
+  );
+  if (!imageContainers.length) {
+    console.error("No image containers found with [data-motion-seq='image']");
+    return;
+  }
+
+  console.log(`Found ${imageContainers.length} image containers to animate`);
+
+  // Setup all image containers with curtains
+  imageContainers.forEach((container) => {
+    try {
+      const seqIndex = container.getAttribute("data-seq-index");
+
+      // Find the child element (the image)
+      const imageElement = container.children[0];
+      if (!imageElement) {
+        console.error(`Image container ${seqIndex} has no child elements`);
+        return;
+      }
+
+      // Get original height and set container style
+      const finalHeight = container.offsetHeight;
+      container.style.height = `${finalHeight}px`;
+      container.style.overflow = "hidden";
+
+      // Set z-index based on sequence index
+      const zIndex = parseInt(seqIndex) * 2;
+      container.style.zIndex = zIndex;
+
+      console.log(
+        `Image container ${seqIndex}: Height ${finalHeight}px, z-index ${zIndex}`,
+      );
+
+      // Create curtain wrapper
+      const curtain = document.createElement("div");
+      curtain.setAttribute("data-motion-element", "curtain");
+      curtain.style.overflow = "hidden";
+      curtain.style.width = "100%";
+      curtain.style.position = "relative";
+
+      // Move image into curtain
+      container.appendChild(curtain);
+      curtain.appendChild(imageElement);
+
+      // Set initial state - curtain height 0 and opacity 0.4
+      gsap.set(curtain, {
+        height: 0,
+        opacity: 0.4,
+      });
+
+      // Find corresponding scroll unit
+      const scrollUnit = document.querySelector(
+        `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+      );
+      if (!scrollUnit) {
+        console.error(`No scroll unit found for image ${seqIndex}`);
+        return;
+      }
+
+      // Create animation timeline
+      const tl = gsap.timeline({ paused: true });
+      tl.to(curtain, {
+        height: finalHeight,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.out",
+      });
+
+      // Create ScrollTrigger
+      ScrollTrigger.create({
+        trigger: scrollUnit,
+        start: "top 85%",
+        markers: false,
+        onEnter: () => {
+          tl.play();
+          console.log(`Image ${seqIndex} animation triggered`);
+        },
+        onLeaveBack: () => {
+          tl.reverse();
+          console.log(`Image ${seqIndex} animation reversed`);
+        },
+      });
+    } catch (error) {
+      console.error(`Error in image animation setup: ${error.message}`);
+    }
+  });
+});
