@@ -41,6 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set up animation
       const drawerHeight = drawer.offsetHeight;
       wrap.style.overflow = "hidden";
+
+      // Force initial height before transition
+      wrap.style.height = initialWrapHeight + "px";
+
+      // Force reflow to ensure initial height is applied
+      void wrap.offsetHeight;
+
+      // Now add transition
       wrap.style.transition = "height 0.3s ease";
 
       // Set target height based on state
