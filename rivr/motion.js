@@ -386,7 +386,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   }, 0);
 });
 
-//GSAP fpr Images
+//GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
@@ -396,84 +396,80 @@ document.addEventListener("DOMContentLoaded", function () {
   // Register ScrollTrigger plugin to be safe
   gsap.registerPlugin(ScrollTrigger);
 
-  // Wait a moment to ensure images are loaded
-  setTimeout(() => {
-    // Target all elements with data-motion-element="image" attribute
-    const imageContainers = document.querySelectorAll(
-      '[data-motion-element="image"]',
-    );
+  // Target all elements with data-motion-element="image" attribute
+  const imageContainers = document.querySelectorAll(
+    '[data-motion-element="image"]',
+  );
 
-    // Debug: Check if elements exist
-    if (!imageContainers || imageContainers.length === 0) {
-      console.error('Could not find elements with data-motion-element="image"');
-      return;
-    }
+  // Debug: Check if elements exist
+  if (!imageContainers || imageContainers.length === 0) {
+    console.error('Could not find elements with data-motion-element="image"');
+    return;
+  }
 
-    console.log(`Found ${imageContainers.length} image containers to animate`);
+  console.log(`Found ${imageContainers.length} image containers to animate`);
 
-    // Process each image container
-    imageContainers.forEach((container, index) => {
-      try {
-        // Find the child element (the image)
-        const imageElement = container.children[0];
+  // Process each image container individually
+  imageContainers.forEach((container, index) => {
+    try {
+      // Find the child element (the image)
+      const imageElement = container.children[0];
 
-        if (!imageElement) {
-          console.error(`Container ${index + 1} has no child elements`);
-          return;
-        }
+      if (!imageElement) {
+        console.error(`Container ${index + 1} has no child elements`);
+        return;
+      }
 
-        // Get the original height of the container
-        const finalHeight = container.offsetHeight;
+      // Get the original height of the container
+      const finalHeight = container.offsetHeight;
 
-        console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
+      console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
 
-        // Set the container's height explicitly to prevent layout shifts
-        container.style.height = `${finalHeight}px`;
-        container.style.overflow = "hidden";
+      // Set the container's height explicitly to prevent layout shifts
+      container.style.height = `${finalHeight}px`;
+      container.style.overflow = "hidden";
 
-        // Create a curtain wrapper
-        const curtain = document.createElement("div");
-        curtain.setAttribute("data-motion-element", "curtain");
-        curtain.style.overflow = "hidden";
-        curtain.style.width = "100%";
-        curtain.style.position = "relative";
+      // Create a curtain wrapper
+      const curtain = document.createElement("div");
+      curtain.setAttribute("data-motion-element", "curtain");
+      curtain.style.overflow = "hidden";
+      curtain.style.width = "100%";
+      curtain.style.position = "relative";
 
-        // Move the image into the curtain
-        container.appendChild(curtain);
-        curtain.appendChild(imageElement);
+      // Move the image into the curtain
+      container.appendChild(curtain);
+      curtain.appendChild(imageElement);
 
-        // Set initial state - curtain height 0 and opacity 0
-        gsap.set(curtain, {
-          height: 0,
-          opacity: 0.4,
-        });
+      // Set initial state - curtain height 0 and opacity 0
+      gsap.set(curtain, {
+        height: 0,
+        opacity: 0.4,
+      });
 
-        // Create the scroll-triggered animation
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: container,
-              start: "top 500%", // Start when top of container reaches 85% of viewport
-              end: "top 20%", // End when top of container reaches 50% of viewport
-              scrub: false, // No scrub for smoother animation
-              markers: false, // Enable for debugging
-              once: true, // Only play once
-            },
-          })
-          .to(curtain, {
+      // Create individual ScrollTrigger for each container
+      ScrollTrigger.create({
+        trigger: container,
+        start: "top 85%", // Start when top of container reaches 85% of viewport
+        markers: false, // Enable for debugging
+        once: true, // Only play once
+        onEnter: () => {
+          // Create and play animation when this specific element enters viewport
+          gsap.to(curtain, {
             height: finalHeight,
             opacity: 1,
-            duration: 1.2, // Animation duration in seconds
-            ease: "power2.out", // Easing function for smooth reveal
+            duration: 1.2,
+            ease: "power2.out",
           });
-      } catch (error) {
-        console.error(
-          `Error in image animation setup for element ${index + 1}:`,
-          error,
-        );
-      }
-    });
-  }, 0); // Wait 500ms for images to be properly loaded
+          console.log(`Image ${index + 1} animation triggered`);
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error in image animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
 });
 
 //GSAP for Objects
