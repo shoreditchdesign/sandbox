@@ -1017,7 +1017,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Create ScrollTrigger for exit
       ScrollTrigger.create({
         trigger: scrollUnit,
-        start: "bottom 95%", // Start exit SOONER (when just 5% of section remains visible)
+        start: "bottom 5%", // Start exit SOONER (when just 5% of section remains visible)
         markers: false,
         onEnter: () => {
           exitTimeline.play();
