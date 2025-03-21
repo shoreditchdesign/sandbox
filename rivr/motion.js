@@ -645,199 +645,75 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Features Sequence
-// Feature Scroll Sequence Animation
-function initFeatureScrollSequence() {
-  if (!gsap || !ScrollTrigger || !SplitType) {
-    console.error("Required libraries not loaded");
+//GSAP for Cards (Features Sequence)
+document.addEventListener("DOMContentLoaded", function () {
+  initCardAnimations();
+});
+
+function initCardAnimations() {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
+  console.log("Card animations initializing");
 
-  // Initialize all chapters
-  initializeChapters();
-  setupChapterScrollTriggers();
-
-  console.log("Feature scroll sequence initialized");
-}
-
-function initializeChapters() {
-  // Get all chapters
-  const chapters = [];
-  document.querySelectorAll("[data-seq-index]").forEach((el) => {
-    const index = el.getAttribute("data-seq-index");
-    if (!chapters.includes(index)) {
-      chapters.push(index);
-    }
-  });
-
-  chapters.sort((a, b) => parseInt(a) - parseInt(b));
-  console.log(`Found ${chapters.length} chapters to initialize`);
-
-  // Setup all chapters (except first for visibility)
-  chapters.forEach((index) => {
-    if (index !== "1") {
-      const heading = document.querySelector(
-        `[data-seq-index='${index}'][data-motion-seq='heading']`,
-      );
-      const textBlock = document.querySelector(
-        `[data-seq-index='${index}'][data-motion-seq='text']`,
-      );
-
-      if (heading) {
-        prepareTextElement(heading);
-        gsap.set(heading.querySelectorAll(".line"), { y: "20%", opacity: 0 });
-      }
-
-      if (textBlock) {
-        prepareTextElement(textBlock);
-        gsap.set(textBlock.querySelectorAll(".line"), { y: "20%", opacity: 0 });
-      }
-    }
-  });
-
-  // Special handling for first chapter
-  // Prepare first chapter elements but make them visible
-  const firstHeading = document.querySelector(
-    "[data-seq-index='1'][data-motion-seq='heading']",
-  );
-  const firstText = document.querySelector(
-    "[data-seq-index='1'][data-motion-seq='text']",
-  );
-  const firstImage = document.querySelector(
-    "[data-seq-index='1'][data-motion-seq='image']",
-  );
-  const firstCards = document.querySelector(
-    "[data-seq-index='1'][data-motion-seq='cards']",
-  );
-
-  if (firstHeading) {
-    prepareTextElement(firstHeading);
-    console.log("First heading prepared");
-  }
-
-  if (firstText) {
-    prepareTextElement(firstText);
-    console.log("First text prepared");
-  }
-
-  if (firstImage) {
-    setupImageContainer(firstImage);
-    console.log("First image prepared");
-  }
-
-  if (firstCards) {
-    console.log("First cards found");
-  }
-
-  // Make first nav active
-  document
-    .querySelector("[data-seq-index='1'][data-motion-seq='cell']")
-    ?.classList.add("active");
-}
-
-function createTextEntryAnimation(element) {
-  if (!element) return gsap.timeline();
-
-  // Make sure text is prepared
-  prepareTextElement(element);
-
-  const tl = gsap.timeline();
-  const lines = element.querySelectorAll(".line");
-
-  console.log(`Creating text entry for ${lines.length} lines`);
-
-  tl.to(lines, {
-    y: "0%",
-    opacity: 1,
-    duration: 0.5,
-    ease: "power1.out",
-    stagger: 0.1,
-  });
-
-  return tl;
-}
-
-function createTextExitAnimation(element) {
-  if (!element) return gsap.timeline();
-
-  const tl = gsap.timeline();
-  const lines = element.querySelectorAll(".line");
-
-  console.log(`Creating text exit for ${lines.length} lines`);
-
-  tl.to(lines, {
-    y: "-20%",
-    opacity: 0,
-    duration: 0.5,
-    ease: "power1.in",
-    stagger: 0.1,
-  });
-
-  return tl;
-}
-
-function setupImageContainer(container) {
-  if (!container) return;
-
-  if (container.querySelector("[data-motion-element='curtain']")) {
+  // Set initial state for all cards
+  const cardGroups = document.querySelectorAll("[data-motion-seq='cards']");
+  if (!cardGroups.length) {
+    console.error("No card groups found with [data-motion-seq='cards']");
     return;
   }
 
-  const image = container.children[0];
-  if (!image) {
-    console.error("Image container has no child");
-    return;
-  }
+  console.log(`Found ${cardGroups.length} card groups to animate`);
 
-  const height = container.offsetHeight;
-  container.style.height = `${height}px`;
-  container.style.overflow = "hidden";
-
-  const curtain = document.createElement("div");
-  curtain.setAttribute("data-motion-element", "curtain");
-  curtain.style.overflow = "hidden";
-  curtain.style.width = "100%";
-  curtain.style.position = "relative";
-  curtain.style.height = "0px";
-  curtain.style.opacity = "0.4";
-
-  container.appendChild(curtain);
-  curtain.appendChild(image);
-
-  console.log(`Image container setup: height ${height}px`);
-}
-
-function createImageRevealAnimation(container) {
-  if (!container) return gsap.timeline();
-
-  setupImageContainer(container);
-  const curtain = container.querySelector("[data-motion-element='curtain']");
-  if (!curtain) return gsap.timeline();
-
-  const height = container.offsetHeight;
-
-  const tl = gsap.timeline();
-  tl.to(curtain, {
-    height: height,
-    opacity: 1,
-    duration: 1.2,
-    ease: "power2.out",
+  // Initialize all card groups to be hidden initially
+  cardGroups.forEach((cardGroup) => {
+    gsap.set(cardGroup, {
+      y: "100%",
+      opacity: 0,
+    });
+    console.log(
+      `Card group ${cardGroup.getAttribute("data-seq-index")} initialized`,
+    );
   });
 
-  return tl;
+  // Create scroll animations for each card group
+  cardGroups.forEach((cardGroup) => {
+    const seqIndex = cardGroup.getAttribute("data-seq-index");
+    const scrollUnit = document.querySelector(
+      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+    );
+
+    if (!scrollUnit) {
+      console.error(`No scroll unit found for card group ${seqIndex}`);
+      return;
+    }
+
+    const cardAnimation = createCardAnimation(cardGroup);
+    cardAnimation.pause();
+
+    ScrollTrigger.create({
+      trigger: scrollUnit,
+      start: "top 80%",
+      end: "top 20%",
+      markers: false,
+      onEnter: () => {
+        cardAnimation.play();
+        console.log(`Card group ${seqIndex} animation played`);
+      },
+      onLeaveBack: () => {
+        cardAnimation.reverse();
+        console.log(`Card group ${seqIndex} animation reversed`);
+      },
+    });
+  });
 }
 
-function createCardRevealAnimation(cardGroup) {
-  if (!cardGroup) return gsap.timeline();
-
-  // Set initial position if not set
-  if (cardGroup.style.transform === "") {
-    gsap.set(cardGroup, { y: "100%", opacity: 0 });
-  }
-
+function createCardAnimation(cardGroup) {
   const tl = gsap.timeline();
+
   tl.to(cardGroup, {
     y: 0,
     opacity: 1,
@@ -847,222 +723,3 @@ function createCardRevealAnimation(cardGroup) {
 
   return tl;
 }
-
-function updateNavCells(fromIndex, toIndex) {
-  const fromCell = document.querySelector(
-    `[data-seq-index='${fromIndex}'][data-motion-seq='cell']`,
-  );
-  const toCell = document.querySelector(
-    `[data-seq-index='${toIndex}'][data-motion-seq='cell']`,
-  );
-
-  if (fromCell) fromCell.classList.remove("active");
-  if (toCell) toCell.classList.add("active");
-
-  console.log(`Nav updated: ${fromIndex} -> ${toIndex}`);
-}
-
-function buildEntryTimeline(chapterIndex) {
-  const tl = gsap.timeline();
-
-  const heading = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='heading']`,
-  );
-  const textBlock = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='text']`,
-  );
-  const imageContainer = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='image']`,
-  );
-  const cardGroup = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='cards']`,
-  );
-
-  console.log(`Building entry timeline for chapter ${chapterIndex}`);
-  console.log(`- Heading: ${heading ? "found" : "not found"}`);
-  console.log(`- Text: ${textBlock ? "found" : "not found"}`);
-  console.log(`- Image: ${imageContainer ? "found" : "not found"}`);
-  console.log(`- Cards: ${cardGroup ? "found" : "not found"}`);
-
-  if (heading) {
-    tl.add(createTextEntryAnimation(heading), 0);
-  }
-
-  if (textBlock) {
-    tl.add(createTextEntryAnimation(textBlock), 0.2);
-  }
-
-  if (imageContainer) {
-    tl.add(createImageRevealAnimation(imageContainer), 0.4);
-  }
-
-  if (cardGroup) {
-    tl.add(createCardRevealAnimation(cardGroup), 0.6);
-  }
-
-  return tl;
-}
-
-function buildExitTimeline(chapterIndex) {
-  const tl = gsap.timeline();
-
-  const heading = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='heading']`,
-  );
-  const textBlock = document.querySelector(
-    `[data-seq-index='${chapterIndex}'][data-motion-seq='text']`,
-  );
-
-  console.log(`Building exit timeline for chapter ${chapterIndex}`);
-
-  if (heading) {
-    tl.add(createTextExitAnimation(heading), 0);
-  }
-
-  if (textBlock) {
-    tl.add(createTextExitAnimation(textBlock), 0.1);
-  }
-
-  return tl;
-}
-
-function prepareTextElement(element) {
-  if (!element) return;
-
-  if (element.getAttribute("data-text-prepared") === "true") {
-    return;
-  }
-
-  const splitText = new SplitType(element, {
-    types: "lines",
-    tagName: "span",
-  });
-
-  element.querySelectorAll(".line").forEach((line) => {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("u-line-mask");
-    line.parentNode.insertBefore(wrapper, line);
-    wrapper.appendChild(line);
-  });
-
-  element.setAttribute("data-text-prepared", "true");
-  console.log(
-    `Text element prepared with ${element.querySelectorAll(".line").length} lines`,
-  );
-}
-
-function setupChapterScrollTriggers() {
-  const chapterIndexes = [];
-  document.querySelectorAll("[data-seq-index]").forEach((el) => {
-    const index = el.getAttribute("data-seq-index");
-    if (!chapterIndexes.includes(index)) {
-      chapterIndexes.push(index);
-    }
-  });
-
-  chapterIndexes.sort((a, b) => parseInt(a) - parseInt(b));
-  console.log(
-    `Found ${chapterIndexes.length} chapters to animate: ${chapterIndexes.join(", ")}`,
-  );
-
-  // Set z-indexes
-  chapterIndexes.forEach((index) => {
-    const zIndex = parseInt(index) * 2;
-    document
-      .querySelectorAll(
-        `[data-seq-index='${index}'][data-motion-seq='section']`,
-      )
-      .forEach((section) => {
-        section.style.zIndex = zIndex;
-        console.log(`Set z-index ${zIndex} for section ${index}`);
-      });
-  });
-
-  // Create scroll triggers
-  chapterIndexes.forEach((index) => {
-    const scrollUnit = document.querySelector(
-      `[data-seq-index='${index}'][data-motion-seq='scroll']`,
-    );
-    if (!scrollUnit) {
-      console.error(`No scroll unit found for chapter ${index}`);
-      return;
-    }
-
-    console.log(`Creating scrolltrigger for chapter ${index}`);
-
-    const entryTimeline = buildEntryTimeline(index);
-
-    // Special case for first chapter - entry already visible
-    if (index === "1") {
-      entryTimeline.progress(1);
-    } else {
-      entryTimeline.pause();
-    }
-
-    ScrollTrigger.create({
-      trigger: scrollUnit,
-      start: "top 85%", // Adjusted for better triggering
-      end: "top 15%", // Adjusted for better triggering
-      scrub: 0.5, // Added scrub for smoother transitions
-      markers: false,
-      onEnter: () => {
-        if (parseInt(index) > 1) {
-          updateNavCells(parseInt(index) - 1, index);
-        }
-        if (index !== "1") {
-          // Skip if first chapter
-          entryTimeline.play();
-        }
-        console.log(`Chapter ${index} entry triggered`);
-      },
-      onLeaveBack: () => {
-        if (index !== "1") {
-          // Skip if first chapter
-          entryTimeline.reverse();
-        }
-        if (parseInt(index) > 1) {
-          updateNavCells(index, parseInt(index) - 1);
-        }
-        console.log(`Chapter ${index} entry reversed`);
-      },
-    });
-
-    // Only create exit triggers for chapters that have a next chapter
-    if (parseInt(index) < chapterIndexes.length) {
-      const exitTimeline = buildExitTimeline(index);
-      exitTimeline.pause();
-
-      ScrollTrigger.create({
-        trigger: scrollUnit,
-        start: "bottom 85%", // Adjusted for better triggering
-        end: "bottom 15%", // Adjusted for better triggering
-        scrub: 0.5, // Added scrub for smoother transitions
-        markers: false,
-        onEnter: () => {
-          exitTimeline.play();
-          console.log(`Chapter ${index} exit triggered`);
-        },
-        onLeaveBack: () => {
-          exitTimeline.reverse();
-          console.log(`Chapter ${index} exit reversed`);
-        },
-      });
-    }
-  });
-
-  // Add click handling for nav cells
-  document.querySelectorAll("[data-motion-seq='cell']").forEach((cell) => {
-    cell.addEventListener("click", () => {
-      const index = cell.getAttribute("data-seq-index");
-      const scrollUnit = document.querySelector(
-        `[data-seq-index='${index}'][data-motion-seq='scroll']`,
-      );
-      if (scrollUnit) {
-        scrollUnit.scrollIntoView({ behavior: "smooth" });
-        console.log(`Scrolling to chapter ${index}`);
-      }
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", initFeatureScrollSequence);
