@@ -47,11 +47,13 @@ document
       initialWrapHeight = wrap.offsetHeight;
       console.log("Initial wrap height:", initialWrapHeight);
 
-      // Store original styles
+      // Store original computed styles
+      const computedStyle = window.getComputedStyle(wrap);
       originalWrapStyles = {
         height: wrap.style.height || "",
         overflow: wrap.style.overflow || "",
         transition: wrap.style.transition || "",
+        display: computedStyle.display,
       };
       console.log("Original styles stored:", originalWrapStyles);
     }
@@ -63,9 +65,15 @@ document
       // Opening the drawer
       console.log("Opening drawer");
 
-      // Set height without changing display property
+      // Set only height and overflow without affecting display
       wrap.style.height = initialWrapHeight + "px";
       wrap.style.overflow = "hidden";
+
+      // Log current computed display to verify it's not changing
+      console.log(
+        "Current display during animation:",
+        window.getComputedStyle(wrap).display,
+      );
 
       // Force reflow to ensure style changes are applied
       void wrap.offsetHeight;
@@ -77,6 +85,7 @@ document
 
       // Clean up styles after transition
       setTimeout(() => {
+        // Only restore overflow, keep the new height
         wrap.style.overflow = originalWrapStyles.overflow;
         console.log("Transition complete, height is now:", wrap.offsetHeight);
       }, 350);
@@ -84,9 +93,15 @@ document
       // Closing the drawer
       console.log("Closing drawer");
 
-      // Set current height explicitly before transitioning
+      // Set only height and overflow without affecting display
       wrap.style.height = initialWrapHeight + drawerHeight + "px";
       wrap.style.overflow = "hidden";
+
+      // Log current computed display to verify it's not changing
+      console.log(
+        "Current display during animation:",
+        window.getComputedStyle(wrap).display,
+      );
 
       // Force reflow
       void wrap.offsetHeight;
@@ -98,13 +113,13 @@ document
 
       // Clean up styles after transition
       setTimeout(() => {
-        // Restore original styles
+        // Restore original styles but preserve the new height
         if (originalWrapStyles) {
-          wrap.style.height = originalWrapStyles.height;
+          // Do NOT restore height - keep the animation end result
           wrap.style.overflow = originalWrapStyles.overflow;
           wrap.style.transition = originalWrapStyles.transition;
         }
-        console.log("Transition complete, restored original styles");
+        console.log("Transition complete, restored compatible original styles");
       }, 350);
     }
   });
