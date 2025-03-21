@@ -1006,7 +1006,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create ScrollTrigger for entry based on PREVIOUS scroll unit
         ScrollTrigger.create({
           trigger: prevScrollUnit,
-          start: "bottom 40%", // When previous unit is 60% scrolled out
+          start: "bottom 20%", // When previous unit is 60% scrolled out
           markers: false,
           onEnter: () => {
             entryTimeline.play();
