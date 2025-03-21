@@ -16,9 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let initialWrapHeight = null;
   let originalOverflow = null;
 
+  // Desktop check function
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
   document
     .querySelector('[data-nav-element="toggle"]')
     .addEventListener("click", () => {
+      // Only run on desktop
+      if (!isDesktop()) return;
+
       // Get elements
       const toggle = document.querySelector('[data-nav-element="toggle"]');
       let wrap =
