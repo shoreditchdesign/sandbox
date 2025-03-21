@@ -655,48 +655,102 @@ function initFeatureScrollSequence() {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  initializeFirstChapter();
+  // Initialize all chapters
+  initializeChapters();
   setupChapterScrollTriggers();
 
   console.log("Feature scroll sequence initialized");
 }
 
-function initializeFirstChapter() {
-  gsap.set(
-    "[data-seq-index='1'][data-motion-seq='heading'], [data-seq-index='1'][data-motion-seq='text']",
-    {
-      opacity: 0,
-    },
-  );
+function initializeChapters() {
+  // Get all chapters
+  const chapters = [];
+  document.querySelectorAll("[data-seq-index]").forEach((el) => {
+    const index = el.getAttribute("data-seq-index");
+    if (!chapters.includes(index)) {
+      chapters.push(index);
+    }
+  });
 
+  chapters.sort((a, b) => parseInt(a) - parseInt(b));
+  console.log(`Found ${chapters.length} chapters to initialize`);
+
+  // Setup all chapters (except first for visibility)
+  chapters.forEach((index) => {
+    if (index !== "1") {
+      const heading = document.querySelector(
+        `[data-seq-index='${index}'][data-motion-seq='heading']`,
+      );
+      const textBlock = document.querySelector(
+        `[data-seq-index='${index}'][data-motion-seq='text']`,
+      );
+
+      if (heading) {
+        prepareTextElement(heading);
+        gsap.set(heading.querySelectorAll(".line"), { y: "20%", opacity: 0 });
+      }
+
+      if (textBlock) {
+        prepareTextElement(textBlock);
+        gsap.set(textBlock.querySelectorAll(".line"), { y: "20%", opacity: 0 });
+      }
+    }
+  });
+
+  // Special handling for first chapter
+  // Prepare first chapter elements but make them visible
+  const firstHeading = document.querySelector(
+    "[data-seq-index='1'][data-motion-seq='heading']",
+  );
+  const firstText = document.querySelector(
+    "[data-seq-index='1'][data-motion-seq='text']",
+  );
   const firstImage = document.querySelector(
     "[data-seq-index='1'][data-motion-seq='image']",
   );
-  if (firstImage) {
-    setupImageContainer(firstImage);
-    gsap.set(firstImage.querySelector("[data-motion-element='curtain']"), {
-      height: 0,
-      opacity: 0.4,
-    });
+  const firstCards = document.querySelector(
+    "[data-seq-index='1'][data-motion-seq='cards']",
+  );
+
+  if (firstHeading) {
+    prepareTextElement(firstHeading);
+    console.log("First heading prepared");
   }
 
-  gsap.set("[data-seq-index='1'][data-motion-seq='cards']", {
-    y: "100%",
-    opacity: 0,
-  });
+  if (firstText) {
+    prepareTextElement(firstText);
+    console.log("First text prepared");
+  }
 
+  if (firstImage) {
+    setupImageContainer(firstImage);
+    console.log("First image prepared");
+  }
+
+  if (firstCards) {
+    console.log("First cards found");
+  }
+
+  // Make first nav active
   document
     .querySelector("[data-seq-index='1'][data-motion-seq='cell']")
     ?.classList.add("active");
 }
 
 function createTextEntryAnimation(element) {
+  if (!element) return gsap.timeline();
+
+  // Make sure text is prepared
   prepareTextElement(element);
 
   const tl = gsap.timeline();
-  tl.from(element.querySelectorAll(".line"), {
-    y: "20%",
-    opacity: 0,
+  const lines = element.querySelectorAll(".line");
+
+  console.log(`Creating text entry for ${lines.length} lines`);
+
+  tl.to(lines, {
+    y: "0%",
+    opacity: 1,
     duration: 0.5,
     ease: "power1.out",
     stagger: 0.1,
@@ -706,8 +760,14 @@ function createTextEntryAnimation(element) {
 }
 
 function createTextExitAnimation(element) {
+  if (!element) return gsap.timeline();
+
   const tl = gsap.timeline();
-  tl.to(element.querySelectorAll(".line"), {
+  const lines = element.querySelectorAll(".line");
+
+  console.log(`Creating text exit for ${lines.length} lines`);
+
+  tl.to(lines, {
     y: "-20%",
     opacity: 0,
     duration: 0.5,
@@ -719,6 +779,8 @@ function createTextExitAnimation(element) {
 }
 
 function setupImageContainer(container) {
+  if (!container) return;
+
   if (container.querySelector("[data-motion-element='curtain']")) {
     return;
   }
@@ -738,6 +800,8 @@ function setupImageContainer(container) {
   curtain.style.overflow = "hidden";
   curtain.style.width = "100%";
   curtain.style.position = "relative";
+  curtain.style.height = "0px";
+  curtain.style.opacity = "0.4";
 
   container.appendChild(curtain);
   curtain.appendChild(image);
@@ -746,8 +810,12 @@ function setupImageContainer(container) {
 }
 
 function createImageRevealAnimation(container) {
+  if (!container) return gsap.timeline();
+
   setupImageContainer(container);
   const curtain = container.querySelector("[data-motion-element='curtain']");
+  if (!curtain) return gsap.timeline();
+
   const height = container.offsetHeight;
 
   const tl = gsap.timeline();
@@ -762,6 +830,13 @@ function createImageRevealAnimation(container) {
 }
 
 function createCardRevealAnimation(cardGroup) {
+  if (!cardGroup) return gsap.timeline();
+
+  // Set initial position if not set
+  if (cardGroup.style.transform === "") {
+    gsap.set(cardGroup, { y: "100%", opacity: 0 });
+  }
+
   const tl = gsap.timeline();
   tl.to(cardGroup, {
     y: 0,
@@ -774,12 +849,16 @@ function createCardRevealAnimation(cardGroup) {
 }
 
 function updateNavCells(fromIndex, toIndex) {
-  document
-    .querySelector(`[data-seq-index='${fromIndex}'][data-motion-seq='cell']`)
-    ?.classList.remove("active");
-  document
-    .querySelector(`[data-seq-index='${toIndex}'][data-motion-seq='cell']`)
-    ?.classList.add("active");
+  const fromCell = document.querySelector(
+    `[data-seq-index='${fromIndex}'][data-motion-seq='cell']`,
+  );
+  const toCell = document.querySelector(
+    `[data-seq-index='${toIndex}'][data-motion-seq='cell']`,
+  );
+
+  if (fromCell) fromCell.classList.remove("active");
+  if (toCell) toCell.classList.add("active");
+
   console.log(`Nav updated: ${fromIndex} -> ${toIndex}`);
 }
 
@@ -798,6 +877,12 @@ function buildEntryTimeline(chapterIndex) {
   const cardGroup = document.querySelector(
     `[data-seq-index='${chapterIndex}'][data-motion-seq='cards']`,
   );
+
+  console.log(`Building entry timeline for chapter ${chapterIndex}`);
+  console.log(`- Heading: ${heading ? "found" : "not found"}`);
+  console.log(`- Text: ${textBlock ? "found" : "not found"}`);
+  console.log(`- Image: ${imageContainer ? "found" : "not found"}`);
+  console.log(`- Cards: ${cardGroup ? "found" : "not found"}`);
 
   if (heading) {
     tl.add(createTextEntryAnimation(heading), 0);
@@ -828,6 +913,8 @@ function buildExitTimeline(chapterIndex) {
     `[data-seq-index='${chapterIndex}'][data-motion-seq='text']`,
   );
 
+  console.log(`Building exit timeline for chapter ${chapterIndex}`);
+
   if (heading) {
     tl.add(createTextExitAnimation(heading), 0);
   }
@@ -840,6 +927,8 @@ function buildExitTimeline(chapterIndex) {
 }
 
 function prepareTextElement(element) {
+  if (!element) return;
+
   if (element.getAttribute("data-text-prepared") === "true") {
     return;
   }
@@ -858,7 +947,7 @@ function prepareTextElement(element) {
 
   element.setAttribute("data-text-prepared", "true");
   console.log(
-    `Text element prepared: ${element.textContent.substring(0, 20)}...`,
+    `Text element prepared with ${element.querySelectorAll(".line").length} lines`,
   );
 }
 
@@ -871,10 +960,12 @@ function setupChapterScrollTriggers() {
     }
   });
 
-  console.log(`Found ${chapterIndexes.length} chapters to animate`);
+  chapterIndexes.sort((a, b) => parseInt(a) - parseInt(b));
+  console.log(
+    `Found ${chapterIndexes.length} chapters to animate: ${chapterIndexes.join(", ")}`,
+  );
 
-  chapterIndexes.sort();
-
+  // Set z-indexes
   chapterIndexes.forEach((index) => {
     const zIndex = parseInt(index) * 2;
     document
@@ -883,9 +974,11 @@ function setupChapterScrollTriggers() {
       )
       .forEach((section) => {
         section.style.zIndex = zIndex;
+        console.log(`Set z-index ${zIndex} for section ${index}`);
       });
   });
 
+  // Create scroll triggers
   chapterIndexes.forEach((index) => {
     const scrollUnit = document.querySelector(
       `[data-seq-index='${index}'][data-motion-seq='scroll']`,
@@ -895,23 +988,38 @@ function setupChapterScrollTriggers() {
       return;
     }
 
+    console.log(`Creating scrolltrigger for chapter ${index}`);
+
     const entryTimeline = buildEntryTimeline(index);
-    entryTimeline.pause();
+
+    // Special case for first chapter - entry already visible
+    if (index === "1") {
+      entryTimeline.progress(1);
+    } else {
+      entryTimeline.pause();
+    }
 
     ScrollTrigger.create({
       trigger: scrollUnit,
-      start: "top 90%",
-      end: "top 10%",
+      start: "top 85%", // Adjusted for better triggering
+      end: "top 15%", // Adjusted for better triggering
+      scrub: 0.5, // Added scrub for smoother transitions
       markers: false,
       onEnter: () => {
         if (parseInt(index) > 1) {
           updateNavCells(parseInt(index) - 1, index);
         }
-        entryTimeline.play();
+        if (index !== "1") {
+          // Skip if first chapter
+          entryTimeline.play();
+        }
         console.log(`Chapter ${index} entry triggered`);
       },
       onLeaveBack: () => {
-        entryTimeline.reverse();
+        if (index !== "1") {
+          // Skip if first chapter
+          entryTimeline.reverse();
+        }
         if (parseInt(index) > 1) {
           updateNavCells(index, parseInt(index) - 1);
         }
@@ -919,14 +1027,16 @@ function setupChapterScrollTriggers() {
       },
     });
 
+    // Only create exit triggers for chapters that have a next chapter
     if (parseInt(index) < chapterIndexes.length) {
       const exitTimeline = buildExitTimeline(index);
       exitTimeline.pause();
 
       ScrollTrigger.create({
         trigger: scrollUnit,
-        start: "bottom 90%",
-        end: "bottom 10%",
+        start: "bottom 85%", // Adjusted for better triggering
+        end: "bottom 15%", // Adjusted for better triggering
+        scrub: 0.5, // Added scrub for smoother transitions
         markers: false,
         onEnter: () => {
           exitTimeline.play();
@@ -938,6 +1048,20 @@ function setupChapterScrollTriggers() {
         },
       });
     }
+  });
+
+  // Add click handling for nav cells
+  document.querySelectorAll("[data-motion-seq='cell']").forEach((cell) => {
+    cell.addEventListener("click", () => {
+      const index = cell.getAttribute("data-seq-index");
+      const scrollUnit = document.querySelector(
+        `[data-seq-index='${index}'][data-motion-seq='scroll']`,
+      );
+      if (scrollUnit) {
+        scrollUnit.scrollIntoView({ behavior: "smooth" });
+        console.log(`Scrolling to chapter ${index}`);
+      }
+    });
   });
 }
 
