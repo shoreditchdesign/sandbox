@@ -13,6 +13,7 @@ document
 //Navigation Bar Dropdown
 // Store the initial wrap height
 let initialWrapHeight = null;
+let originalWrapStyles = null;
 
 document
   .querySelector('[data-nav-element="toggle"]')
@@ -40,10 +41,19 @@ document
     const currentState = toggle.getAttribute("data-toggle-state");
     const newState = currentState === "open" ? "closed" : "open";
 
-    // Store initial wrap height if not already stored
+    // Store initial wrap properties if not already stored
     if (initialWrapHeight === null) {
+      // Store original height
       initialWrapHeight = wrap.offsetHeight;
       console.log("Initial wrap height:", initialWrapHeight);
+
+      // Store original styles
+      originalWrapStyles = {
+        height: wrap.style.height || "",
+        overflow: wrap.style.overflow || "",
+        transition: wrap.style.transition || "",
+      };
+      console.log("Original styles stored:", originalWrapStyles);
     }
 
     // Set toggle state
@@ -52,46 +62,49 @@ document
     if (newState === "open") {
       // Opening the drawer
       console.log("Opening drawer");
-      // Force repaint to ensure height is applied properly
-      wrap.style.display = "block";
+
+      // Set height without changing display property
       wrap.style.height = initialWrapHeight + "px";
       wrap.style.overflow = "hidden";
 
-      // Force browser to recognize the style changes before transition
-      wrap.getBoundingClientRect();
+      // Force reflow to ensure style changes are applied
+      void wrap.offsetHeight;
 
+      // Add transition and set new height
       wrap.style.transition = "height 0.3s ease";
       wrap.style.height = initialWrapHeight + drawerHeight + "px";
       console.log("New wrap height:", initialWrapHeight + drawerHeight);
 
-      // Verify height change
+      // Clean up styles after transition
       setTimeout(() => {
-        console.log(
-          "Actual element height after transition:",
-          wrap.offsetHeight,
-        );
+        wrap.style.overflow = originalWrapStyles.overflow;
+        console.log("Transition complete, height is now:", wrap.offsetHeight);
       }, 350);
     } else {
       // Closing the drawer
       console.log("Closing drawer");
+
+      // Set current height explicitly before transitioning
       wrap.style.height = initialWrapHeight + drawerHeight + "px";
       wrap.style.overflow = "hidden";
 
-      // Force browser to recognize the style changes before transition
-      wrap.getBoundingClientRect();
+      // Force reflow
+      void wrap.offsetHeight;
 
+      // Add transition and return to original height
       wrap.style.transition = "height 0.3s ease";
-      setTimeout(() => {
-        wrap.style.height = initialWrapHeight + "px";
-        console.log("Reverting to initial height:", initialWrapHeight);
-      }, 10);
+      wrap.style.height = initialWrapHeight + "px";
+      console.log("Reverting to initial height:", initialWrapHeight);
 
-      // Verify height change
+      // Clean up styles after transition
       setTimeout(() => {
-        console.log(
-          "Actual element height after transition:",
-          wrap.offsetHeight,
-        );
+        // Restore original styles
+        if (originalWrapStyles) {
+          wrap.style.height = originalWrapStyles.height;
+          wrap.style.overflow = originalWrapStyles.overflow;
+          wrap.style.transition = originalWrapStyles.transition;
+        }
+        console.log("Transition complete, restored original styles");
       }, 350);
     }
   });
