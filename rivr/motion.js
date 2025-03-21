@@ -647,10 +647,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Cards (Features Sequence)
 document.addEventListener("DOMContentLoaded", function () {
-  initCardAnimations();
-});
-
-function initCardAnimations() {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
     return;
@@ -670,13 +666,17 @@ function initCardAnimations() {
 
   // Initialize all card groups to be hidden initially
   cardGroups.forEach((cardGroup) => {
+    const seqIndex = cardGroup.getAttribute("data-seq-index");
     gsap.set(cardGroup, {
       y: "100%",
       opacity: 0,
     });
-    console.log(
-      `Card group ${cardGroup.getAttribute("data-seq-index")} initialized`,
-    );
+
+    // Set z-index based on sequence index
+    const zIndex = parseInt(seqIndex) * 2;
+    cardGroup.style.zIndex = zIndex;
+
+    console.log(`Card group ${seqIndex} initialized with z-index ${zIndex}`);
   });
 
   // Create scroll animations for each card group
@@ -691,35 +691,29 @@ function initCardAnimations() {
       return;
     }
 
-    const cardAnimation = createCardAnimation(cardGroup);
-    cardAnimation.pause();
+    // Create card animation timeline
+    const tl = gsap.timeline({ paused: true });
+    tl.to(cardGroup, {
+      y: 0,
+      opacity: 1,
+      duration: 0.8,
+      ease: "back.out(1.2)",
+    });
 
+    // Create ScrollTrigger
     ScrollTrigger.create({
       trigger: scrollUnit,
       start: "top 80%",
       end: "top 20%",
       markers: false,
       onEnter: () => {
-        cardAnimation.play();
+        tl.play();
         console.log(`Card group ${seqIndex} animation played`);
       },
       onLeaveBack: () => {
-        cardAnimation.reverse();
+        tl.reverse();
         console.log(`Card group ${seqIndex} animation reversed`);
       },
     });
   });
-}
-
-function createCardAnimation(cardGroup) {
-  const tl = gsap.timeline();
-
-  tl.to(cardGroup, {
-    y: 0,
-    opacity: 1,
-    duration: 0.8,
-    ease: "back.out(1.2)",
-  });
-
-  return tl;
-}
+});
