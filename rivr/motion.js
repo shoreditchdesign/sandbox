@@ -922,3 +922,206 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//GSAP for Text (Features Section)
+document.addEventListener("DOMContentLoaded", function () {
+  if (
+    typeof gsap === "undefined" ||
+    typeof ScrollTrigger === "undefined" ||
+    typeof SplitType === "undefined"
+  ) {
+    console.error(
+      "Required libraries (GSAP, ScrollTrigger or SplitType) not loaded",
+    );
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  console.log("Text animations initializing");
+
+  // Find all heading and text elements
+  const textElements = document.querySelectorAll(
+    "[data-motion-seq='heading'], [data-motion-seq='text']",
+  );
+  if (!textElements.length) {
+    console.error(
+      "No text elements found with [data-motion-seq='heading'] or [data-motion-seq='text']",
+    );
+    return;
+  }
+
+  console.log(`Found ${textElements.length} text elements to animate`);
+
+  // Prepare all text elements (split into lines and create masks)
+  textElements.forEach((element) => {
+    prepareTextElement(element);
+  });
+
+  // Group elements by chapter (seq-index)
+  const chapterElements = {};
+  textElements.forEach((element) => {
+    const seqIndex = element.getAttribute("data-seq-index");
+    if (!chapterElements[seqIndex]) {
+      chapterElements[seqIndex] = [];
+    }
+    chapterElements[seqIndex].push(element);
+  });
+
+  // Create entry and exit animations for each chapter
+  Object.keys(chapterElements).forEach((seqIndex) => {
+    const elements = chapterElements[seqIndex];
+    const scrollUnit = document.querySelector(
+      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+    );
+
+    if (!scrollUnit) {
+      console.error(`No scroll unit found for chapter ${seqIndex}`);
+      return;
+    }
+
+    // Set z-index for text elements
+    elements.forEach((element) => {
+      const zIndex = parseInt(seqIndex) * 2;
+      element.style.zIndex = zIndex;
+    });
+
+    // Create entry timeline
+    const entryTimeline = gsap.timeline({ paused: true });
+
+    // Add animations for each element with slight offset
+    elements.forEach((element, i) => {
+      const elementType = element.getAttribute("data-motion-seq");
+      const delay = i * 0.15; // Stagger between heading and text
+
+      entryTimeline.to(
+        element.querySelectorAll(".line"),
+        {
+          y: "0%",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power1.out",
+          stagger: 0.1,
+        },
+        delay,
+      );
+
+      console.log(
+        `Added entry animation for ${elementType} in chapter ${seqIndex}`,
+      );
+    });
+
+    // Create exit timeline (if not the last chapter)
+    const exitTimeline = gsap.timeline({ paused: true });
+
+    elements.forEach((element, i) => {
+      const elementType = element.getAttribute("data-motion-seq");
+      const delay = i * 0.1; // Slightly quicker exit stagger
+
+      exitTimeline.to(
+        element.querySelectorAll(".line"),
+        {
+          y: "-20%", // Exit in opposite direction
+          opacity: 0,
+          duration: 0.4, // Slightly faster exit
+          ease: "power1.in",
+          stagger: 0.08,
+        },
+        delay,
+      );
+
+      console.log(
+        `Added exit animation for ${elementType} in chapter ${seqIndex}`,
+      );
+    });
+
+    // Entry scroll trigger
+    ScrollTrigger.create({
+      trigger: scrollUnit,
+      start: "top 85%",
+      end: "top 15%",
+      markers: false,
+      onEnter: () => {
+        entryTimeline.play();
+        console.log(`Chapter ${seqIndex} text entry triggered`);
+      },
+      onLeaveBack: () => {
+        entryTimeline.reverse();
+        console.log(`Chapter ${seqIndex} text entry reversed`);
+      },
+    });
+
+    // Exit scroll trigger (if not the last chapter)
+    if (parseInt(seqIndex) < Object.keys(chapterElements).length) {
+      ScrollTrigger.create({
+        trigger: scrollUnit,
+        start: "bottom 80%", // Slightly earlier than entry of next
+        end: "bottom 20%",
+        markers: false,
+        onEnter: () => {
+          exitTimeline.play();
+          console.log(`Chapter ${seqIndex} text exit triggered`);
+        },
+        onLeaveBack: () => {
+          exitTimeline.reverse();
+          console.log(`Chapter ${seqIndex} text exit reversed`);
+        },
+      });
+    }
+  });
+
+  // Initialize first chapter text to be visible
+  const firstChapterElements = chapterElements["1"] || [];
+  firstChapterElements.forEach((element) => {
+    gsap.set(element.querySelectorAll(".line"), {
+      y: "0%",
+      opacity: 1,
+    });
+    console.log(
+      `First chapter ${element.getAttribute("data-motion-seq")} initialized as visible`,
+    );
+  });
+
+  // Initialize all other chapter texts to be hidden
+  Object.keys(chapterElements).forEach((seqIndex) => {
+    if (seqIndex !== "1") {
+      const elements = chapterElements[seqIndex];
+      elements.forEach((element) => {
+        gsap.set(element.querySelectorAll(".line"), {
+          y: "20%", // Initial position for entry animation
+          opacity: 0,
+        });
+        console.log(
+          `Chapter ${seqIndex} ${element.getAttribute("data-motion-seq")} initialized as hidden`,
+        );
+      });
+    }
+  });
+});
+
+// Helper function to prepare text element with SplitType
+function prepareTextElement(element) {
+  // Skip if already prepared
+  if (element.getAttribute("data-text-prepared") === "true") {
+    return;
+  }
+
+  // Split text into lines
+  const splitText = new SplitType(element, {
+    types: "lines",
+    tagName: "span",
+  });
+
+  // Create wrappers for each line
+  element.querySelectorAll(".line").forEach((line) => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("u-line-mask");
+    line.parentNode.insertBefore(wrapper, line);
+    wrapper.appendChild(line);
+  });
+
+  // Mark as prepared
+  element.setAttribute("data-text-prepared", "true");
+  console.log(
+    `Text element prepared with ${element.querySelectorAll(".line").length} lines`,
+  );
+}
