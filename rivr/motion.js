@@ -1088,3 +1088,65 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//GSAP for Scale Hover//GSAP for Scale Hover
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined") {
+    console.error("GSAP library is not loaded");
+    return;
+  }
+
+  console.log("Scale hover animations initializing");
+
+  const scaleElements = document.querySelectorAll("[data-motion-scale]");
+
+  if (!scaleElements || scaleElements.length === 0) {
+    console.log("No elements found with data-motion-scale attribute");
+    return;
+  }
+
+  console.log(`Found ${scaleElements.length} scale elements to animate`);
+
+  scaleElements.forEach((element, index) => {
+    try {
+      // Select all children of the element
+      const children = Array.from(element.children);
+
+      if (!children.length) {
+        console.log(`Element ${index + 1} has no children to scale`);
+        return;
+      }
+
+      // Create quickTo animations for smooth transitions
+      const childrenScale = children.map((child) =>
+        gsap.quickTo(child, "scale", {
+          duration: 0.6,
+          ease: "power2.inOut",
+        }),
+      );
+
+      // Set initial scale
+      gsap.set(children, { scale: 1 });
+
+      // Add hover event listeners
+      element.addEventListener("mouseenter", () => {
+        children.forEach((child, i) => {
+          childrenScale[i](1.05);
+        });
+        console.log(`Scale up triggered for element ${index + 1}`);
+      });
+
+      element.addEventListener("mouseleave", () => {
+        children.forEach((child, i) => {
+          childrenScale[i](1);
+        });
+        console.log(`Scale down triggered for element ${index + 1}`);
+      });
+    } catch (error) {
+      console.error(
+        `Error in scale animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
+});
