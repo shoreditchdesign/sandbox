@@ -1089,7 +1089,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Scale Hover//GSAP for Scale Hover
+//GSAP for Scale Hover
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {
     console.error("GSAP library is not loaded");
