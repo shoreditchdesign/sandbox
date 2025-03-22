@@ -224,106 +224,105 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //FAQ Accordions
-// Store drawer heights and initialize accordions
 document.addEventListener("DOMContentLoaded", function () {
-  initializeAccordions();
-});
+  // Heights storage object
+  const drawerHeights = {};
 
-// Heights storage object
-const drawerHeights = {};
+  function initializeAccordions() {
+    const toggles = document.querySelectorAll("[data-faq-toggle]");
+    console.log("Initializing", toggles.length, "accordions");
 
-function initializeAccordions() {
-  const toggles = document.querySelectorAll("[data-faq-toggle]");
-  console.log("Initializing", toggles.length, "accordions");
+    toggles.forEach((toggle, index) => {
+      // Get drawer element
+      const drawer = toggle.querySelector("[data-faq-drawer]");
+      if (drawer) {
+        // Store the drawer's content height
+        const drawerContent = drawer.firstElementChild;
+        const height = drawerContent.offsetHeight;
 
-  toggles.forEach((toggle, index) => {
-    // Get drawer element
-    const drawer = toggle.querySelector("[data-faq-drawer]");
-    if (drawer) {
-      // Store the drawer's content height
-      const drawerContent = drawer.firstElementChild;
-      const height = drawerContent.offsetHeight;
+        // Store height in our object using a unique key
+        const drawerId = "drawer-" + index;
+        drawerHeights[drawerId] = height;
 
-      // Store height in our object using a unique key
-      const drawerId = "drawer-" + index;
-      drawerHeights[drawerId] = height;
+        // Set initial height to 0
+        drawer.style.height = "0px";
+        drawer.style.overflow = "hidden";
+        drawer.style.transition = "height 0.3s ease-in-out";
 
-      // Set initial height to 0
-      drawer.style.height = "0px";
-      drawer.style.overflow = "hidden";
-      drawer.style.transition = "height 0.3s ease-in-out";
+        // Add data attribute to link toggle with drawer
+        toggle.setAttribute("data-drawer-id", drawerId);
 
-      // Add data attribute to link toggle with drawer
-      toggle.setAttribute("data-drawer-id", drawerId);
+        console.log("Stored height for accordion", index, ":", height, "px");
+      }
 
-      console.log("Stored height for accordion", index, ":", height, "px");
-    }
-
-    // Add click event listener
-    toggle.addEventListener("click", handleAccordionClick);
-  });
-}
-
-function openAccordion(toggle) {
-  const drawerId = toggle.getAttribute("data-drawer-id");
-  const drawer = toggle.querySelector("[data-faq-drawer]");
-
-  // Update toggle state
-  toggle.setAttribute("data-toggle-state", "open");
-
-  // Animate height
-  drawer.style.height = drawerHeights[drawerId] + "px";
-
-  console.log("Opened accordion with drawer ID:", drawerId);
-}
-
-function closeAccordion(toggle) {
-  const drawer = toggle.querySelector("[data-faq-drawer]");
-
-  // Update toggle state
-  toggle.setAttribute("data-toggle-state", "closed");
-
-  // Animate height back to 0
-  drawer.style.height = "0px";
-
-  console.log(
-    "Closed accordion with drawer ID:",
-    toggle.getAttribute("data-drawer-id"),
-  );
-}
-
-function handleAccordionClick(event) {
-  const toggle = event.currentTarget;
-  const toggleState = toggle.getAttribute("data-toggle-state");
-
-  console.log("Accordion clicked, current state:", toggleState);
-
-  if (toggleState === "closed") {
-    // Close all other accordions in all components
-    closeAllOtherAccordions(toggle);
-
-    // Open this accordion
-    openAccordion(toggle);
-  } else {
-    // Close this accordion
-    closeAccordion(toggle);
+      // Add click event listener
+      toggle.addEventListener("click", handleAccordionClick);
+    });
   }
-}
 
-function closeAllOtherAccordions(currentToggle) {
-  // Find all open accordions across all components
-  const allOpenToggles = document.querySelectorAll(
-    '[data-faq-toggle][data-toggle-state="open"]',
-  );
+  function openAccordion(toggle) {
+    const drawerId = toggle.getAttribute("data-drawer-id");
+    const drawer = toggle.querySelector("[data-faq-drawer]");
 
-  console.log("Found", allOpenToggles.length, "open accordions to close");
+    // Update toggle state
+    toggle.setAttribute("data-toggle-state", "open");
 
-  allOpenToggles.forEach((toggle) => {
-    if (toggle !== currentToggle) {
+    // Animate height
+    drawer.style.height = drawerHeights[drawerId] + "px";
+
+    console.log("Opened accordion with drawer ID:", drawerId);
+  }
+
+  function closeAccordion(toggle) {
+    const drawer = toggle.querySelector("[data-faq-drawer]");
+
+    // Update toggle state
+    toggle.setAttribute("data-toggle-state", "closed");
+
+    // Animate height back to 0
+    drawer.style.height = "0px";
+
+    console.log(
+      "Closed accordion with drawer ID:",
+      toggle.getAttribute("data-drawer-id"),
+    );
+  }
+
+  function handleAccordionClick(event) {
+    const toggle = event.currentTarget;
+    const toggleState = toggle.getAttribute("data-toggle-state");
+
+    console.log("Accordion clicked, current state:", toggleState);
+
+    if (toggleState === "closed") {
+      // Close all other accordions in all components
+      closeAllOtherAccordions(toggle);
+
+      // Open this accordion
+      openAccordion(toggle);
+    } else {
+      // Close this accordion
       closeAccordion(toggle);
     }
-  });
-}
+  }
+
+  function closeAllOtherAccordions(currentToggle) {
+    // Find all open accordions across all components
+    const allOpenToggles = document.querySelectorAll(
+      '[data-faq-toggle][data-toggle-state="open"]',
+    );
+
+    console.log("Found", allOpenToggles.length, "open accordions to close");
+
+    allOpenToggles.forEach((toggle) => {
+      if (toggle !== currentToggle) {
+        closeAccordion(toggle);
+      }
+    });
+  }
+
+  initializeAccordions();
+});
 
 //Blog Share Snippet
 document.addEventListener("DOMContentLoaded", () => {
