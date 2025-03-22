@@ -39,17 +39,20 @@ window.intercomSettings = {
 })();
 
 //Lenis Smooth Scroll
-const lenis = new Lenis({
-  smooth: true,
-  lerp: 0.1,
-  wheelMultiplier: 1,
-  infinite: false,
-});
-function raf(time) {
-  lenis.raf(time);
+if (window.innerWidth >= 992) {
+  // Only initialize on desktop (width >= 992px)
+  const lenis = new Lenis({
+    smooth: true,
+    lerp: 0.1,
+    wheelMultiplier: 1,
+    infinite: false,
+  });
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
   requestAnimationFrame(raf);
 }
-requestAnimationFrame(raf);
 
 //Table of Contents
 document.addEventListener("DOMContentLoaded", function () {

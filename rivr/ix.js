@@ -355,27 +355,27 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // Simple toast notification function
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.padding = "10px 20px";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.borderRadius = "4px";
+    toast.style.zIndex = "1000";
+
+    document.body.appendChild(toast);
+    console.log("Toast notification shown");
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
 });
-
-// Simple toast notification function
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-  toast.style.padding = "10px 20px";
-  toast.style.backgroundColor = "#333";
-  toast.style.color = "#fff";
-  toast.style.borderRadius = "4px";
-  toast.style.zIndex = "1000";
-
-  document.body.appendChild(toast);
-  console.log("Toast notification shown");
-
-  // Remove the toast after 3 seconds
-  setTimeout(() => {
-    document.body.removeChild(toast);
-  }, 3000);
-}
