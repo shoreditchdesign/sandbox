@@ -420,49 +420,89 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // Get the original height of the container
-      const finalHeight = container.offsetHeight;
+      // Check if we're dealing with an image element
+      const isImg = imageElement.tagName.toLowerCase() === "img";
 
-      console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
+      // Function to set up and animate the container
+      const setupAndAnimate = () => {
+        // Get the original height of the container
+        const finalHeight = container.offsetHeight;
 
-      // Set the container's height explicitly to prevent layout shifts
-      container.style.height = `${finalHeight}px`;
-      container.style.overflow = "hidden";
+        console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
 
-      // Create a curtain wrapper
-      const curtain = document.createElement("div");
-      curtain.setAttribute("data-motion-element", "curtain");
-      curtain.style.overflow = "hidden";
-      curtain.style.width = "100%";
-      curtain.style.position = "relative";
+        // Set the container's height explicitly to prevent layout shifts
+        container.style.height = `${finalHeight}px`;
+        container.style.overflow = "hidden";
 
-      // Move the image into the curtain
-      container.appendChild(curtain);
-      curtain.appendChild(imageElement);
+        // Create a curtain wrapper
+        const curtain = document.createElement("div");
+        curtain.setAttribute("data-motion-element", "curtain");
+        curtain.style.overflow = "hidden";
+        curtain.style.width = "100%";
+        curtain.style.position = "relative";
 
-      // Set initial state - curtain height 0 and opacity 0
-      gsap.set(curtain, {
-        height: 0,
-        opacity: 0.4,
-      });
+        // Move the image into the curtain
+        container.appendChild(curtain);
+        curtain.appendChild(imageElement);
 
-      // Create individual ScrollTrigger for each container
-      ScrollTrigger.create({
-        trigger: container,
-        start: "top 85%", // Start when top of container reaches 85% of viewport
-        markers: false, // Enable for debugging
-        once: true, // Only play once
-        onEnter: () => {
-          // Create and play animation when this specific element enters viewport
-          gsap.to(curtain, {
-            height: finalHeight,
-            opacity: 1,
-            duration: 1.2,
-            ease: "power2.out",
+        // Set initial state - curtain height 0 and opacity 0
+        gsap.set(curtain, {
+          height: 0,
+          opacity: 0.4,
+        });
+
+        // Create individual ScrollTrigger for each container
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top 85%", // Start when top of container reaches 85% of viewport
+          markers: false, // Enable for debugging
+          once: true, // Only play once
+          onEnter: () => {
+            // Create and play animation when this specific element enters viewport
+            gsap.to(curtain, {
+              height: finalHeight,
+              opacity: 1,
+              duration: 1.2,
+              ease: "power2.out",
+            });
+            console.log(`Image ${index + 1} animation triggered`);
+          },
+        });
+      };
+
+      // If it's an image element, check if it's loaded
+      if (isImg) {
+        if (imageElement.complete) {
+          console.log(
+            `Image ${index + 1} already loaded, setting up animation`,
+          );
+          setupAndAnimate();
+        } else {
+          console.log(
+            `Image ${index + 1} not yet loaded, waiting for load event`,
+          );
+          imageElement.addEventListener("load", () => {
+            console.log(
+              `Image ${index + 1} finished loading, setting up animation`,
+            );
+            setupAndAnimate();
           });
-          console.log(`Image ${index + 1} animation triggered`);
-        },
-      });
+
+          // Also handle error case
+          imageElement.addEventListener("error", () => {
+            console.error(
+              `Image ${index + 1} failed to load, setting up animation anyway`,
+            );
+            setupAndAnimate();
+          });
+        }
+      } else {
+        // Not an image element, proceed with setup
+        console.log(
+          `Container ${index + 1} does not contain an img element, setting up animation`,
+        );
+        setupAndAnimate();
+      }
     } catch (error) {
       console.error(
         `Error in image animation setup for element ${index + 1}:`,
