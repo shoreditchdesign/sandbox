@@ -10,7 +10,7 @@ document
     );
   });
 
-//Navigation Bar Dropdown
+//Navigation Bar Dropdown (Desktop)
 document.addEventListener("DOMContentLoaded", () => {
   // Cache initial values
   let initialWrapHeight = null;
@@ -68,6 +68,43 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         wrap.style.overflow = originalOverflow;
       }, 350);
+    });
+});
+
+// Navigation Bar Dropdown (Mobile)
+document.addEventListener("DOMContentLoaded", () => {
+  // Mobile check function
+  const isMobile = () => window.matchMedia("(max-width: 991px)").matches;
+
+  document
+    .querySelector('[data-nav-element="toggle"]')
+    .addEventListener("click", () => {
+      // Only run on mobile
+      if (!isMobile()) return;
+
+      // Get elements
+      const toggle = document.querySelector('[data-nav-element="toggle"]');
+      const dropdown = document.querySelector('[data-nav-element="dropdown"]');
+      const nest = document.querySelector('[data-nav-element="nest"]');
+
+      // Toggle state
+      const currentState = toggle.getAttribute("data-toggle-state");
+      const newState = currentState === "open" ? "closed" : "open";
+      toggle.setAttribute("data-toggle-state", newState);
+
+      // Get the total height needed
+      const nestHeight = nest.offsetHeight;
+
+      // Set up animation
+      dropdown.style.transition = "height 0.3s ease";
+      dropdown.style.overflow = "hidden";
+
+      // Set height based on state
+      if (newState === "open") {
+        dropdown.style.height = `${nestHeight}px`;
+      } else {
+        dropdown.style.height = "0px";
+      }
     });
 });
 
