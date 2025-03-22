@@ -1,24 +1,30 @@
 // GSAP Navbar Slide
 document.addEventListener("DOMContentLoaded", () => {
-  const showAnim = gsap
-    .from(".c-navbar", {
-      yPercent: -100,
-      paused: true,
-      duration: 0.2,
-    })
-    .progress(1);
+  // Check if desktop (screen width >= 992px)
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
 
-  ScrollTrigger.create({
-    start: "top top",
-    end: "max",
-    onUpdate: (self) => {
-      self.direction === -1 ? showAnim.play() : showAnim.reverse();
-    },
-  });
+  // Only run on desktop
+  if (isDesktop()) {
+    const showAnim = gsap
+      .from(".c-navbar", {
+        yPercent: -100,
+        paused: true,
+        duration: 0.2,
+      })
+      .progress(1);
 
-  setTimeout(() => {
-    gsap.set(".c-navbar", { yPercent: 0 });
-  }, 10);
+    ScrollTrigger.create({
+      start: "top top",
+      end: "max",
+      onUpdate: (self) => {
+        self.direction === -1 ? showAnim.play() : showAnim.reverse();
+      },
+    });
+
+    setTimeout(() => {
+      gsap.set(".c-navbar", { yPercent: 0 });
+    }, 10);
+  }
 });
 
 //GSAP for Headings
