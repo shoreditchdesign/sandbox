@@ -40,19 +40,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       types: "lines", // Explicitly specify ONLY lines (not words or chars)
       tagName: "span",
     });
-    // Optional debugging to confirm only lines are created
-    console.log(
-      "Lines created:",
-      document.querySelectorAll("[data-stagger-fade] .line").length,
-    );
-    console.log(
-      "Words created:",
-      document.querySelectorAll("[data-stagger-fade] .word").length,
-    ); // Should be 0
-    console.log(
-      "Chars created:",
-      document.querySelectorAll("[data-stagger-fade] .char").length,
-    ); // Should be 0
+
     // Create wrappers for each line
     document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
       const wrapper = document.createElement("div");
@@ -166,10 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    console.log(
-      `Found ${textElements.length} text elements with data-motion-text="reveal"`,
-    );
-
     // Process each element
     textElements.forEach((textElement, elementIndex) => {
       try {
@@ -187,10 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           return;
         }
-
-        console.log(
-          `Element ${elementIndex + 1}: Split into ${splitText.words.length} words`,
-        );
 
         // Set initial state of all words - maintaining the 0.5 opacity
         gsap.set(splitText.words, {
@@ -247,15 +227,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
       return;
     }
 
-    console.log("Setting up card hover animations");
-
     // Set up text splitting for hover hide effect
     const splitTextLines = new SplitType("[data-hover-text]", {
       types: "lines", // Explicitly specify ONLY lines
       tagName: "span",
     });
-
-    console.log("Text split into lines completed");
 
     // Create wrappers for each line - these act as masks
     document.querySelectorAll("[data-hover-text] .line").forEach((line) => {
@@ -281,16 +257,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
         return;
       }
 
-      console.log(`Setting up card: ${card.id || "unnamed card"}`);
-
       // Store initial and target heights
       const parentHeight = card.parentElement.offsetHeight;
       const initialHeight = parentHeight * 0.7; // 70% of parent height
       const targetHeight = parentHeight; // 100% of parent height
-
-      console.log(
-        `Card dimensions - Parent: ${parentHeight}px, Initial: ${initialHeight}px`,
-      );
 
       // Set initial height
       gsap.set(card, { height: initialHeight, overflow: "hidden" });
@@ -309,8 +279,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
         ease: "power2.inOut",
       });
 
-      console.log("QuickTo animations created for", card.id || "unnamed card");
-
       // Create text animation timeline for each text element
       const textTimelines = [];
 
@@ -327,7 +295,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
       // Add hover event listeners
       card.addEventListener("mouseenter", () => {
-        console.log(`Card hover started: ${card.id || "unnamed card"}`);
         card.classList.add("active");
         arrowOpacity(1);
         bgOpacity(1);
@@ -336,7 +303,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
       });
 
       card.addEventListener("mouseleave", () => {
-        console.log(`Card hover ended: ${card.id || "unnamed card"}`);
         card.classList.remove("active");
         arrowOpacity(0);
         bgOpacity(0);
@@ -367,7 +333,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
     window.addEventListener(
       "resize",
       _.debounce(() => {
-        console.log("Window resized, recalculating card heights");
         document.querySelectorAll("[data-hover-card]").forEach((card) => {
           const parentHeight = card.parentElement.offsetHeight;
           const initialHeight = parentHeight * 0.7;
@@ -381,8 +346,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
         });
       }, 250),
     );
-
-    console.log("Card hover animations setup complete");
   }, 0);
 });
 
@@ -407,8 +370,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${imageContainers.length} image containers to animate`);
-
   // Process each image container individually
   imageContainers.forEach((container, index) => {
     try {
@@ -427,8 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const setupAndAnimate = () => {
         // Get the original height of the container
         const finalHeight = container.offsetHeight;
-
-        console.log(`Container ${index + 1}: Height is ${finalHeight}px`);
 
         // Set the container's height explicitly to prevent layout shifts
         container.style.height = `${finalHeight}px`;
@@ -465,7 +424,6 @@ document.addEventListener("DOMContentLoaded", function () {
               duration: 1.2,
               ease: "power2.out",
             });
-            console.log(`Image ${index + 1} animation triggered`);
           },
         });
       };
@@ -473,18 +431,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // If it's an image element, check if it's loaded
       if (isImg) {
         if (imageElement.complete) {
-          console.log(
-            `Image ${index + 1} already loaded, setting up animation`,
-          );
           setupAndAnimate();
         } else {
-          console.log(
-            `Image ${index + 1} not yet loaded, waiting for load event`,
-          );
           imageElement.addEventListener("load", () => {
-            console.log(
-              `Image ${index + 1} finished loading, setting up animation`,
-            );
             setupAndAnimate();
           });
 
@@ -498,9 +447,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       } else {
         // Not an image element, proceed with setup
-        console.log(
-          `Container ${index + 1} does not contain an img element, setting up animation`,
-        );
         setupAndAnimate();
       }
     } catch (error) {
@@ -537,8 +483,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    console.log(`Found ${cardContainers.length} card containers to animate`);
-
     // Process each card container
     cardContainers.forEach((container, containerIndex) => {
       try {
@@ -552,10 +496,6 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
-        console.log(
-          `Container ${containerIndex + 1}: Found ${cardElements.length} card elements`,
-        );
-
         // Set initial state - all cards invisible
         gsap.set(cardElements, {
           opacity: 0,
@@ -565,10 +505,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create the animation timeline (paused until scrolled to)
         const tl = gsap.timeline({
           paused: true,
-          onComplete: () =>
-            console.log(
-              `Animation completed for container ${containerIndex + 1}`,
-            ),
         });
 
         // Add the staggered animation
@@ -587,9 +523,6 @@ document.addEventListener("DOMContentLoaded", function () {
           markers: false, // Set to true for debugging
           once: true, // Add once: true to prevent replaying the animation
           onEnter: () => {
-            console.log(
-              `Container ${containerIndex + 1} entered viewport, playing animation`,
-            );
             tl.play(0); // Play from the beginning
           },
           // Deliberately NOT using onRefresh to avoid playing for elements already in view
@@ -625,23 +558,12 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${singleElements.length} potential elements to animate`);
-
   // Filter elements that don't have data-motion-state="blocked"
   const animatableElements = Array.from(singleElements).filter((element) => {
     const motionState = element.getAttribute("data-motion-state");
     const isBlocked = motionState === "blocked";
-
-    if (isBlocked) {
-      console.log("Element skipped due to blocked state:", element);
-    }
-
     return !isBlocked;
   });
-
-  console.log(
-    `${animatableElements.length} elements will be animated (after filtering blocked states)`,
-  );
 
   // Process each eligible element
   animatableElements.forEach((element, index) => {
@@ -693,7 +615,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Card animations initializing");
 
   // Set initial state for all cards
   const cardGroups = document.querySelectorAll("[data-motion-seq='cards']");
@@ -701,8 +622,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("No card groups found with [data-motion-seq='cards']");
     return;
   }
-
-  console.log(`Found ${cardGroups.length} card groups to animate`);
 
   // Initialize all card groups to be hidden initially
   cardGroups.forEach((cardGroup) => {
@@ -714,8 +633,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Set z-index based on sequence index
     const zIndex = parseInt(seqIndex) * 2;
     cardGroup.style.zIndex = zIndex;
-
-    console.log(`Card group ${seqIndex} initialized with z-index ${zIndex}`);
   });
 
   // Create scroll animations for each card group
@@ -746,11 +663,9 @@ document.addEventListener("DOMContentLoaded", function () {
       markers: false,
       onEnter: () => {
         tl.play();
-        console.log(`Card group ${seqIndex} animation played`);
       },
       onLeaveBack: () => {
         tl.reverse();
-        console.log(`Card group ${seqIndex} animation reversed`);
       },
     });
   });
@@ -764,7 +679,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Nav animations initializing");
 
   // Get all nav cells
   const navCells = document.querySelectorAll("[data-motion-seq='cell']");
@@ -773,15 +687,12 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${navCells.length} nav cells`);
-
   // Initialize first cell as active
   const firstCell = document.querySelector(
     "[data-seq-index='1'][data-motion-seq='cell']",
   );
   if (firstCell) {
     firstCell.classList.add("active");
-    console.log("First nav cell initialized as active");
   } else {
     console.error("First nav cell not found");
   }
@@ -816,7 +727,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Add active class to current cell
         cell.classList.add("active");
-        console.log(`Nav updated: ${prevIndex} -> ${seqIndex}`);
       },
       onLeaveBack: () => {
         // Remove active class from current cell
@@ -830,7 +740,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (prevCell) {
           prevCell.classList.add("active");
         }
-        console.log(`Nav reversed: ${seqIndex} -> ${prevIndex}`);
       },
     });
 
@@ -841,7 +750,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       if (scrollTo) {
         scrollTo.scrollIntoView({ behavior: "smooth" });
-        console.log(`Nav click: scrolling to ${seqIndex}`);
       }
     });
   });
@@ -854,7 +762,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       if (scrollTo) {
         scrollTo.scrollIntoView({ behavior: "smooth" });
-        console.log("Nav click: scrolling to 1");
       }
     });
   }
@@ -868,7 +775,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Image animations initializing");
 
   // Get all image containers
   const imageContainers = document.querySelectorAll(
@@ -878,8 +784,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("No image containers found with [data-motion-seq='image']");
     return;
   }
-
-  console.log(`Found ${imageContainers.length} image containers to animate`);
 
   // Setup all image containers with curtains
   imageContainers.forEach((container) => {
@@ -901,10 +805,6 @@ document.addEventListener("DOMContentLoaded", function () {
       // Set z-index based on sequence index
       const zIndex = parseInt(seqIndex) * 2;
       container.style.zIndex = zIndex;
-
-      console.log(
-        `Image container ${seqIndex}: Height ${finalHeight}px, z-index ${zIndex}`,
-      );
 
       // Create curtain wrapper
       const curtain = document.createElement("div");
@@ -946,11 +846,9 @@ document.addEventListener("DOMContentLoaded", function () {
         markers: false,
         onEnter: () => {
           tl.play();
-          console.log(`Image ${seqIndex} animation triggered`);
         },
         onLeaveBack: () => {
           tl.reverse();
-          console.log(`Image ${seqIndex} animation reversed`);
         },
       });
     } catch (error) {
@@ -967,7 +865,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   gsap.registerPlugin(ScrollTrigger);
-  console.log("Content block animations initializing");
 
   // Find all heading blocks
   const headingBlocks = document.querySelectorAll(
@@ -977,8 +874,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("No heading blocks found with [data-motion-seq='heading']");
     return;
   }
-
-  console.log(`Found ${headingBlocks.length} heading blocks to animate`);
 
   // Get all sequence indexes and sort them
   const seqIndexes = [];
@@ -1001,13 +896,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Set initial state (first block visible, others hidden)
     if (seqIndex !== "1") {
       gsap.set(block, { opacity: 0 });
-      console.log(
-        `Heading block ${seqIndex} initialized with opacity 0 and z-index ${zIndex}`,
-      );
-    } else {
-      console.log(
-        `Heading block ${seqIndex} initialized as visible with z-index ${zIndex}`,
-      );
     }
   });
 
@@ -1048,13 +936,9 @@ document.addEventListener("DOMContentLoaded", function () {
           markers: false,
           onEnter: () => {
             entryTimeline.play();
-            console.log(
-              `Heading block ${seqIndex} entry triggered by previous scroll unit`,
-            );
           },
           onLeaveBack: () => {
             entryTimeline.reverse();
-            console.log(`Heading block ${seqIndex} entry reversed`);
           },
         });
       }
