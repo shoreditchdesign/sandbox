@@ -1011,37 +1011,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   scaleElements.forEach((element, index) => {
     try {
-      // Select all children of the element
-      const children = Array.from(element.children);
-
-      if (!children.length) {
-        console.log(`Element ${index + 1} has no children to scale`);
-        return;
-      }
-
-      // Create quickTo animations for smooth transitions
-      const childrenScale = children.map((child) =>
-        gsap.quickTo(child, "scale", {
-          duration: 0.6,
-          ease: "power2.inOut",
-        }),
-      );
+      // Create quickTo animation for smooth transition
+      const elementScale = gsap.quickTo(element, "scale", {
+        duration: 0.6,
+        ease: "power2.inOut",
+      });
 
       // Set initial scale
-      gsap.set(children, { scale: 1 });
+      gsap.set(element, { scale: 1 });
 
       // Add hover event listeners
       element.addEventListener("mouseenter", () => {
-        children.forEach((child, i) => {
-          childrenScale[i](1.05);
-        });
+        elementScale(1.05);
         console.log(`Scale up triggered for element ${index + 1}`);
       });
 
       element.addEventListener("mouseleave", () => {
-        children.forEach((child, i) => {
-          childrenScale[i](1);
-        });
+        elementScale(1);
         console.log(`Scale down triggered for element ${index + 1}`);
       });
     } catch (error) {
