@@ -13,3 +13,21 @@
     position: absolute;
     left: 0; /* Initial position at left */
 }
+
+.d-jl2_toc {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.d-jl2_toc::-webkit-scrollbar {
+    width: 8px;
+}
+
+.d-jl2_toc::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.d-jl2_toc::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
