@@ -1,4 +1,4 @@
-//Navigation Bar Mobile
+//Navigation Bar Drawer (Mobile)
 document
   .querySelector('[data-nav-element="menu"]')
   .addEventListener("click", () => {

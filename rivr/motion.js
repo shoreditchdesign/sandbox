@@ -1052,3 +1052,50 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//GSAP for blog progress
+document.addEventListener("DOMContentLoaded", function () {
+  // Get references to the elements
+  const progressContainer = document.querySelector(
+    '[data-duration-el="progress"]',
+  );
+  const progressBar = document.querySelector('[data-duration-el="bar"]');
+  const scrollContent = document.querySelector('[data-duration-el="scroll"]');
+
+  console.log("Elements found:", {
+    progressContainer,
+    progressBar,
+    scrollContent,
+  });
+
+  // Initialize GSAP
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Set initial state
+  gsap.set(progressBar, { width: 0 });
+
+  // Create the scroll animation
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: scrollContent,
+      start: "top top",
+      end: "bottom 70%",
+      scrub: true,
+      onUpdate: (self) => {
+        console.log("ScrollTrigger progress:", self.progress.toFixed(2));
+      },
+      onEnter: () => console.log("Scroll content entered viewport"),
+      onLeave: () => console.log("Scroll content left viewport"),
+      onEnterBack: () => console.log("Scroll content entered viewport again"),
+      onLeaveBack: () => console.log("Scroll content left viewport again"),
+    },
+  });
+
+  // Animation to scale the progress bar
+  tl.to(progressBar, {
+    width: "100%",
+    ease: "none",
+  });
+
+  console.log("Progress bar animation initialized");
+});
