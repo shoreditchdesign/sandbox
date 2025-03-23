@@ -537,7 +537,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Create ScrollTrigger
         ScrollTrigger.create({
           trigger: container,
-          start: "top 70%", // Start when the top of the container reaches 75% of viewport
+          start: "top 95%", // Start when the top of the container reaches 75% of viewport
           markers: false, // Set to true for debugging
           once: true, // Add once: true to prevent replaying the animation
           onEnter: () => {
