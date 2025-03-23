@@ -609,7 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Create ScrollTrigger
       ScrollTrigger.create({
         trigger: element,
-        start: "top 80%", // Start when the top of the element reaches 80% of viewport
+        start: "top 95%", // Start when the top of the element reaches 80% of viewport
         markers: false, // Set to true for debugging
         once: true, // Set replay to false by using once: true
         onEnter: () => {
