@@ -1062,12 +1062,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressBar = document.querySelector('[data-duration-el="bar"]');
   const scrollContent = document.querySelector('[data-duration-el="scroll"]');
 
-  console.log("Elements found:", {
-    progressContainer,
-    progressBar,
-    scrollContent,
-  });
-
   // Initialize GSAP
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1081,9 +1075,7 @@ document.addEventListener("DOMContentLoaded", function () {
       start: "top top",
       end: "bottom 70%",
       scrub: true,
-      onUpdate: (self) => {
-        console.log("ScrollTrigger progress:", self.progress.toFixed(2));
-      },
+      onUpdate: (self) => {},
       onEnter: () => console.log("Scroll content entered viewport"),
       onLeave: () => console.log("Scroll content left viewport"),
       onEnterBack: () => console.log("Scroll content entered viewport again"),
@@ -1096,6 +1088,4 @@ document.addEventListener("DOMContentLoaded", function () {
     width: "100%",
     ease: "none",
   });
-
-  console.log("Progress bar animation initialized");
 });
