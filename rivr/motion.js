@@ -225,11 +225,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards
-window.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     // Check if required libraries exist
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
       console.error("GSAP or SplitType is not loaded.");
+      return;
+    }
+
+    // Check if desktop (screen width >= 992px)
+    const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
+    // Only run on desktop
+    if (!isDesktop()) {
+      console.log("Card hover animations disabled on mobile");
       return;
     }
 
@@ -339,17 +348,20 @@ window.addEventListener("DOMContentLoaded", (event) => {
     window.addEventListener(
       "resize",
       _.debounce(() => {
-        document.querySelectorAll("[data-hover-card]").forEach((card) => {
-          const parentHeight = card.parentElement.offsetHeight;
-          const initialHeight = parentHeight * 0.7;
+        // Only update if we're still on desktop
+        if (isDesktop()) {
+          document.querySelectorAll("[data-hover-card]").forEach((card) => {
+            const parentHeight = card.parentElement.offsetHeight;
+            const initialHeight = parentHeight * 0.7;
 
-          // Check if card is currently hovered/active
-          if (card.classList.contains("active")) {
-            gsap.set(card, { height: parentHeight });
-          } else {
-            gsap.set(card, { height: initialHeight });
-          }
-        });
+            // Check if card is currently hovered/active
+            if (card.classList.contains("active")) {
+              gsap.set(card, { height: parentHeight });
+            } else {
+              gsap.set(card, { height: initialHeight });
+            }
+          });
+        }
       }, 250),
     );
   }, 0);
