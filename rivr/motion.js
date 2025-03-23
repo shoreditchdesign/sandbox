@@ -990,6 +990,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 //GSAP for Scale Hover
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {
@@ -997,51 +998,27 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log("Scale hover animations initializing");
-
   const scaleElements = document.querySelectorAll("[data-motion-scale]");
 
-  if (!scaleElements || scaleElements.length === 0) {
+  if (!scaleElements.length) {
     console.log("No elements found with data-motion-scale attribute");
     return;
   }
 
-  console.log(`Found ${scaleElements.length} scale elements to animate`);
+  scaleElements.forEach((element) => {
+    // Create hover timeline that's paused initially
+    const hoverTl = gsap.timeline({ paused: true });
 
-  scaleElements.forEach((element, index) => {
-    try {
-      // Create quickTo animation for smooth transition
-      const elementScale = gsap.quickTo(element, "scale", {
-        duration: 0.6,
-        ease: "power2.inOut",
-        onComplete: () => {
-          console.log(
-            `Element ${index + 1} scale animation completed successfully`,
-          );
-        },
-      });
+    // Add the scale animation to the timeline
+    hoverTl.to(element, {
+      scale: 1.05,
+      duration: 0.6,
+      ease: "power2.inOut",
+    });
 
-      // Set initial scale
-      gsap.set(element, { scale: 1 });
-
-      // Add hover event listeners
-      element.addEventListener("mouseenter", () => {
-        console.log(`Mouse entered element ${index + 1}`);
-        elementScale(1.05);
-        console.log(`Scale up triggered for element ${index + 1}`);
-      });
-
-      element.addEventListener("mouseleave", () => {
-        console.log(`Mouse left element ${index + 1}`);
-        elementScale(1);
-        console.log(`Scale down triggered for element ${index + 1}`);
-      });
-    } catch (error) {
-      console.error(
-        `Error in scale animation setup for element ${index + 1}:`,
-        error,
-      );
-    }
+    // Use event listeners to play/reverse the timeline
+    element.addEventListener("mouseenter", () => hoverTl.play());
+    element.addEventListener("mouseleave", () => hoverTl.reverse());
   });
 });
 
