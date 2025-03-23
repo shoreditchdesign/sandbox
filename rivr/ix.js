@@ -230,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function initializeAccordions() {
     const toggles = document.querySelectorAll("[data-faq-toggle]");
-    console.log("Initializing", toggles.length, "accordions");
 
     toggles.forEach((toggle, index) => {
       // Get drawer element
@@ -251,8 +250,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Add data attribute to link toggle with drawer
         toggle.setAttribute("data-drawer-id", drawerId);
-
-        console.log("Stored height for accordion", index, ":", height, "px");
       }
 
       // Add click event listener
@@ -269,8 +266,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Animate height
     drawer.style.height = drawerHeights[drawerId] + "px";
-
-    console.log("Opened accordion with drawer ID:", drawerId);
   }
 
   function closeAccordion(toggle) {
@@ -281,18 +276,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Animate height back to 0
     drawer.style.height = "0px";
-
-    console.log(
-      "Closed accordion with drawer ID:",
-      toggle.getAttribute("data-drawer-id"),
-    );
   }
 
   function handleAccordionClick(event) {
     const toggle = event.currentTarget;
     const toggleState = toggle.getAttribute("data-toggle-state");
-
-    console.log("Accordion clicked, current state:", toggleState);
 
     if (toggleState === "closed") {
       // Close all other accordions in all components
@@ -312,8 +300,6 @@ document.addEventListener("DOMContentLoaded", function () {
       '[data-faq-toggle][data-toggle-state="open"]',
     );
 
-    console.log("Found", allOpenToggles.length, "open accordions to close");
-
     allOpenToggles.forEach((toggle) => {
       if (toggle !== currentToggle) {
         closeAccordion(toggle);
@@ -328,20 +314,17 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", () => {
   // Find all elements with data-blog-share attribute
   const shareElements = document.querySelectorAll("[data-blog-share]");
-  console.log("Found share elements:", shareElements.length);
 
   // Add click event listeners to each element
   shareElements.forEach((element) => {
     element.addEventListener("click", function () {
       const shareType = this.getAttribute("data-blog-share");
-      console.log("Share type clicked:", shareType);
 
       if (shareType === "copy") {
         // Copy current URL to clipboard
         navigator.clipboard
           .writeText(window.location.href)
           .then(() => {
-            console.log("URL copied to clipboard");
             showToast("Copied to clipboard");
           })
           .catch((err) => {
@@ -350,7 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (shareType === "mail") {
         // Create mailto link and trigger it
         const mailtoUrl = `mailto:?subject=Check this out&body=${window.location.href}`;
-        console.log("Opening mailto link");
         window.location.href = mailtoUrl;
       }
     });
@@ -371,7 +353,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.style.zIndex = "1000";
 
     document.body.appendChild(toast);
-    console.log("Toast notification shown");
 
     // Remove the toast after 3 seconds
     setTimeout(() => {
