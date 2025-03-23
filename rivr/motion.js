@@ -997,28 +997,42 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("GSAP library is not loaded");
     return;
   }
-
+  console.log("Scale hover animations initializing");
   const scaleElements = document.querySelectorAll("[data-motion-scale]");
-
-  if (!scaleElements.length) {
+  if (!scaleElements || scaleElements.length === 0) {
     console.log("No elements found with data-motion-scale attribute");
     return;
   }
-
-  scaleElements.forEach((element) => {
-    // Create hover timeline that's paused initially
-    const hoverTl = gsap.timeline({ paused: true });
-
-    // Add the scale animation to the timeline
-    hoverTl.to(element, {
-      scale: 1.05,
-      duration: 0.6,
-      ease: "power2.inOut",
-    });
-
-    // Use event listeners to play/reverse the timeline
-    element.addEventListener("mouseenter", () => hoverTl.play());
-    element.addEventListener("mouseleave", () => hoverTl.reverse());
+  console.log(`Found ${scaleElements.length} scale elements to animate`);
+  scaleElements.forEach((element, index) => {
+    try {
+      // Use simple tweens instead of quickTo
+      element.addEventListener("mouseenter", () => {
+        console.log(`Mouse entered element ${index + 1}`);
+        gsap.to(element, {
+          scale: 1.05,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onComplete: () =>
+            console.log(`Scale up completed for element ${index + 1}`),
+        });
+      });
+      element.addEventListener("mouseleave", () => {
+        console.log(`Mouse left element ${index + 1}`);
+        gsap.to(element, {
+          scale: 1,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onComplete: () =>
+            console.log(`Scale down completed for element ${index + 1}`),
+        });
+      });
+    } catch (error) {
+      console.error(
+        `Error in scale animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
   });
 });
 
