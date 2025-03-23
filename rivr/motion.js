@@ -990,7 +990,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-
 //GSAP for Scale Hover
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {
@@ -1015,6 +1014,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const elementScale = gsap.quickTo(element, "scale", {
         duration: 0.6,
         ease: "power2.inOut",
+        onComplete: () => {
+          console.log(
+            `Element ${index + 1} scale animation completed successfully`,
+          );
+        },
       });
 
       // Set initial scale
@@ -1022,11 +1026,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Add hover event listeners
       element.addEventListener("mouseenter", () => {
+        console.log(`Mouse entered element ${index + 1}`);
         elementScale(1.05);
         console.log(`Scale up triggered for element ${index + 1}`);
       });
 
       element.addEventListener("mouseleave", () => {
+        console.log(`Mouse left element ${index + 1}`);
         elementScale(1);
         console.log(`Scale down triggered for element ${index + 1}`);
       });
