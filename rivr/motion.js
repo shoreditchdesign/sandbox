@@ -366,7 +366,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
-
 //GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -440,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function () {
               height: finalHeight,
               opacity: 1,
               duration: 1.2,
-              ease: "power2.out",
+              ease: "power2.inOut",
             });
           },
         });
