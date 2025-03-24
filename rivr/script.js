@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Block rich text elements from aniamting
+//Animation Blockers
 document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Inject Blog Call-to-action banner
+//Banner Injection
 document.addEventListener("DOMContentLoaded", function () {
   // Find all parent elements with class w-richtext
   const richTextElements = document.querySelectorAll(".w-richtext");
