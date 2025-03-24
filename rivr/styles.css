@@ -31,3 +31,21 @@
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
+
+.c-cookie_c-prefs_content {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.c-cookie_c-prefs_content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.c-cookie_c-prefs_content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.c-cookie_c-prefs_content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
