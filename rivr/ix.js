@@ -1,15 +1,31 @@
 //Navigation Bar Drawer (Mobile)
+//Navigation Bar Drawer (Mobile)
 document
   .querySelector('[data-nav-element="menu"]')
   .addEventListener("click", () => {
     const navbar = document.querySelector('[data-nav-element="navbar"]');
     const currentState = navbar.getAttribute("data-nav-state");
-    navbar.setAttribute(
-      "data-nav-state",
-      currentState === "open" ? "closed" : "open",
-    );
+    const newState = currentState === "open" ? "closed" : "open";
+    navbar.setAttribute("data-nav-state", newState);
+
+    // Handle dropdown visibility based on navbar state
+    const dropdowns = navbar.querySelectorAll('[data-nav-element="dropdown"]');
+    dropdowns.forEach((dropdown) => {
+      dropdown.style.display = newState === "closed" ? "none" : "flex";
+    });
   });
 
+// Initial state setup for dropdowns
+document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.querySelector('[data-nav-element="navbar"]');
+  if (navbar && navbar.getAttribute("data-nav-state") === "closed") {
+    const dropdowns = navbar.querySelectorAll('[data-nav-element="dropdown"]');
+    console.log(`Initial setup: hiding ${dropdowns.length} dropdowns`);
+    dropdowns.forEach((dropdown) => {
+      dropdown.style.display = "none";
+    });
+  }
+});
 //Navigation Bar Dropdown (Desktop)
 document.addEventListener("DOMContentLoaded", () => {
   // Cache initial values
