@@ -182,3 +182,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//Inject Blog Call-to-action banner
+document.addEventListener("DOMContentLoaded", function () {
+  // Find all parent elements with class w-richtext
+  const richTextElements = document.querySelectorAll(".w-richtext");
+
+  richTextElements.forEach(function (parent) {
+    // Look for paragraphs inside each rich text element
+    const paragraphs = parent.querySelectorAll("p");
+
+    paragraphs.forEach(function (paragraph) {
+      // Check if paragraph contains exactly "{{banner}}"
+      if (paragraph.textContent.trim() === "{{banner}}") {
+        // Create new banner element
+        const bannerElement = document.createElement("div");
+        bannerElement.setAttribute("data-blog-banner", "");
+
+        // Insert the new banner element before the paragraph
+        parent.insertBefore(bannerElement, paragraph);
+
+        // Remove the original paragraph
+        paragraph.remove();
+      }
+    });
+  });
+});
