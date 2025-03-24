@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Navigation Bar Disable Scroll
-// Wait for DOM to be fully loaded before initializing
 document.addEventListener("DOMContentLoaded", () => {
   // Select necessary elements
   const menuButton = document.querySelector('[data-nav-element="menu"]');
