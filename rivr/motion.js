@@ -232,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards
+/*
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     // Check if required libraries exist
@@ -373,6 +374,141 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
+*/
+//GSAP for Cards
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    // Check if required libraries exist
+    if (typeof gsap === "undefined") {
+      console.error("GSAP is not loaded.");
+      return;
+    }
+
+    // Check if desktop (screen width >= 992px)
+    const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
+    // Only run on desktop
+    if (!isDesktop()) {
+      console.log("Card hover animations disabled on mobile");
+      return;
+    }
+
+    // Set up hover interactions for cards
+    document.querySelectorAll("[data-hover-card]").forEach((card) => {
+      // Get associated elements
+      const textElements = card.querySelectorAll("[data-hover-text]");
+      const bgElement = card.querySelector("[data-hover-bg]");
+      const arrowElement = card.querySelector("[data-hover-arrow]");
+
+      // Skip if required elements are missing
+      if (!bgElement || !arrowElement) {
+        console.warn(
+          `Card ${card.id || "unnamed"} is missing required elements`,
+        );
+        return;
+      }
+
+      // Store initial and target heights
+      const parentHeight = card.parentElement.offsetHeight;
+      const initialHeight = parentHeight * 0.7; // 70% of parent height
+      const targetHeight = parentHeight; // 100% of parent height
+
+      // Set initial height
+      gsap.set(card, { height: initialHeight, overflow: "hidden" });
+
+      // Create quickTo animations for smooth transitions
+      const arrowOpacity = gsap.quickTo(arrowElement, "opacity", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      const bgOpacity = gsap.quickTo(bgElement, "opacity", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      const cardHeight = gsap.quickTo(card, "height", {
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+
+      // Store initial offsets for each text element
+      const textOffsets = new Map();
+      textElements.forEach((textElement) => {
+        // Store the initial offset height
+        textOffsets.set(textElement, textElement.offsetHeight);
+
+        // Set initial state with text visible
+        gsap.set(textElement, { y: 0, opacity: 1 });
+      });
+
+      // Add hover event listeners
+      card.addEventListener("mouseenter", () => {
+        card.classList.add("active");
+        arrowOpacity(1);
+        bgOpacity(1);
+        cardHeight(targetHeight);
+
+        // Animate each text element
+        textElements.forEach((textElement) => {
+          const offset = textOffsets.get(textElement);
+          gsap.to(textElement, {
+            y: offset * 0.2, // Move down 20% of the element's height
+            duration: 0.3,
+            ease: "power2.inOut",
+          });
+        });
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.classList.remove("active");
+        arrowOpacity(0);
+        bgOpacity(0);
+        cardHeight(initialHeight);
+
+        // Return text elements to original position
+        textElements.forEach((textElement) => {
+          gsap.to(textElement, {
+            y: 0,
+            duration: 0.3,
+            ease: "power2.inOut",
+          });
+        });
+      });
+
+      // Set initial properties
+      gsap.set(arrowElement, { opacity: 0 });
+      gsap.set(bgElement, { opacity: 0 });
+    });
+
+    // Listen for window resize to recalculate heights and offsets
+    window.addEventListener(
+      "resize",
+      _.debounce(() => {
+        // Only update if we're still on desktop
+        if (isDesktop()) {
+          document.querySelectorAll("[data-hover-card]").forEach((card) => {
+            const parentHeight = card.parentElement.offsetHeight;
+            const initialHeight = parentHeight * 0.7;
+            const textElements = card.querySelectorAll("[data-hover-text]");
+
+            // Update stored offset values
+            textElements.forEach((textElement) => {
+              const newOffset = textElement.offsetHeight;
+              textElement.dataset.offset = newOffset;
+            });
+
+            // Check if card is currently hovered/active
+            if (card.classList.contains("active")) {
+              gsap.set(card, { height: parentHeight });
+            } else {
+              gsap.set(card, { height: initialHeight });
+            }
+          });
+        }
+      }, 250),
+    );
+  }, 0);
+});
+
 //GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
