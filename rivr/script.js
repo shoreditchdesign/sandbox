@@ -159,3 +159,29 @@ document.addEventListener("DOMContentLoaded", function () {
     templateCell.remove();
   });
 });
+
+//Block rich text elements from aniamting
+document.addEventListener("DOMContentLoaded", function () {
+  const richTextElements = document.querySelectorAll(".w-richtext");
+
+  if (richTextElements.length === 0) {
+    console.log("No elements with class .w-richtext found");
+    return;
+  }
+
+  richTextElements.forEach(function (richText) {
+    const paragraphs = richText.querySelectorAll("p");
+
+    if (paragraphs.length === 0) {
+      console.log("No paragraph elements found in a .w-richtext element");
+    } else {
+      paragraphs.forEach(function (paragraph) {
+        paragraph.setAttribute("data-stagger-block", "");
+      });
+
+      console.log(
+        `Added data-stagger-block to ${paragraphs.length} paragraphs in a .w-richtext element`,
+      );
+    }
+  });
+});
