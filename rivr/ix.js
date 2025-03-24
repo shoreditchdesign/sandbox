@@ -92,6 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const newState = currentState === "open" ? "closed" : "open";
       toggle.setAttribute("data-toggle-state", newState);
 
+      // Toggle display before animating height
+      if (newState === "open") {
+        dropdown.style.display = "flex";
+      }
+
       // Get the total height needed
       const nestHeight = nest.offsetHeight;
 
@@ -104,6 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
         dropdown.style.height = `${nestHeight}px`;
       } else {
         dropdown.style.height = "0px";
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+          if (toggle.getAttribute("data-toggle-state") === "closed") {
+            dropdown.style.display = "none";
+          }
+        }, 300); // Match the transition duration
       }
     });
 });
