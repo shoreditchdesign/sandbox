@@ -119,8 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-//Navigation Bar Disable Scroll
-
 //Swiper Component
 document.addEventListener("DOMContentLoaded", function () {
   const component = document.getElementById("swiper-component");
