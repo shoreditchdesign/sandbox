@@ -232,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards
+//GSAP for Cards
 /*
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
@@ -375,10 +376,10 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 0);
 });
 */
-//GSAP for Cards
+
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
-    // Check if required libraries exist
+    // Check if GSAP library exists
     if (typeof gsap === "undefined") {
       console.error("GSAP is not loaded.");
       return;
@@ -408,12 +409,12 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Store initial and target heights
+      // Store initial and target heights for card
       const parentHeight = card.parentElement.offsetHeight;
       const initialHeight = parentHeight * 0.7; // 70% of parent height
       const targetHeight = parentHeight; // 100% of parent height
 
-      // Set initial height
+      // Set initial card height
       gsap.set(card, { height: initialHeight, overflow: "hidden" });
 
       // Create quickTo animations for smooth transitions
@@ -430,14 +431,17 @@ window.addEventListener("DOMContentLoaded", () => {
         ease: "power2.inOut",
       });
 
-      // Store initial offsets for each text element
+      // Store offset heights for each text element
       const textOffsets = new Map();
-      textElements.forEach((textElement) => {
-        // Store the initial offset height
-        textOffsets.set(textElement, textElement.offsetHeight);
 
-        // Set initial state with text visible
-        gsap.set(textElement, { y: 0, opacity: 1 });
+      // Store initial offset height for each text element
+      textElements.forEach((textElement) => {
+        // Store the initial offset as a data attribute
+        const offsetHeight = 20; // 20px offset, same as previous version
+        textOffsets.set(textElement, offsetHeight);
+
+        // Set initial position
+        gsap.set(textElement, { y: 0 });
       });
 
       // Add hover event listeners
@@ -447,11 +451,11 @@ window.addEventListener("DOMContentLoaded", () => {
         bgOpacity(1);
         cardHeight(targetHeight);
 
-        // Animate each text element
+        // Animate text elements
         textElements.forEach((textElement) => {
           const offset = textOffsets.get(textElement);
           gsap.to(textElement, {
-            y: offset * 0.2, // Move down 20% of the element's height
+            y: offset,
             duration: 0.3,
             ease: "power2.inOut",
           });
@@ -464,7 +468,7 @@ window.addEventListener("DOMContentLoaded", () => {
         bgOpacity(0);
         cardHeight(initialHeight);
 
-        // Return text elements to original position
+        // Reset text elements
         textElements.forEach((textElement) => {
           gsap.to(textElement, {
             y: 0,
@@ -479,7 +483,7 @@ window.addEventListener("DOMContentLoaded", () => {
       gsap.set(bgElement, { opacity: 0 });
     });
 
-    // Listen for window resize to recalculate heights and offsets
+    // Listen for window resize to recalculate heights
     window.addEventListener(
       "resize",
       _.debounce(() => {
@@ -488,13 +492,6 @@ window.addEventListener("DOMContentLoaded", () => {
           document.querySelectorAll("[data-hover-card]").forEach((card) => {
             const parentHeight = card.parentElement.offsetHeight;
             const initialHeight = parentHeight * 0.7;
-            const textElements = card.querySelectorAll("[data-hover-text]");
-
-            // Update stored offset values
-            textElements.forEach((textElement) => {
-              const newOffset = textElement.offsetHeight;
-              textElement.dataset.offset = newOffset;
-            });
 
             // Check if card is currently hovered/active
             if (card.classList.contains("active")) {
