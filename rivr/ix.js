@@ -1,31 +1,15 @@
 //Navigation Bar Drawer (Mobile)
-//Navigation Bar Drawer (Mobile)
 document
   .querySelector('[data-nav-element="menu"]')
   .addEventListener("click", () => {
     const navbar = document.querySelector('[data-nav-element="navbar"]');
     const currentState = navbar.getAttribute("data-nav-state");
-    const newState = currentState === "open" ? "closed" : "open";
-    navbar.setAttribute("data-nav-state", newState);
-
-    // Handle dropdown visibility based on navbar state
-    const dropdowns = navbar.querySelectorAll('[data-nav-element="dropdown"]');
-    dropdowns.forEach((dropdown) => {
-      dropdown.style.display = newState === "closed" ? "none" : "flex";
-    });
+    navbar.setAttribute(
+      "data-nav-state",
+      currentState === "open" ? "closed" : "open",
+    );
   });
 
-// Initial state setup for dropdowns
-document.addEventListener("DOMContentLoaded", () => {
-  const navbar = document.querySelector('[data-nav-element="navbar"]');
-  if (navbar && navbar.getAttribute("data-nav-state") === "closed") {
-    const dropdowns = navbar.querySelectorAll('[data-nav-element="dropdown"]');
-    console.log(`Initial setup: hiding ${dropdowns.length} dropdowns`);
-    dropdowns.forEach((dropdown) => {
-      dropdown.style.display = "none";
-    });
-  }
-});
 //Navigation Bar Dropdown (Desktop)
 document.addEventListener("DOMContentLoaded", () => {
   // Cache initial values
@@ -133,6 +117,86 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300); // Match the transition duration
       }
     });
+});
+
+//Navigation Bar Disable Scroll
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener("DOMContentLoaded", () => {
+  // Select necessary elements
+  const menuButton = document.querySelector('[data-nav-element="menu"]');
+  const navbar = document.querySelector('[data-nav-element="navbar"]');
+
+  // Function to check if device is non-desktop (mobile or tablet)
+  function isNonDesktop() {
+    return window.innerWidth <= 991; // Common breakpoint for tablets and below
+  }
+
+  // Function to toggle scroll lock
+  function toggleScrollLock() {
+    console.log("Toggle scroll lock called");
+
+    // Only apply scroll lock on non-desktop devices
+    if (!isNonDesktop()) {
+      console.log("Desktop detected, not applying scroll lock");
+      return;
+    }
+
+    const navState = navbar.getAttribute("data-nav-state");
+
+    if (navState === "open") {
+      // Disable body scrolling when navbar is open
+      document.body.style.overflow = "hidden";
+      console.log("Body scroll disabled (mobile/tablet)");
+    } else {
+      // Enable body scrolling when navbar is closed
+      document.body.style.overflow = "";
+      console.log("Body scroll enabled (mobile/tablet)");
+    }
+  }
+
+  // Function to toggle navbar state
+  function toggleNavbar() {
+    console.log("Menu button clicked");
+
+    const currentState = navbar.getAttribute("data-nav-state");
+    const newState = currentState === "open" ? "closed" : "open";
+
+    // Update navbar state
+    navbar.setAttribute("data-nav-state", newState);
+    console.log(`Navbar state set to: ${newState}`);
+
+    // Apply scroll lock based on new state
+    toggleScrollLock();
+  }
+
+  // Add click event listener to menu button
+  menuButton.addEventListener("click", toggleNavbar);
+
+  // Initialize scroll state based on current navbar state on page load
+  toggleScrollLock();
+
+  // Prevent scroll propagation within the navbar when open
+  const navbarDrawer = document.querySelector('[data-nav-element="drawer"]');
+  if (navbarDrawer) {
+    navbarDrawer.addEventListener("wheel", (e) => {
+      if (isNonDesktop() && navbar.getAttribute("data-nav-state") === "open") {
+        // Allow scrolling within the navbar drawer on mobile/tablet
+        e.stopPropagation();
+      }
+    });
+  }
+
+  // Handle window resize to manage scroll state appropriately
+  window.addEventListener("resize", () => {
+    // If we're resizing to desktop and navbar is open, ensure body scroll is enabled
+    if (!isNonDesktop() && navbar.getAttribute("data-nav-state") === "open") {
+      document.body.style.overflow = "";
+      console.log("Resized to desktop, enabling body scroll");
+    } else if (isNonDesktop()) {
+      // Re-apply appropriate scroll state when resizing to mobile
+      toggleScrollLock();
+    }
+  });
 });
 
 //Swiper Component
