@@ -58,48 +58,123 @@ if (window.innerWidth >= 992) {
 }
 
 //Table of Contents
-// Try this modified event listener for your click handler
-newCell.addEventListener("click", (e) => {
-  e.preventDefault();
-  console.log("Scroll click triggered for ID:", id);
+document.addEventListener("DOMContentLoaded", function () {
+  // Part 1: Add data-stagger-block to children of data-toc-body elements
+  const tocBodyElements = document.querySelectorAll("[data-toc-body]");
 
-  const targetH2 = document.getElementById(id);
-  if (targetH2) {
-    console.log("Target element found:", targetH2);
-
-    // Option 1: Use scrollIntoView instead
-    targetH2.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-
-    // Apply offset using a timeout to ensure scrolling has started
-    setTimeout(() => {
-      console.log("Applying offset adjustment");
-      window.scrollBy({
-        top: -200,
-        behavior: "smooth",
-      });
-    }, 10);
-
-    /*
-    // Option 2: Alternative approach if Option 1 doesn't work
-    // Use requestAnimationFrame to ensure calculations happen at the right time
-    requestAnimationFrame(() => {
-      const offset = 200;
-      const targetPosition = targetH2.getBoundingClientRect().top + window.pageYOffset - offset;
-      console.log("Calculated position:", targetPosition);
-
-      window.scrollTo({
-        top: targetPosition,
-        behavior: "smooth"
-      });
-    });
-    */
+  if (tocBodyElements.length === 0) {
+    console.log("No elements with [data-toc-body] found");
   } else {
-    console.error("Target element not found for ID:", id);
+    tocBodyElements.forEach(function (tocBody) {
+      const childElements = tocBody.children;
+
+      if (childElements.length === 0) {
+        console.log("No children found for a data-toc-body element");
+      } else {
+        Array.from(childElements).forEach(function (child) {
+          child.setAttribute("data-stagger-block", "");
+          console.log("Added data-stagger-block to element:", child);
+        });
+
+        console.log(
+          `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
+        );
+      }
+    });
   }
-});
+
+  // Part 2: Create table of contents
+  const richTextBodies = document.querySelectorAll("[data-toc-body]");
+  let allH2s = [];
+
+  richTextBodies.forEach((body) => {
+    const h2s = body.querySelectorAll("h2");
+    allH2s = [...allH2s, ...h2s];
+  });
+
+  // If no H2s are found, remove template cells from all TOC wrappers
+  if (allH2s.length === 0) {
+    const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+    tocWrappers.forEach((tocWrapper) => {
+      const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+      if (templateCell) {
+        templateCell.remove();
+      }
+      tocWrapper.style.display = "none";
+    });
+    return; // Exit early if no H2s found
+  }
+
+  allH2s.forEach((h2, index) => {
+    const id = `id-toc-link-${index + 1}`;
+    h2.setAttribute("id", id);
+  });
+
+  const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+
+  tocWrappers.forEach((tocWrapper) => {
+    const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+
+    if (!templateCell || allH2s.length === 0) {
+      tocWrapper.style.display = "none";
+      return;
+    }
+
+    const existingCells = tocWrapper.querySelectorAll("[data-toc-cell]");
+    existingCells.forEach((cell, index) => {
+      if (index !== 0) cell.remove();
+    });
+
+    allH2s.forEach((h2, index) => {
+      const newCell = templateCell.cloneNode(true);
+      const textElement = newCell.querySelector("[data-toc-text]");
+      const id = `id-toc-link-${index + 1}`;
+
+      // Store the id as a data attribute instead of href
+      newCell.setAttribute("data-toc-target", id);
+      // Remove href to prevent default behavior
+      newCell.removeAttribute("href");
+
+      if (textElement) {
+        textElement.textContent = h2.textContent;
+      }
+
+      newCell.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetH2 = document.getElementById(id);
+        if (targetH2) {
+          const offset = 200;
+          const targetPosition =
+            targetH2.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: "smooth",
+          });
+        }
+      });
+
+      // And replace just that part with this:
+      newCell.addEventListener("click", (e) => {
+        e.preventDefault();
+        console.log("Scroll click triggered for ID:", id);
+
+        const targetH2 = document.getElementById(id);
+        if (targetH2) {
+          console.log("Target element found:", targetH2);
+
+          // Simple fix: use requestAnimationFrame
+          requestAnimationFrame(() => {
+            const offset = 200;
+            const targetPosition = targetH2.getBoundingClientRect().top + window.pageYOffset - offset;
+            console.log("Scrolling to position:", targetPosition);
+
+            window.scrollTo({
+              top: targetPosition,
+              behavior: "smooth"
+            });
+          });
+        }
+      });
 //Block rich text elements from aniamting
 document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
