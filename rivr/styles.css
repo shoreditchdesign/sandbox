@@ -49,3 +49,21 @@
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
 }
+
+.d-pr5_right {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.d-pr5_right::-webkit-scrollbar {
+    width: 8px;
+}
+
+.d-pr5_right::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.d-pr5_right::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
