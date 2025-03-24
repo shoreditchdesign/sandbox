@@ -234,9 +234,9 @@ document.addEventListener("DOMContentLoaded", function () {
 //GSAP for Cards
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
-    // Check if GSAP library exists
-    if (typeof gsap === "undefined") {
-      console.error("GSAP is not loaded.");
+    // Check if required libraries exist
+    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
+      console.error("GSAP or SplitType is not loaded.");
       return;
     }
 
@@ -248,6 +248,21 @@ window.addEventListener("DOMContentLoaded", () => {
       console.log("Card hover animations disabled on mobile");
       return;
     }
+
+    // Set up text splitting for hover hide effect
+    const splitTextLines = new SplitType("[data-hover-text]", {
+      types: "lines", // Explicitly specify ONLY lines
+      tagName: "span",
+    });
+
+    // Create wrappers for each line - these act as masks
+    document.querySelectorAll("[data-hover-text] .line").forEach((line) => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("u-line-mask");
+      wrapper.style.overflow = "hidden"; // Ensure the mask hides overflowing content
+      line.parentNode.insertBefore(wrapper, line);
+      wrapper.appendChild(line);
+    });
 
     // Set up hover interactions for cards
     document.querySelectorAll("[data-hover-card]").forEach((card) => {
@@ -264,12 +279,12 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Store initial and target heights for card
+      // Store initial and target heights
       const parentHeight = card.parentElement.offsetHeight;
       const initialHeight = parentHeight * 0.7; // 70% of parent height
       const targetHeight = parentHeight; // 100% of parent height
 
-      // Set initial card height
+      // Set initial height
       gsap.set(card, { height: initialHeight, overflow: "hidden" });
 
       // Create quickTo animations for smooth transitions
@@ -286,17 +301,18 @@ window.addEventListener("DOMContentLoaded", () => {
         ease: "power2.inOut",
       });
 
-      // Store offset heights for each text element
-      const textOffsets = new Map();
+      // Create text animation timeline for each text element
+      const textTimelines = [];
 
-      // Store initial offset height for each text element
       textElements.forEach((textElement) => {
-        // Store the initial offset as a data attribute
-        const offsetHeight = 20; // 20px offset, same as previous version
-        textOffsets.set(textElement, offsetHeight);
-
-        // Set initial position
-        gsap.set(textElement, { y: 0 });
+        const tl = gsap.timeline({ paused: true });
+        tl.to(textElement.querySelectorAll(".line"), {
+          y: "20px", // Move down to hide behind mask
+          duration: 0.3,
+          ease: "power2.inOut",
+          stagger: 0.05,
+        });
+        textTimelines.push(tl);
       });
 
       // Add hover event listeners
@@ -305,16 +321,7 @@ window.addEventListener("DOMContentLoaded", () => {
         arrowOpacity(1);
         bgOpacity(1);
         cardHeight(targetHeight);
-
-        // Animate text elements
-        textElements.forEach((textElement) => {
-          const offset = textOffsets.get(textElement);
-          gsap.to(textElement, {
-            y: offset,
-            duration: 0.3,
-            ease: "power2.inOut",
-          });
-        });
+        textTimelines.forEach((tl) => tl.play());
       });
 
       card.addEventListener("mouseleave", () => {
@@ -322,21 +329,27 @@ window.addEventListener("DOMContentLoaded", () => {
         arrowOpacity(0);
         bgOpacity(0);
         cardHeight(initialHeight);
-
-        // Reset text elements
-        textElements.forEach((textElement) => {
-          gsap.to(textElement, {
-            y: 0,
-            duration: 0.3,
-            ease: "power2.inOut",
-          });
-        });
+        textTimelines.forEach((tl) => tl.reverse());
       });
 
       // Set initial properties
       gsap.set(arrowElement, { opacity: 0 });
       gsap.set(bgElement, { opacity: 0 });
+
+      // Handle text elements properly (textElements is a NodeList, not a single element)
+      textElements.forEach((textElement) => {
+        gsap.set(textElement.querySelectorAll(".line"), { y: 0, opacity: 1 });
+      });
     });
+
+    // Function to revert split if needed (for cleanup)
+    function revertSplitText() {
+      document.querySelectorAll("[data-hover-text] .line").forEach((line) => {
+        const wrapper = line.parentNode;
+        wrapper.replaceWith(...wrapper.childNodes);
+      });
+      splitTextLines.revert();
+    }
 
     // Listen for window resize to recalculate heights
     window.addEventListener(
@@ -360,7 +373,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
-
 //GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
