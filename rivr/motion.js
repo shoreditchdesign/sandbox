@@ -5,8 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Only run on desktop
   if (isDesktop()) {
+    // Select navbars that don't have the blocked attribute
+    const navbars = document.querySelectorAll(
+      '[data-nav-element="navbar"]:not([data-nav-block="blocked"])',
+    );
+
+    if (navbars.length === 0) return;
+
     const showAnim = gsap
-      .from(".c-navbar", {
+      .from(navbars, {
         yPercent: -100,
         paused: true,
         duration: 0.2,
@@ -22,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setTimeout(() => {
-      gsap.set(".c-navbar", { yPercent: 0 });
+      gsap.set(navbars, { yPercent: 0 });
     }, 10);
   }
 });
