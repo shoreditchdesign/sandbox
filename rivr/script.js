@@ -177,10 +177,11 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       paragraphs.forEach(function (paragraph) {
         paragraph.setAttribute("data-stagger-block", "");
+        paragraph.setAttribute("data-motion-element", "single");
       });
 
       console.log(
-        `Added data-stagger-block to ${paragraphs.length} paragraphs in a .w-richtext element`,
+        `Added data-stagger-block and data-motion-element=single to ${paragraphs.length} paragraphs in a .w-richtext element`,
       );
     }
   });
