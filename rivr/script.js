@@ -92,6 +92,19 @@ document.addEventListener("DOMContentLoaded", function () {
     allH2s = [...allH2s, ...h2s];
   });
 
+  // If no H2s are found, remove template cells from all TOC wrappers
+  if (allH2s.length === 0) {
+    const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+    tocWrappers.forEach((tocWrapper) => {
+      const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+      if (templateCell) {
+        templateCell.remove();
+      }
+      tocWrapper.style.display = "none";
+    });
+    return; // Exit early if no H2s found
+  }
+
   allH2s.forEach((h2, index) => {
     const id = `id-toc-link-${index + 1}`;
     h2.setAttribute("id", id);
