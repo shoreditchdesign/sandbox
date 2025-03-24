@@ -232,8 +232,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Cards
-//GSAP for Cards
-/*
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     // Check if required libraries exist
@@ -375,8 +373,8 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
-*/
 
+/*
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     // Check if GSAP library exists
@@ -505,6 +503,7 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
+*/
 
 //GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
