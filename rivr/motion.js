@@ -35,19 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Headings
-window.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    // Add data attribute to target elements - MODIFIED to exclude elements with data-stagger-block
-    document.querySelectorAll("h1, h2, p").forEach((element) => {
-      // Only apply to elements that don't have the data-stagger-block attribute
-      if (!element.hasAttribute("data-stagger-block")) {
-        element.setAttribute("data-stagger-fade", "");
-      }
-    });
+
     // Split text by LINES ONLY
     const splitLines = new SplitType("[data-stagger-fade]", {
       types: "lines", // Explicitly specify ONLY lines (not words or chars)
@@ -61,6 +55,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
+
     // Create animations
     document.querySelectorAll("[data-stagger-fade]").forEach((element) => {
       const tl = gsap.timeline({ paused: true });
@@ -79,6 +74,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         once: true,
       });
     });
+
     // Function to revert split
     function splitRevert() {
       document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
@@ -87,6 +83,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       });
       splitLines.revert();
     }
+
     // Ensure elements are visible
     gsap.set("[data-stagger-fade]", { opacity: 1 });
   }, 0);
@@ -373,6 +370,7 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }, 0);
 });
+
 //GSAP for Images
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
