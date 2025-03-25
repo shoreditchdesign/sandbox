@@ -1,3 +1,5 @@
+console.log("added head.js");
+
 //Setting Stagger Attributes
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
