@@ -19,56 +19,85 @@ document.addEventListener("DOMContentLoaded", () => {
   // Desktop check function
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
 
-  document
-    .querySelector('[data-nav-element="toggle"]')
-    .addEventListener("click", () => {
-      // Only run on desktop
-      if (!isDesktop()) return;
+  const toggleElement = document.querySelector('[data-nav-element="toggle"]');
 
-      // Get elements
-      const toggle = document.querySelector('[data-nav-element="toggle"]');
-      let wrap =
-        document.querySelector('[data-nav-element="wrap"]') ||
-        document.querySelector('[data-nav-element="navbar"]') ||
-        document.querySelector(".c-navbar");
-      const drawer = document.querySelector('[data-nav-element="dropdown"]');
+  // Function to handle opening the dropdown
+  const openDropdown = () => {
+    // Only run on desktop
+    if (!isDesktop()) return;
 
-      // Store initial values on first click
-      if (initialWrapHeight === null) {
-        initialWrapHeight = wrap.offsetHeight;
-        originalOverflow = wrap.style.overflow || "";
-      }
+    // Get elements
+    const toggle = document.querySelector('[data-nav-element="toggle"]');
+    let wrap =
+      document.querySelector('[data-nav-element="wrap"]') ||
+      document.querySelector('[data-nav-element="navbar"]') ||
+      document.querySelector(".c-navbar");
+    const drawer = document.querySelector('[data-nav-element="dropdown"]');
 
-      // Toggle state
-      const currentState = toggle.getAttribute("data-toggle-state");
-      const newState = currentState === "open" ? "closed" : "open";
-      toggle.setAttribute("data-toggle-state", newState);
+    // Store initial values on first hover
+    if (initialWrapHeight === null) {
+      initialWrapHeight = wrap.offsetHeight;
+      originalOverflow = wrap.style.overflow || "";
+    }
 
-      // Set up animation
-      const drawerHeight = drawer.offsetHeight;
-      wrap.style.overflow = "hidden";
+    // Set state to open
+    toggle.setAttribute("data-toggle-state", "open");
 
-      // Force initial height before transition
-      wrap.style.height = initialWrapHeight + "px";
+    // Set up animation
+    const drawerHeight = drawer.offsetHeight;
+    wrap.style.overflow = "hidden";
 
-      // Force reflow to ensure initial height is applied
-      void wrap.offsetHeight;
+    // Force initial height before transition
+    wrap.style.height = initialWrapHeight + "px";
 
-      // Now add transition
-      wrap.style.transition = "height 0.3s ease";
+    // Force reflow to ensure initial height is applied
+    void wrap.offsetHeight;
 
-      // Set target height based on state
-      if (newState === "open") {
-        wrap.style.height = initialWrapHeight + drawerHeight + "px";
-      } else {
-        wrap.style.height = initialWrapHeight + "px";
-      }
+    // Now add transition
+    wrap.style.transition = "height 0.3s ease";
 
-      // Restore overflow after transition
-      setTimeout(() => {
-        wrap.style.overflow = originalOverflow;
-      }, 350);
-    });
+    // Set target height for open state
+    wrap.style.height = initialWrapHeight + drawerHeight + "px";
+
+    // Restore overflow after transition
+    setTimeout(() => {
+      wrap.style.overflow = originalOverflow;
+    }, 350);
+  };
+
+  // Function to handle closing the dropdown
+  const closeDropdown = () => {
+    // Only run on desktop
+    if (!isDesktop()) return;
+
+    // Get elements
+    const toggle = document.querySelector('[data-nav-element="toggle"]');
+    let wrap =
+      document.querySelector('[data-nav-element="wrap"]') ||
+      document.querySelector('[data-nav-element="navbar"]') ||
+      document.querySelector(".c-navbar");
+
+    // Set state to closed
+    toggle.setAttribute("data-toggle-state", "closed");
+
+    // Set up animation
+    wrap.style.overflow = "hidden";
+    wrap.style.transition = "height 0.3s ease";
+
+    // Set height for closed state
+    wrap.style.height = initialWrapHeight + "px";
+
+    // Restore overflow after transition
+    setTimeout(() => {
+      wrap.style.overflow = originalOverflow;
+    }, 350);
+  };
+
+  // Add hover event listeners
+  if (toggleElement) {
+    toggleElement.addEventListener("mouseenter", openDropdown);
+    toggleElement.addEventListener("mouseleave", closeDropdown);
+  }
 });
 
 // Navigation Bar Dropdown (Mobile)
@@ -371,3 +400,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 });
+
+/*//Navigation Bar Dropdown (Desktop)
+document.addEventListener("DOMContentLoaded", () => {
+  // Cache initial values
+  let initialWrapHeight = null;
+  let originalOverflow = null;
+
+  // Desktop check function
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
+  document
+    .querySelector('[data-nav-element="toggle"]')
+    .addEventListener("click", () => {
+      // Only run on desktop
+      if (!isDesktop()) return;
+
+      // Get elements
+      const toggle = document.querySelector('[data-nav-element="toggle"]');
+      let wrap =
+        document.querySelector('[data-nav-element="wrap"]') ||
+        document.querySelector('[data-nav-element="navbar"]') ||
+        document.querySelector(".c-navbar");
+      const drawer = document.querySelector('[data-nav-element="dropdown"]');
+
+      // Store initial values on first click
+      if (initialWrapHeight === null) {
+        initialWrapHeight = wrap.offsetHeight;
+        originalOverflow = wrap.style.overflow || "";
+      }
+
+      // Toggle state
+      const currentState = toggle.getAttribute("data-toggle-state");
+      const newState = currentState === "open" ? "closed" : "open";
+      toggle.setAttribute("data-toggle-state", newState);
+
+      // Set up animation
+      const drawerHeight = drawer.offsetHeight;
+      wrap.style.overflow = "hidden";
+
+      // Force initial height before transition
+      wrap.style.height = initialWrapHeight + "px";
+
+      // Force reflow to ensure initial height is applied
+      void wrap.offsetHeight;
+
+      // Now add transition
+      wrap.style.transition = "height 0.3s ease";
+
+      // Set target height based on state
+      if (newState === "open") {
+        wrap.style.height = initialWrapHeight + drawerHeight + "px";
+      } else {
+        wrap.style.height = initialWrapHeight + "px";
+      }
+
+      // Restore overflow after transition
+      setTimeout(() => {
+        wrap.style.overflow = originalOverflow;
+      }, 350);
+    });
+}); */
