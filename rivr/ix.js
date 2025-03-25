@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cache initial values
   let initialWrapHeight = null;
   let originalOverflow = null;
+  let closeTimeout = null;
 
   // Desktop check function
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
@@ -25,6 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const openDropdown = () => {
     // Only run on desktop
     if (!isDesktop()) return;
+
+    // Clear any pending close timeout
+    if (closeTimeout) {
+      clearTimeout(closeTimeout);
+      closeTimeout = null;
+    }
 
     // Get elements
     const toggle = document.querySelector('[data-nav-element="toggle"]');
@@ -70,27 +77,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // Only run on desktop
     if (!isDesktop()) return;
 
-    // Get elements
-    const toggle = document.querySelector('[data-nav-element="toggle"]');
-    let wrap =
-      document.querySelector('[data-nav-element="wrap"]') ||
-      document.querySelector('[data-nav-element="navbar"]') ||
-      document.querySelector(".c-navbar");
+    // Set a 300ms delay before starting the close animation
+    closeTimeout = setTimeout(() => {
+      // Get elements
+      const toggle = document.querySelector('[data-nav-element="toggle"]');
+      let wrap =
+        document.querySelector('[data-nav-element="wrap"]') ||
+        document.querySelector('[data-nav-element="navbar"]') ||
+        document.querySelector(".c-navbar");
 
-    // Set state to closed
-    toggle.setAttribute("data-toggle-state", "closed");
+      // Set state to closed
+      toggle.setAttribute("data-toggle-state", "closed");
 
-    // Set up animation
-    wrap.style.overflow = "hidden";
-    wrap.style.transition = "height 0.3s ease";
+      // Set up animation
+      wrap.style.overflow = "hidden";
+      wrap.style.transition = "height 0.3s ease";
 
-    // Set height for closed state
-    wrap.style.height = initialWrapHeight + "px";
+      // Set height for closed state
+      wrap.style.height = initialWrapHeight + "px";
 
-    // Restore overflow after transition
-    setTimeout(() => {
-      wrap.style.overflow = originalOverflow;
-    }, 350);
+      // Restore overflow after transition
+      setTimeout(() => {
+        wrap.style.overflow = originalOverflow;
+      }, 350);
+    }, 300); // 300ms delay before starting close animation
   };
 
   // Add hover event listeners
