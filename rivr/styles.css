@@ -1,3 +1,11 @@
+[data-stagger-fade] {
+    opacity: 0;
+}
+
+html.w-editor [data-stagger-fade] {
+    opacity: 1;
+}
+
 .swiper-prev.is-disabled,
 .swiper-next.is-disabled {
     opacity: 20% !important;
