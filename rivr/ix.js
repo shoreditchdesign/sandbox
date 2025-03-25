@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         wrap.style.overflow = originalOverflow;
       }, 350);
-    }, 500); // 300ms delay before starting close animation
+    }, 300); // 300ms delay before starting close animation
   };
 
   // Add hover event listeners
