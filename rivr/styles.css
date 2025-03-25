@@ -1,4 +1,5 @@
-[data-stagger-fade] {
+[data-stagger-fade],
+html.w-editor [data-motion-element="single"] {
     opacity: 0;
 }
 
