@@ -22,13 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Track scroll position and direction
     let lastScrollTop = 0;
-    const scrollThreshold = 100; // Pixels to scroll before triggering
+    const scrollThreshold = 200; // Pixels to scroll before triggering
     let accumulatedScroll = 0; // Track accumulated scroll in each direction
     let navbarVisible = true;
 
     window.addEventListener("scroll", () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
 
       // Calculate scroll amount since last check
