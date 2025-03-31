@@ -988,7 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const entryTimeline = gsap.timeline({ paused: true });
     entryTimeline.to(block, {
       opacity: 1,
-      duration: 0.8,
+      duration: 0.2,
       ease: "power1.out",
     });
 
@@ -1020,7 +1020,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const exitTimeline = gsap.timeline({ paused: true });
       exitTimeline.to(block, {
         opacity: 0,
-        duration: 0.6,
+        duration: 0.2,
         ease: "power1.in",
       });
 
