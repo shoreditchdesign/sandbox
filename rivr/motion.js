@@ -906,7 +906,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const tl = gsap.timeline({ paused: true });
       tl.to(curtain, {
         height: finalHeight,
-        duration: 1.2,
+        duration: 1.6,
         ease: "power2.out",
       });
 
