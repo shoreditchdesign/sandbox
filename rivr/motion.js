@@ -22,12 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Track scroll position and direction
     let lastScrollTop = 0;
-    let scrollThreshold = 100; // Number of pixels to scroll before triggering
+    let scrollThreshold = 400; // Number of pixels to scroll before triggering
     let navbarVisible = true;
 
     window.addEventListener("scroll", () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
       const scrollDistance = Math.abs(scrollTop - lastScrollTop);
 
