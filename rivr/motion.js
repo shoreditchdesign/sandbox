@@ -20,12 +20,30 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .progress(1);
 
-    ScrollTrigger.create({
-      start: "top top",
-      end: "max",
-      onUpdate: (self) => {
-        self.direction === -1 ? showAnim.play() : showAnim.reverse();
-      },
+    // Track scroll position and direction
+    let lastScrollTop = 0;
+    let scrollThreshold = 100; // Number of pixels to scroll before triggering
+    let navbarVisible = true;
+
+    window.addEventListener("scroll", () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+      const scrollDistance = Math.abs(scrollTop - lastScrollTop);
+
+      // Only trigger when we've scrolled enough distance
+      if (scrollDistance > scrollThreshold) {
+        if (scrollDirection === "down" && navbarVisible) {
+          showAnim.reverse();
+          navbarVisible = false;
+        } else if (scrollDirection === "up" && !navbarVisible) {
+          showAnim.play();
+          navbarVisible = true;
+        }
+
+        // Reset counter after action
+        lastScrollTop = scrollTop;
+      }
     });
 
     setTimeout(() => {
