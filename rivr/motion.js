@@ -22,27 +22,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Track scroll position and direction
     let lastScrollTop = 0;
-    let scrollThreshold = 400; // Number of pixels to scroll before triggering
+    const scrollThreshold = 100; // Pixels to scroll before triggering
+    let accumulatedScroll = 0; // Track accumulated scroll in each direction
     let navbarVisible = true;
 
     window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-      const scrollDistance = Math.abs(scrollTop - lastScrollTop);
 
-      // Only trigger when we've scrolled enough distance
-      if (scrollDistance > scrollThreshold) {
-        if (scrollDirection === "down" && navbarVisible) {
-          showAnim.reverse();
-          navbarVisible = false;
-        } else if (scrollDirection === "up" && !navbarVisible) {
-          showAnim.play();
-          navbarVisible = true;
-        }
+      // Calculate scroll amount since last check
+      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
 
-        // Reset counter after action
-        lastScrollTop = scrollTop;
+      // If direction changed, reset accumulated scroll
+      if (
+        (scrollDirection === "down" && accumulatedScroll < 0) ||
+        (scrollDirection === "up" && accumulatedScroll > 0)
+      ) {
+        accumulatedScroll = 0;
       }
+
+      // Accumulate scroll in the appropriate direction
+      accumulatedScroll +=
+        scrollDirection === "down" ? scrollAmount : -scrollAmount;
+
+      // Check if we've scrolled enough in either direction
+      if (accumulatedScroll > scrollThreshold && navbarVisible) {
+        showAnim.reverse();
+        navbarVisible = false;
+        accumulatedScroll = 0; // Reset after action
+      } else if (accumulatedScroll < -scrollThreshold && !navbarVisible) {
+        showAnim.play();
+        navbarVisible = true;
+        accumulatedScroll = 0; // Reset after action
+      }
+
+      lastScrollTop = scrollTop;
     });
 
     setTimeout(() => {
