@@ -330,19 +330,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function handleAccordionClick(event) {
     const toggle = event.currentTarget;
-    const toggleState = toggle.getAttribute("data-toggle-state");
+    const rightSection = document.querySelector(".d-pr5_right");
+
+    console.log("Right section:", rightSection);
+    console.log("Current scroll position:", rightSection?.scrollTop);
+    console.log("Scroll height:", rightSection?.scrollHeight);
+    console.log("Client height:", rightSection?.clientHeight);
 
     if (toggle.getAttribute("data-acc-item") === "product") {
-      const rightSection = document.querySelector(".d-pr5_right");
-      console.log("Right section:", rightSection);
-      console.log("Attempting to scroll to 88px");
-      if (rightSection) {
-        rightSection.scrollTo({
-          top: 88,
-          behavior: "smooth",
-        });
-        console.log("Scroll executed");
-      }
+      rightSection?.scrollTo({
+        top: 88,
+        behavior: "smooth",
+      });
     }
 
     if (toggleState === "closed") {
