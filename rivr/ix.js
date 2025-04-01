@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click event listeners to each product element
   productElements.forEach(function (element) {
-    element.addEventListener("click", function (event) {
+    element.addEventListener("click", function () {
       // Find the summary element
       const summaryElement = document.querySelector(
         '[data-acc-item="summary"]',
@@ -380,6 +380,7 @@ document.addEventListener("DOMContentLoaded", function () {
           block: "start",
           inline: "start",
         });
+        console.log("Scrolled to summary element");
       }
     });
   });
