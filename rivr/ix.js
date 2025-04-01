@@ -373,14 +373,36 @@ document.addEventListener("DOMContentLoaded", function () {
         '[data-acc-item="summary"]',
       );
 
-      // If summary element exists, scroll to it smoothly
+      // If summary element exists, scroll to it with 88px offset from top
       if (summaryElement) {
-        summaryElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "start",
-        });
-        console.log("Scrolled to summary element");
+        // Find the scrollable container (100vh with overflow scroll)
+        const scrollableContainer = summaryElement.closest(
+          "[style*='overflow: scroll'], [style*='overflow:scroll'], [style*='overflow-y: scroll'], [style*='overflow-y:scroll']",
+        );
+
+        if (scrollableContainer) {
+          const summaryRect = summaryElement.getBoundingClientRect();
+          const containerRect = scrollableContainer.getBoundingClientRect();
+          const relativeTop = summaryRect.top - containerRect.top;
+
+          // Scroll to the element with 88px offset
+          scrollableContainer.scrollTo({
+            top: relativeTop - 88,
+            behavior: "smooth",
+          });
+        } else {
+          // Fallback to window scroll with 88px offset
+          const summaryRect = summaryElement.getBoundingClientRect();
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop;
+          const targetScrollPosition = scrollTop + summaryRect.top - 88;
+
+          window.scrollTo({
+            top: targetScrollPosition,
+            behavior: "smooth",
+          });
+        }
+        console.log("Scrolled to summary element with 88px offset");
       }
     });
   });
