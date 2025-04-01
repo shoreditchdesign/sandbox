@@ -344,43 +344,80 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Summary Accordions
+// First Accordion (Toggle 1)
 document.addEventListener("DOMContentLoaded", function () {
-  function initializeAccordion(accordionContainer) {
-    const drawerHeights = {};
-    const toggles = accordionContainer.querySelectorAll("[data-summ-toggle]");
+  const drawerHeightsOne = {};
 
-    function handleClick(event) {
-      const toggle = event.currentTarget;
-      const toggleState = toggle.getAttribute("data-toggle-state");
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      const drawerId = toggle.getAttribute("data-drawer-id");
+  function initializeFirstAccordion() {
+    const toggle = document.querySelector("[data-summ-toggle='1']");
+    if (!toggle) return;
 
-      if (toggleState === "closed") {
-        toggle.setAttribute("data-toggle-state", "open");
-        drawer.style.height = drawerHeights[drawerId] + "px";
-      } else {
-        toggle.setAttribute("data-toggle-state", "closed");
-        drawer.style.height = "0px";
-      }
+    const drawer = toggle.querySelector("[data-summ-drawer='1']");
+    if (drawer) {
+      const drawerContent = drawer.firstElementChild;
+      const height = drawerContent.offsetHeight;
+      drawerHeightsOne["drawer-0"] = height;
+      drawer.style.height = "0px";
+      drawer.style.overflow = "hidden";
+      drawer.style.transition = "height 0.3s ease-in-out";
+      toggle.setAttribute("data-drawer-id", "drawer-0");
+      toggle.addEventListener("click", handleFirstAccordion);
     }
-
-    toggles.forEach((toggle, index) => {
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      if (drawer) {
-        const drawerContent = drawer.firstElementChild;
-        const drawerId = "drawer-" + index;
-        drawerHeights[drawerId] = drawerContent.offsetHeight;
-        drawer.style.height = "0px";
-        drawer.style.overflow = "hidden";
-        drawer.style.transition = "height 0.3s ease-in-out";
-        toggle.setAttribute("data-drawer-id", drawerId);
-        toggle.addEventListener("click", handleClick);
-      }
-    });
   }
 
-  const accordions = document.querySelectorAll("[data-summ-component]");
-  accordions.forEach(initializeAccordion);
+  function handleFirstAccordion(event) {
+    const toggle = event.currentTarget;
+    const toggleState = toggle.getAttribute("data-toggle-state");
+    const drawer = toggle.querySelector("[data-summ-drawer='1']");
+
+    if (toggleState === "closed") {
+      toggle.setAttribute("data-toggle-state", "open");
+      drawer.style.height = drawerHeightsOne["drawer-0"] + "px";
+    } else {
+      toggle.setAttribute("data-toggle-state", "closed");
+      drawer.style.height = "0px";
+    }
+  }
+
+  initializeFirstAccordion();
+});
+
+// Second Accordion (Toggle 2)
+document.addEventListener("DOMContentLoaded", function () {
+  const drawerHeightsTwo = {};
+
+  function initializeSecondAccordion() {
+    const toggle = document.querySelector("[data-summ-toggle='2']");
+    if (!toggle) return;
+
+    const drawer = toggle.querySelector("[data-summ-drawer='2']");
+    if (drawer) {
+      const drawerContent = drawer.firstElementChild;
+      const height = drawerContent.offsetHeight;
+      drawerHeightsTwo["drawer-0"] = height;
+      drawer.style.height = "0px";
+      drawer.style.overflow = "hidden";
+      drawer.style.transition = "height 0.3s ease-in-out";
+      toggle.setAttribute("data-drawer-id", "drawer-0");
+      toggle.addEventListener("click", handleSecondAccordion);
+    }
+  }
+
+  function handleSecondAccordion(event) {
+    const toggle = event.currentTarget;
+    const toggleState = toggle.getAttribute("data-toggle-state");
+    const drawer = toggle.querySelector("[data-summ-drawer='2']");
+
+    if (toggleState === "closed") {
+      toggle.setAttribute("data-toggle-state", "open");
+      drawer.style.height = drawerHeightsTwo["drawer-0"] + "px";
+    } else {
+      toggle.setAttribute("data-toggle-state", "closed");
+      drawer.style.height = "0px";
+    }
+  }
+
+  initializeSecondAccordion();
 });
 
 //Blog Share Snippet
