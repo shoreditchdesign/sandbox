@@ -272,18 +272,17 @@ document.addEventListener("DOMContentLoaded", function () {
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
 });
-
 //FAQ Accordions
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
   const drawerHeights = {};
 
   function initializeAccordions() {
-    const toggles = document.querySelectorAll("[data-faq-toggle]");
+    const toggles = document.querySelectorAll("[data-acc-toggle]");
 
     toggles.forEach((toggle, index) => {
       // Get drawer element
-      const drawer = toggle.querySelector("[data-faq-drawer]");
+      const drawer = toggle.querySelector("[data-acc-drawer]");
       if (drawer) {
         // Store the drawer's content height
         const drawerContent = drawer.firstElementChild;
@@ -309,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function openAccordion(toggle) {
     const drawerId = toggle.getAttribute("data-drawer-id");
-    const drawer = toggle.querySelector("[data-faq-drawer]");
+    const drawer = toggle.querySelector("[data-acc-drawer]");
 
     // Update toggle state
     toggle.setAttribute("data-toggle-state", "open");
@@ -319,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function closeAccordion(toggle) {
-    const drawer = toggle.querySelector("[data-faq-drawer]");
+    const drawer = toggle.querySelector("[data-acc-drawer]");
 
     // Update toggle state
     toggle.setAttribute("data-toggle-state", "closed");
@@ -347,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeAllOtherAccordions(currentToggle) {
     // Find all open accordions across all components
     const allOpenToggles = document.querySelectorAll(
-      '[data-faq-toggle][data-toggle-state="open"]',
+      '[data-acc-toggle][data-toggle-state="open"]',
     );
 
     allOpenToggles.forEach((toggle) => {
@@ -410,3 +409,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 });
+//
