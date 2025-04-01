@@ -335,6 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (toggle.getAttribute("data-acc-item") === "product") {
       rightSection.scrollTop = 88;
       console.log("New scroll position:", rightSection.scrollTop);
+      console.log(window.getComputedStyle(rightSection));
     }
 
     if (toggleState === "closed") {
