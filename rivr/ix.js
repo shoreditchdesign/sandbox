@@ -359,6 +359,32 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeAccordions();
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  // Select all elements with data-acc-item="product"
+  const productElements = document.querySelectorAll(
+    '[data-acc-item="product"]',
+  );
+
+  // Add click event listeners to each product element
+  productElements.forEach(function (element) {
+    element.addEventListener("click", function (event) {
+      // Find the summary element
+      const summaryElement = document.querySelector(
+        '[data-acc-item="summary"]',
+      );
+
+      // If summary element exists, scroll to it smoothly
+      if (summaryElement) {
+        summaryElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "start",
+        });
+      }
+    });
+  });
+});
+
 //Blog Share Snippet
 document.addEventListener("DOMContentLoaded", () => {
   // Find all elements with data-blog-share attribute
