@@ -332,14 +332,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const toggle = event.currentTarget;
     const toggleState = toggle.getAttribute("data-toggle-state");
 
-    // If it's a product accordion
     if (toggle.getAttribute("data-acc-item") === "product") {
-      const rightSection = toggle.closest(".d-pr5_right");
+      const rightSection = document.querySelector(".d-pr5_right");
+      console.log("Right section:", rightSection);
+      console.log("Attempting to scroll to 88px");
       if (rightSection) {
         rightSection.scrollTo({
           top: 88,
           behavior: "smooth",
         });
+        console.log("Scroll executed");
       }
     }
 
