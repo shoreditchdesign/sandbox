@@ -343,6 +343,84 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeAccordions();
 });
 
+//Summary Accordions
+document.addEventListener("DOMContentLoaded", function () {
+  const summaryDrawerHeights = {};
+
+  function recalculateSummaryHeights() {
+    const toggles = document.querySelectorAll("[data-summ-toggle]");
+    toggles.forEach((toggle, index) => {
+      const drawer = toggle.querySelector("[data-summ-drawer]");
+      if (drawer) {
+        const drawerContent = drawer.firstElementChild;
+        const drawerId = "drawer-" + index;
+        summaryDrawerHeights[drawerId] = drawerContent.offsetHeight;
+      }
+    });
+  }
+
+  function initializeSummaryAccordions() {
+    const toggles = document.querySelectorAll("[data-summ-toggle]");
+    toggles.forEach((toggle, index) => {
+      const drawer = toggle.querySelector("[data-summ-drawer]");
+      if (drawer) {
+        const drawerContent = drawer.firstElementChild;
+        const drawerId = "drawer-" + index;
+        summaryDrawerHeights[drawerId] = drawerContent.offsetHeight;
+        drawer.style.height = "0px";
+        drawer.style.overflow = "hidden";
+        drawer.style.transition = "height 0.3s ease-in-out";
+        toggle.setAttribute("data-drawer-id", drawerId);
+      }
+      toggle.addEventListener("click", handleSummaryClick);
+    });
+  }
+
+  function openSummaryAccordion(toggle) {
+    const drawerId = toggle.getAttribute("data-drawer-id");
+    const drawer = toggle.querySelector("[data-summ-drawer]");
+    toggle.setAttribute("data-toggle-state", "open");
+    drawer.style.height = summaryDrawerHeights[drawerId] + "px";
+  }
+
+  function closeSummaryAccordion(toggle) {
+    const drawer = toggle.querySelector("[data-summ-drawer]");
+    toggle.setAttribute("data-toggle-state", "closed");
+    drawer.style.height = "0px";
+  }
+
+  function handleSummaryClick(event) {
+    const toggle = event.currentTarget;
+    const toggleState = toggle.getAttribute("data-toggle-state");
+    if (toggleState === "closed") {
+      closeAllOtherSummaryAccordions(toggle);
+      openSummaryAccordion(toggle);
+    } else {
+      closeSummaryAccordion(toggle);
+    }
+  }
+
+  function closeAllOtherSummaryAccordions(currentToggle) {
+    const allOpenToggles = document.querySelectorAll(
+      '[data-summ-toggle][data-toggle-state="open"]',
+    );
+    allOpenToggles.forEach((toggle) => {
+      if (toggle !== currentToggle) {
+        closeSummaryAccordion(toggle);
+      }
+    });
+  }
+
+  const tabLinks = document.querySelectorAll("[data-w-tab]");
+  tabLinks.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      setTimeout(recalculateSummaryHeights, 100);
+    });
+  });
+
+  initializeSummaryAccordions();
+});
+
 //Blog Share Snippet
 document.addEventListener("DOMContentLoaded", () => {
   // Find all elements with data-blog-share attribute
