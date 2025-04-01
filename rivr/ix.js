@@ -347,25 +347,24 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   function initializeAccordion(accordionContainer) {
     const drawerHeights = {};
-    const toggles = accordionContainer.querySelectorAll("[data-summ-toggle]");
 
-    toggles.forEach((toggle, index) => {
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      if (drawer) {
-        const drawerContent = drawer.firstElementChild;
-        const drawerId = "drawer-" + index;
-        drawerHeights[drawerId] = drawerContent.offsetHeight;
-        drawer.style.height = "0px";
-        drawer.style.overflow = "hidden";
-        drawer.style.transition = "height 0.3s ease-in-out";
-        toggle.setAttribute("data-drawer-id", drawerId);
-      }
-      toggle.addEventListener("click", handleClick);
-    });
+    function initializeHeights() {
+      const toggles = accordionContainer.querySelectorAll("[data-summ-toggle]");
+      toggles.forEach((toggle, index) => {
+        const drawer = toggle.querySelector("[data-summ-drawer]");
+        if (drawer) {
+          const drawerContent = drawer.firstElementChild;
+          drawerHeights[`drawer-${index}`] = drawerContent.offsetHeight;
+        }
+      });
+    }
 
     function handleClick(event) {
       const toggle = event.currentTarget;
       const toggleState = toggle.getAttribute("data-toggle-state");
+
+      // Re-initialize heights before animating
+      initializeHeights();
 
       if (toggleState === "closed") {
         const allToggles = accordionContainer.querySelectorAll(
@@ -378,34 +377,19 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    function openAccordion(toggle) {
-      const drawerId = toggle.getAttribute("data-drawer-id");
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      toggle.setAttribute("data-toggle-state", "open");
-      drawer.style.height = drawerHeights[drawerId] + "px";
-    }
-
-    function closeAccordion(toggle) {
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      toggle.setAttribute("data-toggle-state", "closed");
-      drawer.style.height = "0px";
-    }
+    // Rest of your accordion code remains the same
 
     const tabLinks = document.querySelectorAll("[data-w-tab]");
     tabLinks.forEach((tab) => {
       tab.addEventListener("click", () => {
-        setTimeout(() => {
-          toggles.forEach((toggle, index) => {
-            const drawer = toggle.querySelector("[data-summ-drawer]");
-            if (drawer) {
-              const drawerContent = drawer.firstElementChild;
-              const drawerId = "drawer-" + index;
-              drawerHeights[drawerId] = drawerContent.offsetHeight;
-            }
-          });
-        }, 100);
+        // Increased timeout to ensure content is rendered
+        setTimeout(initializeHeights, 150);
       });
     });
+
+    initializeHeights();
+    const toggles = accordionContainer.querySelectorAll("[data-summ-toggle]");
+    toggles.forEach((toggle) => toggle.addEventListener("click", handleClick));
   }
 
   const accordions = document.querySelectorAll("[data-summ-component]");
