@@ -344,7 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Summary Accordions
-
 document.addEventListener("DOMContentLoaded", function () {
   // First Accordion
   function initializeAccordionOne() {
