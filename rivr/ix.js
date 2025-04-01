@@ -348,10 +348,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // First Accordion
   function initializeAccordionOne() {
     const toggle = document.querySelector("[data-summ-toggle='1']");
-    if (!toggle) return;
+    if (!toggle) {
+      console.log("Toggle 1 not found");
+      return;
+    }
 
     const drawer = toggle.querySelector("[data-summ-drawer='1']");
+    if (!drawer) {
+      console.log("Drawer 1 not found");
+      return;
+    }
+
     const drawerHeight = drawer.firstElementChild.offsetHeight;
+    console.log("Drawer 1 height:", drawerHeight);
 
     drawer.style.height = "0px";
     drawer.style.overflow = "hidden";
@@ -367,10 +376,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Second Accordion
   function initializeAccordionTwo() {
     const toggle = document.querySelector("[data-summ-toggle='2']");
-    if (!toggle) return;
+    if (!toggle) {
+      console.log("Toggle 2 not found");
+      return;
+    }
 
     const drawer = toggle.querySelector("[data-summ-drawer='2']");
+    if (!drawer) {
+      console.log("Drawer 2 not found");
+      return;
+    }
+
     const drawerHeight = drawer.firstElementChild.offsetHeight;
+    console.log("Drawer 2 height:", drawerHeight);
 
     drawer.style.height = "0px";
     drawer.style.overflow = "hidden";
