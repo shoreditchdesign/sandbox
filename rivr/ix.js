@@ -332,16 +332,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const toggle = event.currentTarget;
     const rightSection = document.querySelector(".d-pr5_right");
 
-    console.log("Right section:", rightSection);
-    console.log("Current scroll position:", rightSection?.scrollTop);
-    console.log("Scroll height:", rightSection?.scrollHeight);
-    console.log("Client height:", rightSection?.clientHeight);
-
     if (toggle.getAttribute("data-acc-item") === "product") {
-      rightSection?.scrollTo({
-        top: 88,
-        behavior: "smooth",
-      });
+      rightSection.scrollTop = 88;
+      console.log("New scroll position:", rightSection.scrollTop);
     }
 
     if (toggleState === "closed") {
