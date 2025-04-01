@@ -67,3 +67,33 @@
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
+
+.d-pr5_right {
+    position: relative;
+    overflow: auto;
+}
+
+.d-pr5_right::-webkit-scrollbar {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+}
+
+.d-pr5_right::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.d-pr5_right::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.d-pr5_right::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Firefox support */
+.d-pr5_right {
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
+}
