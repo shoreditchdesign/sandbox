@@ -345,80 +345,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Summary Accordions
 document.addEventListener("DOMContentLoaded", function () {
-  const summaryDrawerHeights = {};
+  function initializeAccordion(accordionContainer) {
+    const drawerHeights = {};
+    const toggles = accordionContainer.querySelectorAll("[data-summ-toggle]");
 
-  function recalculateSummaryHeights() {
-    const toggles = document.querySelectorAll("[data-summ-toggle]");
     toggles.forEach((toggle, index) => {
       const drawer = toggle.querySelector("[data-summ-drawer]");
       if (drawer) {
         const drawerContent = drawer.firstElementChild;
         const drawerId = "drawer-" + index;
-        summaryDrawerHeights[drawerId] = drawerContent.offsetHeight;
-      }
-    });
-  }
-
-  function initializeSummaryAccordions() {
-    const toggles = document.querySelectorAll("[data-summ-toggle]");
-    toggles.forEach((toggle, index) => {
-      const drawer = toggle.querySelector("[data-summ-drawer]");
-      if (drawer) {
-        const drawerContent = drawer.firstElementChild;
-        const drawerId = "drawer-" + index;
-        summaryDrawerHeights[drawerId] = drawerContent.offsetHeight;
+        drawerHeights[drawerId] = drawerContent.offsetHeight;
         drawer.style.height = "0px";
         drawer.style.overflow = "hidden";
         drawer.style.transition = "height 0.3s ease-in-out";
         toggle.setAttribute("data-drawer-id", drawerId);
       }
-      toggle.addEventListener("click", handleSummaryClick);
+      toggle.addEventListener("click", handleClick);
     });
-  }
 
-  function openSummaryAccordion(toggle) {
-    const drawerId = toggle.getAttribute("data-drawer-id");
-    const drawer = toggle.querySelector("[data-summ-drawer]");
-    toggle.setAttribute("data-toggle-state", "open");
-    drawer.style.height = summaryDrawerHeights[drawerId] + "px";
-  }
+    function handleClick(event) {
+      const toggle = event.currentTarget;
+      const toggleState = toggle.getAttribute("data-toggle-state");
 
-  function closeSummaryAccordion(toggle) {
-    const drawer = toggle.querySelector("[data-summ-drawer]");
-    toggle.setAttribute("data-toggle-state", "closed");
-    drawer.style.height = "0px";
-  }
-
-  function handleSummaryClick(event) {
-    const toggle = event.currentTarget;
-    const toggleState = toggle.getAttribute("data-toggle-state");
-    if (toggleState === "closed") {
-      closeAllOtherSummaryAccordions(toggle);
-      openSummaryAccordion(toggle);
-    } else {
-      closeSummaryAccordion(toggle);
-    }
-  }
-
-  function closeAllOtherSummaryAccordions(currentToggle) {
-    const allOpenToggles = document.querySelectorAll(
-      '[data-summ-toggle][data-toggle-state="open"]',
-    );
-    allOpenToggles.forEach((toggle) => {
-      if (toggle !== currentToggle) {
-        closeSummaryAccordion(toggle);
+      if (toggleState === "closed") {
+        const allToggles = accordionContainer.querySelectorAll(
+          '[data-summ-toggle][data-toggle-state="open"]',
+        );
+        allToggles.forEach((t) => closeAccordion(t));
+        openAccordion(toggle);
+      } else {
+        closeAccordion(toggle);
       }
+    }
+
+    function openAccordion(toggle) {
+      const drawerId = toggle.getAttribute("data-drawer-id");
+      const drawer = toggle.querySelector("[data-summ-drawer]");
+      toggle.setAttribute("data-toggle-state", "open");
+      drawer.style.height = drawerHeights[drawerId] + "px";
+    }
+
+    function closeAccordion(toggle) {
+      const drawer = toggle.querySelector("[data-summ-drawer]");
+      toggle.setAttribute("data-toggle-state", "closed");
+      drawer.style.height = "0px";
+    }
+
+    const tabLinks = document.querySelectorAll("[data-w-tab]");
+    tabLinks.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        setTimeout(() => {
+          toggles.forEach((toggle, index) => {
+            const drawer = toggle.querySelector("[data-summ-drawer]");
+            if (drawer) {
+              const drawerContent = drawer.firstElementChild;
+              const drawerId = "drawer-" + index;
+              drawerHeights[drawerId] = drawerContent.offsetHeight;
+            }
+          });
+        }, 100);
+      });
     });
   }
 
-  const tabLinks = document.querySelectorAll("[data-w-tab]");
-  tabLinks.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      setTimeout(recalculateSummaryHeights, 100);
-    });
-  });
-
-  initializeSummaryAccordions();
+  const accordions = document.querySelectorAll("[data-summ-component]");
+  accordions.forEach(initializeAccordion);
 });
 
 //Blog Share Snippet
