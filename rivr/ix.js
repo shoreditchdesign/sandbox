@@ -344,80 +344,48 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Summary Accordions
-// First Accordion (Toggle 1)
-document.addEventListener("DOMContentLoaded", function () {
-  const drawerHeightsOne = {};
 
-  function initializeFirstAccordion() {
+document.addEventListener("DOMContentLoaded", function () {
+  // First Accordion
+  function initializeAccordionOne() {
     const toggle = document.querySelector("[data-summ-toggle='1']");
     if (!toggle) return;
 
     const drawer = toggle.querySelector("[data-summ-drawer='1']");
-    if (drawer) {
-      const drawerContent = drawer.firstElementChild;
-      const height = drawerContent.offsetHeight;
-      drawerHeightsOne["drawer-0"] = height;
-      drawer.style.height = "0px";
-      drawer.style.overflow = "hidden";
-      drawer.style.transition = "height 0.3s ease-in-out";
-      toggle.setAttribute("data-drawer-id", "drawer-0");
-      toggle.addEventListener("click", handleFirstAccordion);
-    }
+    const drawerHeight = drawer.firstElementChild.offsetHeight;
+
+    drawer.style.height = "0px";
+    drawer.style.overflow = "hidden";
+    drawer.style.transition = "height 0.3s ease-in-out";
+
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("data-toggle-state") === "open";
+      toggle.setAttribute("data-toggle-state", isOpen ? "closed" : "open");
+      drawer.style.height = isOpen ? "0px" : drawerHeight + "px";
+    });
   }
 
-  function handleFirstAccordion(event) {
-    const toggle = event.currentTarget;
-    const toggleState = toggle.getAttribute("data-toggle-state");
-    const drawer = toggle.querySelector("[data-summ-drawer='1']");
-
-    if (toggleState === "closed") {
-      toggle.setAttribute("data-toggle-state", "open");
-      drawer.style.height = drawerHeightsOne["drawer-0"] + "px";
-    } else {
-      toggle.setAttribute("data-toggle-state", "closed");
-      drawer.style.height = "0px";
-    }
-  }
-
-  initializeFirstAccordion();
-});
-
-// Second Accordion (Toggle 2)
-document.addEventListener("DOMContentLoaded", function () {
-  const drawerHeightsTwo = {};
-
-  function initializeSecondAccordion() {
+  // Second Accordion
+  function initializeAccordionTwo() {
     const toggle = document.querySelector("[data-summ-toggle='2']");
     if (!toggle) return;
 
     const drawer = toggle.querySelector("[data-summ-drawer='2']");
-    if (drawer) {
-      const drawerContent = drawer.firstElementChild;
-      const height = drawerContent.offsetHeight;
-      drawerHeightsTwo["drawer-0"] = height;
-      drawer.style.height = "0px";
-      drawer.style.overflow = "hidden";
-      drawer.style.transition = "height 0.3s ease-in-out";
-      toggle.setAttribute("data-drawer-id", "drawer-0");
-      toggle.addEventListener("click", handleSecondAccordion);
-    }
+    const drawerHeight = drawer.firstElementChild.offsetHeight;
+
+    drawer.style.height = "0px";
+    drawer.style.overflow = "hidden";
+    drawer.style.transition = "height 0.3s ease-in-out";
+
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("data-toggle-state") === "open";
+      toggle.setAttribute("data-toggle-state", isOpen ? "closed" : "open");
+      drawer.style.height = isOpen ? "0px" : drawerHeight + "px";
+    });
   }
 
-  function handleSecondAccordion(event) {
-    const toggle = event.currentTarget;
-    const toggleState = toggle.getAttribute("data-toggle-state");
-    const drawer = toggle.querySelector("[data-summ-drawer='2']");
-
-    if (toggleState === "closed") {
-      toggle.setAttribute("data-toggle-state", "open");
-      drawer.style.height = drawerHeightsTwo["drawer-0"] + "px";
-    } else {
-      toggle.setAttribute("data-toggle-state", "closed");
-      drawer.style.height = "0px";
-    }
-  }
-
-  initializeSecondAccordion();
+  initializeAccordionOne();
+  initializeAccordionTwo();
 });
 
 //Blog Share Snippet
