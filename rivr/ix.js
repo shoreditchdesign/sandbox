@@ -364,7 +364,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Summary Accordions
+//Policy Accordions
 document.addEventListener("DOMContentLoaded", () => {
   // Find all elements with data-summ-iden
   const accordionElements = document.querySelectorAll("[data-summ-iden]");
@@ -438,6 +438,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Handle vertical bar indicator if exists
       const indicator = toggle.querySelector("[data-summ-bar]");
+      if (indicator) {
+        indicator.style.transition = "transform 0.3s ease";
+        indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
+      }
+    });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Find all elements with data-ow-iden
+  const accordionElements = document.querySelectorAll("[data-ow-iden]");
+  console.log("Found accordion elements:", accordionElements.length);
+
+  // Store heights in a map for quick access
+  const heightMap = {};
+
+  // Calculate and store heights
+  accordionElements.forEach((accordion, index) => {
+    const id = accordion.getAttribute("data-ow-iden");
+    const offsetElement = accordion.querySelector(`[data-ow-offset="${id}"]`);
+
+    if (offsetElement) {
+      // First remove transition to prevent animation during initialization
+      offsetElement.style.transition = "none";
+
+      // Force a reflow to ensure the transition removal takes effect
+      offsetElement.offsetHeight;
+
+      // Store original height
+      const originalHeight = offsetElement.scrollHeight;
+      heightMap[id] = originalHeight;
+      console.log(`Stored height for accordion ${id}: ${originalHeight}px`);
+      console.log(`Index ${index} offset height: ${originalHeight}px`);
+
+      // Set initial state (closed)
+      offsetElement.style.height = "0px";
+      offsetElement.style.overflow = "hidden";
+
+      // Force a reflow before adding transition back
+      offsetElement.offsetHeight;
+
+      // Add transition after setting initial height
+      offsetElement.style.transition =
+        "height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)";
+    }
+  });
+
+  // Find all toggle elements
+  const toggleElements = document.querySelectorAll("[data-ow-toggle]");
+  console.log("Found toggle elements:", toggleElements.length);
+
+  // Add click event listeners to toggles
+  toggleElements.forEach((toggle, index) => {
+    toggle.addEventListener("click", () => {
+      const id = toggle.getAttribute("data-ow-toggle");
+      const drawer = document.querySelector(`[data-ow-drawer="${id}"]`);
+      const currentState = toggle.getAttribute("data-toggle-state") || "closed";
+      const newState = currentState === "closed" ? "open" : "closed";
+
+      console.log(
+        `Toggle ${id} clicked. Current state: ${currentState}, New state: ${newState}`,
+      );
+      console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
+
+      if (drawer) {
+        // Ensure transition is properly applied
+        requestAnimationFrame(() => {
+          if (newState === "open") {
+            // Open drawer
+            drawer.style.height = `${heightMap[id]}px`;
+            toggle.setAttribute("data-toggle-state", "open");
+          } else {
+            // Close drawer
+            drawer.style.height = "0px";
+            toggle.setAttribute("data-toggle-state", "closed");
+          }
+        });
+      }
+
+      // Handle vertical bar indicator if exists
+      const indicator = toggle.querySelector("[data-ow-bar]");
       if (indicator) {
         indicator.style.transition = "transform 0.3s ease";
         indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
