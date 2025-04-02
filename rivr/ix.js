@@ -475,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .forEach((tab) => {
       tab.addEventListener("mousedown", () => {
         console.log("Tab change detected");
-        setTimeout(calculateAccordionHeights, 100);
+        setTimeout(initializeAccordions, 100);
       });
     });
 
