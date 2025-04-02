@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Part 1: Add data-stagger-block to children of data-toc-body elements
   const tocBodyElements = document.querySelectorAll("[data-toc-body]");
   if (tocBodyElements.length === 0) {
-    console.log("No elements with [data-toc-body] found");
+    console.warn("No elements with [data-toc-body] found");
   } else {
     tocBodyElements.forEach(function (tocBody) {
       const childElements = tocBody.children;
