@@ -218,3 +218,101 @@ document.addEventListener("DOMContentLoaded", function () {
 
   bannerElement.remove();
 });
+
+//Active Journal Links
+// Select all h2 headings and TOC links
+const headings = document.querySelectorAll('[id^="id-toc-link-"]');
+const tocLinks = document.querySelectorAll("[data-toc-target]");
+
+console.log("Found headings:", headings.length);
+console.log("Found TOC links:", tocLinks.length);
+
+// Function to update active state
+function updateActiveState(currentId) {
+  // Remove active class from all TOC links
+  tocLinks.forEach((link) => {
+    link.classList.remove("active");
+  });
+
+  // Add active class to the TOC link matching currentId
+  if (currentId) {
+    const activeLink = document.querySelector(
+      `[data-toc-target="${currentId}"]`,
+    );
+    if (activeLink) {
+      activeLink.classList.add("active");
+      console.log("Set active:", currentId);
+    }
+  }
+}
+
+// Create IntersectionObserver
+const options = {
+  root: null, // Use viewport as root
+  rootMargin: "-10% 0px -80% 0px", // Adjust these values based on preference
+  threshold: 0, // Trigger as soon as any part becomes visible
+};
+
+// Track scroll direction
+let lastScrollTop = 0;
+let scrollDirection = "down";
+
+window.addEventListener("scroll", () => {
+  const st = window.pageYOffset || document.documentElement.scrollTop;
+  scrollDirection = st > lastScrollTop ? "down" : "up";
+  lastScrollTop = st <= 0 ? 0 : st;
+});
+
+// Observer callback function
+const observerCallback = (entries) => {
+  // Check if any heading is intersecting
+  const isAnyIntersecting = entries.some((entry) => entry.isIntersecting);
+
+  if (isAnyIntersecting) {
+    // Find the first intersecting heading
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        updateActiveState(entry.target.id);
+        break;
+      }
+    }
+  } else {
+    // Handle case when scrolled past all headings
+    if (scrollDirection === "down" && window.scrollY > 0) {
+      // If scrolled down past last heading, set last heading as active
+      const lastHeading = headings[headings.length - 1];
+      updateActiveState(lastHeading.id);
+    } else if (scrollDirection === "up" && window.scrollY > 0) {
+      // If scrolled up above first heading, set first heading as active
+      const firstHeading = headings[0];
+      updateActiveState(firstHeading.id);
+    }
+  }
+};
+
+// Create and start observer
+const observer = new IntersectionObserver(observerCallback, options);
+
+// Start observing all headings
+headings.forEach((heading) => {
+  observer.observe(heading);
+  console.log("Observing:", heading.id);
+});
+
+// Handle initial state on page load
+window.addEventListener("DOMContentLoaded", () => {
+  // Set first heading as active by default
+  if (headings.length > 0) {
+    // Check if any headings are in view on load
+    const inView = Array.from(headings).find((heading) => {
+      const rect = heading.getBoundingClientRect();
+      return rect.top >= 0 && rect.bottom <= window.innerHeight;
+    });
+
+    if (inView) {
+      updateActiveState(inView.id);
+    } else {
+      updateActiveState(headings[0].id);
+    }
+  }
+});
