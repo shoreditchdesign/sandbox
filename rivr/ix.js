@@ -277,6 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
   const drawerHeights = {};
+
   function initializeAccordions() {
     const toggles = document.querySelectorAll("[data-acc-toggle]");
     toggles.forEach((toggle, index) => {
@@ -300,6 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
       toggle.addEventListener("click", handleAccordionClick);
     });
   }
+
   function openAccordion(toggle) {
     const drawerId = toggle.getAttribute("data-drawer-id");
     const drawer = toggle.querySelector("[data-acc-drawer]");
@@ -308,6 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Animate height
     drawer.style.height = drawerHeights[drawerId] + "px";
   }
+
   function closeAccordion(toggle) {
     const drawer = toggle.querySelector("[data-acc-drawer]");
     // Update toggle state
@@ -315,6 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Animate height back to 0
     drawer.style.height = "0px";
   }
+
   function handleAccordionClick(event) {
     const toggle = event.currentTarget;
 
@@ -329,6 +333,7 @@ document.addEventListener("DOMContentLoaded", function () {
       closeAccordion(toggle);
     }
   }
+
   function closeAllOtherAccordions(currentToggle) {
     // Find all open accordions across all components
     const allOpenToggles = document.querySelectorAll(
@@ -340,7 +345,23 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // Initialize accordions on page load
   initializeAccordions();
+
+  // Add click event listener for pagination button
+  document.addEventListener("click", function (event) {
+    if (
+      event.target.hasAttribute("data-acc-load") ||
+      event.target.closest("[data-acc-load]")
+    ) {
+      // When pagination button is clicked, reinitialize accordions
+      // after a small delay to allow for DOM updates
+      setTimeout(function () {
+        initializeAccordions();
+      }, 300);
+    }
+  });
 });
 
 //Summary Accordions
