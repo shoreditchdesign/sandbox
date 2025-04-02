@@ -100,11 +100,11 @@
 
 /* Tab pane display styles */
 [data-tab-pane][data-tab-state="show"] {
-    display: flex;
+    opacity: 1;
 }
 
 [data-tab-pane][data-tab-state="hide"] {
-    display: none;
+    opacity: 0;
 }
 
 /* Tab link styles */
