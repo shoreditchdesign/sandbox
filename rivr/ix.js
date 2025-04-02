@@ -358,6 +358,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const offsetElement = accordion.querySelector(`[data-summ-offset="${id}"]`);
 
     if (offsetElement) {
+      // First remove transition to prevent animation during initialization
+      offsetElement.style.transition = "none";
+
+      // Force a reflow to ensure the transition removal takes effect
+      offsetElement.offsetHeight;
+
       // Store original height
       const originalHeight = offsetElement.scrollHeight;
       heightMap[id] = originalHeight;
@@ -367,7 +373,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set initial state (closed)
       offsetElement.style.height = "0px";
       offsetElement.style.overflow = "hidden";
-      offsetElement.style.transition = "height 0.6s ease-in";
+
+      // Force a reflow before adding transition back
+      offsetElement.offsetHeight;
+
+      // Add transition after setting initial height
+      offsetElement.style.transition =
+        "height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)";
     }
   });
 
@@ -389,23 +401,24 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
 
       if (drawer) {
-        // Ensure transition is set properly before animating
-        drawer.style.transition = "height 0.6s ease-in";
-
-        if (newState === "open") {
-          // Open drawer
-          drawer.style.height = `${heightMap[id]}px`;
-          toggle.setAttribute("data-toggle-state", "open");
-        } else {
-          // Close drawer
-          drawer.style.height = "0px";
-          toggle.setAttribute("data-toggle-state", "closed");
-        }
+        // Ensure transition is properly applied
+        requestAnimationFrame(() => {
+          if (newState === "open") {
+            // Open drawer
+            drawer.style.height = `${heightMap[id]}px`;
+            toggle.setAttribute("data-toggle-state", "open");
+          } else {
+            // Close drawer
+            drawer.style.height = "0px";
+            toggle.setAttribute("data-toggle-state", "closed");
+          }
+        });
       }
 
       // Handle vertical bar indicator if exists
       const indicator = toggle.querySelector("[data-summ-bar]");
       if (indicator) {
+        indicator.style.transition = "transform 0.3s ease";
         indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
       }
     });
