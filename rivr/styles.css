@@ -100,13 +100,11 @@
 
 /* Tab pane display styles */
 [data-tab-pane][data-tab-state="show"] {
-    opacity: 1;
-    height: auto;
+    display: flex;
 }
 
 [data-tab-pane][data-tab-state="hide"] {
-    opacity: 0;
-    height: 0;
+    display: none;
 }
 
 /* Tab link styles */
