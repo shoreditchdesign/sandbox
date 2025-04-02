@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Track scroll position and direction
     let lastScrollTop = 0;
-    const scrollThreshold = 200; // Pixels to scroll before triggering
+    const scrollThreshold = 600; // Pixels to scroll before triggering
     let accumulatedScroll = 0; // Track accumulated scroll in each direction
     let navbarVisible = true;
 
