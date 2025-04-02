@@ -344,65 +344,67 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Summary Accordions
-document.addEventListener("DOMContentLoaded", function () {
-  // First Accordion
-  function initializeAccordionOne() {
-    const toggle = document.querySelector("[data-summ-toggle='1']");
-    if (!toggle) {
-      console.log("Toggle 1 not found");
-      return;
+document.addEventListener("DOMContentLoaded", () => {
+  // Find all elements with data-summ-iden
+  const accordionElements = document.querySelectorAll("[data-summ-iden]");
+  console.log("Found accordion elements:", accordionElements.length);
+
+  // Store heights in a map for quick access
+  const heightMap = {};
+
+  // Calculate and store heights
+  accordionElements.forEach((accordion) => {
+    const id = accordion.getAttribute("data-summ-iden");
+    const offsetElement = accordion.querySelector(`[data-summ-offset="${id}"]`);
+
+    if (offsetElement) {
+      // Store original height
+      const originalHeight = offsetElement.scrollHeight;
+      heightMap[id] = originalHeight;
+      console.log(`Stored height for accordion ${id}: ${originalHeight}px`);
+
+      // Set initial state (closed)
+      offsetElement.style.height = "0px";
+      offsetElement.style.overflow = "hidden";
+      offsetElement.style.transition = "height 0.3s ease-in-out";
     }
+  });
 
-    const drawer = toggle.querySelector("[data-summ-drawer='1']");
-    if (!drawer) {
-      console.log("Drawer 1 not found");
-      return;
-    }
+  // Find all toggle elements
+  const toggleElements = document.querySelectorAll("[data-summ-toggle]");
+  console.log("Found toggle elements:", toggleElements.length);
 
-    const drawerHeight = drawer.firstElementChild.offsetHeight;
-    console.log("Drawer 1 height:", drawerHeight);
-
-    drawer.style.height = "0px";
-    drawer.style.overflow = "hidden";
-    drawer.style.transition = "height 0.3s ease-in-out";
-
+  // Add click event listeners to toggles
+  toggleElements.forEach((toggle) => {
     toggle.addEventListener("click", () => {
-      const isOpen = toggle.getAttribute("data-toggle-state") === "open";
-      toggle.setAttribute("data-toggle-state", isOpen ? "closed" : "open");
-      drawer.style.height = isOpen ? "0px" : drawerHeight + "px";
+      const id = toggle.getAttribute("data-summ-toggle");
+      const drawer = document.querySelector(`[data-summ-drawer="${id}"]`);
+      const currentState = toggle.getAttribute("data-toggle-state") || "closed";
+      const newState = currentState === "closed" ? "open" : "closed";
+
+      console.log(
+        `Toggle ${id} clicked. Current state: ${currentState}, New state: ${newState}`,
+      );
+
+      if (drawer) {
+        if (newState === "open") {
+          // Open drawer
+          drawer.style.height = `${heightMap[id]}px`;
+          toggle.setAttribute("data-toggle-state", "open");
+        } else {
+          // Close drawer
+          drawer.style.height = "0px";
+          toggle.setAttribute("data-toggle-state", "closed");
+        }
+      }
+
+      // Handle vertical bar indicator if exists
+      const indicator = toggle.querySelector("[data-summ-bar]");
+      if (indicator) {
+        indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
+      }
     });
-  }
-
-  // Second Accordion
-  function initializeAccordionTwo() {
-    const toggle = document.querySelector("[data-summ-toggle='2']");
-    if (!toggle) {
-      console.log("Toggle 2 not found");
-      return;
-    }
-
-    const drawer = toggle.querySelector("[data-summ-drawer='2']");
-    if (!drawer) {
-      console.log("Drawer 2 not found");
-      return;
-    }
-
-    const drawerHeight = drawer.firstElementChild.offsetHeight;
-    console.log("Drawer 2 height:", drawerHeight);
-
-    drawer.style.height = "0px";
-    drawer.style.overflow = "hidden";
-    drawer.style.transition = "height 0.3s ease-in-out";
-
-    toggle.addEventListener("click", () => {
-      const isOpen = toggle.getAttribute("data-toggle-state") === "open";
-      toggle.setAttribute("data-toggle-state", isOpen ? "closed" : "open");
-      drawer.style.height = isOpen ? "0px" : drawerHeight + "px";
-    });
-  }
-
-  initializeAccordionOne();
-  initializeAccordionTwo();
+  });
 });
 
 //Blog Share Snippet
