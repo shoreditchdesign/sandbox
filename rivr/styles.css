@@ -101,10 +101,12 @@
 /* Tab pane display styles */
 [data-tab-pane][data-tab-state="show"] {
     opacity: 1;
+    height: auto;
 }
 
 [data-tab-pane][data-tab-state="hide"] {
     opacity: 0;
+    height: 0;
 }
 
 /* Tab link styles */
