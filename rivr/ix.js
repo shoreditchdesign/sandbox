@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set initial state (closed)
       offsetElement.style.height = "0px";
       offsetElement.style.overflow = "hidden";
-      offsetElement.style.transition = "height 0.3s ease-in-out";
+      offsetElement.style.transition = "height 0.6s ease-in";
     }
   });
 
@@ -389,6 +389,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
 
       if (drawer) {
+        // Ensure transition is set properly before animating
+        drawer.style.transition = "height 0.6s ease-in";
+
         if (newState === "open") {
           // Open drawer
           drawer.style.height = `${heightMap[id]}px`;
