@@ -162,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
 
   if (richTextElements.length === 0) {
-    console.log("No elements with class .w-richtext found");
     return;
   }
 
@@ -170,15 +169,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const paragraphs = richText.querySelectorAll("p");
 
     if (paragraphs.length === 0) {
-      console.log("No paragraph elements found in a .w-richtext element");
+      // No paragraph elements found
     } else {
       paragraphs.forEach(function (paragraph) {
         paragraph.setAttribute("data-stagger-block", "");
       });
-
-      console.log(
-        `Added data-stagger-block to ${paragraphs.length} paragraphs in a .w-richtext element`,
-      );
     }
   });
 });
@@ -227,22 +222,13 @@ document.addEventListener("DOMContentLoaded", function () {
     "[data-toc-cell][data-toc-target]",
   );
 
-  console.log("Found headings:", headings.length, headings);
-  console.log("Found TOC links:", tocLinks.length, tocLinks);
-
   // Try alternative selectors if nothing found
   if (headings.length === 0) {
     const altHeadings = document.querySelectorAll("h2");
-    console.log("Alternative h2 search:", altHeadings.length, altHeadings);
   }
 
   if (tocLinks.length === 0) {
     const altTocLinks = document.querySelectorAll(".d-jl2_toc-cell");
-    console.log(
-      "Alternative TOC links search:",
-      altTocLinks.length,
-      altTocLinks,
-    );
   }
 
   // Function to update active state
@@ -259,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       if (activeLink) {
         activeLink.classList.add("active");
-        console.log("Set active:", currentId);
       }
     }
   }
@@ -314,7 +299,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Start observing all headings
   headings.forEach((heading) => {
     observer.observe(heading);
-    console.log("Observing:", heading.id);
   });
 
   // Handle initial state on page load
