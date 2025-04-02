@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const heightMap = {};
 
   // Calculate and store heights
-  accordionElements.forEach((accordion) => {
+  accordionElements.forEach((accordion, index) => {
     const id = accordion.getAttribute("data-summ-iden");
     const offsetElement = accordion.querySelector(`[data-summ-offset="${id}"]`);
 
@@ -362,6 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const originalHeight = offsetElement.scrollHeight;
       heightMap[id] = originalHeight;
       console.log(`Stored height for accordion ${id}: ${originalHeight}px`);
+      console.log(`Index ${index} offset height: ${originalHeight}px`);
 
       // Set initial state (closed)
       offsetElement.style.height = "0px";
@@ -375,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Found toggle elements:", toggleElements.length);
 
   // Add click event listeners to toggles
-  toggleElements.forEach((toggle) => {
+  toggleElements.forEach((toggle, index) => {
     toggle.addEventListener("click", () => {
       const id = toggle.getAttribute("data-summ-toggle");
       const drawer = document.querySelector(`[data-summ-drawer="${id}"]`);
@@ -385,6 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(
         `Toggle ${id} clicked. Current state: ${currentState}, New state: ${newState}`,
       );
+      console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
 
       if (drawer) {
         if (newState === "open") {
