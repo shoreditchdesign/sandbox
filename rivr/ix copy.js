@@ -366,121 +366,165 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Policy Accordions
 document.addEventListener("DOMContentLoaded", () => {
-  // Height storage maps
-  const summaryHeights = new Map();
-  const overviewHeights = new Map();
+  // Find all elements with data-summ-iden
+  const accordionElements = document.querySelectorAll("[data-summ-iden]");
+  console.log("Found accordion elements:", accordionElements.length);
 
-  // Calculate heights function
-  function calculateAccordionHeights() {
-    console.log("Calculating accordion heights...");
+  // Store heights in a map for quick access
+  const heightMap = {};
 
-    // Summary accordions
-    document.querySelectorAll("[data-summ-offset]").forEach((element) => {
-      const id = element.getAttribute("data-summ-offset");
-      const height = element.scrollHeight;
-      summaryHeights.set(id, height);
-      console.log(`Summary accordion ${id} height: ${height}px`);
-    });
+  // Calculate and store heights
+  accordionElements.forEach((accordion, index) => {
+    const id = accordion.getAttribute("data-summ-iden");
+    const offsetElement = accordion.querySelector(`[data-summ-offset="${id}"]`);
 
-    // Overview accordions
-    document.querySelectorAll("[data-ow-offset]").forEach((element) => {
-      const id = element.getAttribute("data-ow-offset");
-      const height = element.scrollHeight;
-      overviewHeights.set(id, height);
-      console.log(`Overview accordion ${id} height: ${height}px`);
-    });
-  }
+    if (offsetElement) {
+      // First remove transition to prevent animation during initialization
+      offsetElement.style.transition = "none";
 
-  // Toggle accordion states
-  function toggleAccordion(type, id, forceState = null) {
-    const toggle = document.querySelector(`[data-${type}-toggle="${id}"]`);
-    const drawer = document.querySelector(`[data-${type}-drawer="${id}"]`);
-    const heights = type === "summ" ? summaryHeights : overviewHeights;
+      // Force a reflow to ensure the transition removal takes effect
+      offsetElement.offsetHeight;
 
-    if (!toggle || !drawer) {
-      console.log(`Toggle or drawer not found for ${type} ${id}`);
-      return;
+      // Store original height
+      const originalHeight = offsetElement.scrollHeight;
+      heightMap[id] = originalHeight;
+      console.log(`Stored height for accordion ${id}: ${originalHeight}px`);
+      console.log(`Index ${index} offset height: ${originalHeight}px`);
+
+      // Set initial state (closed)
+      offsetElement.style.height = "0px";
+      offsetElement.style.overflow = "hidden";
+
+      // Force a reflow before adding transition back
+      offsetElement.offsetHeight;
+
+      // Add transition after setting initial height
+      offsetElement.style.transition =
+        "height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)";
     }
+  });
 
-    const currentState = toggle.getAttribute("data-toggle-state");
-    const newState =
-      forceState || (currentState === "closed" ? "open" : "closed");
+  // Find all toggle elements
+  const toggleElements = document.querySelectorAll("[data-summ-toggle]");
+  console.log("Found toggle elements:", toggleElements.length);
 
-    console.log(
-      `Toggling ${type} accordion ${id} from ${currentState} to ${newState}`,
-    );
-
-    toggle.setAttribute("data-toggle-state", newState);
-    drawer.style.height = newState === "open" ? `${heights.get(id)}px` : "0px";
-
-    // Rotate indicator
-    const indicator = toggle.querySelector(`[data-${type}-bar]`);
-    if (indicator) {
-      indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
-    }
-  }
-
-  // Handle opposite state for summary/overview
-  function handleOppositeState(type, id) {
-    console.log(`Handling opposite state for ${type} ${id}`);
-
-    if (type === "summ") {
-      const summaryState = document
-        .querySelector(`[data-summ-toggle="${id}"]`)
-        .getAttribute("data-toggle-state");
-      toggleAccordion("ow", id, summaryState === "open" ? "closed" : "open");
-    }
-  }
-
-  // Initialize accordion states
-  function initializeAccordions() {
-    console.log("Initializing accordions...");
-    calculateAccordionHeights();
-
-    // Set initial states
-    document.querySelectorAll("[data-ow-toggle]").forEach((toggle) => {
-      const id = toggle.getAttribute("data-ow-toggle");
-      toggle.setAttribute("data-toggle-state", "open");
-      const drawer = document.querySelector(`[data-ow-drawer="${id}"]`);
-      drawer.style.height = `${overviewHeights.get(id)}px`;
-    });
-
-    document.querySelectorAll("[data-summ-toggle]").forEach((toggle) => {
+  // Add click event listeners to toggles
+  toggleElements.forEach((toggle, index) => {
+    toggle.addEventListener("click", () => {
       const id = toggle.getAttribute("data-summ-toggle");
-      toggle.setAttribute("data-toggle-state", "closed");
       const drawer = document.querySelector(`[data-summ-drawer="${id}"]`);
-      drawer.style.height = "0px";
-    });
-  }
+      const currentState = toggle.getAttribute("data-toggle-state") || "closed";
+      const newState = currentState === "closed" ? "open" : "closed";
 
-  // Event Listeners
-  document.querySelectorAll("[data-summ-toggle]").forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-      const id = toggle.getAttribute("data-summ-toggle");
-      toggleAccordion("summ", id);
-      handleOppositeState("summ", id);
+      console.log(
+        `Toggle ${id} clicked. Current state: ${currentState}, New state: ${newState}`,
+      );
+      console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
+
+      if (drawer) {
+        // Ensure transition is properly applied
+        requestAnimationFrame(() => {
+          if (newState === "open") {
+            // Open drawer
+            drawer.style.height = `${heightMap[id]}px`;
+            toggle.setAttribute("data-toggle-state", "open");
+          } else {
+            // Close drawer
+            drawer.style.height = "0px";
+            toggle.setAttribute("data-toggle-state", "closed");
+          }
+        });
+      }
+
+      // Handle vertical bar indicator if exists
+      const indicator = toggle.querySelector("[data-summ-bar]");
+      if (indicator) {
+        indicator.style.transition = "transform 0.3s ease";
+        indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
+      }
     });
   });
+});
 
-  document.querySelectorAll("[data-ow-toggle]").forEach((toggle) => {
+document.addEventListener("DOMContentLoaded", () => {
+  // Find all elements with data-ow-iden
+  const accordionElements = document.querySelectorAll("[data-ow-iden]");
+  console.log("Found accordion elements:", accordionElements.length);
+
+  // Store heights in a map for quick access
+  const heightMap = {};
+
+  // Calculate and store heights
+  accordionElements.forEach((accordion, index) => {
+    const id = accordion.getAttribute("data-ow-iden");
+    const offsetElement = accordion.querySelector(`[data-ow-offset="${id}"]`);
+
+    if (offsetElement) {
+      // First remove transition to prevent animation during initialization
+      offsetElement.style.transition = "none";
+
+      // Force a reflow to ensure the transition removal takes effect
+      offsetElement.offsetHeight;
+
+      // Store original height
+      const originalHeight = offsetElement.scrollHeight;
+      heightMap[id] = originalHeight;
+      console.log(`Stored height for accordion ${id}: ${originalHeight}px`);
+      console.log(`Index ${index} offset height: ${originalHeight}px`);
+
+      // Set initial state (closed)
+      offsetElement.style.height = "0px";
+      offsetElement.style.overflow = "hidden";
+
+      // Force a reflow before adding transition back
+      offsetElement.offsetHeight;
+
+      // Add transition after setting initial height
+      offsetElement.style.transition =
+        "height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)";
+    }
+  });
+
+  // Find all toggle elements
+  const toggleElements = document.querySelectorAll("[data-ow-toggle]");
+  console.log("Found toggle elements:", toggleElements.length);
+
+  // Add click event listeners to toggles
+  toggleElements.forEach((toggle, index) => {
     toggle.addEventListener("click", () => {
       const id = toggle.getAttribute("data-ow-toggle");
-      toggleAccordion("ow", id);
+      const drawer = document.querySelector(`[data-ow-drawer="${id}"]`);
+      const currentState = toggle.getAttribute("data-toggle-state") || "closed";
+      const newState = currentState === "closed" ? "open" : "closed";
+
+      console.log(
+        `Toggle ${id} clicked. Current state: ${currentState}, New state: ${newState}`,
+      );
+      console.log(`Toggle index ${index} height: ${heightMap[id]}px`);
+
+      if (drawer) {
+        // Ensure transition is properly applied
+        requestAnimationFrame(() => {
+          if (newState === "open") {
+            // Open drawer
+            drawer.style.height = `${heightMap[id]}px`;
+            toggle.setAttribute("data-toggle-state", "open");
+          } else {
+            // Close drawer
+            drawer.style.height = "0px";
+            toggle.setAttribute("data-toggle-state", "closed");
+          }
+        });
+      }
+
+      // Handle vertical bar indicator if exists
+      const indicator = toggle.querySelector("[data-ow-bar]");
+      if (indicator) {
+        indicator.style.transition = "transform 0.3s ease";
+        indicator.style.transform = newState === "open" ? "rotate(90deg)" : "";
+      }
     });
   });
-
-  // Tab change listeners
-  document
-    .querySelectorAll("[data-summ-load], [data-ow-load]")
-    .forEach((tab) => {
-      tab.addEventListener("mousedown", () => {
-        console.log("Tab change detected");
-        setTimeout(calculateAccordionHeights, 100);
-      });
-    });
-
-  // Initial setup
-  initializeAccordions();
 });
 
 //Blog Share Snippet
