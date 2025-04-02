@@ -335,3 +335,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//Tab Switchers
+// Select all tab links
+//Tab Switchers
+document.addEventListener("DOMContentLoaded", function () {
+  const tabLinks = document.querySelectorAll("[data-tab-link]");
+
+  // Add click event listeners to each tab link
+  tabLinks.forEach((tabLink) => {
+    tabLink.addEventListener("click", () => {
+      // Get the tab link value (index)
+      const tabIndex = tabLink.getAttribute("data-tab-link");
+      console.log("Tab clicked:", tabIndex);
+
+      // Find all tab links and panes
+      const allTabLinks = document.querySelectorAll("[data-tab-link]");
+      const allTabPanes = document.querySelectorAll("[data-tab-pane]");
+
+      // Set all tab links and panes to hide
+      allTabLinks.forEach((link) => {
+        link.setAttribute("data-tab-state", "hide");
+      });
+
+      allTabPanes.forEach((pane) => {
+        pane.setAttribute("data-tab-state", "hide");
+      });
+
+      // Set the clicked tab link to show
+      tabLink.setAttribute("data-tab-state", "show");
+      console.log("Showing tab link:", tabIndex);
+
+      // Find and show the corresponding tab pane
+      const correspondingPane = document.querySelector(
+        `[data-tab-pane="${tabIndex}"]`,
+      );
+      if (correspondingPane) {
+        correspondingPane.setAttribute("data-tab-state", "show");
+        console.log("Showing tab pane:", tabIndex);
+      } else {
+        console.log("No matching tab pane found for index:", tabIndex);
+      }
+    });
+  });
+});
