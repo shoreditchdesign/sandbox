@@ -365,7 +365,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Policy Accordions
-//Policy Accordions
 document.addEventListener("DOMContentLoaded", () => {
   // Height storage maps
   const summaryHeights = new Map();
