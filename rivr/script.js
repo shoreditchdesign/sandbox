@@ -79,13 +79,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-  // Part 2: Create table of contents
+
+  // Part 2: Create table of contents and wrap H2 sections
   const richTextBodies = document.querySelectorAll("[data-toc-body]");
   let allH2s = [];
+
+  // First collect all H2s
   richTextBodies.forEach((body) => {
     const h2s = body.querySelectorAll("h2");
     allH2s = [...allH2s, ...h2s];
   });
+
   // If no H2s are found, remove template cells from all TOC wrappers
   if (allH2s.length === 0) {
     const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
@@ -98,10 +102,79 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     return; // Exit early if no H2s found
   }
-  allH2s.forEach((h2, index) => {
-    const id = `toc-${index + 1}`;
-    h2.setAttribute("id", id);
+
+  // Process each data-toc-body container separately
+  richTextBodies.forEach((body) => {
+    // Get all children of the body
+    const allChildren = Array.from(body.children);
+    // Get H2s within this specific body
+    const h2sInBody = Array.from(body.querySelectorAll("h2"));
+
+    // Skip if no H2s in this body
+    if (h2sInBody.length === 0) return;
+
+    // Track processed elements to avoid duplicates
+    const processedElements = new Set();
+
+    // Process each H2
+    h2sInBody.forEach((h2, index) => {
+      const sectionId = `toc-${index + 1}`;
+      const sectionDiv = document.createElement("div");
+      sectionDiv.setAttribute("id", sectionId);
+      sectionDiv.setAttribute("data-toc-section", "");
+
+      // Start with the H2
+      const elementsToGroup = [h2];
+      processedElements.add(h2);
+
+      // Find the index of current H2 in allChildren
+      const h2Index = allChildren.indexOf(h2);
+
+      // Find all elements until the next H2 or the end
+      let nextIndex = h2Index + 1;
+      while (nextIndex < allChildren.length) {
+        const nextElement = allChildren[nextIndex];
+        // Stop if we hit another H2
+        if (nextElement.tagName === "H2") break;
+        elementsToGroup.push(nextElement);
+        processedElements.add(nextElement);
+        nextIndex++;
+      }
+
+      console.log(
+        `Creating section for H2: "${h2.textContent}" with ${elementsToGroup.length} elements`,
+      );
+
+      // Create a document fragment for better performance
+      const fragment = document.createDocumentFragment();
+      elementsToGroup.forEach((el) => fragment.appendChild(el));
+
+      // Add the fragment to the section div
+      sectionDiv.appendChild(fragment);
+
+      // Insert the section div where the H2 was
+      if (
+        h2Index > 0 &&
+        allChildren[h2Index - 1] &&
+        !processedElements.has(allChildren[h2Index - 1])
+      ) {
+        body.insertBefore(sectionDiv, allChildren[h2Index - 1].nextSibling);
+      } else {
+        body.appendChild(sectionDiv);
+      }
+    });
+
+    // Handle elements before the first H2 (leave them as is)
+    // Handle elements that weren't processed (shouldn't be any with our approach)
+    const unprocessedElements = allChildren.filter(
+      (el) => !processedElements.has(el),
+    );
+    console.log(
+      `${unprocessedElements.length} elements weren't included in any section`,
+    );
   });
+
+  // Create TOC using the new section IDs
   const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
   tocWrappers.forEach((tocWrapper) => {
     const templateCell = tocWrapper.querySelector("[data-toc-cell]");
@@ -109,32 +182,37 @@ document.addEventListener("DOMContentLoaded", function () {
       tocWrapper.style.display = "none";
       return;
     }
+
     const existingCells = tocWrapper.querySelectorAll("[data-toc-cell]");
     existingCells.forEach((cell, index) => {
       if (index !== 0) cell.remove();
     });
+
     allH2s.forEach((h2, index) => {
       const newCell = templateCell.cloneNode(true);
       const textElement = newCell.querySelector("[data-toc-text]");
       const id = `toc-${index + 1}`;
+
       // Store the id as a data attribute
       newCell.setAttribute("data-toc-target", id);
-      // Add href attribute with format #toc-1 (without slash)
+      // Add href attribute with format #toc-1
       newCell.setAttribute("href", `#${id}`);
+
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
+
       // MODIFIED PART - Fixed smooth scrolling with requestAnimationFrame
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("Scroll click triggered for ID:", id);
-        const targetH2 = document.getElementById(id);
-        if (targetH2) {
-          console.log("Target element found:", targetH2);
+        const targetSection = document.getElementById(id);
+        if (targetSection) {
+          console.log("Target section found:", targetSection);
           requestAnimationFrame(() => {
             const offset = 200;
             const targetPosition =
-              targetH2.getBoundingClientRect().top +
+              targetSection.getBoundingClientRect().top +
               window.pageYOffset -
               offset;
             console.log("Scrolling to position:", targetPosition);
@@ -146,8 +224,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
       // END OF MODIFIED PART
+
       tocWrapper.appendChild(newCell);
     });
+
     templateCell.remove();
   });
 });
