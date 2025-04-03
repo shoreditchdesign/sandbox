@@ -239,6 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 //Animation Blockers
 document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");

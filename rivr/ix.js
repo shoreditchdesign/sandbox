@@ -439,15 +439,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Handle opposite state for summary/overview
+  // Handle opposite state for summary/overview (updated for symmetrical behavior)
   function handleOppositeState(type, id) {
     console.log(`Handling opposite state for ${type} ${id}`);
 
     if (type === "summ") {
+      // Get summary state and set overview to opposite
       const summaryState = document
         .querySelector(`[data-summ-toggle="${id}"]`)
         .getAttribute("data-toggle-state");
       toggleAccordion("ow", id, summaryState === "open" ? "closed" : "open");
+    } else if (type === "ow") {
+      // Get overview state and set summary to opposite
+      const overviewState = document
+        .querySelector(`[data-ow-toggle="${id}"]`)
+        .getAttribute("data-toggle-state");
+      toggleAccordion("summ", id, overviewState === "open" ? "closed" : "open");
     }
   }
 
@@ -628,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Observing container for display changes:", container);
   });
 
-  // Event Listeners
+  // Event Listeners (updated for symmetrical behavior)
   document.querySelectorAll("[data-summ-toggle]").forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const id = toggle.getAttribute("data-summ-toggle");
@@ -641,6 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", () => {
       const id = toggle.getAttribute("data-ow-toggle");
       toggleAccordion("ow", id);
+      handleOppositeState("ow", id); // Added this call for symmetrical behavior
     });
   });
 
