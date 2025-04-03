@@ -202,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
         textElement.textContent = h2.textContent;
       }
 
-      // MODIFIED PART - Fixed smooth scrolling with requestAnimationFrame
+      // Prevent default anchor behavior for ALL clicks on these elements
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("Scroll click triggered for ID:", id);
@@ -223,15 +223,22 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
       });
-      // END OF MODIFIED PART
 
       tocWrapper.appendChild(newCell);
     });
 
     templateCell.remove();
   });
-});
 
+  // NEW ADDITION: Prevent default behavior for all links with data-toc-target attribute
+  document.addEventListener("click", function (e) {
+    const tocLink = e.target.closest("[data-toc-target]");
+    if (tocLink) {
+      e.preventDefault();
+      console.log("Prevented default anchor behavior");
+    }
+  });
+});
 //Animation Blockers
 document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
