@@ -784,7 +784,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create ScrollTrigger for this nav cell
     ScrollTrigger.create({
       trigger: scrollUnit,
-      start: "top 90%", // Activate when scroll unit is 10% in view
+      start: "top 40%", // Activate when scroll unit is 10% in view
       markers: false,
       onEnter: () => {
         // Remove active class from previous cell
