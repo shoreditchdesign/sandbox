@@ -321,8 +321,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
-// Select all tab links
-//Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
   const tabLinks = document.querySelectorAll("[data-tab-link]");
 

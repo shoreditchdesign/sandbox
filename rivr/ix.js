@@ -473,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Set up MutationObserver to detect display changes
+  // Set up observers to detect display and size changes
   const accordionContainers = document.querySelectorAll(
     "[data-summ-offset], [data-ow-offset]",
   );
@@ -481,6 +481,55 @@ document.addEventListener("DOMContentLoaded", () => {
   // Get all tab panes that contain accordions
   const tabPanes = document.querySelectorAll("[data-tab-pane]");
   console.log("Found tab panes:", tabPanes.length);
+
+  // Track visibility of panes
+  const paneVisibility = new Map();
+  tabPanes.forEach((pane) => {
+    const id = pane.getAttribute("data-tab-pane");
+    const isVisible = window.getComputedStyle(pane).display !== "none";
+    paneVisibility.set(id, isVisible);
+    console.log(`Initial pane ${id} visibility:`, isVisible);
+  });
+
+  // Set up ResizeObserver to detect when elements become visible
+  const resizeObserver = new ResizeObserver((entries) => {
+    console.log("ResizeObserver triggered");
+    let visibilityChanged = false;
+
+    // Check each observed element
+    entries.forEach((entry) => {
+      if (entry.target.hasAttribute("data-tab-pane")) {
+        const id = entry.target.getAttribute("data-tab-pane");
+        const wasVisible = paneVisibility.get(id);
+        const isVisible =
+          window.getComputedStyle(entry.target).display !== "none";
+
+        // Update our tracked visibility
+        paneVisibility.set(id, isVisible);
+
+        if (!wasVisible && isVisible) {
+          console.log(`Pane ${id} became visible`);
+          visibilityChanged = true;
+        }
+      }
+    });
+
+    if (visibilityChanged) {
+      console.log("Visibility changed, recalculating heights");
+      setTimeout(() => {
+        calculateAccordionHeights();
+        updateOpenAccordions();
+      }, 150);
+    }
+  });
+
+  // Observe all tab panes for size changes
+  tabPanes.forEach((pane) => {
+    resizeObserver.observe(pane);
+    console.log(
+      `Observing size changes for pane ${pane.getAttribute("data-tab-pane")}`,
+    );
+  });
 
   // Also get parent containers that might change visibility
   const parentContainers = [];
@@ -493,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Set up observer for display changes
+  // Set up MutationObserver for attribute changes
   const observer = new MutationObserver((mutations) => {
     let displayChanged = false;
 
@@ -503,34 +553,62 @@ document.addEventListener("DOMContentLoaded", () => {
         mutation.attributeName === "data-tab-state"
       ) {
         const newValue = mutation.target.getAttribute("data-tab-state");
-        console.log(`Tab pane state changed to: ${newValue}`);
+        console.log(`Tab pane state attribute changed to: ${newValue}`);
         if (newValue === "show") {
           displayChanged = true;
-          console.log("Tab pane became visible, will recalculate heights");
         }
       }
-      // Also check for style/class changes that affect visibility
+      // Check for direct style changes too
       else if (
         mutation.type === "attributes" &&
-        (mutation.attributeName === "style" ||
-          mutation.attributeName === "class")
+        mutation.attributeName === "style"
       ) {
+        console.log("Style attribute changed:", mutation.target);
+        // Force check computed style
         const style = window.getComputedStyle(mutation.target);
+        console.log("New computed display:", style.display);
         if (style.display !== "none") {
           displayChanged = true;
-          console.log("Display changed to visible, will recalculate heights");
         }
       }
     });
 
     if (displayChanged) {
-      // Longer delay to ensure DOM is fully updated after tab switch
+      console.log("Display change detected via MutationObserver");
       setTimeout(() => {
-        console.log("Recalculating heights after display change");
         calculateAccordionHeights();
         updateOpenAccordions();
       }, 150);
     }
+  });
+
+  // Check DOM periodically as a fallback
+  function pollForVisibilityChanges() {
+    tabPanes.forEach((pane) => {
+      const id = pane.getAttribute("data-tab-pane");
+      const wasVisible = paneVisibility.get(id);
+      const isVisible = window.getComputedStyle(pane).display !== "none";
+
+      if (!wasVisible && isVisible) {
+        console.log(`Pane ${id} became visible (detected by polling)`);
+        paneVisibility.set(id, isVisible);
+
+        // Recalculate heights
+        calculateAccordionHeights();
+        updateOpenAccordions();
+      }
+
+      // Update current state
+      paneVisibility.set(id, isVisible);
+    });
+  }
+
+  // Poll every 500ms as absolute fallback
+  const pollInterval = setInterval(pollForVisibilityChanges, 500);
+
+  // Clean up interval when page is unloaded
+  window.addEventListener("unload", () => {
+    clearInterval(pollInterval);
   });
 
   // Observe tab panes for attribute changes (especially data-tab-state)
@@ -569,14 +647,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Tab change listeners
   document.querySelectorAll("[data-tab-link]").forEach((tab) => {
-    tab.addEventListener("mousedown", () => {
+    tab.addEventListener("click", () => {
       const tabId = tab.getAttribute("data-tab-link");
-      console.log(`Tab change detected to tab ${tabId}`);
-      // Still keep the timeout as a fallback but with longer delay
+      console.log(`Tab click detected for tab ${tabId}`);
+
+      // Force recalculation after tab click with increased delay
       setTimeout(() => {
-        console.log(`Tab change fallback timer for tab ${tabId} executing`);
+        console.log(`Forced recalculation after tab ${tabId} click`);
+
+        // Force visibility check on all panes
+        tabPanes.forEach((pane) => {
+          const paneId = pane.getAttribute("data-tab-pane");
+          const isVisible = window.getComputedStyle(pane).display !== "none";
+          console.log(`Pane ${paneId} visibility:`, isVisible);
+        });
+
         initializeAccordions();
-      }, 250);
+      }, 300);
     });
   });
 
