@@ -117,10 +117,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const newCell = templateCell.cloneNode(true);
       const textElement = newCell.querySelector("[data-toc-text]");
       const id = `toc-${index + 1}`;
-      // Store the id as a data attribute instead of href
+      // Store the id as a data attribute
       newCell.setAttribute("data-toc-target", id);
-      // Remove href to prevent default behavior
-      newCell.removeAttribute("href");
+      // Add href attribute with format /#toc-1
+      newCell.setAttribute("href", `/#${id}`);
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
