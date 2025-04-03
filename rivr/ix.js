@@ -391,6 +391,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Function to update heights of already-open accordions
+  function updateOpenAccordions() {
+    document
+      .querySelectorAll("[data-toggle-state='open']")
+      .forEach((toggle) => {
+        const type = toggle.hasAttribute("data-summ-toggle") ? "summ" : "ow";
+        const id = toggle.getAttribute(`data-${type}-toggle`);
+        const drawer = document.querySelector(`[data-${type}-drawer="${id}"]`);
+        const heights = type === "summ" ? summaryHeights : overviewHeights;
+
+        if (drawer && heights.get(id)) {
+          drawer.style.height = `${heights.get(id)}px`;
+          console.log(
+            `Updated ${type} accordion ${id} with new height: ${heights.get(id)}px`,
+          );
+        }
+      });
+  }
+
   // Toggle accordion states
   function toggleAccordion(type, id, forceState = null) {
     const toggle = document.querySelector(`[data-${type}-toggle="${id}"]`);
@@ -453,6 +472,58 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Set up MutationObserver to detect display changes
+  const accordionContainers = document.querySelectorAll(
+    "[data-summ-offset], [data-ow-offset]",
+  );
+
+  // Get all parent containers that might change visibility
+  const parentContainers = [];
+  accordionContainers.forEach((accordion) => {
+    let parent = accordion.parentElement;
+    while (parent && !parentContainers.includes(parent)) {
+      parentContainers.push(parent);
+      parent = parent.parentElement;
+    }
+  });
+
+  // Set up observer for display changes
+  const observer = new MutationObserver((mutations) => {
+    let displayChanged = false;
+
+    mutations.forEach((mutation) => {
+      if (
+        mutation.type === "attributes" &&
+        (mutation.attributeName === "style" ||
+          mutation.attributeName === "class")
+      ) {
+        const style = window.getComputedStyle(mutation.target);
+        if (style.display !== "none") {
+          displayChanged = true;
+          console.log("Display changed to visible, will recalculate heights");
+        }
+      }
+    });
+
+    if (displayChanged) {
+      // Short delay to ensure DOM is fully updated
+      setTimeout(() => {
+        console.log("Recalculating heights after display change");
+        calculateAccordionHeights();
+        updateOpenAccordions();
+      }, 50);
+    }
+  });
+
+  // Observe parents for style and class changes
+  parentContainers.forEach((container) => {
+    observer.observe(container, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+    console.log("Observing container for display changes:", container);
+  });
+
   // Event Listeners
   document.querySelectorAll("[data-summ-toggle]").forEach((toggle) => {
     toggle.addEventListener("click", () => {
@@ -475,6 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .forEach((tab) => {
       tab.addEventListener("mousedown", () => {
         console.log("Tab change detected");
+        // Still keep the timeout as a fallback
         setTimeout(initializeAccordions, 100);
       });
     });
