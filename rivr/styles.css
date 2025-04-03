@@ -32,24 +32,6 @@
     border-radius: 4px;
 }
 
-.c-cookie_c-prefs_content {
-    scrollbar-width: auto;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.c-cookie_c-prefs_content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.c-cookie_c-prefs_content::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.c-cookie_c-prefs_content::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-}
-
 .d-pr5_right {
     scrollbar-width: auto;
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
@@ -59,18 +41,9 @@
     width: 8px;
 }
 
-.d-pr5_right::-webkit-scrollbar-track {
-    background: transparent;
-}
-
 .d-pr5_right::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
-}
-
-.d-pr5_right {
-    position: relative;
-    overflow: auto;
 }
 
 .d-pr5_right::-webkit-scrollbar {
