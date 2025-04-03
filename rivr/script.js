@@ -119,8 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = `toc-${index + 1}`;
       // Store the id as a data attribute
       newCell.setAttribute("data-toc-target", id);
-      // Add href attribute with format /#toc-1
-      newCell.setAttribute("href", `/#${id}`);
+      // Add href attribute with format #toc-1 (without slash)
+      newCell.setAttribute("href", `#${id}`);
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
