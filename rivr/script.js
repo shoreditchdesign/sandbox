@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return; // Exit early if no H2s found
   }
   allH2s.forEach((h2, index) => {
-    const id = `id-toc-link-${index + 1}`;
+    const id = `toc-${index + 1}`;
     h2.setAttribute("id", id);
   });
   const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     allH2s.forEach((h2, index) => {
       const newCell = templateCell.cloneNode(true);
       const textElement = newCell.querySelector("[data-toc-text]");
-      const id = `id-toc-link-${index + 1}`;
+      const id = `toc-${index + 1}`;
       // Store the id as a data attribute instead of href
       newCell.setAttribute("data-toc-target", id);
       // Remove href to prevent default behavior
@@ -124,16 +124,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
-
       // MODIFIED PART - Fixed smooth scrolling with requestAnimationFrame
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("Scroll click triggered for ID:", id);
-
         const targetH2 = document.getElementById(id);
         if (targetH2) {
           console.log("Target element found:", targetH2);
-
           requestAnimationFrame(() => {
             const offset = 200;
             const targetPosition =
@@ -141,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function () {
               window.pageYOffset -
               offset;
             console.log("Scrolling to position:", targetPosition);
-
             window.scrollTo({
               top: targetPosition,
               behavior: "smooth",
@@ -150,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
       // END OF MODIFIED PART
-
       tocWrapper.appendChild(newCell);
     });
     templateCell.remove();
