@@ -365,6 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Policy Accordions
+//Policy Accordions
 document.addEventListener("DOMContentLoaded", () => {
   // Height storage maps
   const summaryHeights = new Map();
@@ -477,7 +478,11 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-summ-offset], [data-ow-offset]",
   );
 
-  // Get all parent containers that might change visibility
+  // Get all tab panes that contain accordions
+  const tabPanes = document.querySelectorAll("[data-tab-pane]");
+  console.log("Found tab panes:", tabPanes.length);
+
+  // Also get parent containers that might change visibility
   const parentContainers = [];
   accordionContainers.forEach((accordion) => {
     let parent = accordion.parentElement;
@@ -492,7 +497,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let displayChanged = false;
 
     mutations.forEach((mutation) => {
+      // Check for tab pane state changes
       if (
+        mutation.type === "attributes" &&
+        mutation.attributeName === "data-tab-state"
+      ) {
+        const newValue = mutation.target.getAttribute("data-tab-state");
+        console.log(`Tab pane state changed to: ${newValue}`);
+        if (newValue === "show") {
+          displayChanged = true;
+          console.log("Tab pane became visible, will recalculate heights");
+        }
+      }
+      // Also check for style/class changes that affect visibility
+      else if (
         mutation.type === "attributes" &&
         (mutation.attributeName === "style" ||
           mutation.attributeName === "class")
@@ -506,16 +524,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (displayChanged) {
-      // Short delay to ensure DOM is fully updated
+      // Longer delay to ensure DOM is fully updated after tab switch
       setTimeout(() => {
         console.log("Recalculating heights after display change");
         calculateAccordionHeights();
         updateOpenAccordions();
-      }, 50);
+      }, 150);
     }
   });
 
-  // Observe parents for style and class changes
+  // Observe tab panes for attribute changes (especially data-tab-state)
+  tabPanes.forEach((pane) => {
+    observer.observe(pane, {
+      attributes: true,
+      attributeFilter: ["data-tab-state", "style", "class"],
+    });
+    console.log("Observing tab pane for visibility changes:", pane);
+  });
+
+  // Also observe parents for style and class changes
   parentContainers.forEach((container) => {
     observer.observe(container, {
       attributes: true,
@@ -541,15 +568,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Tab change listeners
-  document
-    .querySelectorAll("[data-summ-load], [data-ow-load]")
-    .forEach((tab) => {
-      tab.addEventListener("mousedown", () => {
-        console.log("Tab change detected");
-        // Still keep the timeout as a fallback
-        setTimeout(initializeAccordions, 100);
-      });
+  document.querySelectorAll("[data-tab-link]").forEach((tab) => {
+    tab.addEventListener("mousedown", () => {
+      const tabId = tab.getAttribute("data-tab-link");
+      console.log(`Tab change detected to tab ${tabId}`);
+      // Still keep the timeout as a fallback but with longer delay
+      setTimeout(() => {
+        console.log(`Tab change fallback timer for tab ${tabId} executing`);
+        initializeAccordions();
+      }, 250);
     });
+  });
 
   // Initial setup
   initializeAccordions();
