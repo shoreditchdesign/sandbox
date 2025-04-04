@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .progress(1);
     // Track scroll position and direction
     let lastScrollTop = 0;
-    const downScrollThreshold = 600; // Pixels to scroll down before hiding
-    const upScrollThreshold = 300; // Pixels to scroll up before showing
+    const downScrollThreshold = 200; // Pixels to scroll down before hiding
+    const upScrollThreshold = 800; // Pixels to scroll up before showing
     let accumulatedScroll = 0; // Track accumulated scroll in each direction
     let navbarVisible = true;
     window.addEventListener("scroll", () => {
