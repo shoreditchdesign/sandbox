@@ -677,70 +677,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Cards (Features Sequence)
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
-    return;
-  }
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Set initial state for all cards
-  const cardGroups = document.querySelectorAll("[data-motion-seq='cards']");
-  if (!cardGroups.length) {
-    console.error("No card groups found with [data-motion-seq='cards']");
-    return;
-  }
-
-  // Initialize all card groups to be hidden initially
-  cardGroups.forEach((cardGroup) => {
-    const seqIndex = cardGroup.getAttribute("data-seq-index");
-    gsap.set(cardGroup, {
-      y: "100%",
-    });
-
-    // Set z-index based on sequence index
-    const zIndex = parseInt(seqIndex) * 2;
-    cardGroup.style.zIndex = zIndex;
-  });
-
-  // Create scroll animations for each card group
-  cardGroups.forEach((cardGroup) => {
-    const seqIndex = cardGroup.getAttribute("data-seq-index");
-    const scrollUnit = document.querySelector(
-      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
-    );
-
-    if (!scrollUnit) {
-      console.error(`No scroll unit found for card group ${seqIndex}`);
-      return;
-    }
-
-    // Create card animation timeline
-    const tl = gsap.timeline({ paused: true });
-    tl.to(cardGroup, {
-      y: 0,
-      duration: 0.8,
-      ease: "power2.inOut",
-    });
-
-    // Create ScrollTrigger
-    ScrollTrigger.create({
-      trigger: scrollUnit,
-      start: "top 80%",
-      end: "top 20%",
-      markers: false,
-      onEnter: () => {
-        tl.play();
-      },
-      onLeaveBack: () => {
-        tl.reverse();
-      },
-    });
-  });
-});
-
 //GSAP for Navigation (Features Sequence)
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -835,6 +771,170 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+});
+
+//GSAP for Scale Hover
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined") {
+    console.error("GSAP library is not loaded");
+    return;
+  }
+  const scaleElements = document.querySelectorAll("[data-motion-scale]");
+  if (!scaleElements || scaleElements.length === 0) {
+    return;
+  }
+  scaleElements.forEach((element, index) => {
+    try {
+      // Use simple tweens instead of quickTo
+      element.addEventListener("mouseenter", () => {
+        gsap.to(element, {
+          scale: 1.05,
+          duration: 0.6,
+          ease: "power2.inOut",
+        });
+      });
+      element.addEventListener("mouseleave", () => {
+        gsap.to(element, {
+          scale: 1,
+          duration: 0.6,
+          ease: "power2.inOut",
+        });
+      });
+    } catch (error) {
+      console.error(
+        `Error in scale animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
+});
+
+//GSAP for blog progress
+document.addEventListener("DOMContentLoaded", function () {
+  // Get references to the elements
+  const progressContainer = document.querySelector(
+    '[data-duration-el="progress"]',
+  );
+  const progressBar = document.querySelector('[data-duration-el="bar"]');
+  const scrollContent = document.querySelector('[data-duration-el="scroll"]');
+
+  // Initialize GSAP
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Check if content is long enough to need a progress bar
+  const checkContentHeight = () => {
+    if (!scrollContent || !progressBar) return;
+
+    // Get content height and viewport height
+    const contentHeight = scrollContent.offsetHeight;
+    const viewportHeight = window.innerHeight;
+
+    // If content is less than 120vh, hide progress bar and skip animation
+    if (contentHeight < viewportHeight * 1.2) {
+      console.log("Content too short for progress bar, hiding");
+      gsap.set(progressBar, { width: 0 });
+      if (progressContainer) {
+        progressContainer.style.display = "none";
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  // Set initial state
+  gsap.set(progressBar, { width: 0 });
+
+  // Only create scroll animation if content is long enough
+  if (checkContentHeight()) {
+    // Create the scroll animation
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: scrollContent,
+        start: "top top",
+        end: "bottom 70%",
+        scrub: true,
+        onEnter: () => console.log("Scroll content entered viewport"),
+        onLeave: () => console.log("Scroll content left viewport"),
+        onEnterBack: () => console.log("Scroll content entered viewport again"),
+        onLeaveBack: () => console.log("Scroll content left viewport again"),
+      },
+    });
+
+    // Animation to scale the progress bar
+    tl.to(progressBar, {
+      width: "100%",
+      ease: "none",
+    });
+  }
+
+  // Update on resize
+  window.addEventListener("resize", checkContentHeight);
+});
+
+/*
+//GSAP for Cards (Features Sequence)
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) not loaded");
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Set initial state for all cards
+  const cardGroups = document.querySelectorAll("[data-motion-seq='cards']");
+  if (!cardGroups.length) {
+    console.error("No card groups found with [data-motion-seq='cards']");
+    return;
+  }
+
+  // Initialize all card groups to be hidden initially
+  cardGroups.forEach((cardGroup) => {
+    const seqIndex = cardGroup.getAttribute("data-seq-index");
+    gsap.set(cardGroup, {
+      y: "100%",
+    });
+
+    // Set z-index based on sequence index
+    const zIndex = parseInt(seqIndex) * 2;
+    cardGroup.style.zIndex = zIndex;
+  });
+
+  // Create scroll animations for each card group
+  cardGroups.forEach((cardGroup) => {
+    const seqIndex = cardGroup.getAttribute("data-seq-index");
+    const scrollUnit = document.querySelector(
+      `[data-seq-index='${seqIndex}'][data-motion-seq='scroll']`,
+    );
+
+    if (!scrollUnit) {
+      console.error(`No scroll unit found for card group ${seqIndex}`);
+      return;
+    }
+
+    // Create card animation timeline
+    const tl = gsap.timeline({ paused: true });
+    tl.to(cardGroup, {
+      y: 0,
+      duration: 0.8,
+      ease: "power2.inOut",
+    });
+
+    // Create ScrollTrigger
+    ScrollTrigger.create({
+      trigger: scrollUnit,
+      start: "top 80%",
+      end: "top 20%",
+      markers: false,
+      onEnter: () => {
+        tl.play();
+      },
+      onLeaveBack: () => {
+        tl.reverse();
+      },
+    });
+  });
 });
 
 //GSAP for Images (Features Section)
@@ -1043,101 +1143,4 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Scale Hover
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof gsap === "undefined") {
-    console.error("GSAP library is not loaded");
-    return;
-  }
-  const scaleElements = document.querySelectorAll("[data-motion-scale]");
-  if (!scaleElements || scaleElements.length === 0) {
-    return;
-  }
-  scaleElements.forEach((element, index) => {
-    try {
-      // Use simple tweens instead of quickTo
-      element.addEventListener("mouseenter", () => {
-        gsap.to(element, {
-          scale: 1.05,
-          duration: 0.6,
-          ease: "power2.inOut",
-        });
-      });
-      element.addEventListener("mouseleave", () => {
-        gsap.to(element, {
-          scale: 1,
-          duration: 0.6,
-          ease: "power2.inOut",
-        });
-      });
-    } catch (error) {
-      console.error(
-        `Error in scale animation setup for element ${index + 1}:`,
-        error,
-      );
-    }
-  });
-});
-
-//GSAP for blog progress
-document.addEventListener("DOMContentLoaded", function () {
-  // Get references to the elements
-  const progressContainer = document.querySelector(
-    '[data-duration-el="progress"]',
-  );
-  const progressBar = document.querySelector('[data-duration-el="bar"]');
-  const scrollContent = document.querySelector('[data-duration-el="scroll"]');
-
-  // Initialize GSAP
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Check if content is long enough to need a progress bar
-  const checkContentHeight = () => {
-    if (!scrollContent || !progressBar) return;
-
-    // Get content height and viewport height
-    const contentHeight = scrollContent.offsetHeight;
-    const viewportHeight = window.innerHeight;
-
-    // If content is less than 120vh, hide progress bar and skip animation
-    if (contentHeight < viewportHeight * 1.2) {
-      console.log("Content too short for progress bar, hiding");
-      gsap.set(progressBar, { width: 0 });
-      if (progressContainer) {
-        progressContainer.style.display = "none";
-      }
-      return false;
-    }
-
-    return true;
-  };
-
-  // Set initial state
-  gsap.set(progressBar, { width: 0 });
-
-  // Only create scroll animation if content is long enough
-  if (checkContentHeight()) {
-    // Create the scroll animation
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: scrollContent,
-        start: "top top",
-        end: "bottom 70%",
-        scrub: true,
-        onEnter: () => console.log("Scroll content entered viewport"),
-        onLeave: () => console.log("Scroll content left viewport"),
-        onEnterBack: () => console.log("Scroll content entered viewport again"),
-        onLeaveBack: () => console.log("Scroll content left viewport again"),
-      },
-    });
-
-    // Animation to scale the progress bar
-    tl.to(progressBar, {
-      width: "100%",
-      ease: "none",
-    });
-  }
-
-  // Update on resize
-  window.addEventListener("resize", checkContentHeight);
-});
+*/
