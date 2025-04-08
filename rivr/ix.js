@@ -612,11 +612,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Poll every 500ms as absolute fallback
   const pollInterval = setInterval(pollForVisibilityChanges, 500);
 
-  // Clean up interval when page is unloaded
-  window.addEventListener("unload", () => {
-    clearInterval(pollInterval);
-  });
-
   // Observe tab panes for attribute changes (especially data-tab-state)
   tabPanes.forEach((pane) => {
     observer.observe(pane, {
