@@ -190,6 +190,9 @@ document.addEventListener("DOMContentLoaded", function () {
         enabled: true,
         onlyInViewport: true,
       },
+      a11y: {
+        slideRole: "link",
+      },
       breakpoints: {
         // mobile landscape
         480: {
