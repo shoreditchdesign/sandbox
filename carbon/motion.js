@@ -1,4 +1,4 @@
-console.log("graphene1 deployed");
+console.log("motion deployed");
 
 document.addEventListener("DOMContentLoaded", () => {
   // Only execute popup code if the element exists
@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Graphene Preloader
+console.log("grapehene deployed");
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration Variables
   const ANIMATION = {
