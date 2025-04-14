@@ -1,7 +1,4 @@
-console.log("graphene deployed");
-
-//Graphene Preloader
-console.log("graphene deployed");
+console.log("graphene1 deployed");
 
 // Conversion Pop-up
 gsap.registerPlugin(ScrollTrigger);
