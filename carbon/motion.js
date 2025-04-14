@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "background: #333; color: #3498db; font-size: 16px;",
   );
 
+  console.log("graphene deployed");
+
   // Configuration variables for the animation
   const ANIMATION = {
     duration: 3, // Total duration in seconds
