@@ -47,18 +47,18 @@ document.addEventListener("DOMContentLoaded", () => {
       yStart: "80vh",
       yEnd: "-10vh",
       startTime: 0,
-      endTime: 1.2,
+      endTime: 4,
       ease: "power2.out",
     },
     angulars: {
       p1s1: {
         startFade: 0,
-        endFade: 1.5,
+        endFade: 5,
         ease: "power2.out",
       },
       p2s2: {
         startFade: 2,
-        endFade: 3,
+        endFade: 6,
         ease: "power2.out",
       },
     },
