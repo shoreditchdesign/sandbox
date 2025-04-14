@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     duration: 6,
     p1: {
       yStart: "-150vh",
-      yEnd: "-50vh",
+      yEnd: "-80vh",
       startTime: 0,
       endTime: 6,
       ease: "power1.inOut", // Slower first half, faster second half
