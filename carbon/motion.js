@@ -1,30 +1,19 @@
 console.log("graphene1 deployed");
 
-// Check if popup element exists
-const popup = document.querySelector(".c-nw_share-wrap");
-console.log("Popup element found:", popup);
-
-// Only proceed if popup exists
-if (popup) {
-  const popupHeight = popup.offsetHeight;
-  console.log("Popup height:", popupHeight);
-
-  const conversionDistance =
-    parseFloat(popup.getAttribute("data-conversion-distance")) || 1.5;
-  console.log("Conversion distance:", conversionDistance);
-
-  // Check GSAP availability
-  console.log("GSAP available:", typeof gsap !== "undefined");
-  console.log("ScrollTrigger available:", typeof ScrollTrigger !== "undefined");
-
-  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+document.addEventListener("DOMContentLoaded", () => {
+  // Only execute popup code if the element exists
+  const popup = document.querySelector(".c-nw_share-wrap");
+  if (popup) {
+    // Conversion Pop-up
     gsap.registerPlugin(ScrollTrigger);
+    const popupHeight = popup.offsetHeight;
+    const conversionDistance =
+      parseFloat(popup.getAttribute("data-conversion-distance")) || 1.5;
     gsap.fromTo(
       popup,
       { y: popupHeight },
       { y: 0, duration: 0.5, paused: true },
     );
-
     ScrollTrigger.create({
       trigger: document.body,
       start: "top top",
@@ -37,7 +26,9 @@ if (popup) {
         }
       },
     });
+    console.log("Popup initialized");
   }
-}
+});
 
 console.log("graphene2 deployed");
+//Graphene Preloader
