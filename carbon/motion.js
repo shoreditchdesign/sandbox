@@ -35,15 +35,18 @@ console.log("grapehene deployed");
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration Variables
   const ANIMATION = {
-    duration: 3,
+    duration: 6,
     p1: {
       yStart: "-150vh",
       yEnd: "-50vh",
+      startTime: 0,
+      endTime: 6,
       ease: "power1.inOut", // Slower first half, faster second half
     },
     p2: {
       yStart: "80vh",
       yEnd: "-10vh",
+      startTime: 0,
       endTime: 1.2,
       ease: "power2.out",
     },
@@ -130,11 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectors.hexElements.p1,
       {
         y: ANIMATION.p1.yEnd,
-        duration: ANIMATION.duration,
+        duration: ANIMATION.p1.endTime - ANIMATION.p1.startTime,
         ease: ANIMATION.p1.ease,
         force3D: true,
       },
-      0,
+      ANIMATION.p1.startTime,
     );
 
     // P2 animation
@@ -142,11 +145,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectors.hexElements.p2,
       {
         y: ANIMATION.p2.yEnd,
-        duration: ANIMATION.p2.endTime,
+        duration: ANIMATION.p2.endTime - ANIMATION.p2.startTime,
         ease: ANIMATION.p2.ease,
         force3D: true,
       },
-      0,
+      ANIMATION.p2.startTime,
     );
 
     // Angular fade animations
