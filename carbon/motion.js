@@ -1,5 +1,8 @@
 console.log("motion deployed");
 
+//Graphene Preloader
+console.log("graphene deployed");
+
 // Conversion Pop-up
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,6 +26,3 @@ ScrollTrigger.create({
     }
   },
 });
-
-//Graphene Preloader
-console.log("graphene deployed");
