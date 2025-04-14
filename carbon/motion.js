@@ -1,4 +1,4 @@
-console.log("motion deployed");
+console.log("graphene deployed");
 
 //Graphene Preloader
 console.log("graphene deployed");
