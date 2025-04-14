@@ -25,7 +25,6 @@ ScrollTrigger.create({
 });
 
 //Graphene Preloader
-//Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   console.log(
     "%c DOM LOADED ",
