@@ -50,6 +50,20 @@ document.addEventListener("DOMContentLoaded", () => {
       endTime: 4,
       ease: "power2.out",
     },
+    s1: {
+      yStart: "30vh",
+      yEnd: "0vh",
+      startTime: 0,
+      endTime: 5,
+      ease: "power1.inOut",
+    },
+    s2: {
+      yStart: "0vh",
+      yEnd: "0vh",
+      startTime: 0,
+      endTime: 5,
+      ease: "power1.inOut",
+    },
     angulars: {
       p1s1: {
         startFade: 0,
@@ -102,6 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial states
     gsap.set(selectors.hexElements.p1, { y: ANIMATION.p1.yStart });
     gsap.set(selectors.hexElements.p2, { y: ANIMATION.p2.yStart });
+    gsap.set(selectors.hexElements.s1, { y: ANIMATION.s1.yStart });
+    gsap.set(selectors.hexElements.s2, { y: ANIMATION.s2.yStart });
     gsap.set(
       [
         selectors.angElements.p1,
@@ -150,6 +166,30 @@ document.addEventListener("DOMContentLoaded", () => {
         force3D: true,
       },
       ANIMATION.p2.startTime,
+    );
+
+    // S1 animation
+    timeline.to(
+      selectors.hexElements.s1,
+      {
+        y: ANIMATION.s1.yEnd,
+        duration: ANIMATION.s1.endTime - ANIMATION.s1.startTime,
+        ease: ANIMATION.s1.ease,
+        force3D: true,
+      },
+      ANIMATION.s1.startTime,
+    );
+
+    // S2 animation
+    timeline.to(
+      selectors.hexElements.s2,
+      {
+        y: ANIMATION.s2.yEnd,
+        duration: ANIMATION.s2.endTime - ANIMATION.s2.startTime,
+        ease: ANIMATION.s2.ease,
+        force3D: true,
+      },
+      ANIMATION.s2.startTime,
     );
 
     // Angular fade animations
