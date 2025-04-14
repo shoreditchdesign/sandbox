@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     angulars: {
       p1s1: {
         startFade: 0,
-        endFade: 5,
+        endFade: 12,
         ease: "power2.out",
       },
       p2s2: {
