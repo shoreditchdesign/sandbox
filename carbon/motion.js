@@ -514,3 +514,80 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//GSAP tp Slide Down
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+
+  const slideElements = document.querySelectorAll(
+    '[data-motion-element="slide"]',
+  );
+
+  if (!slideElements || slideElements.length === 0) {
+    console.error('Could not find elements with data-motion-element="slide"');
+    return;
+  }
+
+  console.log(`Found ${slideElements.length} slide motion elements`);
+
+  const animatableElements = Array.from(slideElements).filter((element) => {
+    const motionState = element.getAttribute("data-motion-state");
+    const isBlocked = motionState === "blocked";
+    return !isBlocked;
+  });
+
+  console.log(`Found ${animatableElements.length} animatable slide elements`);
+
+  animatableElements.forEach((element, index) => {
+    try {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
+
+      console.log(`Slide element ${index + 1} delay value: ${delay}s`, element);
+
+      gsap.set(element, {
+        opacity: 1,
+        y: -100,
+      });
+
+      const tl = gsap.timeline({
+        paused: true,
+      });
+
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 95%",
+        markers: false,
+        once: true,
+        onEnter: () => {
+          console.log(
+            `Triggering slide animation for element ${index + 1} with delay: ${delay}s`,
+          );
+          setTimeout(() => {
+            console.log(
+              `Playing slide animation for element ${index + 1} after delay`,
+            );
+            tl.play(0);
+          }, delay * 1000);
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error in slide animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
+});
