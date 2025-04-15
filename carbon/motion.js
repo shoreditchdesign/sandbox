@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", function () {
       tl.to(element, {
         opacity: 1,
         y: 0,
-        duration: 0.5,
+        duration: 0.8,
         ease: "power2.out",
       });
 
@@ -567,7 +567,7 @@ document.addEventListener("DOMContentLoaded", function () {
       tl.to(element, {
         opacity: 1,
         yPercent: 0,
-        duration: 0.5,
+        duration: 0.8,
         ease: "power2.out",
       });
 
