@@ -552,7 +552,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       gsap.set(element, {
         opacity: 1,
-        y: -120,
+        yPercent: -120,
       });
 
       const tl = gsap.timeline({
@@ -561,7 +561,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         opacity: 1,
-        y: 0,
+        yPercent: 0,
         duration: 0.5,
         ease: "power2.out",
       });
