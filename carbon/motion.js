@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isDesktop()) {
     // Select navbars that don't have the blocked attribute
     const navbars = document.querySelectorAll(
-      '[data-nav-element="navbar"]:not([data-slide-block="blocked"])',
+      '[data-nav-element="navbar-wrap"]:not([data-slide-block="blocked"])',
     );
     if (navbars.length === 0) return;
     const showAnim = gsap
