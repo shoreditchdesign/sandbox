@@ -314,25 +314,30 @@ window.addEventListener("DOMContentLoaded", () => {
       types: "lines",
       tagName: "span",
     });
+
     document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("u-line-mask");
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
+
     document.querySelectorAll("[data-motion-text]").forEach((element) => {
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
+
       console.log(`Animation for element with delay: ${delay}s`, element);
+
       const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
         y: "200%",
         opacity: 0,
-        duration: 0.5,
+        duration: 0.8,
         ease: "power1.out",
         stagger: 0.1,
       });
+
       ScrollTrigger.create({
         trigger: element,
         start: "top 90%",
