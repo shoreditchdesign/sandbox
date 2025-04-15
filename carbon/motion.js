@@ -29,8 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-console.log("grapehene deployed");
+//GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
+  //Variables
   const ANIMATION = {
     duration: 6,
     p1: {
@@ -75,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  //Query Selectors
   const selectors = {
     component: "[data-gpl-component]",
     hexGroup: "[data-gpl-group]",
@@ -92,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  //Initialisers
   const initPreloader = () => {
     const preloaderComponent = document.querySelector(selectors.component);
     if (!preloaderComponent) {
@@ -135,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
+    //P1 Aniamtion
     timeline.to(
       selectors.hexElements.p1,
       {
@@ -146,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.p1.startTime,
     );
 
+    //P2 Aniamtion
     timeline.to(
       selectors.hexElements.p2,
       {
@@ -157,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.p2.startTime,
     );
 
+    //S1 Aniamtion
     timeline.to(
       selectors.hexElements.s1,
       {
@@ -168,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.s1.startTime,
     );
 
+    //S2 Aniamtion
     timeline.to(
       selectors.hexElements.s2,
       {
@@ -179,6 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.s2.startTime,
     );
 
+    //Angulars Aniamtion
     timeline.to(
       [selectors.angElements.p1, selectors.angElements.s1],
       {
