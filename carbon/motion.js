@@ -228,18 +228,15 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Desktop view detected - initializing navbar animation");
 
     const navbars = document.querySelectorAll(
-      '[data-nav-element="navbar-wrap"]:not([data-slide-block="blocked"])',
+      '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
     );
-
     if (navbars.length === 0) {
       console.log("No navbar elements found - animation aborted");
       return;
     }
 
     console.log(`Found ${navbars.length} navbar elements to animate`);
-
     gsap.set(navbars, { yPercent: 0 });
-
     const showAnim = gsap
       .from(navbars, {
         yPercent: -100,
@@ -258,9 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
       const scrollAmount = Math.abs(scrollTop - lastScrollTop);
-
       console.log(`Direction: ${scrollDirection}, Amount: ${scrollAmount}`);
-
       if (
         (scrollDirection === "down" && accumulatedScroll < 0) ||
         (scrollDirection === "up" && accumulatedScroll > 0)
@@ -271,7 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       accumulatedScroll +=
         scrollDirection === "down" ? scrollAmount : -scrollAmount;
-
       console.log(`Accumulated: ${accumulatedScroll}`);
 
       if (accumulatedScroll > downScrollThreshold && navbarVisible) {
@@ -290,7 +284,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       lastScrollTop = scrollTop;
     });
-
     console.log("Navbar animation setup complete");
   } else {
     console.log("Mobile view detected - navbar animation not applied");
