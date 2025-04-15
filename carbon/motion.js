@@ -301,41 +301,42 @@ window.addEventListener("DOMContentLoaded", () => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-
     // Add data attribute to target elements - MODIFIED to exclude elements with data-stagger-block
-    document.querySelectorAll("h1, h2, p").forEach((element) => {
+    document.querySelectorAll("h1, h2").forEach((element) => {
       // Only apply to elements that don't have the data-stagger-block attribute
       if (!element.hasAttribute("data-stagger-block")) {
-        element.setAttribute("data-stagger-fade", "");
+        element.setAttribute("data-stagger-text", "");
       }
     });
   }, 0);
 });
-
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-
-    // Split text by LINES ONLY
-    const splitLines = new SplitType("[data-stagger-fade]", {
-      types: "lines", // Explicitly specify ONLY lines (not words or chars)
+    // Split text by lines
+    const splitLines = new SplitType("[data-stagger-text]", {
+      types: "lines",
       tagName: "span",
     });
-
     // Create wrappers for each line
-    document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+    document.querySelectorAll("[data-stagger-text] .line").forEach((line) => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("u-line-mask");
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
-
     // Create animations
-    document.querySelectorAll("[data-stagger-fade]").forEach((element) => {
-      const tl = gsap.timeline({ paused: true });
+    document.querySelectorAll("[data-stagger-text]").forEach((element) => {
+      // Get delay value from data attribute or use 0 as default
+      const delay = element.getAttribute("data-stagger-delay")
+        ? parseFloat(element.getAttribute("data-stagger-delay"))
+        : 0;
+      console.log(`Animation for element with delay: ${delay}s`, element);
+
+      const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
         y: "200%",
         opacity: 0,
@@ -351,17 +352,15 @@ window.addEventListener("DOMContentLoaded", () => {
         once: true,
       });
     });
-
     // Function to revert split
     function splitRevert() {
-      document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+      document.querySelectorAll("[data-stagger-text] .line").forEach((line) => {
         const wrapper = line.parentNode;
         wrapper.replaceWith(...wrapper.childNodes);
       });
       splitLines.revert();
     }
-
     // Ensure elements are visible
-    gsap.set("[data-stagger-fade]", { opacity: 1 });
+    gsap.set("[data-stagger-text]", { opacity: 1 });
   }, 0);
 });
