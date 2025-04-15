@@ -301,15 +301,14 @@ window.addEventListener("DOMContentLoaded", () => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    // Add data attribute to target elements - MODIFIED to exclude elements with data-stagger-block
     document.querySelectorAll("h1, h2").forEach((element) => {
-      // Only apply to elements that don't have the data-stagger-block attribute
-      if (!element.hasAttribute("data-stagger-block")) {
+      if (element.getAttribute("data-motion-state") !== "blocked") {
         element.setAttribute("data-stagger-text", "");
       }
     });
   }, 0);
 });
+
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
@@ -365,7 +364,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 0);
 });
 
-//GSAP for Arrays
 //GSAP for Array
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and ScrollTrigger are loaded
@@ -432,4 +430,74 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }, 200);
+});
+
+//GSAP for single elememts
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and ScrollTrigger are loaded
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+
+  // Register ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Target all elements with data-motion-element="single" attribute
+  const singleElements = document.querySelectorAll(
+    '[data-motion-element="single"]',
+  );
+
+  if (!singleElements || singleElements.length === 0) {
+    console.error('Could not find elements with data-motion-element="single"');
+    return;
+  }
+
+  // Filter elements that don't have data-motion-state="blocked"
+  const animatableElements = Array.from(singleElements).filter((element) => {
+    const motionState = element.getAttribute("data-motion-state");
+    const isBlocked = motionState === "blocked";
+    return !isBlocked;
+  });
+
+  // Process each eligible element
+  animatableElements.forEach((element, index) => {
+    try {
+      // Set initial state - invisible and slightly moved down
+      gsap.set(element, {
+        opacity: 0,
+        y: 20,
+      });
+
+      // Create the animation timeline (paused until scrolled to)
+      const tl = gsap.timeline({
+        paused: true,
+      });
+
+      // Add the animation
+      tl.to(element, {
+        opacity: 1,
+        delay: 0.2,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+
+      // Create ScrollTrigger
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 95%", // Start when the top of the element reaches 80% of viewport
+        markers: false, // Set to true for debugging
+        once: true, // Set replay to false by using once: true
+        onEnter: () => {
+          tl.play(0); // Play from the beginning
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error in animation setup for element ${index + 1}:`,
+        error,
+      );
+    }
+  });
 });
