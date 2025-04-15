@@ -364,3 +364,72 @@ window.addEventListener("DOMContentLoaded", () => {
     gsap.set("[data-stagger-text]", { opacity: 1 });
   }, 0);
 });
+
+//GSAP for Arrays
+//GSAP for Array
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and ScrollTrigger are loaded
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+  // Register ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+  // Wait a moment to ensure everything is loaded
+  setTimeout(() => {
+    // Target all elements with data-motion-element="array" attribute
+    const cardContainers = document.querySelectorAll(
+      '[data-motion-element="array"]',
+    );
+    if (!cardContainers || cardContainers.length === 0) {
+      console.error('Could not find elements with data-motion-element="array"');
+      return;
+    }
+    // Process each card container
+    cardContainers.forEach((container, containerIndex) => {
+      try {
+        // Get all direct children
+        const cardElements = Array.from(container.children);
+        if (!cardElements || cardElements.length === 0) {
+          console.error(
+            `Container ${containerIndex + 1} has no child elements`,
+          );
+          return;
+        }
+        // Set initial state - all cards invisible
+        gsap.set(cardElements, {
+          opacity: 0,
+          y: 20,
+        });
+        // Create the animation timeline (paused until scrolled to)
+        const tl = gsap.timeline({
+          paused: true,
+        });
+        // Add the staggered animation
+        tl.to(cardElements, {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.15,
+          ease: "power2.out",
+        });
+        // Create ScrollTrigger
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top 95%", // Start when the top of the container reaches 75% of viewport
+          markers: false, // Set to true for debugging
+          once: true, // Add once: true to prevent replaying the animation
+          onEnter: () => {
+            tl.play(0); // Play from the beginning
+          },
+          // Deliberately NOT using onRefresh to avoid playing for elements already in view
+        });
+      } catch (error) {
+        console.error(
+          `Error in card animation setup for container ${containerIndex + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 200);
+});
