@@ -1,10 +1,9 @@
 console.log("motion deployed");
 
+//GSAP for Banners
 document.addEventListener("DOMContentLoaded", () => {
-  // Only execute popup code if the element exists
   const popup = document.querySelector(".c-nw_share-wrap");
   if (popup) {
-    // Conversion Pop-up
     gsap.registerPlugin(ScrollTrigger);
     const popupHeight = popup.offsetHeight;
     const conversionDistance =
@@ -30,10 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//Graphene Preloader
 console.log("grapehene deployed");
 document.addEventListener("DOMContentLoaded", () => {
-  // Configuration Variables
   const ANIMATION = {
     duration: 6,
     p1: {
@@ -41,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       yEnd: "-80vh",
       startTime: 0,
       endTime: 6,
-      ease: "power1.inOut", // Slower first half, faster second half
+      ease: "power1.inOut",
     },
     p2: {
       yStart: "80vh",
@@ -78,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // DOM Selectors
   const selectors = {
     component: "[data-gpl-component]",
     hexGroup: "[data-gpl-group]",
@@ -96,9 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // Initialization Function
   const initPreloader = () => {
-    // Check if component exists
     const preloaderComponent = document.querySelector(selectors.component);
     if (!preloaderComponent) {
       console.error("Preloader component not found");
@@ -107,13 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Preloader component found:", preloaderComponent);
 
-    // Check if GSAP is available
     if (typeof gsap === "undefined") {
       console.error("GSAP library not loaded");
       return null;
     }
 
-    // Set initial states
     gsap.set(selectors.hexElements.p1, { y: ANIMATION.p1.yStart });
     gsap.set(selectors.hexElements.p2, { y: ANIMATION.p2.yStart });
     gsap.set(selectors.hexElements.s1, { y: ANIMATION.s1.yStart });
@@ -131,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return createPreloaderAnimation();
   };
 
-  // Timeline Creation
   const createPreloaderAnimation = () => {
     const timeline = gsap.timeline({
       onStart: () => console.log("Animation started"),
@@ -144,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
 
-    // P1 animation (single animation with custom ease)
     timeline.to(
       selectors.hexElements.p1,
       {
@@ -156,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.p1.startTime,
     );
 
-    // P2 animation
     timeline.to(
       selectors.hexElements.p2,
       {
@@ -168,7 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.p2.startTime,
     );
 
-    // S1 animation
     timeline.to(
       selectors.hexElements.s1,
       {
@@ -180,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.s1.startTime,
     );
 
-    // S2 animation
     timeline.to(
       selectors.hexElements.s2,
       {
@@ -192,7 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ANIMATION.s2.startTime,
     );
 
-    // Angular fade animations
     timeline.to(
       [selectors.angElements.p1, selectors.angElements.s1],
       {
@@ -220,20 +206,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return timeline;
   };
 
-  // Execution
   const preloaderTimeline = initPreloader();
   if (preloaderTimeline) {
     preloaderTimeline.play();
   }
 });
 
-// GSAP Navbar Slide
+//GSAP for Navbar slide
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if desktop (screen width >= 992px)
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
-  // Only run on desktop
   if (isDesktop()) {
-    // Select navbars that don't have the blocked attribute
     const navbars = document.querySelectorAll(
       '[data-nav-element="navbar-wrap"]:not([data-slide-block="blocked"])',
     );
@@ -245,21 +227,18 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 0.2,
       })
       .progress(1);
-    // Track scroll position and direction
     let lastScrollTop = 0;
-    const downScrollThreshold = 200; // Pixels to scroll down before hiding
-    const upScrollThreshold = 800; // Pixels to scroll up before showing
-    let accumulatedScroll = 0; // Track accumulated scroll in each direction
+    const downScrollThreshold = 200;
+    const upScrollThreshold = 800;
+    let accumulatedScroll = 0;
     let navbarVisible = true;
     window.addEventListener("scroll", () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-      // Calculate scroll amount since last check
       const scrollAmount = Math.abs(scrollTop - lastScrollTop);
 
       console.log(`Direction: ${scrollDirection}, Amount: ${scrollAmount}`);
 
-      // If direction changed, reset accumulated scroll
       if (
         (scrollDirection === "down" && accumulatedScroll < 0) ||
         (scrollDirection === "up" && accumulatedScroll > 0)
@@ -267,22 +246,20 @@ document.addEventListener("DOMContentLoaded", () => {
         accumulatedScroll = 0;
         console.log("Direction changed, reset accumulated scroll");
       }
-      // Accumulate scroll in the appropriate direction
       accumulatedScroll +=
         scrollDirection === "down" ? scrollAmount : -scrollAmount;
 
       console.log(`Accumulated: ${accumulatedScroll}`);
 
-      // Check if we've scrolled enough in each direction with separate thresholds
       if (accumulatedScroll > downScrollThreshold && navbarVisible) {
         showAnim.reverse();
         navbarVisible = false;
-        accumulatedScroll = 0; // Reset after action
+        accumulatedScroll = 0;
         console.log("Navbar hidden");
       } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
         showAnim.play();
         navbarVisible = true;
-        accumulatedScroll = 0; // Reset after action
+        accumulatedScroll = 0;
         console.log("Navbar shown");
       }
       lastScrollTop = scrollTop;
@@ -294,7 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Headings
-
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
@@ -303,38 +279,32 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     document.querySelectorAll("h1, h2").forEach((element) => {
       if (element.getAttribute("data-motion-state") !== "blocked") {
-        element.setAttribute("data-stagger-text", "");
+        element.setAttribute("data-motion-text", "");
       }
     });
   }, 0);
 });
-
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    // Split text by lines
-    const splitLines = new SplitType("[data-stagger-text]", {
+    const splitLines = new SplitType("[data-motion-text]", {
       types: "lines",
       tagName: "span",
     });
-    // Create wrappers for each line
-    document.querySelectorAll("[data-stagger-text] .line").forEach((line) => {
+    document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("u-line-mask");
       line.parentNode.insertBefore(wrapper, line);
       wrapper.appendChild(line);
     });
-    // Create animations
-    document.querySelectorAll("[data-stagger-text]").forEach((element) => {
-      // Get delay value from data attribute or use 0 as default
-      const delay = element.getAttribute("data-stagger-delay")
-        ? parseFloat(element.getAttribute("data-stagger-delay"))
+    document.querySelectorAll("[data-motion-text]").forEach((element) => {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
       console.log(`Animation for element with delay: ${delay}s`, element);
-
       const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
         y: "200%",
@@ -351,31 +321,25 @@ window.addEventListener("DOMContentLoaded", () => {
         once: true,
       });
     });
-    // Function to revert split
     function splitRevert() {
-      document.querySelectorAll("[data-stagger-text] .line").forEach((line) => {
+      document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
         const wrapper = line.parentNode;
         wrapper.replaceWith(...wrapper.childNodes);
       });
       splitLines.revert();
     }
-    // Ensure elements are visible
-    gsap.set("[data-stagger-text]", { opacity: 1 });
+    gsap.set("[data-motion-text]", { opacity: 1 });
   }, 0);
 });
 
-//GSAP for Array
+//GSAP for Arrays
 document.addEventListener("DOMContentLoaded", function () {
-  // Make sure GSAP and ScrollTrigger are loaded
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
   }
-  // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
-  // Wait a moment to ensure everything is loaded
   setTimeout(() => {
-    // Target all elements with data-motion-element="array" attribute
     const cardContainers = document.querySelectorAll(
       '[data-motion-element="array"]',
     );
@@ -383,10 +347,13 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error('Could not find elements with data-motion-element="array"');
       return;
     }
-    // Process each card container
     cardContainers.forEach((container, containerIndex) => {
       try {
-        // Get all direct children
+        const delay = container.getAttribute("data-motion-delay")
+          ? parseFloat(container.getAttribute("data-motion-delay"))
+          : 0;
+        console.log(`Animation for container with delay: ${delay}s`, container);
+
         const cardElements = Array.from(container.children);
         if (!cardElements || cardElements.length === 0) {
           console.error(
@@ -394,16 +361,14 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           return;
         }
-        // Set initial state - all cards invisible
         gsap.set(cardElements, {
           opacity: 0,
           y: 20,
         });
-        // Create the animation timeline (paused until scrolled to)
         const tl = gsap.timeline({
           paused: true,
+          delay: delay,
         });
-        // Add the staggered animation
         tl.to(cardElements, {
           opacity: 1,
           y: 0,
@@ -411,16 +376,14 @@ document.addEventListener("DOMContentLoaded", function () {
           stagger: 0.15,
           ease: "power2.out",
         });
-        // Create ScrollTrigger
         ScrollTrigger.create({
           trigger: container,
-          start: "top 95%", // Start when the top of the container reaches 75% of viewport
-          markers: false, // Set to true for debugging
-          once: true, // Add once: true to prevent replaying the animation
+          start: "top 95%",
+          markers: false,
+          once: true,
           onEnter: () => {
-            tl.play(0); // Play from the beginning
+            tl.play(0);
           },
-          // Deliberately NOT using onRefresh to avoid playing for elements already in view
         });
       } catch (error) {
         console.error(
@@ -432,65 +395,60 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 200);
 });
 
-//GSAP for single elememts
+//GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", function () {
-  // Make sure GSAP and ScrollTrigger are loaded
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
   }
 
-  // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
 
-  // Target all elements with data-motion-element="single" attribute
   const singleElements = document.querySelectorAll(
     '[data-motion-element="single"]',
   );
-
   if (!singleElements || singleElements.length === 0) {
     console.error('Could not find elements with data-motion-element="single"');
     return;
   }
 
-  // Filter elements that don't have data-motion-state="blocked"
   const animatableElements = Array.from(singleElements).filter((element) => {
     const motionState = element.getAttribute("data-motion-state");
     const isBlocked = motionState === "blocked";
     return !isBlocked;
   });
 
-  // Process each eligible element
   animatableElements.forEach((element, index) => {
     try {
-      // Set initial state - invisible and slightly moved down
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
+      console.log(`Animation for element with delay: ${delay}s`, element);
+
       gsap.set(element, {
         opacity: 0,
         y: 20,
       });
 
-      // Create the animation timeline (paused until scrolled to)
       const tl = gsap.timeline({
         paused: true,
+        delay: delay,
       });
 
-      // Add the animation
       tl.to(element, {
         opacity: 1,
-        delay: 0.2,
         y: 0,
         duration: 0.5,
         ease: "power2.out",
       });
 
-      // Create ScrollTrigger
       ScrollTrigger.create({
         trigger: element,
-        start: "top 95%", // Start when the top of the element reaches 80% of viewport
-        markers: false, // Set to true for debugging
-        once: true, // Set replay to false by using once: true
+        start: "top 95%",
+        markers: false,
+        once: true,
         onEnter: () => {
-          tl.play(0); // Play from the beginning
+          tl.play(0);
         },
       });
     } catch (error) {
