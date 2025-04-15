@@ -220,6 +220,142 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//GSAP for Grapehen Parallax
+//GSAP for Graphene Parallax
+document.addEventListener("DOMContentLoaded", () => {
+  //Variables
+  const PARALLAX = {
+    scrollDuration: "100%",
+    p1: {
+      speed: 0.5,
+      ease: "none",
+    },
+    p2: {
+      speed: 0.3,
+      ease: "none",
+    },
+    s1: {
+      speed: 0.2,
+      ease: "none",
+    },
+    s2: {
+      speed: 0.1,
+      ease: "none",
+    },
+  };
+
+  //Query Selectors
+  const selectors = {
+    component: "[data-gpl-component]",
+    hexGroup: "[data-gpl-group]",
+    hexElements: {
+      p1: '[data-gpl-hex="p1"]',
+      p2: '[data-gpl-hex="p2"]',
+      s1: '[data-gpl-hex="s1"]',
+      s2: '[data-gpl-hex="s2"]',
+    },
+    angElements: {
+      p1: '[data-gpl-ang="p1"]',
+      p2: '[data-gpl-ang="p2"]',
+      s1: '[data-gpl-ang="s1"]',
+      s2: '[data-gpl-ang="s2"]',
+    },
+  };
+
+  //Initialisers
+  const initParallax = () => {
+    const parallaxComponent = document.querySelector(selectors.component);
+    if (!parallaxComponent) {
+      console.error("Parallax component not found");
+      return null;
+    }
+
+    console.log("Parallax component found:", parallaxComponent);
+
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.error("GSAP or ScrollTrigger library not loaded");
+      return null;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    return createParallaxAnimation(parallaxComponent);
+  };
+
+  const createParallaxAnimation = (triggerElement) => {
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: triggerElement,
+        start: "top top",
+        end: `bottom+=${window.innerHeight * 2} bottom`,
+        scrub: true,
+        markers: false,
+        onUpdate: (self) => {
+          const progress = Math.round(self.progress * 100);
+          if (progress % 25 === 0) {
+            console.log(`Scroll progress: ${progress}%`);
+          }
+        },
+      },
+      onStart: () => console.log("Parallax animation started"),
+      onComplete: () => console.log("Parallax animation completed"),
+    });
+
+    // Add p1 parallax
+    addHexParallax(timeline, selectors.hexElements.p1, PARALLAX.p1);
+
+    // Add p2 parallax
+    addHexParallax(timeline, selectors.hexElements.p2, PARALLAX.p2);
+
+    // Add s1 parallax
+    addHexParallax(timeline, selectors.hexElements.s1, PARALLAX.s1);
+
+    // Add s2 parallax
+    addHexParallax(timeline, selectors.hexElements.s2, PARALLAX.s2);
+
+    return timeline;
+  };
+
+  // Composable function for hex parallax
+  const addHexParallax = (timeline, selector, config) => {
+    const element = document.querySelector(selector);
+    if (!element) {
+      console.error(`Element not found: ${selector}`);
+      return;
+    }
+
+    const yTravel = config.speed * window.innerHeight;
+
+    timeline.to(
+      selector,
+      {
+        y: `+=${yTravel}`,
+        ease: config.ease,
+        force3D: true,
+      },
+      0,
+    );
+
+    console.log(`Added parallax for ${selector} with speed ${config.speed}`);
+    return timeline;
+  };
+
+  // Initialize parallax with a 6-second delay
+  setTimeout(() => {
+    console.log("Starting parallax animation after 6-second delay");
+    const parallaxTimeline = initParallax();
+
+    // Handle window resize to update parallax values
+    window.addEventListener("resize", () => {
+      if (parallaxTimeline) {
+        // Refresh ScrollTrigger and update values
+        ScrollTrigger.refresh();
+        console.log("Parallax values updated after resize");
+      }
+    });
+  }, 6000);
+});
+
 //GSAP for Navbar slide
 document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
