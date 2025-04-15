@@ -223,11 +223,23 @@ document.addEventListener("DOMContentLoaded", () => {
 //GSAP for Navbar slide
 document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
   if (isDesktop()) {
+    console.log("Desktop view detected - initializing navbar animation");
+
     const navbars = document.querySelectorAll(
       '[data-nav-element="navbar-wrap"]:not([data-slide-block="blocked"])',
     );
-    if (navbars.length === 0) return;
+
+    if (navbars.length === 0) {
+      console.log("No navbar elements found - animation aborted");
+      return;
+    }
+
+    console.log(`Found ${navbars.length} navbar elements to animate`);
+
+    gsap.set(navbars, { yPercent: 0 });
+
     const showAnim = gsap
       .from(navbars, {
         yPercent: -100,
@@ -235,11 +247,13 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 0.2,
       })
       .progress(1);
+
     let lastScrollTop = 0;
     const downScrollThreshold = 200;
     const upScrollThreshold = 800;
     let accumulatedScroll = 0;
     let navbarVisible = true;
+
     window.addEventListener("scroll", () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
@@ -254,27 +268,32 @@ document.addEventListener("DOMContentLoaded", () => {
         accumulatedScroll = 0;
         console.log("Direction changed, reset accumulated scroll");
       }
+
       accumulatedScroll +=
         scrollDirection === "down" ? scrollAmount : -scrollAmount;
 
       console.log(`Accumulated: ${accumulatedScroll}`);
 
       if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+        console.log("Hiding navbar - threshold reached");
         showAnim.reverse();
         navbarVisible = false;
         accumulatedScroll = 0;
         console.log("Navbar hidden");
       } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+        console.log("Showing navbar - threshold reached");
         showAnim.play();
         navbarVisible = true;
         accumulatedScroll = 0;
         console.log("Navbar shown");
       }
+
       lastScrollTop = scrollTop;
     });
-    setTimeout(() => {
-      gsap.set(navbars, { yPercent: 0 });
-    }, 10);
+
+    console.log("Navbar animation setup complete");
+  } else {
+    console.log("Mobile view detected - navbar animation not applied");
   }
 });
 
@@ -347,36 +366,52 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
   gsap.registerPlugin(ScrollTrigger);
+
   setTimeout(() => {
     const cardContainers = document.querySelectorAll(
       '[data-motion-element="array"]',
     );
+
     if (!cardContainers || cardContainers.length === 0) {
       console.error('Could not find elements with data-motion-element="array"');
       return;
     }
+
+    console.log(`Found ${cardContainers.length} array containers`);
+
     cardContainers.forEach((container, containerIndex) => {
       try {
         const delay = container.getAttribute("data-motion-delay")
           ? parseFloat(container.getAttribute("data-motion-delay"))
           : 0;
-        console.log(`Animation for container with delay: ${delay}s`, container);
+
+        console.log(
+          `Container ${containerIndex + 1} delay value: ${delay}s`,
+          container,
+        );
 
         const cardElements = Array.from(container.children);
+
         if (!cardElements || cardElements.length === 0) {
           console.error(
             `Container ${containerIndex + 1} has no child elements`,
           );
           return;
         }
+
+        console.log(
+          `Container ${containerIndex + 1} has ${cardElements.length} elements to animate`,
+        );
+
         gsap.set(cardElements, {
           opacity: 0,
           y: 20,
         });
+
         const tl = gsap.timeline({
           paused: true,
-          delay: delay,
         });
+
         tl.to(cardElements, {
           opacity: 1,
           y: 0,
@@ -384,13 +419,22 @@ document.addEventListener("DOMContentLoaded", function () {
           stagger: 0.15,
           ease: "power2.out",
         });
+
         ScrollTrigger.create({
           trigger: container,
           start: "top 95%",
           markers: false,
           once: true,
           onEnter: () => {
-            tl.play(0);
+            console.log(
+              `Triggering animation for container ${containerIndex + 1} with delay: ${delay}s`,
+            );
+            setTimeout(() => {
+              console.log(
+                `Playing animation for container ${containerIndex + 1} after delay`,
+              );
+              tl.play(0);
+            }, delay * 1000);
           },
         });
       } catch (error) {
@@ -409,9 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
   }
-
   gsap.registerPlugin(ScrollTrigger);
-
   const singleElements = document.querySelectorAll(
     '[data-motion-element="single"]',
   );
@@ -420,18 +462,23 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
+  console.log(`Found ${singleElements.length} single motion elements`);
+
   const animatableElements = Array.from(singleElements).filter((element) => {
     const motionState = element.getAttribute("data-motion-state");
     const isBlocked = motionState === "blocked";
     return !isBlocked;
   });
 
+  console.log(`Found ${animatableElements.length} animatable elements`);
+
   animatableElements.forEach((element, index) => {
     try {
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
-      console.log(`Animation for element with delay: ${delay}s`, element);
+
+      console.log(`Element ${index + 1} delay value: ${delay}s`, element);
 
       gsap.set(element, {
         opacity: 0,
@@ -440,7 +487,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const tl = gsap.timeline({
         paused: true,
-        delay: delay,
       });
 
       tl.to(element, {
@@ -456,7 +502,15 @@ document.addEventListener("DOMContentLoaded", function () {
         markers: false,
         once: true,
         onEnter: () => {
-          tl.play(0);
+          console.log(
+            `Triggering animation for element ${index + 1} with delay: ${delay}s`,
+          );
+          setTimeout(() => {
+            console.log(
+              `Playing animation for element ${index + 1} after delay`,
+            );
+            tl.play(0);
+          }, delay * 1000);
         },
       });
     } catch (error) {
