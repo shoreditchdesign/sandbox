@@ -220,18 +220,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//GSAP for Grapehen Parallax
 //GSAP for Graphene Parallax
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
   const PARALLAX = {
     scrollDuration: "100%",
     p1: {
-      speed: 0.5,
+      speed: 0.8,
       ease: "none",
     },
     p2: {
-      speed: 0.3,
+      speed: 0.6,
       ease: "none",
     },
     s1: {
@@ -239,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: "none",
     },
     s2: {
-      speed: 0.1,
+      speed: 0.4,
       ease: "none",
     },
   };
