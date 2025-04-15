@@ -226,3 +226,142 @@ document.addEventListener("DOMContentLoaded", () => {
     preloaderTimeline.play();
   }
 });
+
+// GSAP Navbar Slide
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if desktop (screen width >= 992px)
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+  // Only run on desktop
+  if (isDesktop()) {
+    // Select navbars that don't have the blocked attribute
+    const navbars = document.querySelectorAll(
+      '[data-nav-element="navbar"]:not([data-slide-block="blocked"])',
+    );
+    if (navbars.length === 0) return;
+    const showAnim = gsap
+      .from(navbars, {
+        yPercent: -100,
+        paused: true,
+        duration: 0.2,
+      })
+      .progress(1);
+    // Track scroll position and direction
+    let lastScrollTop = 0;
+    const downScrollThreshold = 200; // Pixels to scroll down before hiding
+    const upScrollThreshold = 800; // Pixels to scroll up before showing
+    let accumulatedScroll = 0; // Track accumulated scroll in each direction
+    let navbarVisible = true;
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+      // Calculate scroll amount since last check
+      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+
+      console.log(`Direction: ${scrollDirection}, Amount: ${scrollAmount}`);
+
+      // If direction changed, reset accumulated scroll
+      if (
+        (scrollDirection === "down" && accumulatedScroll < 0) ||
+        (scrollDirection === "up" && accumulatedScroll > 0)
+      ) {
+        accumulatedScroll = 0;
+        console.log("Direction changed, reset accumulated scroll");
+      }
+      // Accumulate scroll in the appropriate direction
+      accumulatedScroll +=
+        scrollDirection === "down" ? scrollAmount : -scrollAmount;
+
+      console.log(`Accumulated: ${accumulatedScroll}`);
+
+      // Check if we've scrolled enough in each direction with separate thresholds
+      if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+        showAnim.reverse();
+        navbarVisible = false;
+        accumulatedScroll = 0; // Reset after action
+        console.log("Navbar hidden");
+      } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+        showAnim.play();
+        navbarVisible = true;
+        accumulatedScroll = 0; // Reset after action
+        console.log("Navbar shown");
+      }
+      lastScrollTop = scrollTop;
+    });
+    setTimeout(() => {
+      gsap.set(navbars, { yPercent: 0 });
+    }, 10);
+  }
+});
+
+//GSAP for Headings
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
+      console.error("GSAP or SplitType is not loaded.");
+      return;
+    }
+
+    // Add data attribute to target elements - MODIFIED to exclude elements with data-stagger-block
+    document.querySelectorAll("h1, h2, p").forEach((element) => {
+      // Only apply to elements that don't have the data-stagger-block attribute
+      if (!element.hasAttribute("data-stagger-block")) {
+        element.setAttribute("data-stagger-fade", "");
+      }
+    });
+  }, 0);
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
+      console.error("GSAP or SplitType is not loaded.");
+      return;
+    }
+
+    // Split text by LINES ONLY
+    const splitLines = new SplitType("[data-stagger-fade]", {
+      types: "lines", // Explicitly specify ONLY lines (not words or chars)
+      tagName: "span",
+    });
+
+    // Create wrappers for each line
+    document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("u-line-mask");
+      line.parentNode.insertBefore(wrapper, line);
+      wrapper.appendChild(line);
+    });
+
+    // Create animations
+    document.querySelectorAll("[data-stagger-fade]").forEach((element) => {
+      const tl = gsap.timeline({ paused: true });
+      tl.from(element.querySelectorAll(".line"), {
+        y: "200%",
+        opacity: 0,
+        duration: 0.5,
+        ease: "power1.out",
+        stagger: 0.1,
+      });
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 90%",
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+        once: true,
+      });
+    });
+
+    // Function to revert split
+    function splitRevert() {
+      document.querySelectorAll("[data-stagger-fade] .line").forEach((line) => {
+        const wrapper = line.parentNode;
+        wrapper.replaceWith(...wrapper.childNodes);
+      });
+      splitLines.revert();
+    }
+
+    // Ensure elements are visible
+    gsap.set("[data-stagger-fade]", { opacity: 1 });
+  }, 0);
+});
