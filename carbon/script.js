@@ -2,81 +2,70 @@ console.log("script deployed");
 
 //Brand styles
 
-document.querySelectorAll(".c-br_brand-card").forEach((element) => {
-  const cardMap = {
-    Culture: "u-card-pink",
-    Underwriting: "u-card-purple",
-    Technology: "u-card-green",
-    Complementary: "u-card-blue",
-  };
+/**
+ * Maps source elements to target elements based on matching attributes
+ */
+function mapSourceToTargets() {
+  // Find all source elements
+  const sourceElements = document.querySelectorAll("[data-brand-source]");
+  console.log(`Found ${sourceElements.length} source elements`);
 
-  const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && cardMap[brandValue]) {
-    element.classList.add(cardMap[brandValue]);
-  }
-});
+  // Find all target elements
+  const targetElements = document.querySelectorAll("[data-brand-target]");
+  console.log(`Found ${targetElements.length} target elements`);
 
-document.querySelectorAll(".c-br_brand-stroke").forEach((element) => {
-  const strokeMap = {
-    Culture: "u-stroke-pink",
-    Underwriting: "u-stroke-purple",
-    Technology: "u-stroke-green",
-  };
+  // Group source elements by category and type
+  const sourceMap = {};
 
-  const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && strokeMap[brandValue]) {
-    element.classList.add(strokeMap[brandValue]);
-  }
-});
+  sourceElements.forEach((source) => {
+    const sourceType = source.getAttribute("data-brand-source");
+    const sourceCategory = source.getAttribute("data-source-name");
 
-document.querySelectorAll(".c-br_brand-motif").forEach((element) => {
-  const motifMap = {
-    Culture: "u-motif-pink",
-    Underwriting: "u-motif-purple",
-    Technology: "u-motif-green",
-    Complementary: "u-motif-blue",
-  };
+    // Create nested structure if it doesn't exist
+    if (!sourceMap[sourceCategory]) {
+      sourceMap[sourceCategory] = {};
+    }
 
-  const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && motifMap[brandValue]) {
-    element.classList.add(motifMap[brandValue]);
-  }
-});
+    if (!sourceMap[sourceCategory][sourceType]) {
+      sourceMap[sourceCategory][sourceType] = [];
+    }
 
-document.querySelectorAll(".c-sw_card").forEach((element) => {
-  const swiperMap = {
-    Culture: "u-motif-pink",
-    Underwriting: "u-motif-purple",
-    Technology: "u-motif-green",
-    Complementary: "u-motif-blue",
-  };
+    // Add source to map
+    sourceMap[sourceCategory][sourceType].push(source);
+    console.log(`Mapped source: ${sourceType}/${sourceCategory}`);
+  });
 
-  const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && swiperMap[brandValue]) {
-    element.classList.add(swiperMap[brandValue]);
-  } else {
-    console.log(
-      `Class allocation failed for element:`,
-      element,
-      `Reason: ${!brandValue ? "No brand value found" : 'No matching class in swiperMap for "' + brandValue + '"'}`,
-    );
-  }
-});
+  // Process each target and inject matching sources
+  targetElements.forEach((target) => {
+    const targetType = target.getAttribute("data-brand-target");
+    const targetCategory = target.getAttribute("data-target-name");
 
-document.querySelectorAll(".d-nw_cta-wrap").forEach((element) => {
-  const brandMap = {
-    Culture: "u-motif-pink",
-    Underwriting: "u-motif-purple",
-    Technology: "u-motif-green",
-  };
+    console.log(`Processing target: ${targetType}/${targetCategory}`);
 
-  const brandValue = element.getAttribute("data-brand-map");
-  if (brandValue && brandMap[brandValue]) {
-    element.classList.add(brandMap[brandValue]);
-  }
-});
+    // Check if we have matching sources
+    if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
+      const matchingSources = sourceMap[targetCategory][targetType];
 
-//Announcemenet Banner
+      // Inject each matching source into the target
+      matchingSources.forEach((source) => {
+        const clone = source.cloneNode(true);
+        target.appendChild(clone);
+        console.log(
+          `Injected ${targetType}/${targetCategory} source into target`,
+        );
+      });
+    } else {
+      console.log(
+        `No matching sources found for ${targetType}/${targetCategory}`,
+      );
+    }
+  });
+}
+
+// Execute the mapping function
+document.addEventListener("DOMContentLoaded", mapSourceToTargets);
+
+// Announcement Banner
 
 document
   .querySelector('[data-banner-element="close"]')
