@@ -2,7 +2,7 @@
 console.log("ix deployed");
 
 // Marquee Cards
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
   function initializeMarqueeCards() {
     try {
       const cards = document.querySelectorAll("[data-marquee-card]");
@@ -20,14 +20,8 @@ console.log("ix deployed");
     }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeMarqueeCards);
-  } else {
-    initializeMarqueeCards();
-  }
-})();
+  initializeMarqueeCards();
 
-document.addEventListener("DOMContentLoaded", () => {
   const marqueeWrap = document.querySelector("[data-marquee-wrap]");
   const marqueeItem = document.querySelector("[data-marquee-item]");
   const originalContent = marqueeItem.outerHTML;
@@ -72,57 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setupMarquee();
-});
+  initializeMarqueeCards();
+  initializeMarqueeCards();
 
-(function () {
-  function initializeMarqueeCards() {
-    try {
-      const cards = document.querySelectorAll("[data-marquee-card]");
-      if (!cards.length) return;
-
-      cards.forEach((card) => {
-        if (card && card.parentElement) {
-          const parentHeight = card.parentElement.offsetHeight;
-          const width = Math.floor(parentHeight * 0.3 + 24);
-          card.style.width = `${width}px`;
-        }
-      });
-    } catch (error) {
-      console.warn("Marquee card calculation error:", error);
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeMarqueeCards);
-  } else {
-    initializeMarqueeCards();
-  }
-})();
-
-(function () {
-  function initializeMarqueeCards() {
-    try {
-      const cards = document.querySelectorAll("[data-marquee-card]");
-      if (!cards.length) return;
-      cards.forEach((card) => {
-        if (card && card.parentElement) {
-          const parentHeight = card.parentElement.offsetHeight;
-          const width = Math.floor(parentHeight * 0.3 + 24);
-          card.style.width = `${width}px`;
-        }
-      });
-    } catch (error) {
-      console.warn("Marquee card calculation error:", error);
-    }
-  }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeMarqueeCards);
-  } else {
-    initializeMarqueeCards();
-  }
-})();
-
-(function () {
   function openCard(card, initialWidth, getHoverWidth, quickAnims) {
     const targetWidth = getHoverWidth();
     quickAnims.width(targetWidth);
@@ -138,91 +84,85 @@ document.addEventListener("DOMContentLoaded", () => {
     card.setAttribute("data-marquee-state", "default");
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const cards = document.querySelectorAll("[data-marquee-card]");
-    const firstCard = cards[0]; // Store the first card
-    let firstClonedCard;
+  const cards = document.querySelectorAll("[data-marquee-card]");
+  const firstCard = cards[0]; // Store the first card
+  let firstClonedCard;
 
-    cards.forEach((card) => {
-      const bgLayer = card.querySelector("[data-marquee-bg]");
-      const textLayer = card.querySelector("[data-marquee-text]");
-      const easeDuration =
-        parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
+  cards.forEach((card) => {
+    const bgLayer = card.querySelector("[data-marquee-bg]");
+    const textLayer = card.querySelector("[data-marquee-text]");
+    const easeDuration =
+      parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
 
-      gsap.set(textLayer, { opacity: 0 });
-      const initialWidth = card.offsetWidth;
-      const getHoverWidth = () => {
-        const currentHeight = card.offsetHeight;
-        return (currentHeight * 16) / 9;
-      };
-      const quickAnims = {
-        width: gsap.quickTo(card, "width", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        bg: gsap.quickTo(bgLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        textOpacity: gsap.quickTo(textLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-      };
+    gsap.set(textLayer, { opacity: 0 });
+    const initialWidth = card.offsetWidth;
+    const getHoverWidth = () => {
+      const currentHeight = card.offsetHeight;
+      return (currentHeight * 16) / 9;
+    };
+    const quickAnims = {
+      width: gsap.quickTo(card, "width", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+      bg: gsap.quickTo(bgLayer, "opacity", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+      textOpacity: gsap.quickTo(textLayer, "opacity", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+    };
 
-      card.addEventListener("mouseenter", () =>
-        openCard(card, initialWidth, getHoverWidth, quickAnims),
-      );
-      card.addEventListener("mouseleave", () =>
-        closeCard(card, initialWidth, quickAnims),
-      );
+    card.addEventListener("mouseenter", () =>
+      openCard(card, initialWidth, getHoverWidth, quickAnims),
+    );
+    card.addEventListener("mouseleave", () =>
+      closeCard(card, initialWidth, quickAnims),
+    );
 
-      // Find the first cloned card after marquee setup
-      if (
-        !firstClonedCard &&
-        card.closest("[data-marquee-wrap]") &&
-        card !== firstCard
-      ) {
-        firstClonedCard = card;
-      }
-    });
-
-    // Open the first card after all cards have been processed and the marquee is set up
-    if (firstClonedCard) {
-      const bgLayer = firstClonedCard.querySelector("[data-marquee-bg]");
-      const textLayer = firstClonedCard.querySelector("[data-marquee-text]");
-      const easeDuration =
-        parseFloat(firstClonedCard.getAttribute("data-marquee-ease")) || 0.4;
-
-      const initialWidth = firstClonedCard.offsetWidth;
-      const getHoverWidth = () => {
-        const currentHeight = firstClonedCard.offsetHeight;
-        return (currentHeight * 16) / 9;
-      };
-      const quickAnims = {
-        width: gsap.quickTo(firstClonedCard, "width", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        bg: gsap.quickTo(bgLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-        textOpacity: gsap.quickTo(textLayer, "opacity", {
-          duration: easeDuration,
-          ease: "power2.inOut",
-        }),
-      };
-      openCard(firstClonedCard, initialWidth, getHoverWidth, quickAnims);
+    // Find the first cloned card after marquee setup
+    if (
+      !firstClonedCard &&
+      card.closest("[data-marquee-wrap]") &&
+      card !== firstCard
+    ) {
+      firstClonedCard = card;
     }
   });
-})();
+
+  // Open the first card after all cards have been processed and the marquee is set up
+  if (firstClonedCard) {
+    const bgLayer = firstClonedCard.querySelector("[data-marquee-bg]");
+    const textLayer = firstClonedCard.querySelector("[data-marquee-text]");
+    const easeDuration =
+      parseFloat(firstClonedCard.getAttribute("data-marquee-ease")) || 0.4;
+
+    const initialWidth = firstClonedCard.offsetWidth;
+    const getHoverWidth = () => {
+      const currentHeight = firstClonedCard.offsetHeight;
+      return (currentHeight * 16) / 9;
+    };
+    const quickAnims = {
+      width: gsap.quickTo(firstClonedCard, "width", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+      bg: gsap.quickTo(bgLayer, "opacity", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+      textOpacity: gsap.quickTo(textLayer, "opacity", {
+        duration: easeDuration,
+        ease: "power2.inOut",
+      }),
+    };
+    openCard(firstClonedCard, initialWidth, getHoverWidth, quickAnims);
+  }
+});
 
 // Team Card Hover Animation
-
-// Import GSAP (assuming you've already included it in your project)
-// If not, add: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM content loaded - initializing card animations");
 
