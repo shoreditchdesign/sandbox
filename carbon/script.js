@@ -10,12 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     mousewheel: true,
     grabCursor: true,
     loop: true,
-    // Use CSS Mode - this lets the browser handle the scrolling mechanics
-    cssMode: true,
-    // Prevent auto height calculation that causes centering
-    autoHeight: false,
-    // Set initial slide to 0 to start at the top
-    initialSlide: 0,
+    slidesOffsetBefore: 0,
     // Navigation arrows
     navigation: {
       nextEl: "#reviews-next",
@@ -25,6 +20,12 @@ document.addEventListener("DOMContentLoaded", function () {
     pagination: {
       el: "#reviews-pagination",
       clickable: true,
+    },
+    on: {
+      setTranslate: function (translate) {
+        console.log("Setting translate to align with top");
+        // No additional code needed - just monitoring translations
+      },
     },
   });
 
