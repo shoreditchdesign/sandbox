@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     direction: "vertical",
     slidesPerView: 2,
     spaceBetween: 20,
-    mousewheel: true,
+    mousewheel: false,
     grabCursor: true,
     loop: true,
     slidesOffsetBefore: 0,
