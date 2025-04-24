@@ -29,11 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
     const sourceElements = document.querySelectorAll("[data-brand-source]");
-    console.log(`Found ${sourceElements.length} source elements`);
-
     const targetElements = document.querySelectorAll("[data-brand-target]");
-    console.log(`Found ${targetElements.length} target elements`);
-
     const sourceMap = {};
 
     sourceElements.forEach((source) => {
@@ -51,15 +47,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Add source to map
       sourceMap[sourceCategory][sourceType].push(source);
-      console.log(`Mapped source: ${sourceType}/${sourceCategory}`);
     });
 
     // Process each target and inject matching sources
     targetElements.forEach((target) => {
       const targetType = target.getAttribute("data-brand-target");
       const targetCategory = target.getAttribute("data-target-name");
-
-      console.log(`Processing target: ${targetType}/${targetCategory}`);
 
       // Check if we have matching sources
       if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
@@ -69,9 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         matchingSources.forEach((source) => {
           const clone = source.cloneNode(true);
           target.appendChild(clone);
-          console.log(
-            `Injected ${targetType}/${targetCategory} source into target`,
-          );
         });
       } else {
         console.log(
