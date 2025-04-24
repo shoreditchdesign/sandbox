@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     mousewheel: true,
     grabCursor: true,
     loop: true,
+    centeredSlides: false, // Disable centered slides
+    initialSlide: 0, // Start with the first slide
     // Navigation arrows
     navigation: {
       nextEl: "#reviews-next",
