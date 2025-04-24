@@ -179,8 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const index = i + 1; // Assuming indexes start at 1
       console.log(`Processing trigger for chapter ${index}`);
 
-      const chapterTimeline = createChapterTimeline(index);
-
       // Find all elements for this chapter
       const titleEl = document.querySelector(selectors.byIndex("title", index));
       const headingEl = document.querySelector(
@@ -198,61 +196,60 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Exit animations for previous chapter
-      if (index > 1) {
-        const prevIndex = index - 1;
-        const prevTitleEl = document.querySelector(
-          selectors.byIndex("title", prevIndex),
-        );
-        const prevHeadingEl = document.querySelector(
-          selectors.byIndex("heading", prevIndex),
-        );
-        const prevTextEl = document.querySelector(
-          selectors.byIndex("text", prevIndex),
-        );
-        const prevImageEl = document.querySelector(
-          selectors.byIndex("image", prevIndex),
-        );
+      // Create chapter timeline for entries
+      const chapterTimeline = gsap.timeline();
 
-        const prevElements = [
-          prevTitleEl,
-          prevHeadingEl,
-          prevTextEl,
-          prevImageEl,
-        ].filter(Boolean);
+      // Add fade-in animations with staggered timing
+      if (titleEl) chapterTimeline.add(createFadeIn(titleEl), 0);
+      if (headingEl)
+        chapterTimeline.add(createFadeIn(headingEl), ANIMATION.stagger);
+      if (textEl)
+        chapterTimeline.add(createFadeIn(textEl), ANIMATION.stagger * 2);
+      if (imageEl)
+        chapterTimeline.add(createFadeIn(imageEl), ANIMATION.stagger * 3);
 
-        if (prevElements.length === 0) {
-          console.warn(
-            `Chapter ${prevIndex}: No elements found for exit animations`,
-          );
-        } else {
-          prevElements.forEach((el) => {
-            masterTimeline.add(createFadeOut(el), ANIMATION.exitPoint);
-          });
-        }
-      }
+      // Create a separate timeline for fade-outs
+      const exitTimeline = gsap.timeline();
 
-      // Create ScrollTrigger for this chapter
+      // Add fade-out animations
+      if (titleEl) exitTimeline.add(createFadeOut(titleEl), 0);
+      if (headingEl) exitTimeline.add(createFadeOut(headingEl), 0.05);
+      if (textEl) exitTimeline.add(createFadeOut(textEl), 0.1);
+      if (imageEl) exitTimeline.add(createFadeOut(imageEl), 0.15);
+
+      console.log(
+        `Created timeline for chapter ${index} with ${chapterTimeline.getChildren().length} animations`,
+      );
+
+      // Create ScrollTrigger for entry animations
       try {
         ScrollTrigger.create({
           trigger: trigger,
           start: "top center",
-          end: "bottom center",
+          end: "center center",
           animation: chapterTimeline,
           toggleActions: "play none none reverse",
           onEnter: () => console.log(`Chapter ${index} entered`),
-          onLeave: () => console.log(`Chapter ${index} left`),
-          onEnterBack: () =>
-            console.log(`Chapter ${index} entered from bottom`),
-          onLeaveBack: () => console.log(`Chapter ${index} left from bottom`),
+          onLeaveBack: () => console.log(`Chapter ${index} exited backwards`),
           markers: false,
-          id: `chapter-${index}`,
+          id: `chapter-${index}-entry`,
         });
 
-        console.log(
-          `ScrollTrigger created for chapter ${index} with trigger:`,
-          trigger,
-        );
+        // Create ScrollTrigger for exit animations
+        if (index < triggers.length) {
+          // Don't create exit trigger for last chapter
+          ScrollTrigger.create({
+            trigger: triggers[i + 1], // Use next trigger as exit point
+            start: "top center",
+            animation: exitTimeline,
+            toggleActions: "play none none reverse",
+            onEnter: () => console.log(`Chapter ${index} exit triggered`),
+            markers: false,
+            id: `chapter-${index}-exit`,
+          });
+        }
+
+        console.log(`ScrollTriggers created for chapter ${index}`);
       } catch (error) {
         console.error(
           `Error creating ScrollTrigger for chapter ${index}:`,
