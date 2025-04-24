@@ -1,4 +1,3 @@
-// Excerpt from:
 console.log("ix deployed");
 
 // Marquee Cards
