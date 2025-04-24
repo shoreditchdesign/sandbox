@@ -10,9 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
     mousewheel: true,
     grabCursor: true,
     loop: true,
-    centeredSlides: false,
-    loopAdditionalSlides: 2,
-    watchSlidesProgress: true,
+    // Use CSS Mode - this lets the browser handle the scrolling mechanics
+    cssMode: true,
+    // Prevent auto height calculation that causes centering
+    autoHeight: false,
+    // Set initial slide to 0 to start at the top
+    initialSlide: 0,
     // Navigation arrows
     navigation: {
       nextEl: "#reviews-next",
@@ -23,20 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
       el: "#reviews-pagination",
       clickable: true,
     },
-    on: {
-      init: function () {
-        console.log("Swiper initialized, adjusting alignment");
-        // Force top alignment after init
-        document.querySelector(
-          "#reviews-swiper .swiper-wrapper",
-        ).style.alignItems = "flex-start";
-      },
-    },
   });
-
-  // Force top alignment with inline style to override Swiper's default
-  document.querySelector("#reviews-swiper .swiper-wrapper").style.alignItems =
-    "flex-start";
 
   console.log("Reviews swiper initialized with vertical direction");
 });
