@@ -1,11 +1,11 @@
 console.log("script deployed");
 
-/*Reviews Swiper
+//Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize the vertical swiper
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
-    slidesPerView: 2, // Show 2 cards at a time
+    slidesPerView: 2,
     spaceBetween: 20,
     mousewheel: true,
     grabCursor: true,
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   console.log("Reviews swiper initialized with vertical direction");
-  }); */
+});
 
 //Benefits Swiper
 document.addEventListener("DOMContentLoaded", function () {
