@@ -1,6 +1,6 @@
 console.log("script deployed");
 
-//Reviews Swiper
+/* Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("Reviews swiper initialized with vertical direction");
 });
+*/
 
 //Benefits Swiper
 document.addEventListener("DOMContentLoaded", function () {
