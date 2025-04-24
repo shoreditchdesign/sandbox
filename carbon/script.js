@@ -1,5 +1,30 @@
 console.log("script deployed");
 
+//Swiper Component
+document.addEventListener("DOMContentLoaded", function () {
+  // Initialize the vertical swiper
+  var reviewsSwiper = new Swiper("#reviews-swiper", {
+    direction: "vertical",
+    slidesPerView: 2, // Show 2 cards at a time
+    spaceBetween: 20,
+    mousewheel: true,
+    grabCursor: true,
+    loop: true,
+    // Navigation arrows
+    navigation: {
+      nextEl: "#reviews-next",
+      prevEl: "#reviews-prev",
+    },
+    // Pagination
+    pagination: {
+      el: "#reviews-pagination",
+      clickable: true,
+    },
+  });
+
+  console.log("Reviews swiper initialized with vertical direction");
+});
+
 //Brand styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
