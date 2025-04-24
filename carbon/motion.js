@@ -29,6 +29,204 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//GSAP for Home Sequence
+document.addEventListener("DOMContentLoaded", () => {
+  // Animation Constants
+  const ANIMATION = {
+    duration: 0.5,
+    ease: "power2.out",
+    entryPoints: {
+      title: 0,
+      heading: 0.1,
+      text: 0.2,
+      image: 0.3,
+    },
+    exitPoint: 0.8,
+    stagger: 0.1,
+  };
+
+  // Selectors
+  const selectors = {
+    chapters: '[data-ft-seq="chapter"]',
+    titles: '[data-ft-seq="title"]',
+    headings: '[data-ft-seq="heading"]',
+    texts: '[data-ft-seq="text"]',
+    images: '[data-ft-seq="image"]',
+    triggers: '[data-ft-seq="trigger"]',
+    byIndex: (seq, index) =>
+      `[data-ft-seq="${seq}"][data-seq-index="${index}"]`,
+  };
+
+  // Check GSAP and ScrollTrigger availability
+  if (typeof gsap === "undefined") {
+    console.error("GSAP library not loaded");
+    return;
+  }
+
+  if (!gsap.plugins || !gsap.plugins.ScrollTrigger) {
+    console.error("ScrollTrigger plugin not loaded");
+    return;
+  }
+
+  console.log("GSAP and ScrollTrigger loaded successfully");
+
+  // Verify DOM elements exist
+  const chapters = document.querySelectorAll(selectors.chapters);
+  const triggers = document.querySelectorAll(selectors.triggers);
+
+  if (chapters.length === 0) {
+    console.error("No chapter elements found");
+    return;
+  }
+
+  if (triggers.length === 0) {
+    console.error("No trigger elements found");
+    return;
+  }
+
+  console.log(
+    `Found ${chapters.length} chapters and ${triggers.length} triggers`,
+  );
+
+  // Animation Functions
+  const createFadeIn = (element, startPoint) => {
+    return gsap.fromTo(
+      element,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: ANIMATION.duration,
+        ease: ANIMATION.ease,
+        onStart: () =>
+          console.log(
+            `Fade in started for: ${element.getAttribute("data-ft-seq")}`,
+          ),
+      },
+    );
+  };
+
+  const createFadeOut = (element) => {
+    return gsap.to(element, {
+      opacity: 0,
+      duration: ANIMATION.duration,
+      ease: ANIMATION.ease,
+      onStart: () =>
+        console.log(
+          `Fade out started for: ${element.getAttribute("data-ft-seq")}`,
+        ),
+    });
+  };
+
+  // Create Chapter Timelines
+  const createChapterTimeline = (index) => {
+    const timeline = gsap.timeline();
+
+    const title = document.querySelector(selectors.byIndex("title", index));
+    const heading = document.querySelector(selectors.byIndex("heading", index));
+    const text = document.querySelector(selectors.byIndex("text", index));
+    const image = document.querySelector(selectors.byIndex("image", index));
+
+    if (!title || !heading || !text || !image) {
+      console.warn(`Missing elements for chapter ${index}`);
+      return timeline;
+    }
+
+    // Set initial states
+    gsap.set([title, heading, text, image], { opacity: 0 });
+
+    // Add cascading animations
+    timeline.add(createFadeIn(title, ANIMATION.entryPoints.title));
+    timeline.add(
+      createFadeIn(heading, ANIMATION.entryPoints.heading),
+      ANIMATION.stagger,
+    );
+    timeline.add(
+      createFadeIn(text, ANIMATION.entryPoints.text),
+      ANIMATION.stagger * 2,
+    );
+    timeline.add(
+      createFadeIn(image, ANIMATION.entryPoints.image),
+      ANIMATION.stagger * 3,
+    );
+
+    return timeline;
+  };
+
+  // Create Master Timeline with ScrollTrigger
+  const initScrollSequence = () => {
+    const masterTimeline = gsap.timeline();
+
+    triggers.forEach((trigger, i) => {
+      const index = i + 1; // Assuming indexes start at 1
+      const chapterTimeline = createChapterTimeline(index);
+      const chapterElements = [
+        document.querySelector(selectors.byIndex("title", index)),
+        document.querySelector(selectors.byIndex("heading", index)),
+        document.querySelector(selectors.byIndex("text", index)),
+        document.querySelector(selectors.byIndex("image", index)),
+      ].filter(Boolean);
+
+      if (chapterElements.length === 0) return;
+
+      // Exit animations for previous chapter
+      if (index > 1) {
+        const prevElements = [
+          document.querySelector(selectors.byIndex("title", index - 1)),
+          document.querySelector(selectors.byIndex("heading", index - 1)),
+          document.querySelector(selectors.byIndex("text", index - 1)),
+          document.querySelector(selectors.byIndex("image", index - 1)),
+        ].filter(Boolean);
+
+        prevElements.forEach((el) => {
+          masterTimeline.add(createFadeOut(el), ANIMATION.exitPoint);
+        });
+      }
+
+      // Create ScrollTrigger for this chapter
+      gsap.ScrollTrigger.create({
+        trigger: trigger,
+        start: "top center",
+        end: "bottom center",
+        animation: chapterTimeline,
+        toggleActions: "play none none reverse",
+        onEnter: () => console.log(`Chapter ${index} entered`),
+        onLeave: () => console.log(`Chapter ${index} left`),
+        markers: false,
+      });
+
+      console.log(`ScrollTrigger created for chapter ${index}`);
+    });
+
+    return masterTimeline;
+  };
+
+  // Set initial states - first chapter visible, others hidden
+  const initializeStates = () => {
+    // Hide all elements first
+    document
+      .querySelectorAll(
+        '[data-ft-seq="title"], [data-ft-seq="heading"], [data-ft-seq="text"], [data-ft-seq="image"]',
+      )
+      .forEach((el) => gsap.set(el, { opacity: 0 }));
+
+    // Show first chapter elements
+    const firstChapterElements = [
+      document.querySelector(selectors.byIndex("title", 1)),
+      document.querySelector(selectors.byIndex("heading", 1)),
+      document.querySelector(selectors.byIndex("text", 1)),
+      document.querySelector(selectors.byIndex("image", 1)),
+    ].filter(Boolean);
+
+    firstChapterElements.forEach((el) => gsap.set(el, { opacity: 1 }));
+    console.log("Initial states set - first chapter visible");
+  };
+
+  // Initialize everything
+  initializeStates();
+  const scrollSequence = initScrollSequence();
+  console.log("Scroll sequence initialized");
+});
+
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
