@@ -1,82 +1,74 @@
 console.log("script deployed");
 
 //Brand styles
+document.addEventListener("DOMContentLoaded", () => {
+  function mapSourceToTargets() {
+    const sourceElements = document.querySelectorAll("[data-brand-source]");
+    console.log(`Found ${sourceElements.length} source elements`);
 
-/**
- * Maps source elements to target elements based on matching attributes
- */
-function mapSourceToTargets() {
-  // Find all source elements
-  const sourceElements = document.querySelectorAll("[data-brand-source]");
-  console.log(`Found ${sourceElements.length} source elements`);
+    const targetElements = document.querySelectorAll("[data-brand-target]");
+    console.log(`Found ${targetElements.length} target elements`);
 
-  // Find all target elements
-  const targetElements = document.querySelectorAll("[data-brand-target]");
-  console.log(`Found ${targetElements.length} target elements`);
+    const sourceMap = {};
 
-  // Group source elements by category and type
-  const sourceMap = {};
+    sourceElements.forEach((source) => {
+      const sourceType = source.getAttribute("data-brand-source");
+      const sourceCategory = source.getAttribute("data-source-name");
 
-  sourceElements.forEach((source) => {
-    const sourceType = source.getAttribute("data-brand-source");
-    const sourceCategory = source.getAttribute("data-source-name");
+      // Create nested structure if it doesn't exist
+      if (!sourceMap[sourceCategory]) {
+        sourceMap[sourceCategory] = {};
+      }
 
-    // Create nested structure if it doesn't exist
-    if (!sourceMap[sourceCategory]) {
-      sourceMap[sourceCategory] = {};
-    }
+      if (!sourceMap[sourceCategory][sourceType]) {
+        sourceMap[sourceCategory][sourceType] = [];
+      }
 
-    if (!sourceMap[sourceCategory][sourceType]) {
-      sourceMap[sourceCategory][sourceType] = [];
-    }
+      // Add source to map
+      sourceMap[sourceCategory][sourceType].push(source);
+      console.log(`Mapped source: ${sourceType}/${sourceCategory}`);
+    });
 
-    // Add source to map
-    sourceMap[sourceCategory][sourceType].push(source);
-    console.log(`Mapped source: ${sourceType}/${sourceCategory}`);
-  });
+    // Process each target and inject matching sources
+    targetElements.forEach((target) => {
+      const targetType = target.getAttribute("data-brand-target");
+      const targetCategory = target.getAttribute("data-target-name");
 
-  // Process each target and inject matching sources
-  targetElements.forEach((target) => {
-    const targetType = target.getAttribute("data-brand-target");
-    const targetCategory = target.getAttribute("data-target-name");
+      console.log(`Processing target: ${targetType}/${targetCategory}`);
 
-    console.log(`Processing target: ${targetType}/${targetCategory}`);
+      // Check if we have matching sources
+      if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
+        const matchingSources = sourceMap[targetCategory][targetType];
 
-    // Check if we have matching sources
-    if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
-      const matchingSources = sourceMap[targetCategory][targetType];
-
-      // Inject each matching source into the target
-      matchingSources.forEach((source) => {
-        const clone = source.cloneNode(true);
-        target.appendChild(clone);
+        // Inject each matching source into the target
+        matchingSources.forEach((source) => {
+          const clone = source.cloneNode(true);
+          target.appendChild(clone);
+          console.log(
+            `Injected ${targetType}/${targetCategory} source into target`,
+          );
+        });
+      } else {
         console.log(
-          `Injected ${targetType}/${targetCategory} source into target`,
+          `No matching sources found for ${targetType}/${targetCategory}`,
         );
-      });
-    } else {
-      console.log(
-        `No matching sources found for ${targetType}/${targetCategory}`,
+      }
+    });
+  }
+
+  mapSourceToTargets();
+
+  document
+    .querySelector('[data-banner-element="close"]')
+    .addEventListener("click", () => {
+      const banner = document.querySelector('[data-banner-element="banner"]');
+      const currentState = banner.getAttribute("data-banner-state");
+      banner.setAttribute(
+        "data-banner-state",
+        currentState === "visible" ? "hidden" : "visible",
       );
-    }
-  });
-}
-
-// Execute the mapping function
-document.addEventListener("DOMContentLoaded", mapSourceToTargets);
-
-// Announcement Banner
-
-document
-  .querySelector('[data-banner-element="close"]')
-  .addEventListener("click", () => {
-    const banner = document.querySelector('[data-banner-element="banner"]');
-    const currentState = banner.getAttribute("data-banner-state");
-    banner.setAttribute(
-      "data-banner-state",
-      currentState === "visible" ? "hidden" : "visible",
-    );
-  });
+    });
+});
 
 //Navigation Bar
 
