@@ -21,14 +21,26 @@ document.addEventListener("DOMContentLoaded", function () {
       el: "#reviews-pagination",
       clickable: true,
     },
+    // Add this parameter to align slides to top
+    centeredSlides: false,
+    // Modify the wrapper alignment
     on: {
+      init: function () {
+        console.log("Swiper initialized with top alignment");
+        // Force top alignment
+        document.querySelector(
+          "#reviews-swiper .swiper-wrapper",
+        ).style.alignItems = "flex-start";
+      },
       setTranslate: function (translate) {
         console.log("Setting translate to align with top");
-        // No additional code needed - just monitoring translations
+        // Force top alignment on translate
+        document.querySelector(
+          "#reviews-swiper .swiper-wrapper",
+        ).style.alignItems = "flex-start";
       },
     },
   });
-
   console.log("Reviews swiper initialized with vertical direction");
 });
 
