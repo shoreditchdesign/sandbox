@@ -360,17 +360,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
 
   if (isDesktop()) {
-    console.log("Desktop view detected - initializing navbar animation");
-
     const navbars = document.querySelectorAll(
       '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
     );
     if (navbars.length === 0) {
-      console.log("No navbar elements found - animation aborted");
+      console.warn("No navbar elements found - animation aborted");
       return;
     }
 
-    console.log(`Found ${navbars.length} navbar elements to animate`);
     gsap.set(navbars, { yPercent: 0 });
     const showAnim = gsap
       .from(navbars, {
@@ -390,38 +387,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
       const scrollAmount = Math.abs(scrollTop - lastScrollTop);
-      console.log(`Direction: ${scrollDirection}, Amount: ${scrollAmount}`);
+
       if (
         (scrollDirection === "down" && accumulatedScroll < 0) ||
         (scrollDirection === "up" && accumulatedScroll > 0)
       ) {
         accumulatedScroll = 0;
-        console.log("Direction changed, reset accumulated scroll");
       }
 
       accumulatedScroll +=
         scrollDirection === "down" ? scrollAmount : -scrollAmount;
-      console.log(`Accumulated: ${accumulatedScroll}`);
 
       if (accumulatedScroll > downScrollThreshold && navbarVisible) {
-        console.log("Hiding navbar - threshold reached");
         showAnim.reverse();
         navbarVisible = false;
         accumulatedScroll = 0;
-        console.log("Navbar hidden");
       } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
-        console.log("Showing navbar - threshold reached");
         showAnim.play();
         navbarVisible = true;
         accumulatedScroll = 0;
-        console.log("Navbar shown");
       }
 
       lastScrollTop = scrollTop;
     });
-    console.log("Navbar animation setup complete");
-  } else {
-    console.log("Mobile view detected - navbar animation not applied");
   }
 });
 

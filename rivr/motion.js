@@ -1,8 +1,10 @@
-//GSAP for Navbar slide
-
+// GSAP Navbar Slide
 document.addEventListener("DOMContentLoaded", () => {
+  // Check if desktop (screen width >= 992px)
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+  // Only run on desktop
   if (isDesktop()) {
+    // Select navbars that don't have the blocked attribute
     const navbars = document.querySelectorAll(
       '[data-nav-element="navbar"]:not([data-slide-block="blocked"])',
     );
@@ -14,33 +16,45 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 0.2,
       })
       .progress(1);
+    // Track scroll position and direction
     let lastScrollTop = 0;
-    const downScrollThreshold = 200;
-    const upScrollThreshold = 800;
-    let accumulatedScroll = 0;
+    const downScrollThreshold = 200; // Pixels to scroll down before hiding
+    const upScrollThreshold = 800; // Pixels to scroll up before showing
+    let accumulatedScroll = 0; // Track accumulated scroll in each direction
     let navbarVisible = true;
     window.addEventListener("scroll", () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+      // Calculate scroll amount since last check
       const scrollAmount = Math.abs(scrollTop - lastScrollTop);
 
+      console.log(`Direction: ${scrollDirection}, Amount: ${scrollAmount}`);
+
+      // If direction changed, reset accumulated scroll
       if (
         (scrollDirection === "down" && accumulatedScroll < 0) ||
         (scrollDirection === "up" && accumulatedScroll > 0)
       ) {
         accumulatedScroll = 0;
+        console.log("Direction changed, reset accumulated scroll");
       }
+      // Accumulate scroll in the appropriate direction
       accumulatedScroll +=
         scrollDirection === "down" ? scrollAmount : -scrollAmount;
 
+      console.log(`Accumulated: ${accumulatedScroll}`);
+
+      // Check if we've scrolled enough in each direction with separate thresholds
       if (accumulatedScroll > downScrollThreshold && navbarVisible) {
         showAnim.reverse();
         navbarVisible = false;
-        accumulatedScroll = 0;
+        accumulatedScroll = 0; // Reset after action
+        console.log("Navbar hidden");
       } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
         showAnim.play();
         navbarVisible = true;
-        accumulatedScroll = 0;
+        accumulatedScroll = 0; // Reset after action
+        console.log("Navbar shown");
       }
       lastScrollTop = scrollTop;
     });

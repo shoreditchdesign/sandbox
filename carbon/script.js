@@ -1,6 +1,6 @@
 console.log("script deployed");
 
-//Swiper Component
+//Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize the vertical swiper
   var reviewsSwiper = new Swiper("#reviews-swiper", {
@@ -86,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Navigation Bar
-
 document
   .querySelector('[data-nav-element="menu"]')
   .addEventListener("click", () => {
@@ -99,9 +98,6 @@ document
   });
 
 //Rich Text Table of Contents
-
-console.log("generating table of content");
-
 document.addEventListener("DOMContentLoaded", function () {
   const richTextBodies = document.querySelectorAll("[data-toc-body]");
   let allH2s = [];
@@ -206,6 +202,7 @@ var mySwiper = new Swiper("#benefits-swiper", {
   },
 });
 
+//CMS Filter Styles
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
   const categoryFilters = document.querySelectorAll(
