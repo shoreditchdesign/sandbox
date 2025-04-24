@@ -25,6 +25,47 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Reviews swiper initialized with vertical direction");
 });
 
+//Benefits Swiper
+document.addEventListener("DOMContentLoaded", function() {
+  var mySwiper = new Swiper("#benefits-swiper", {
+    slidesPerView: 4,
+    slidesPerGroup: 1,
+    spaceBetween: 28,
+    grabCursor: true,
+    allowTouchMove: true,
+    //loop: true,
+    pagination: {
+      el: "#benefits-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: "#benefits-next",
+      prevEl: "#benefits-prev",
+    },
+    breakpoints: {
+      0: {
+        slidesPerView: 1.1,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      480: {
+        slidesPerView: 2.3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      767: {
+        slidesPerView: 2.2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 3.2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+    },
+});
+
 //Brand styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
@@ -160,46 +201,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     templateCell.remove();
   });
-});
-
-//Benefits Swiper
-var mySwiper = new Swiper("#benefits-swiper", {
-  slidesPerView: 4,
-  slidesPerGroup: 1,
-  spaceBetween: 28,
-  grabCursor: true,
-  allowTouchMove: true,
-  //loop: true,
-  pagination: {
-    el: "#benefits-pagination",
-    clickable: true,
-  },
-  navigation: {
-    nextEl: "#benefits-next",
-    prevEl: "#benefits-prev",
-  },
-  breakpoints: {
-    0: {
-      slidesPerView: 1.1,
-      slidesPerGroup: 1,
-      spaceBetween: 16,
-    },
-    480: {
-      slidesPerView: 2.3,
-      slidesPerGroup: 1,
-      spaceBetween: 16,
-    },
-    767: {
-      slidesPerView: 2.2,
-      slidesPerGroup: 1,
-      spaceBetween: 16,
-    },
-    992: {
-      slidesPerView: 3.2,
-      slidesPerGroup: 1,
-      spaceBetween: 16,
-    },
-  },
 });
 
 //CMS Filter Styles
