@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initCmsFilterStyles();
 });
 
-// Reviews Swiper
+/* Reviews Swiper
 function initReviewsSwiper() {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
@@ -27,7 +27,7 @@ function initReviewsSwiper() {
       clickable: true,
     },
   });
-}
+  } */
 
 // Benefits Swiper
 function initBenefitsSwiper() {
