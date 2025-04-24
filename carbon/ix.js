@@ -163,19 +163,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Team Card Hover Animation
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM content loaded - initializing card animations");
-
   // Select all card elements
   const cards = document.querySelectorAll(".s-ab5_card");
-  console.log(`Found ${cards.length} cards on the page`);
 
   // Track currently open card
   let currentlyOpenCard = null;
 
   // Setup for each card
   cards.forEach((card, index) => {
-    console.log(`Setting up card #${index}`);
-
     const overlay = card.querySelector(".s-ab5_overlay");
     const content = card.querySelector(".s-ab5_content");
     const button = card.querySelector(".s-ab5_btn");
@@ -198,8 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log(`Card #${index} - found all required elements`);
-
     // Track open/closed state
     let isOpen = false;
 
@@ -213,10 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.getComputedStyle(overlay).height,
       );
       finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
-      console.log(`Card #${index} - Heights calculated:`, {
-        initialOverlayHeight,
-        finalOverlayHeight,
-      });
     };
 
     // Calculate on page load
@@ -225,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial styles
     gsap.set(content, { display: "none", opacity: 0 });
     gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
-    console.log(`Card #${index} - Initial styles set`);
 
     // Create quickTo function for the overlay height
     const animateHeight = gsap.quickTo(overlay, "height", {
@@ -239,23 +227,14 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: "power2.out",
     });
 
-    console.log(`Card #${index} - quickTo functions created`);
-
     // Function to open the card
     const openCard = () => {
       if (isOpen) return;
 
       // If another card is open, close it first
       if (currentlyOpenCard && currentlyOpenCard !== card) {
-        console.log(
-          `Closing previously open card before opening Card #${index}`,
-        );
         currentlyOpenCard.closeCard();
       }
-
-      console.log(
-        `Card #${index} - OPENING - animating to height: ${finalOverlayHeight}px`,
-      );
 
       // Animate overlay height using quickTo
       animateHeight(finalOverlayHeight);
@@ -263,12 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show content and animate opacity
       gsap.set(content, { display: "flex" });
       animateOpacity(1);
-      console.log(`Card #${index} - Content display set to flex`);
 
       // Set overflow to scroll
       gsap.delayedCall(0.3, () => {
         gsap.set(overlay, { overflowY: "scroll" });
-        console.log(`Card #${index} - Overflow set to scroll`);
       });
 
       isOpen = true;
@@ -279,13 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeCard = () => {
       if (!isOpen) return;
 
-      console.log(
-        `Card #${index} - CLOSING - animating to height: ${initialOverlayHeight}px`,
-      );
-
       // Reset overflow immediately
       gsap.set(overlay, { overflowY: "hidden" });
-      console.log(`Card #${index} - Overflow set to hidden`);
 
       // Animate overlay back to initial height using quickTo
       animateHeight(initialOverlayHeight);
@@ -296,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Hide content after fade completes
       gsap.delayedCall(0.3, () => {
         gsap.set(content, { display: "none" });
-        console.log(`Card #${index} - Content display set to none`);
       });
 
       isOpen = false;
@@ -311,10 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Button click handler
     button.addEventListener("click", () => {
-      console.log(
-        `Card #${index} - Button clicked, current state: ${isOpen ? "open" : "closed"}`,
-      );
-
       if (isOpen) {
         closeCard();
       } else {
@@ -324,25 +291,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Window resize handler
     window.addEventListener("resize", () => {
-      console.log(`Card #${index} - WINDOW RESIZE detected`);
-
       // Recalculate heights when window is resized
       calculateHeights();
 
       // Update current state if needed
       if (isOpen) {
         gsap.set(overlay, { height: finalOverlayHeight });
-        console.log(
-          `Card #${index} - Updated to new final height after resize (card is open)`,
-        );
       } else {
         gsap.set(overlay, { height: initialOverlayHeight });
-        console.log(
-          `Card #${index} - Updated to new initial height after resize (card is closed)`,
-        );
       }
     });
-
-    console.log(`Card #${index} - All event listeners attached`);
   });
 });
