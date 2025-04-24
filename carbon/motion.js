@@ -30,9 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 console.log("home sequence deployed");
-//GSAP for Home Sequence
+// GSAP Chapter Scroll Sequence
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("home sequence running");
   // Animation Constants
   const ANIMATION = {
     duration: 0.5,
@@ -128,27 +127,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = document.querySelector(selectors.byIndex("text", index));
     const image = document.querySelector(selectors.byIndex("image", index));
 
-    if (!title || !heading || !text || !image) {
-      console.warn(`Missing elements for chapter ${index}`);
+    // Check each element individually and log if missing
+    if (!title) {
+      console.error(`Chapter ${index}: Title element not found`);
+    }
+    if (!heading) {
+      console.error(`Chapter ${index}: Heading element not found`);
+    }
+    if (!text) {
+      console.error(`Chapter ${index}: Text element not found`);
+    }
+    if (!image) {
+      console.error(`Chapter ${index}: Image element not found`);
+    }
+
+    if (!title && !heading && !text && !image) {
+      console.error(`Chapter ${index}: All elements missing, skipping chapter`);
       return timeline;
     }
 
-    // Set initial states
-    gsap.set([title, heading, text, image], { opacity: 0 });
+    // Set initial states for found elements
+    const foundElements = [title, heading, text, image].filter(Boolean);
+    gsap.set(foundElements, { opacity: 0 });
 
-    // Add cascading animations
-    timeline.add(createFadeIn(title, ANIMATION.entryPoints.title));
-    timeline.add(
-      createFadeIn(heading, ANIMATION.entryPoints.heading),
-      ANIMATION.stagger,
-    );
-    timeline.add(
-      createFadeIn(text, ANIMATION.entryPoints.text),
-      ANIMATION.stagger * 2,
-    );
-    timeline.add(
-      createFadeIn(image, ANIMATION.entryPoints.image),
-      ANIMATION.stagger * 3,
+    // Add cascading animations to timeline
+    if (title) timeline.add(createFadeIn(title), 0);
+    if (heading) timeline.add(createFadeIn(heading), ANIMATION.stagger);
+    if (text) timeline.add(createFadeIn(text), ANIMATION.stagger * 2);
+    if (image) timeline.add(createFadeIn(image), ANIMATION.stagger * 3);
+
+    console.log(
+      `Created timeline for chapter ${index} with ${timeline.getChildren().length} animations`,
     );
 
     return timeline;
@@ -160,43 +169,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
     triggers.forEach((trigger, i) => {
       const index = i + 1; // Assuming indexes start at 1
-      const chapterTimeline = createChapterTimeline(index);
-      const chapterElements = [
-        document.querySelector(selectors.byIndex("title", index)),
-        document.querySelector(selectors.byIndex("heading", index)),
-        document.querySelector(selectors.byIndex("text", index)),
-        document.querySelector(selectors.byIndex("image", index)),
-      ].filter(Boolean);
+      console.log(`Processing trigger for chapter ${index}`);
 
-      if (chapterElements.length === 0) return;
+      const chapterTimeline = createChapterTimeline(index);
+
+      // Find all elements for this chapter
+      const titleEl = document.querySelector(selectors.byIndex("title", index));
+      const headingEl = document.querySelector(
+        selectors.byIndex("heading", index),
+      );
+      const textEl = document.querySelector(selectors.byIndex("text", index));
+      const imageEl = document.querySelector(selectors.byIndex("image", index));
+
+      const chapterElements = [titleEl, headingEl, textEl, imageEl].filter(
+        Boolean,
+      );
+
+      if (chapterElements.length === 0) {
+        console.error(`Chapter ${index}: No elements found, skipping trigger`);
+        return;
+      }
 
       // Exit animations for previous chapter
       if (index > 1) {
+        const prevIndex = index - 1;
+        const prevTitleEl = document.querySelector(
+          selectors.byIndex("title", prevIndex),
+        );
+        const prevHeadingEl = document.querySelector(
+          selectors.byIndex("heading", prevIndex),
+        );
+        const prevTextEl = document.querySelector(
+          selectors.byIndex("text", prevIndex),
+        );
+        const prevImageEl = document.querySelector(
+          selectors.byIndex("image", prevIndex),
+        );
+
         const prevElements = [
-          document.querySelector(selectors.byIndex("title", index - 1)),
-          document.querySelector(selectors.byIndex("heading", index - 1)),
-          document.querySelector(selectors.byIndex("text", index - 1)),
-          document.querySelector(selectors.byIndex("image", index - 1)),
+          prevTitleEl,
+          prevHeadingEl,
+          prevTextEl,
+          prevImageEl,
         ].filter(Boolean);
 
-        prevElements.forEach((el) => {
-          masterTimeline.add(createFadeOut(el), ANIMATION.exitPoint);
-        });
+        if (prevElements.length === 0) {
+          console.warn(
+            `Chapter ${prevIndex}: No elements found for exit animations`,
+          );
+        } else {
+          prevElements.forEach((el) => {
+            masterTimeline.add(createFadeOut(el), ANIMATION.exitPoint);
+          });
+        }
       }
 
       // Create ScrollTrigger for this chapter
-      gsap.ScrollTrigger.create({
-        trigger: trigger,
-        start: "top center",
-        end: "bottom center",
-        animation: chapterTimeline,
-        toggleActions: "play none none reverse",
-        onEnter: () => console.log(`Chapter ${index} entered`),
-        onLeave: () => console.log(`Chapter ${index} left`),
-        markers: false,
-      });
+      try {
+        gsap.ScrollTrigger.create({
+          trigger: trigger,
+          start: "top center",
+          end: "bottom center",
+          animation: chapterTimeline,
+          toggleActions: "play none none reverse",
+          onEnter: () => console.log(`Chapter ${index} entered`),
+          onLeave: () => console.log(`Chapter ${index} left`),
+          onEnterBack: () =>
+            console.log(`Chapter ${index} entered from bottom`),
+          onLeaveBack: () => console.log(`Chapter ${index} left from bottom`),
+          markers: false,
+          id: `chapter-${index}`,
+        });
 
-      console.log(`ScrollTrigger created for chapter ${index}`);
+        console.log(
+          `ScrollTrigger created for chapter ${index} with trigger:`,
+          trigger,
+        );
+      } catch (error) {
+        console.error(
+          `Error creating ScrollTrigger for chapter ${index}:`,
+          error,
+        );
+      }
     });
 
     return masterTimeline;
