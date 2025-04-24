@@ -29,8 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+console.log("home sequence deployed");
 //GSAP for Home Sequence
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("home sequence running");
   // Animation Constants
   const ANIMATION = {
     duration: 0.5,
@@ -226,6 +228,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrollSequence = initScrollSequence();
   console.log("Scroll sequence initialized");
 });
+
+console.log("home sequence done");
 
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
