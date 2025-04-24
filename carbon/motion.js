@@ -58,18 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
       `[data-ft-seq="${seq}"][data-seq-index="${index}"]`,
   };
 
-  // Check GSAP and ScrollTrigger availability
+  // Check GSAP availability and register ScrollTrigger
   if (typeof gsap === "undefined") {
     console.error("GSAP library not loaded");
     return;
   }
 
-  if (!gsap.plugins || !gsap.plugins.ScrollTrigger) {
-    console.error("ScrollTrigger plugin not loaded");
+  // Check if ScrollTrigger is available
+  if (typeof ScrollTrigger === "undefined") {
+    console.error(
+      "ScrollTrigger plugin not available. Make sure to include it in your HTML.",
+    );
+    console.error(
+      "Add this to your HTML: <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js'></script>",
+    );
     return;
   }
 
-  console.log("GSAP and ScrollTrigger loaded successfully");
+  // Register the plugin
+  gsap.registerPlugin(ScrollTrigger);
+  console.log("GSAP and ScrollTrigger loaded and registered successfully");
 
   // Verify DOM elements exist
   const chapters = document.querySelectorAll(selectors.chapters);
@@ -226,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Create ScrollTrigger for this chapter
       try {
-        gsap.ScrollTrigger.create({
+        ScrollTrigger.create({
           trigger: trigger,
           start: "top center",
           end: "bottom center",
