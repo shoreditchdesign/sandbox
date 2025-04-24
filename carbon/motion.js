@@ -450,8 +450,6 @@ window.addEventListener("DOMContentLoaded", () => {
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
-      console.log(`Animation for element with delay: ${delay}s`, element);
-
       const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
         y: "200%",
@@ -498,18 +496,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    console.log(`Found ${cardContainers.length} array containers`);
-
     cardContainers.forEach((container, containerIndex) => {
       try {
         const delay = container.getAttribute("data-motion-delay")
           ? parseFloat(container.getAttribute("data-motion-delay"))
           : 0;
-
-        console.log(
-          `Container ${containerIndex + 1} delay value: ${delay}s`,
-          container,
-        );
 
         const cardElements = Array.from(container.children);
 
@@ -519,10 +510,6 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           return;
         }
-
-        console.log(
-          `Container ${containerIndex + 1} has ${cardElements.length} elements to animate`,
-        );
 
         gsap.set(cardElements, {
           opacity: 0,
@@ -547,13 +534,7 @@ document.addEventListener("DOMContentLoaded", function () {
           markers: false,
           once: true,
           onEnter: () => {
-            console.log(
-              `Triggering animation for container ${containerIndex + 1} with delay: ${delay}s`,
-            );
             setTimeout(() => {
-              console.log(
-                `Playing animation for container ${containerIndex + 1} after delay`,
-              );
               tl.play(0);
             }, delay * 1000);
           },
@@ -583,23 +564,17 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${singleElements.length} single motion elements`);
-
   const animatableElements = Array.from(singleElements).filter((element) => {
     const motionState = element.getAttribute("data-motion-state");
     const isBlocked = motionState === "blocked";
     return !isBlocked;
   });
 
-  console.log(`Found ${animatableElements.length} animatable elements`);
-
   animatableElements.forEach((element, index) => {
     try {
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
-
-      console.log(`Element ${index + 1} delay value: ${delay}s`, element);
 
       gsap.set(element, {
         opacity: 0,
@@ -623,13 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
         markers: false,
         once: true,
         onEnter: () => {
-          console.log(
-            `Triggering animation for element ${index + 1} with delay: ${delay}s`,
-          );
           setTimeout(() => {
-            console.log(
-              `Playing animation for element ${index + 1} after delay`,
-            );
             tl.play(0);
           }, delay * 1000);
         },
@@ -660,23 +629,17 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log(`Found ${slideElements.length} slide motion elements`);
-
   const animatableElements = Array.from(slideElements).filter((element) => {
     const motionState = element.getAttribute("data-motion-state");
     const isBlocked = motionState === "blocked";
     return !isBlocked;
   });
 
-  console.log(`Found ${animatableElements.length} animatable slide elements`);
-
   animatableElements.forEach((element, index) => {
     try {
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
-
-      console.log(`Slide element ${index + 1} delay value: ${delay}s`, element);
 
       gsap.set(element, {
         opacity: 1,
@@ -700,13 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
         markers: false,
         once: true,
         onEnter: () => {
-          console.log(
-            `Triggering slide animation for element ${index + 1} with delay: ${delay}s`,
-          );
           setTimeout(() => {
-            console.log(
-              `Playing slide animation for element ${index + 1} after delay`,
-            );
             tl.play(0);
           }, delay * 1000);
         },
