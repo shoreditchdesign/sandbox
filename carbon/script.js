@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
       el: "#reviews-pagination",
       clickable: true,
     },
-    centeredSlides: true,
+    centeredSlides: false,
   });
   console.log("Reviews swiper initialized with vertical direction");
 });
