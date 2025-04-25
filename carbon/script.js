@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize the vertical swiper
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
-    slidesPerView: 2,
+    slidesPerView: 1.2,
     spaceBetween: 20,
     mousewheel: false,
     grabCursor: true,
