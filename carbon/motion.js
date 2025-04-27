@@ -375,8 +375,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initializers
   function initMarqueeAnimation() {
-    console.log("Initializing marquee animation");
-
     // Check if required elements exist
     if (!elements.wrapper || !elements.row1 || !elements.row2) {
       console.error("Required marquee elements not found in DOM");
@@ -392,8 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Animation creators
   function createMarqueeScrollAnimation() {
-    console.log("Creating marquee scroll animation");
-
     // Create timeline with ScrollTrigger
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -401,12 +397,10 @@ document.addEventListener("DOMContentLoaded", () => {
         start: "top bottom",
         end: "bottom top",
         scrub: config.animation.scrub,
-        onEnter: () => console.log("Marquee wrapper entered viewport"),
-        onLeave: () => console.log("Marquee wrapper left viewport"),
-        onEnterBack: () =>
-          console.log("Marquee wrapper entered viewport from below"),
-        onLeaveBack: () =>
-          console.log("Marquee wrapper left viewport going up"),
+        onEnter: () => {},
+        onLeave: () => {},
+        onEnterBack: () => {},
+        onLeaveBack: () => {},
       },
     });
 
@@ -430,8 +424,6 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       0,
     );
-
-    console.log("Marquee scroll animation timeline created");
   }
 
   // Initialize
