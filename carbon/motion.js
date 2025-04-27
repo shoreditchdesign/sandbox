@@ -445,6 +445,162 @@ document.addEventListener("DOMContentLoaded", () => {
   initMarqueeAnimation();
 });
 
+//Gsap for Graphene Flow
+document.addEventListener("DOMContentLoaded", () => {
+  // Configuration
+  const config = {
+    selectors: {
+      chapter: {
+        container: '[data-sq-list="trigger"]',
+        items: '[data-sq-item="trigger"]',
+      },
+      video: {
+        container: '[data-sq-list="videos"]',
+        items: '[data-sq-item="video"]',
+      },
+    },
+    animation: {
+      duration: 0.75,
+      ease: "power2.inOut",
+    },
+  };
+
+  // Initializers
+  function initChapterVideoAnimation() {
+    console.log("Initializing Chapter Video Animation");
+
+    // Get DOM elements
+    const chapterItems = document.querySelectorAll(
+      `${config.selectors.chapter.container} ${config.selectors.chapter.items}`,
+    );
+    const videoItems = document.querySelectorAll(
+      `${config.selectors.video.container} ${config.selectors.video.items}`,
+    );
+
+    // Validate DOM elements
+    if (!chapterItems.length || !videoItems.length) {
+      console.error(
+        "Required DOM elements not found for chapter video animation",
+      );
+      return;
+    }
+
+    // Check if GSAP and ScrollTrigger are available
+    if (!window.gsap || !window.ScrollTrigger) {
+      console.error(
+        "GSAP or ScrollTrigger not found. Please ensure both are loaded.",
+      );
+      return;
+    }
+
+    console.log(
+      `Found ${chapterItems.length} chapters and ${videoItems.length} videos`,
+    );
+
+    // Initialize videos (set all except first to opacity 0)
+    initVideoStates(videoItems);
+
+    // Set up scroll triggers for each chapter
+    createChapterScrollTriggers(chapterItems, videoItems);
+
+    console.log("Chapter Video Animation initialized successfully");
+  }
+
+  function initVideoStates(videoItems) {
+    console.log("Setting initial video states");
+
+    gsap.set(videoItems, { opacity: 0 });
+    gsap.set(videoItems[0], { opacity: 1 });
+
+    console.log("First video set to visible, all others hidden");
+  }
+
+  // Animation creators
+  function createChapterScrollTriggers(chapterItems, videoItems) {
+    const lastIndex = chapterItems.length;
+
+    console.log(`Creating scroll triggers for ${lastIndex} chapters`);
+
+    chapterItems.forEach((chapter, idx) => {
+      // Convert to 1-based index to match data-sq-index
+      const currentIndex = idx + 1;
+      console.log(`Setting up scroll trigger for chapter ${currentIndex}`);
+
+      ScrollTrigger.create({
+        trigger: chapter,
+        start: "top center",
+        onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
+        onEnterBack: () =>
+          handleChapterEnterBack(currentIndex, lastIndex, videoItems),
+        markers: false, // Set to true for debugging
+      });
+    });
+  }
+
+  function handleChapterEnter(currentIndex, lastIndex, videoItems) {
+    console.log(`Chapter ${currentIndex} entered view (scrolling down)`);
+
+    // Skip animation for first chapter (already visible)
+    if (currentIndex === 1) {
+      console.log("First chapter already visible, skipping animation");
+      return;
+    }
+
+    // Create and play transition animation
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 2], // Previous video (currentIndex-1)-1 due to 0-based array
+      videoItems[currentIndex - 1], // Current video (currentIndex-1) due to 0-based array
+    );
+
+    timeline.play();
+  }
+
+  function handleChapterEnterBack(currentIndex, lastIndex, videoItems) {
+    console.log(`Chapter ${currentIndex} entered view (scrolling up)`);
+
+    // Skip animation for first chapter
+    if (currentIndex === 1) {
+      console.log("First chapter already visible, skipping animation");
+      return;
+    }
+
+    // Create and play transition animation (reverse direction)
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 1], // Current video
+      videoItems[currentIndex - 2], // Previous video
+    );
+
+    timeline.play();
+  }
+
+  function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
+    console.log("Creating video transition timeline");
+
+    const tl = gsap.timeline();
+
+    tl.to(fadeOutVideo, {
+      opacity: 0,
+      duration: config.animation.duration / 2,
+      ease: config.animation.ease,
+    });
+
+    tl.to(
+      fadeInVideo,
+      {
+        opacity: 1,
+        duration: config.animation.duration / 2,
+        ease: config.animation.ease,
+      },
+      `-=${config.animation.duration / 4}`,
+    ); // Slight overlap for smoother transition
+
+    return tl;
+  }
+
+  // Initialize animation
+  initChapterVideoAnimation();
+});
+
 //GSAP for Navbar slide
 document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
