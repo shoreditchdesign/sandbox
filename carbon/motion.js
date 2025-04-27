@@ -446,194 +446,195 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Gsap for Graphene Flow
-// Configuration
-const config = {
-  selectors: {
-    chapter: {
-      container: '[data-sq-list="trigger"]',
-      items: '[data-sq-item="trigger"]',
+document.addEventListener("DOMContentLoaded", () => {
+  // Configuration
+  const config = {
+    selectors: {
+      chapter: {
+        container: '[data-sq-list="trigger"]',
+        items: '[data-sq-item="trigger"]',
+      },
+      video: {
+        container: '[data-sq-list="videos"]',
+        items: '[data-sq-item="video"]',
+      },
     },
-    video: {
-      container: '[data-sq-list="videos"]',
-      items: '[data-sq-item="video"]',
+    animation: {
+      duration: 0.75,
+      ease: "power2.inOut",
     },
-  },
-  animation: {
-    duration: 0.75,
-    ease: "power2.inOut",
-  },
-};
+  };
 
-// Initializers
-function initChapterVideoAnimation() {
-  console.log("Initializing Chapter Video Animation");
+  // Initializers
+  function initChapterVideoAnimation() {
+    console.log("Initializing Chapter Video Animation");
 
-  // Get DOM elements
-  const chapterItems = document.querySelectorAll(
-    `${config.selectors.chapter.container} ${config.selectors.chapter.items}`,
-  );
-  const videoItems = document.querySelectorAll(
-    `${config.selectors.video.container} ${config.selectors.video.items}`,
-  );
-
-  // Validate DOM elements
-  if (!chapterItems.length || !videoItems.length) {
-    console.error(
-      "Required DOM elements not found for chapter video animation",
+    // Get DOM elements
+    const chapterItems = document.querySelectorAll(
+      `${config.selectors.chapter.container} ${config.selectors.chapter.items}`,
     );
-    return;
+    const videoItems = document.querySelectorAll(
+      `${config.selectors.video.container} ${config.selectors.video.items}`,
+    );
+
+    // Validate DOM elements
+    if (!chapterItems.length || !videoItems.length) {
+      console.error(
+        "Required DOM elements not found for chapter video animation",
+      );
+      return;
+    }
+
+    // Check if GSAP and ScrollTrigger are available
+    if (!window.gsap || !window.ScrollTrigger) {
+      console.error(
+        "GSAP or ScrollTrigger not found. Please ensure both are loaded.",
+      );
+      return;
+    }
+
+    console.log(
+      `Found ${chapterItems.length} chapters and ${videoItems.length} videos`,
+    );
+
+    // Initialize videos (set all except first to opacity 0)
+    initVideoStates(videoItems);
+
+    // Set up scroll triggers for each chapter
+    createChapterScrollTriggers(chapterItems, videoItems);
+
+    console.log("Chapter Video Animation initialized successfully");
   }
 
-  // Check if GSAP and ScrollTrigger are available
-  if (!window.gsap || !window.ScrollTrigger) {
-    console.error(
-      "GSAP or ScrollTrigger not found. Please ensure both are loaded.",
-    );
-    return;
+  function initVideoStates(videoItems) {
+    console.log("🎞️ Setting initial video states");
+
+    gsap.set(videoItems, { opacity: 0 });
+    gsap.set(videoItems[0], { opacity: 1 });
+
+    console.log("✅ First video set to visible, all others hidden");
+
+    // Log the state of each video for debugging
+    videoItems.forEach((video, idx) => {
+      console.log(`📺 Video ${idx + 1} initial opacity: ${idx === 0 ? 1 : 0}`);
+    });
   }
 
-  console.log(
-    `Found ${chapterItems.length} chapters and ${videoItems.length} videos`,
-  );
+  // Animation creators
+  function createChapterScrollTriggers(chapterItems, videoItems) {
+    const lastIndex = chapterItems.length;
 
-  // Initialize videos (set all except first to opacity 0)
-  initVideoStates(videoItems);
+    console.log(`📋 Creating scroll triggers for ${lastIndex} chapters`);
 
-  // Set up scroll triggers for each chapter
-  createChapterScrollTriggers(chapterItems, videoItems);
+    chapterItems.forEach((chapter, idx) => {
+      // Convert to 1-based index to match data-sq-index
+      const currentIndex = idx + 1;
+      console.log(`🔧 Setting up scroll trigger for chapter ${currentIndex}`);
 
-  console.log("Chapter Video Animation initialized successfully");
-}
+      ScrollTrigger.create({
+        trigger: chapter,
+        start: "top center",
+        onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
+        onEnterBack: () =>
+          handleChapterEnterBack(currentIndex, lastIndex, videoItems),
+        markers: true, // Set to true for debugging
+        id: `chapter-${currentIndex}`,
+      });
 
-function initVideoStates(videoItems) {
-  console.log("🎞️ Setting initial video states");
+      console.log(`✅ Scroll trigger created for chapter ${currentIndex}`);
+    });
+  }
 
-  gsap.set(videoItems, { opacity: 0 });
-  gsap.set(videoItems[0], { opacity: 1 });
+  function handleChapterEnter(currentIndex, lastIndex, videoItems) {
+    console.log(
+      `🔽 TRIGGER: Chapter ${currentIndex} entered view (scrolling DOWN) 🔽`,
+    );
 
-  console.log("✅ First video set to visible, all others hidden");
+    // Skip animation for first chapter (already visible)
+    if (currentIndex === 1) {
+      console.log("⏭️ First chapter already visible, skipping animation");
+      return;
+    }
 
-  // Log the state of each video for debugging
-  videoItems.forEach((video, idx) => {
-    console.log(`📺 Video ${idx + 1} initial opacity: ${idx === 0 ? 1 : 0}`);
-  });
-}
+    console.log(
+      `🎬 ANIMATING: Fade out video ${currentIndex - 1} and fade in video ${currentIndex}`,
+    );
 
-// Animation creators
-function createChapterScrollTriggers(chapterItems, videoItems) {
-  const lastIndex = chapterItems.length;
+    // Create and play transition animation
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 2], // Previous video (currentIndex-1)-1 due to 0-based array
+      videoItems[currentIndex - 1], // Current video (currentIndex-1) due to 0-based array
+    );
 
-  console.log(`📋 Creating scroll triggers for ${lastIndex} chapters`);
+    timeline.play();
+    console.log(`✅ Animation started for Chapter ${currentIndex} entry`);
+  }
 
-  chapterItems.forEach((chapter, idx) => {
-    // Convert to 1-based index to match data-sq-index
-    const currentIndex = idx + 1;
-    console.log(`🔧 Setting up scroll trigger for chapter ${currentIndex}`);
+  function handleChapterEnterBack(currentIndex, lastIndex, videoItems) {
+    console.log(
+      `🔼 TRIGGER: Chapter ${currentIndex} entered view (scrolling UP) 🔼`,
+    );
 
-    ScrollTrigger.create({
-      trigger: chapter,
-      start: "top center",
-      onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
-      onEnterBack: () =>
-        handleChapterEnterBack(currentIndex, lastIndex, videoItems),
-      markers: true, // Set to true for debugging
-      id: `chapter-${currentIndex}`,
+    // Skip animation for first chapter
+    if (currentIndex === 1) {
+      console.log("⏭️ First chapter already visible, skipping animation");
+      return;
+    }
+
+    console.log(
+      `🎬 ANIMATING: Fade out video ${currentIndex} and fade in video ${currentIndex - 1}`,
+    );
+
+    // Create and play transition animation (reverse direction)
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 1], // Current video
+      videoItems[currentIndex - 2], // Previous video
+    );
+
+    timeline.play();
+    console.log(`✅ Animation started for Chapter ${currentIndex} enterBack`);
+  }
+
+  function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
+    console.log("⏱️ Creating video transition timeline");
+
+    // Get indices for logging (add 1 to convert from 0-based to 1-based)
+    const fadeOutIndex =
+      Array.from(fadeOutVideo.parentNode.children).indexOf(fadeOutVideo) + 1;
+    const fadeInIndex =
+      Array.from(fadeInVideo.parentNode.children).indexOf(fadeInVideo) + 1;
+
+    console.log(`🔄 Transition: Video ${fadeOutIndex} → Video ${fadeInIndex}`);
+
+    const tl = gsap.timeline({
+      onStart: () => console.log(`▶️ Starting transition animation`),
+      onComplete: () =>
+        console.log(
+          `✅ Completed transition: Video ${fadeInIndex} now visible`,
+        ),
     });
 
-    console.log(`✅ Scroll trigger created for chapter ${currentIndex}`);
-  });
-}
-
-function handleChapterEnter(currentIndex, lastIndex, videoItems) {
-  console.log(
-    `🔽 TRIGGER: Chapter ${currentIndex} entered view (scrolling DOWN) 🔽`,
-  );
-
-  // Skip animation for first chapter (already visible)
-  if (currentIndex === 1) {
-    console.log("⏭️ First chapter already visible, skipping animation");
-    return;
-  }
-
-  console.log(
-    `🎬 ANIMATING: Fade out video ${currentIndex - 1} and fade in video ${currentIndex}`,
-  );
-
-  // Create and play transition animation
-  const timeline = createVideoTransitionTimeline(
-    videoItems[currentIndex - 2], // Previous video (currentIndex-1)-1 due to 0-based array
-    videoItems[currentIndex - 1], // Current video (currentIndex-1) due to 0-based array
-  );
-
-  timeline.play();
-  console.log(`✅ Animation started for Chapter ${currentIndex} entry`);
-}
-
-function handleChapterEnterBack(currentIndex, lastIndex, videoItems) {
-  console.log(
-    `🔼 TRIGGER: Chapter ${currentIndex} entered view (scrolling UP) 🔼`,
-  );
-
-  // Skip animation for first chapter
-  if (currentIndex === 1) {
-    console.log("⏭️ First chapter already visible, skipping animation");
-    return;
-  }
-
-  console.log(
-    `🎬 ANIMATING: Fade out video ${currentIndex} and fade in video ${currentIndex - 1}`,
-  );
-
-  // Create and play transition animation (reverse direction)
-  const timeline = createVideoTransitionTimeline(
-    videoItems[currentIndex - 1], // Current video
-    videoItems[currentIndex - 2], // Previous video
-  );
-
-  timeline.play();
-  console.log(`✅ Animation started for Chapter ${currentIndex} enterBack`);
-}
-
-function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
-  console.log("⏱️ Creating video transition timeline");
-
-  // Get indices for logging (add 1 to convert from 0-based to 1-based)
-  const fadeOutIndex =
-    Array.from(fadeOutVideo.parentNode.children).indexOf(fadeOutVideo) + 1;
-  const fadeInIndex =
-    Array.from(fadeInVideo.parentNode.children).indexOf(fadeInVideo) + 1;
-
-  console.log(`🔄 Transition: Video ${fadeOutIndex} → Video ${fadeInIndex}`);
-
-  const tl = gsap.timeline({
-    onStart: () => console.log(`▶️ Starting transition animation`),
-    onComplete: () =>
-      console.log(`✅ Completed transition: Video ${fadeInIndex} now visible`),
-  });
-
-  tl.to(fadeOutVideo, {
-    opacity: 0,
-    duration: config.animation.duration / 2,
-    ease: config.animation.ease,
-    onStart: () => console.log(`⬇️ Fading out Video ${fadeOutIndex}`),
-  });
-
-  tl.to(
-    fadeInVideo,
-    {
-      opacity: 1,
+    tl.to(fadeOutVideo, {
+      opacity: 0,
       duration: config.animation.duration / 2,
       ease: config.animation.ease,
-      onStart: () => console.log(`⬆️ Fading in Video ${fadeInIndex}`),
-    },
-    `-=${config.animation.duration / 4}`,
-  ); // Slight overlap for smoother transition
+      onStart: () => console.log(`⬇️ Fading out Video ${fadeOutIndex}`),
+    });
 
-  return tl;
-}
+    tl.to(
+      fadeInVideo,
+      {
+        opacity: 1,
+        duration: config.animation.duration / 2,
+        ease: config.animation.ease,
+        onStart: () => console.log(`⬆️ Fading in Video ${fadeInIndex}`),
+      },
+      `-=${config.animation.duration / 4}`,
+    ); // Slight overlap for smoother transition
 
-// Initialize animation when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
+    return tl;
+  }
+
   console.log("🚀 DOM loaded - initializing chapter video animation");
   initChapterVideoAnimation();
 });
