@@ -1,6 +1,6 @@
 console.log("ix deployed");
 
-// Marquee Cards
+// Marquee Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
   function initializeMarqueeCards() {
     try {
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Team Card Hover Animation
+// Team Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
   // Select all card elements
   const cards = document.querySelectorAll(".s-ab5_card");

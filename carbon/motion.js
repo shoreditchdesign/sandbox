@@ -612,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP tp Slide Down
+//GSAP to Slide Down
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
