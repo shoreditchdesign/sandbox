@@ -258,3 +258,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("CMS filter initialization complete");
 });
+
+//Block Vimeo Console Logs
+document.addEventListener("DOMContentLoaded", function () {
+  (function () {
+    // Store original console methods
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+
+    // Pattern to match Vimeo analytics URLs
+    const vimeoPattern = /arclight\.vimeo\.com\/add\/player-stats|beacon/i;
+
+    // Override console.log
+    console.log = function (...args) {
+      // Check if arguments contain Vimeo analytics related content
+      const shouldBlock = args.some(
+        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
+      );
+
+      // Only log if not related to Vimeo analytics
+      if (!shouldBlock) {
+        originalConsoleLog.apply(console, args);
+      }
+    };
+
+    // Override console.error with same logic
+    console.error = function (...args) {
+      const shouldBlock = args.some(
+        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
+      );
+
+      if (!shouldBlock) {
+        originalConsoleError.apply(console, args);
+      }
+    };
+
+    // Override console.warn with same logic
+    console.warn = function (...args) {
+      const shouldBlock = args.some(
+        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
+      );
+
+      if (!shouldBlock) {
+        originalConsoleWarn.apply(console, args);
+      }
+    };
+
+    // Block the network requests to prevent the errors completely
+    const originalFetch = window.fetch;
+    window.fetch = function (url, options) {
+      if (typeof url === "string" && vimeoPattern.test(url)) {
+        // Return a fake successful response instead
+        console.log("Blocked Vimeo analytics request");
+        return Promise.resolve(
+          new Response("{}", {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }),
+        );
+      }
+      return originalFetch.apply(this, arguments);
+    };
+
+    // Also intercept XMLHttpRequest
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+      if (typeof url === "string" && vimeoPattern.test(url)) {
+        // Redirect to a blank endpoint
+        url = "data:text/plain,{}";
+        console.log("Blocked Vimeo analytics XHR request");
+      }
+      return originalOpen.call(this, method, url, ...rest);
+    };
+
+    console.log("Vimeo console log blocker initialized");
+  })();
+});
