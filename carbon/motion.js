@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMarqueeAnimation();
 });
 
-//Gsap for Graphene Flow
+//GSAP for Graphene Flow
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initChapterVideoAnimation();
 });
 
-//GSAP for Navbar slide
+//GSAP for Navbar Slide
 document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
 
