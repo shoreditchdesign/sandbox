@@ -355,6 +355,96 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 6000);
 });
 
+//GSAP for Graphene Marquee
+document.addEventListener("DOMContentLoaded", () => {
+  // Configuration
+  const config = {
+    animation: {
+      duration: 1,
+      ease: "power1.inOut",
+      scrub: true,
+    },
+    selectors: {
+      wrapper: '[data-parallax-marquee="wrap"]',
+      rows: '[data-parallax-marquee="row"]',
+    },
+    translation: {
+      distance: 300, // Translation distance in pixels
+    },
+  };
+
+  // Selectors
+  const elements = {
+    wrapper: document.querySelector(config.selectors.wrapper),
+    row1: document.querySelector('[data-marquee-id="1"]'),
+    row2: document.querySelector('[data-marquee-id="2"]'),
+  };
+
+  // Initializers
+  function initMarqueeAnimation() {
+    console.log("Initializing marquee animation");
+
+    // Check if required elements exist
+    if (!elements.wrapper || !elements.row1 || !elements.row2) {
+      console.error("Required marquee elements not found in DOM");
+      return;
+    }
+
+    // Set initial state
+    gsap.set([elements.row1, elements.row2], { x: 0 });
+
+    // Create scroll-triggered animation
+    createMarqueeScrollAnimation();
+  }
+
+  // Animation creators
+  function createMarqueeScrollAnimation() {
+    console.log("Creating marquee scroll animation");
+
+    // Create timeline with ScrollTrigger
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: elements.wrapper,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: config.animation.scrub,
+        onEnter: () => console.log("Marquee wrapper entered viewport"),
+        onLeave: () => console.log("Marquee wrapper left viewport"),
+        onEnterBack: () =>
+          console.log("Marquee wrapper entered viewport from below"),
+        onLeaveBack: () =>
+          console.log("Marquee wrapper left viewport going up"),
+      },
+    });
+
+    // Add animations to timeline
+    tl.to(
+      elements.row1,
+      {
+        x: -config.translation.distance,
+        ease: config.animation.ease,
+        duration: config.animation.duration,
+      },
+      0,
+    );
+
+    tl.to(
+      elements.row2,
+      {
+        x: config.translation.distance,
+        ease: config.animation.ease,
+        duration: config.animation.duration,
+      },
+      0,
+    );
+
+    console.log("Marquee scroll animation timeline created");
+  }
+
+  // Initialize
+  initMarqueeAnimation();
+});
+
 //GSAP for Navbar slide
 document.addEventListener("DOMContentLoaded", () => {
   const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
