@@ -260,80 +260,57 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Block Vimeo Console Logs
-// Enhanced Vimeo analytics console blocker - runs after DOM content loaded
 document.addEventListener("DOMContentLoaded", function () {
-  // Store original console methods
-  const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
-  const originalConsoleWarn = console.warn;
-  const originalConsoleInfo = console.info;
+  // Only target specific Vimeo-related errors while preserving console functionality
+  const vimeoErrorPattern =
+    /arclight\.vimeo\.com\/add\/player-stats|beacon=1|ERR_BLOCKED_BY_CLIENT.*vimeo|vendor\.module\.js|player\.module\.js/i;
 
-  // Expanded pattern to match Vimeo analytics URLs and error messages
-  const vimeoPattern =
-    /arclight\.vimeo\.com\/add\/player-stats|beacon|ERR_BLOCKED_BY_CLIENT.*vimeo|player\.module\.js|vendor\.module\.js/i;
+  // Use error event listeners instead of overriding console methods
+  // This preserves the original console behavior and stack traces
+  window.addEventListener(
+    "error",
+    function (event) {
+      // Only prevent Vimeo errors from showing
+      if (event && event.filename && vimeoErrorPattern.test(event.filename)) {
+        event.preventDefault();
+        return false;
+      }
 
-  // Deep inspection function to check for Vimeo patterns in any object
-  const containsVimeoPattern = function (arg) {
-    if (typeof arg === "string") {
-      return vimeoPattern.test(arg);
-    } else if (arg instanceof Error) {
-      return (
-        vimeoPattern.test(arg.message) || vimeoPattern.test(arg.stack || "")
-      );
-    } else if (typeof arg === "object" && arg !== null) {
-      // Check if any string property contains the pattern
-      return Object.values(arg).some(
-        (val) => typeof val === "string" && vimeoPattern.test(val),
-      );
+      // Also check error message
+      if (event && event.message && vimeoErrorPattern.test(event.message)) {
+        event.preventDefault();
+        return false;
+      }
+
+      // Let all other errors pass through normally
+      return true;
+    },
+    true,
+  );
+
+  // Create a specific filter for XMLHttpRequest to block Vimeo analytics
+  const originalOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function (method, url, ...args) {
+    if (
+      typeof url === "string" &&
+      url.includes("arclight.vimeo.com/add/player-stats")
+    ) {
+      // Redirect to empty data URL to prevent the request
+      url = "data:text/plain,{}";
     }
-    return false;
+    return originalOpen.call(this, method, url, ...args);
   };
 
-  // Override all console methods with enhanced filtering
-  console.log = function (...args) {
-    if (!args.some(containsVimeoPattern)) {
-      originalConsoleLog.apply(console, args);
-    }
-  };
-
-  console.error = function (...args) {
-    if (!args.some(containsVimeoPattern)) {
-      originalConsoleError.apply(console, args);
-    }
-  };
-
-  console.warn = function (...args) {
-    if (!args.some(containsVimeoPattern)) {
-      originalConsoleWarn.apply(console, args);
-    }
-  };
-
-  console.info = function (...args) {
-    if (!args.some(containsVimeoPattern)) {
-      originalConsoleInfo.apply(console, args);
-    }
-  };
-
-  // Handle window.onerror to catch network errors
-  const originalOnError = window.onerror;
-  window.onerror = function (message, source, lineno, colno, error) {
-    if (message && typeof message === "string" && vimeoPattern.test(message)) {
-      // Prevent the error from showing in console
-      return true; // This prevents the error from propagating
-    }
-
-    // For other errors, use the original handler
-    if (originalOnError) {
-      return originalOnError.apply(this, arguments);
-    }
-    return false;
-  };
-
-  // Intercept and block network requests
-  if (window.fetch) {
-    const originalFetch = window.fetch;
-    window.fetch = function (url, options) {
-      if (typeof url === "string" && vimeoPattern.test(url)) {
+  // Block Vimeo fetch requests but preserve all other fetch behavior
+  const originalFetch = window.fetch;
+  if (originalFetch) {
+    window.fetch = function (resource, init) {
+      if (
+        resource &&
+        typeof resource === "string" &&
+        resource.includes("arclight.vimeo.com/add/player-stats")
+      ) {
+        // Return a fake successful response
         return Promise.resolve(
           new Response("{}", {
             status: 200,
@@ -341,32 +318,46 @@ document.addEventListener("DOMContentLoaded", function () {
           }),
         );
       }
+      // Pass through all other fetch requests normally
       return originalFetch.apply(this, arguments);
     };
   }
 
-  // Block XMLHttpRequest requests
-  const originalOpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-    if (typeof url === "string" && vimeoPattern.test(url)) {
-      // Use a data URL as a dummy target
-      url = "data:text/plain,{}";
+  // Don't override the Error constructor - it affects too many things
+
+  // Add a special case for Vimeo console errors while preserving normal functionality
+  const originalConsoleError = console.error;
+  console.error = function (...args) {
+    // ONLY filter out Vimeo-related errors
+    const isVimeoError = args.some((arg) => {
+      // Check for Vimeo error strings
+      if (typeof arg === "string" && vimeoErrorPattern.test(arg)) {
+        return true;
+      }
+
+      // Check for Vimeo error objects
+      if (arg && typeof arg === "object") {
+        // Check error stack traces
+        if (arg.stack && vimeoErrorPattern.test(arg.stack)) {
+          return true;
+        }
+
+        // Check for filename in error objects
+        if (arg.filename && vimeoErrorPattern.test(arg.filename)) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+
+    // Only filter Vimeo errors, let everything else through unchanged
+    if (!isVimeoError) {
+      originalConsoleError.apply(console, args);
     }
-    return originalOpen.call(this, method, url, ...rest);
   };
 
-  // Direct interception of script errors
-  document.addEventListener(
-    "error",
-    function (e) {
-      if (e.target && e.target.src && vimeoPattern.test(e.target.src)) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-    },
-    true,
+  console.log(
+    "Vimeo error blocker initialized (preserving normal console behavior)",
   );
-
-  console.log("Enhanced Vimeo console blocker initialized");
 });
