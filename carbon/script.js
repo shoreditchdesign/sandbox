@@ -260,57 +260,80 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Block Vimeo Console Logs
+// Enhanced Vimeo analytics console blocker - runs after DOM content loaded
 document.addEventListener("DOMContentLoaded", function () {
-  (function () {
-    // Store original console methods
-    const originalConsoleLog = console.log;
-    const originalConsoleError = console.error;
-    const originalConsoleWarn = console.warn;
+  // Store original console methods
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+  const originalConsoleInfo = console.info;
 
-    // Pattern to match Vimeo analytics URLs
-    const vimeoPattern = /arclight\.vimeo\.com\/add\/player-stats|beacon/i;
+  // Expanded pattern to match Vimeo analytics URLs and error messages
+  const vimeoPattern =
+    /arclight\.vimeo\.com\/add\/player-stats|beacon|ERR_BLOCKED_BY_CLIENT.*vimeo|player\.module\.js|vendor\.module\.js/i;
 
-    // Override console.log
-    console.log = function (...args) {
-      // Check if arguments contain Vimeo analytics related content
-      const shouldBlock = args.some(
-        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
+  // Deep inspection function to check for Vimeo patterns in any object
+  const containsVimeoPattern = function (arg) {
+    if (typeof arg === "string") {
+      return vimeoPattern.test(arg);
+    } else if (arg instanceof Error) {
+      return (
+        vimeoPattern.test(arg.message) || vimeoPattern.test(arg.stack || "")
       );
-
-      // Only log if not related to Vimeo analytics
-      if (!shouldBlock) {
-        originalConsoleLog.apply(console, args);
-      }
-    };
-
-    // Override console.error with same logic
-    console.error = function (...args) {
-      const shouldBlock = args.some(
-        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
+    } else if (typeof arg === "object" && arg !== null) {
+      // Check if any string property contains the pattern
+      return Object.values(arg).some(
+        (val) => typeof val === "string" && vimeoPattern.test(val),
       );
+    }
+    return false;
+  };
 
-      if (!shouldBlock) {
-        originalConsoleError.apply(console, args);
-      }
-    };
+  // Override all console methods with enhanced filtering
+  console.log = function (...args) {
+    if (!args.some(containsVimeoPattern)) {
+      originalConsoleLog.apply(console, args);
+    }
+  };
 
-    // Override console.warn with same logic
-    console.warn = function (...args) {
-      const shouldBlock = args.some(
-        (arg) => typeof arg === "string" && vimeoPattern.test(arg),
-      );
+  console.error = function (...args) {
+    if (!args.some(containsVimeoPattern)) {
+      originalConsoleError.apply(console, args);
+    }
+  };
 
-      if (!shouldBlock) {
-        originalConsoleWarn.apply(console, args);
-      }
-    };
+  console.warn = function (...args) {
+    if (!args.some(containsVimeoPattern)) {
+      originalConsoleWarn.apply(console, args);
+    }
+  };
 
-    // Block the network requests to prevent the errors completely
+  console.info = function (...args) {
+    if (!args.some(containsVimeoPattern)) {
+      originalConsoleInfo.apply(console, args);
+    }
+  };
+
+  // Handle window.onerror to catch network errors
+  const originalOnError = window.onerror;
+  window.onerror = function (message, source, lineno, colno, error) {
+    if (message && typeof message === "string" && vimeoPattern.test(message)) {
+      // Prevent the error from showing in console
+      return true; // This prevents the error from propagating
+    }
+
+    // For other errors, use the original handler
+    if (originalOnError) {
+      return originalOnError.apply(this, arguments);
+    }
+    return false;
+  };
+
+  // Intercept and block network requests
+  if (window.fetch) {
     const originalFetch = window.fetch;
     window.fetch = function (url, options) {
       if (typeof url === "string" && vimeoPattern.test(url)) {
-        // Return a fake successful response instead
-        console.log("Blocked Vimeo analytics request");
         return Promise.resolve(
           new Response("{}", {
             status: 200,
@@ -320,18 +343,30 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       return originalFetch.apply(this, arguments);
     };
+  }
 
-    // Also intercept XMLHttpRequest
-    const originalOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-      if (typeof url === "string" && vimeoPattern.test(url)) {
-        // Redirect to a blank endpoint
-        url = "data:text/plain,{}";
-        console.log("Blocked Vimeo analytics XHR request");
+  // Block XMLHttpRequest requests
+  const originalOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+    if (typeof url === "string" && vimeoPattern.test(url)) {
+      // Use a data URL as a dummy target
+      url = "data:text/plain,{}";
+    }
+    return originalOpen.call(this, method, url, ...rest);
+  };
+
+  // Direct interception of script errors
+  document.addEventListener(
+    "error",
+    function (e) {
+      if (e.target && e.target.src && vimeoPattern.test(e.target.src)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
       }
-      return originalOpen.call(this, method, url, ...rest);
-    };
+    },
+    true,
+  );
 
-    console.log("Vimeo console log blocker initialized");
-  })();
+  console.log("Enhanced Vimeo console blocker initialized");
 });
