@@ -102,8 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    console.log("Preloader component found:", preloaderComponent);
-
     if (typeof gsap === "undefined") {
       console.error("GSAP library not loaded");
       return null;
@@ -128,14 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createPreloaderAnimation = () => {
     const timeline = gsap.timeline({
-      onStart: () => console.log("Animation started"),
-      onComplete: () => console.log("Animation completed"),
-      onUpdate: () => {
-        const progress = Math.round(timeline.progress() * 100);
-        if (progress % 25 === 0) {
-          console.log(`Animation progress: ${progress}%`);
-        }
-      },
+      onStart: () => {},
+      onComplete: () => {},
+      onUpdate: () => {},
     });
 
     //P1 Aniamtion
@@ -194,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         duration:
           ANIMATION.angulars.p1s1.endFade - ANIMATION.angulars.p1s1.startFade,
         ease: ANIMATION.angulars.p1s1.ease,
-        onStart: () => console.log("P1/S1 angular fade started"),
+        onStart: () => {},
       },
       ANIMATION.angulars.p1s1.startFade,
     );
@@ -206,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         duration:
           ANIMATION.angulars.p2s2.endFade - ANIMATION.angulars.p2s2.startFade,
         ease: ANIMATION.angulars.p2s2.ease,
-        onStart: () => console.log("P2/S2 angular fade started"),
+        onStart: () => {},
       },
       ANIMATION.angulars.p2s2.startFade,
     );
