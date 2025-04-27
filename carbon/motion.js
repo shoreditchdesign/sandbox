@@ -528,15 +528,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentIndex = idx + 1;
       console.log(`🔧 Setting up scroll trigger for chapter ${currentIndex}`);
 
+      // For scrolling down - use onEnter
       ScrollTrigger.create({
         trigger: chapter,
         start: "top center",
         onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
-        onEnterBack: () =>
-          handleChapterEnterBack(currentIndex, lastIndex, videoItems),
         markers: true, // Set to true for debugging
-        id: `chapter-${currentIndex}`,
+        id: `chapter-${currentIndex}-enter`,
       });
+
+      // For scrolling up - use onLeave on the next chapter if it exists
+      if (currentIndex < lastIndex) {
+        ScrollTrigger.create({
+          trigger: chapterItems[idx + 1], // Next chapter
+          start: "top bottom",
+          onLeaveBack: () =>
+            handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems),
+          markers: true, // Set to true for debugging
+          id: `chapter-${currentIndex + 1}-leave`,
+        });
+      }
 
       console.log(`✅ Scroll trigger created for chapter ${currentIndex}`);
     });
@@ -567,14 +578,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(`✅ Animation started for Chapter ${currentIndex} entry`);
   }
 
-  function handleChapterEnterBack(currentIndex, lastIndex, videoItems) {
+  function handleChapterLeaveBack(currentIndex, lastIndex, videoItems) {
     console.log(
-      `🔼 TRIGGER: Chapter ${currentIndex} entered view (scrolling UP) 🔼`,
+      `🔼 TRIGGER: Chapter ${currentIndex} left viewport (scrolling UP) 🔼`,
     );
 
     // Skip animation for first chapter
-    if (currentIndex === 1) {
-      console.log("⏭️ First chapter already visible, skipping animation");
+    if (currentIndex <= 1) {
+      console.log("⏭️ First chapter animation not needed, skipping");
       return;
     }
 
@@ -589,7 +600,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     timeline.play();
-    console.log(`✅ Animation started for Chapter ${currentIndex} enterBack`);
+    console.log(
+      `✅ Animation started for Chapter ${currentIndex} leaving (going up)`,
+    );
   }
 
   function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
