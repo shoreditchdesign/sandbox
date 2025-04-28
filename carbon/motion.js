@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Set initial state
-    gsap.set(shaderWrap, { opacity: 0 });
+    gsap.set(shaderWrap, { opacity: 1 });
     gsap.set(shaderCanvas, {
       y: ANIMATION.shader.initialY,
       opacity: ANIMATION.shader.initialOpacity,
