@@ -29,6 +29,149 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//GSAP for Navbar Slide
+document.addEventListener("DOMContentLoaded", () => {
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+  if (isDesktop()) {
+    const navbars = document.querySelectorAll(
+      '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
+    );
+    if (navbars.length === 0) {
+      console.warn("No navbar elements found - animation aborted");
+      return;
+    }
+
+    // Set initial attribute state
+    navbars.forEach((navbar) => {
+      navbar.setAttribute("data-tuck-state", "default");
+    });
+
+    gsap.set(navbars, { yPercent: 0 });
+    const showAnim = gsap
+      .from(navbars, {
+        yPercent: -100,
+        paused: true,
+        duration: 0.2,
+      })
+      .progress(1);
+    let lastScrollTop = 0;
+    const downScrollThreshold = 200;
+    const upScrollThreshold = 800;
+    let accumulatedScroll = 0;
+    let navbarVisible = true;
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+      if (
+        (scrollDirection === "down" && accumulatedScroll < 0) ||
+        (scrollDirection === "up" && accumulatedScroll > 0)
+      ) {
+        accumulatedScroll = 0;
+      }
+      accumulatedScroll +=
+        scrollDirection === "down" ? scrollAmount : -scrollAmount;
+      if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+        showAnim.reverse();
+        navbarVisible = false;
+        accumulatedScroll = 0;
+
+        // Set attribute to default when hiding navbar (reverse animation)
+        navbars.forEach((navbar) => {
+          navbar.setAttribute("data-tuck-state", "default");
+          console.log("Navbar state changed to: default");
+        });
+      } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+        showAnim.play();
+        navbarVisible = true;
+        accumulatedScroll = 0;
+
+        // Set attribute to hidden when showing navbar (play animation)
+        navbars.forEach((navbar) => {
+          navbar.setAttribute("data-tuck-state", "hidden");
+          console.log("Navbar state changed to: hidden");
+        });
+      }
+      lastScrollTop = scrollTop;
+    });
+  }
+});
+
+//GSAP for Home Preloader
+document.addEventListener("DOMContentLoaded", () => {
+  // Animation Constants
+  const ANIMATION = {
+    // Shader Animation
+    shader: {
+      initialOpacity: 1,
+      finalOpacity: 0,
+      initialY: 0,
+      finalY: "-100vh",
+      displayDuration: 3, // 3 seconds in viewport
+      fadeOutDuration: 1.2,
+      ease: "power2.inOut",
+    },
+    // Text & Arrow Animation will go here
+    // Scramble Configuration will go here
+  };
+
+  // Selectors
+  const selectors = {
+    // Shader Elements
+    shader: {
+      wrap: '[data-pl-shader="wrap"]',
+      canvas: '[data-pl-shader="canvas"]',
+    },
+    // Text Elements will go here
+  };
+
+  /**
+   * Creates the shader canvas animation
+   * @return {gsap.core.Timeline} - GSAP timeline for shader animation
+   */
+  function createShaderAnimation() {
+    console.log("Initializing shader animation");
+
+    const shaderWrap = document.querySelector(selectors.shader.wrap);
+    const shaderCanvas = document.querySelector(selectors.shader.canvas);
+
+    if (!shaderWrap || !shaderCanvas) {
+      console.error("Shader elements not found");
+      return gsap.timeline(); // Return empty timeline to prevent errors
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting shader animation"),
+      onComplete: () => console.log("Shader animation complete"),
+    });
+
+    // Set initial state
+    gsap.set(shaderCanvas, { opacity: 0 });
+    gsap.set(shaderWrap, {
+      y: ANIMATION.shader.initialY,
+      opacity: ANIMATION.shader.initialOpacity,
+      visibility: "visible",
+    });
+
+    // Hold the shader in view for specified duration
+    tl.to(shaderWrap, {
+      duration: ANIMATION.shader.displayDuration,
+      onStart: () => console.log("Shader holding in viewport"),
+    });
+
+    // Then translate and fade out
+    tl.to(shaderWrap, {
+      y: ANIMATION.shader.finalY,
+      opacity: ANIMATION.shader.finalOpacity,
+      duration: ANIMATION.shader.fadeOutDuration,
+      ease: ANIMATION.shader.ease,
+      onStart: () => console.log("Shader fading out"),
+    });
+
+    return tl;
+  }
+});
+
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
@@ -593,74 +736,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize animation
   initChapterVideoAnimation();
-});
-
-//GSAP for Navbar Slide
-document.addEventListener("DOMContentLoaded", () => {
-  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
-  if (isDesktop()) {
-    const navbars = document.querySelectorAll(
-      '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
-    );
-    if (navbars.length === 0) {
-      console.warn("No navbar elements found - animation aborted");
-      return;
-    }
-
-    // Set initial attribute state
-    navbars.forEach((navbar) => {
-      navbar.setAttribute("data-tuck-state", "default");
-    });
-
-    gsap.set(navbars, { yPercent: 0 });
-    const showAnim = gsap
-      .from(navbars, {
-        yPercent: -100,
-        paused: true,
-        duration: 0.2,
-      })
-      .progress(1);
-    let lastScrollTop = 0;
-    const downScrollThreshold = 200;
-    const upScrollThreshold = 800;
-    let accumulatedScroll = 0;
-    let navbarVisible = true;
-    window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
-      if (
-        (scrollDirection === "down" && accumulatedScroll < 0) ||
-        (scrollDirection === "up" && accumulatedScroll > 0)
-      ) {
-        accumulatedScroll = 0;
-      }
-      accumulatedScroll +=
-        scrollDirection === "down" ? scrollAmount : -scrollAmount;
-      if (accumulatedScroll > downScrollThreshold && navbarVisible) {
-        showAnim.reverse();
-        navbarVisible = false;
-        accumulatedScroll = 0;
-
-        // Set attribute to default when hiding navbar (reverse animation)
-        navbars.forEach((navbar) => {
-          navbar.setAttribute("data-tuck-state", "default");
-          console.log("Navbar state changed to: default");
-        });
-      } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
-        showAnim.play();
-        navbarVisible = true;
-        accumulatedScroll = 0;
-
-        // Set attribute to hidden when showing navbar (play animation)
-        navbars.forEach((navbar) => {
-          navbar.setAttribute("data-tuck-state", "hidden");
-          console.log("Navbar state changed to: hidden");
-        });
-      }
-      lastScrollTop = scrollTop;
-    });
-  }
 });
 
 //GSAP for Headings
