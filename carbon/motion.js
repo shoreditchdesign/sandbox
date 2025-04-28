@@ -105,8 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     shader: {
       initialOpacity: 1,
       finalOpacity: 0,
-      initialY: 0,
-      finalY: "-100vh",
+      initialX: 0,
+      finalX: 0,
       displayDuration: 3, // 3 seconds in viewport
       fadeOutDuration: 1.2,
       ease: "power2.inOut",
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set initial state
     gsap.set(shaderCanvas, { opacity: 0 });
     gsap.set(shaderWrap, {
-      y: ANIMATION.shader.initialY,
+      x: ANIMATION.shader.initialX,
       opacity: ANIMATION.shader.initialOpacity,
       visibility: "visible",
     });
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Then translate and fade out
     tl.to(shaderWrap, {
-      y: ANIMATION.shader.finalY,
+      x: ANIMATION.shader.finalX,
       opacity: ANIMATION.shader.finalOpacity,
       duration: ANIMATION.shader.fadeOutDuration,
       ease: ANIMATION.shader.ease,
@@ -171,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 });
-
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
