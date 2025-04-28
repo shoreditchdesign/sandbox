@@ -117,18 +117,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Selectors
   const selectors = {
-    // Shader Elements
     shader: {
       wrap: '[data-pl-shader="wrap"]',
       canvas: '[data-pl-shader="canvas"]',
     },
-    // Text Elements will go here
   };
 
-  /**
-   * Creates the shader canvas animation
-   * @return {gsap.core.Timeline} - GSAP timeline for shader animation
-   */
   function createShaderAnimation() {
     console.log("Initializing shader animation");
 
@@ -145,22 +139,21 @@ document.addEventListener("DOMContentLoaded", () => {
       onComplete: () => console.log("Shader animation complete"),
     });
 
-    // Set initial state
-    gsap.set(shaderCanvas, { opacity: 0 });
-    gsap.set(shaderWrap, {
+    gsap.set(shaderWrap, { opacity: 1 });
+    gsap.set(shaderCanvas, {
       x: ANIMATION.shader.initialX,
       opacity: ANIMATION.shader.initialOpacity,
       visibility: "visible",
     });
 
     // Hold the shader in view for specified duration
-    tl.to(shaderWrap, {
+    tl.to(shaderCanvas, {
       duration: ANIMATION.shader.displayDuration,
       onStart: () => console.log("Shader holding in viewport"),
     });
 
     // Then translate and fade out
-    tl.to(shaderWrap, {
+    tl.to(shaderCanvas, {
       x: ANIMATION.shader.finalX,
       opacity: ANIMATION.shader.finalOpacity,
       duration: ANIMATION.shader.fadeOutDuration,
@@ -171,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 });
+
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
