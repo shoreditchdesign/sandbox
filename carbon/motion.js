@@ -105,8 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     shader: {
       initialOpacity: 1,
       finalOpacity: 0,
-      initialX: 0,
-      finalX: 0,
+      initialY: 0,
+      finalY: "-100vh",
       displayDuration: 3, // 3 seconds in viewport
       fadeOutDuration: 1.2,
       ease: "power2.inOut",
@@ -139,9 +139,10 @@ document.addEventListener("DOMContentLoaded", () => {
       onComplete: () => console.log("Shader animation complete"),
     });
 
-    gsap.set(shaderWrap, { opacity: 1 });
+    // Set initial state
+    gsap.set(shaderWrap, { opacity: 0 });
     gsap.set(shaderCanvas, {
-      x: ANIMATION.shader.initialX,
+      y: ANIMATION.shader.initialY,
       opacity: ANIMATION.shader.initialOpacity,
       visibility: "visible",
     });
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Then translate and fade out
     tl.to(shaderCanvas, {
-      x: ANIMATION.shader.finalX,
+      y: ANIMATION.shader.finalY,
       opacity: ANIMATION.shader.finalOpacity,
       duration: ANIMATION.shader.fadeOutDuration,
       ease: ANIMATION.shader.ease,
