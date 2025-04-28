@@ -1,5 +1,21 @@
 console.log("script deployed");
 
+//Lenis Smooth Scroll
+if (window.innerWidth >= 992) {
+  // Only initialize on desktop (width >= 992px)
+  const lenis = new Lenis({
+    smooth: true,
+    lerp: 0.1,
+    wheelMultiplier: 1,
+    infinite: false,
+  });
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+}
+
 //Navigation Bar
 document
   .querySelector('[data-nav-element="menu"]')
