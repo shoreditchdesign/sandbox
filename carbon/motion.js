@@ -99,20 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Home Preloader
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing shader animation");
+
   // Animation Constants
   const ANIMATION = {
-    // Shader Animation
     shader: {
       initialOpacity: 1,
       finalOpacity: 0,
       initialY: 0,
       finalY: "-100vh",
-      displayDuration: 3, // 3 seconds in viewport
+      displayDuration: 3,
       fadeOutDuration: 1.2,
       ease: "power2.inOut",
     },
-    // Text & Arrow Animation will go here
-    // Scramble Configuration will go here
   };
 
   // Selectors
@@ -124,14 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function createShaderAnimation() {
-    console.log("Initializing shader animation");
+    console.log("Creating shader animation");
 
     const shaderWrap = document.querySelector(selectors.shader.wrap);
     const shaderCanvas = document.querySelector(selectors.shader.canvas);
 
+    console.log("Shader elements found:", !!shaderWrap, !!shaderCanvas);
+
     if (!shaderWrap || !shaderCanvas) {
       console.error("Shader elements not found");
-      return gsap.timeline(); // Return empty timeline to prevent errors
+      return gsap.timeline();
     }
 
     const tl = gsap.timeline({
@@ -164,6 +165,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return tl;
   }
+
+  // Create and play the animation
+  const shaderTimeline = createShaderAnimation();
+  console.log("Timeline created, playing animation");
+  shaderTimeline.play();
 });
 
 //GSAP for Graphene Preloader
