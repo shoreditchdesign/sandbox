@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       initialOpacity: 1,
       finalOpacity: 0,
       initialX: 0,
-      finalX: "-20px",
+      finalX: "5px",
       displayDuration: 3,
       fadeOutDuration: 1.2,
       ease: "power2.inOut",
