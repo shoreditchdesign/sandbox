@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialPosition: "100%",
         finalPosition: "0%",
         ease: "power2.out",
-        initialDelay: -0.2,
+        initialDelay: 1.2,
         staggerDelay: 0.3,
       },
       fade: {
@@ -273,7 +273,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Set initial state for all arrows
-    gsap.set(arrows, { right: ANIMATION.hero.swoosh.initialPosition });
+    gsap.set(arrows, {
+      right: ANIMATION.hero.swoosh.initialPosition,
+      opacity: 0,
+    });
 
     // Add initial delay
     tl.set({}, {}, ANIMATION.hero.swoosh.initialDelay);
