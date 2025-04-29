@@ -107,10 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
       finalOpacity: 0,
       initialX: 0,
       finalX: "0px",
-      displayDuration: 3,
+      shaderDelay: 3,
       shaderFadeOutDuration: 0.6,
-      bgFadeOutDuration: 0.6,
       bgDelay: 1,
+      bgFadeOutDuration: 0.6,
       ease: "power2.inOut",
     },
     hero: {
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Hold the shader in view for specified duration
     tl.to(shaderCanvas, {
-      duration: ANIMATION.shader.displayDuration,
+      duration: ANIMATION.shader.shaderDelay,
       onStart: () => console.log("Shader holding in viewport"),
     });
 
