@@ -408,8 +408,14 @@ document.addEventListener("DOMContentLoaded", () => {
   masterTimeline.add(createShaderAnimation());
 
   // Add swoosh and text fade animations concurrently
-  masterTimeline.add(playSwooshAnimations());
-  masterTimeline.add(playTextFadeAnimations());
+  masterTimeline.add(
+    playSwooshAnimations(),
+    "+=" + ANIMATION.hero.swoosh.initialDelay,
+  );
+  masterTimeline.add(
+    playTextFadeAnimations(),
+    "+=" + ANIMATION.hero.fade.initialDelay,
+  );
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
