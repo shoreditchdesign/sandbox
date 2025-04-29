@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialPosition: "100%",
         finalPosition: "0%",
         ease: "power2.out",
-        initialDelay: 3.5,
+        initialDelay: 5.5,
         staggerDelay: 0.3,
       },
       fade: {
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialOpacity: 0,
         finalOpacity: 1,
         ease: "power2.out",
-        initialDelay: 5.5,
+        initialDelay: 6.1,
         staggerDelay: 0.3,
       },
       text: {
@@ -408,8 +408,8 @@ document.addEventListener("DOMContentLoaded", () => {
   masterTimeline.add(createShaderAnimation());
 
   // Add swoosh and text fade animations concurrently
-  masterTimeline.add(playSwooshAnimations(), "swooshStart");
-  masterTimeline.add(playTextFadeAnimations(), "swooshStart");
+  masterTimeline.add(playSwooshAnimations());
+  masterTimeline.add(playTextFadeAnimations());
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
