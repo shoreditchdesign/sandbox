@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       text: {
         letterDuration: 0.06,
         staggerDelay: 0.3,
+        initialDelay: 0.5,
         ease: "power1.inOut",
       },
     },
@@ -211,31 +212,42 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 
-  function playSwooshAnimation(index) {
-    console.log(`Creating swoosh animation for line ${index}`);
+  function playSwooshAnimations() {
+    console.log("Creating swoosh animations for all lines");
 
-    const arrow = document.querySelector(
-      `${selectors.hero.arrows}:nth-child(${index})`,
-    );
-    if (!arrow) {
-      console.error(`Arrow ${index} not found`);
+    const arrows = document.querySelectorAll(selectors.hero.arrows);
+
+    if (!arrows.length) {
+      console.error("No arrows found");
       return gsap.timeline();
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log(`Starting swoosh animation for line ${index}`),
-      onComplete: () =>
-        console.log(`Swoosh animation complete for line ${index}`),
+      onStart: () => console.log("Starting swoosh animations sequence"),
+      onComplete: () => console.log("Swoosh animations sequence complete"),
     });
 
-    // Set initial state
-    gsap.set(arrow, { right: ANIMATION.hero.swoosh.initialPosition });
+    // Set initial state for all arrows
+    gsap.set(arrows, { right: ANIMATION.hero.swoosh.initialPosition });
 
-    // Animate arrow from right to left
-    tl.to(arrow, {
-      right: ANIMATION.hero.swoosh.finalPosition,
-      duration: ANIMATION.hero.swoosh.duration,
-      ease: ANIMATION.hero.swoosh.ease,
+    // Add initial delay
+    tl.set({}, {}, ANIMATION.hero.text.initialDelay);
+
+    // Animate each arrow with stagger
+    arrows.forEach((arrow, index) => {
+      // Create individual swoosh animation
+      const swooshTl = gsap.timeline();
+
+      swooshTl.to(arrow, {
+        right: ANIMATION.hero.swoosh.finalPosition,
+        duration: ANIMATION.hero.swoosh.duration,
+        ease: ANIMATION.hero.swoosh.ease,
+        onStart: () =>
+          console.log(`Starting swoosh animation for line ${index + 1}`),
+      });
+
+      // Add to main timeline with stagger
+      tl.add(swooshTl, index * ANIMATION.hero.text.staggerDelay);
     });
 
     return tl;
@@ -245,19 +257,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const masterTimeline = gsap.timeline();
 
   // Add shader animation to master timeline
-  const shaderTimeline = createShaderAnimation();
-  masterTimeline.add(shaderTimeline);
+  masterTimeline.add(createShaderAnimation());
 
   // Add text preparation
   masterTimeline.add(createTextAnimation());
 
-  // Start arrow swoosh animations
+  // Add swoosh animations
+  masterTimeline.add(playSwooshAnimations());
+
   // We'll add scramble animations in the next step
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
 });
-
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
