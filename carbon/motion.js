@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       text: {
         letterDuration: 0.06,
         staggerDelay: 0.3,
-        initialDelay: 0.5,
+        initialDelay: 3.3,
         ease: "power1.inOut",
       },
     },
@@ -270,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
 });
+
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
