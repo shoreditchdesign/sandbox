@@ -106,10 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
       initialOpacity: 1,
       finalOpacity: 0,
       initialX: 0,
-      finalX: "5px",
+      finalX: "0px",
       displayDuration: 3,
       fadeOutDuration: 1.2,
-      finalDelay: 1.5,
+      finalDelay: 3,
       ease: "power2.inOut",
     },
     hero: {
