@@ -122,12 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       text: {
         letterDuration: 0.06,
-        initialDelay: 0.1,
+        initialDelay: 3.6,
         staggerDelay: 0.3,
         ease: "power1.inOut",
       },
     },
   };
+
   // Selectors
   const selectors = {
     shader: {
@@ -141,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
       arrows: "[data-pl-arrow]",
     },
   };
+
   function createShaderAnimation() {
     console.log("Creating shader animation");
     const shaderWrap = document.querySelector(selectors.shader.wrap);
@@ -254,6 +256,64 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 
+  function playTextScrambleAnimations() {
+    console.log("Creating text scramble animations for all headings");
+
+    const headings = document.querySelectorAll(selectors.hero.headings);
+
+    if (!headings.length) {
+      console.error("No headings found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text scramble animations sequence"),
+      onComplete: () =>
+        console.log("Text scramble animations sequence complete"),
+    });
+
+    // Add initial delay
+    tl.set({}, {}, ANIMATION.hero.text.initialDelay);
+
+    // Animate each heading with stagger
+    headings.forEach((heading, index) => {
+      // Get split characters
+      const chars = heading.querySelectorAll(".char");
+
+      if (!chars.length) {
+        console.error(`No characters found in heading ${index + 1}`);
+        return;
+      }
+
+      // Randomize characters for animation order
+      const randomChars = [...chars].sort(() => Math.random() - 0.5);
+
+      // Create individual text animation timeline
+      const textTl = gsap.timeline({
+        onStart: () =>
+          console.log(`Starting text scramble for heading ${index + 1}`),
+      });
+
+      // Animate each character with fade in
+      randomChars.forEach((char, charIndex) => {
+        textTl.to(
+          char,
+          {
+            opacity: 1,
+            duration: ANIMATION.hero.text.letterDuration,
+            ease: ANIMATION.hero.text.ease,
+          },
+          charIndex * ANIMATION.hero.text.letterDuration,
+        );
+      });
+
+      // Add to main timeline with stagger after corresponding swoosh
+      tl.add(textTl, index * ANIMATION.hero.text.staggerDelay);
+    });
+
+    return tl;
+  }
+
   // Create master timeline
   const masterTimeline = gsap.timeline();
 
@@ -266,7 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add swoosh animations
   masterTimeline.add(playSwooshAnimations());
 
-  // We'll add scramble animations in the next step
+  // Add text scramble animations
+  masterTimeline.add(playTextScrambleAnimations());
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
