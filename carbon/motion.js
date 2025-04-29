@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//GSAP for Home Preloader
+//GSAP for Preloader
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing animations");
   // Animation Constants
@@ -120,9 +120,17 @@ document.addEventListener("DOMContentLoaded", () => {
         initialDelay: 3.5,
         staggerDelay: 0.3,
       },
+      fade: {
+        duration: 0.3,
+        initialPosition: "20px",
+        finalPosition: "0px",
+        ease: "power2.out",
+        initialDelay: 3.6,
+        staggerDelay: 0.3,
+      },
       text: {
         letterDuration: 0.06,
-        initialDelay: 0,
+        initialDelay: 0.1,
         staggerDelay: 0.3,
         ease: "power1.inOut",
       },
@@ -314,6 +322,47 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 
+  function playTextFadeAnimations() {
+    console.log("Creating text fade animations for all headings");
+
+    const headings = document.querySelectorAll(selectors.hero.headings);
+
+    if (!headings.length) {
+      console.error("No headings found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text fade animations sequence"),
+      onComplete: () => console.log("Text fade animations sequence complete"),
+    });
+
+    // Set initial state for all headings
+    gsap.set(headings, { translateX: ANIMATION.hero.fade.initialPosition });
+
+    // Add initial delay
+    tl.set({}, {}, ANIMATION.hero.fade.initialDelay);
+
+    // Animate each heading with stagger
+    headings.forEach((heading, index) => {
+      // Create individual fade animation
+      const fadeTl = gsap.timeline();
+
+      fadeTl.to(heading, {
+        translateX: ANIMATION.hero.fade.finalPosition,
+        duration: ANIMATION.hero.fade.duration,
+        ease: ANIMATION.hero.fade.ease,
+        onStart: () =>
+          console.log(`Starting fade animation for heading ${index + 1}`),
+      });
+
+      // Add to main timeline with stagger
+      tl.add(fadeTl, index * ANIMATION.hero.fade.staggerDelay);
+    });
+
+    return tl;
+  }
+
   // Create master timeline
   const masterTimeline = gsap.timeline();
 
@@ -326,8 +375,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add swoosh animations
   masterTimeline.add(playSwooshAnimations());
 
+  // Add text fade animations
+  masterTimeline.add(playTextFadeAnimations());
+
   // Add text scramble animations
-  masterTimeline.add(playTextScrambleAnimations());
+  // masterTimeline.add(playTextScrambleAnimations());
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
