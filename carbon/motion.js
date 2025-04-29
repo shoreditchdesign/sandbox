@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//GSAP for Preloader
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing animations");
   // Animation Constants
@@ -124,6 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 0.3,
         initialPosition: "20px",
         finalPosition: "0px",
+        initialOpacity: 0,
+        finalOpacity: 1,
         ease: "power2.out",
         initialDelay: 3.6,
         staggerDelay: 0.3,
@@ -338,7 +339,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Set initial state for all headings
-    gsap.set(headings, { translateX: ANIMATION.hero.fade.initialPosition });
+    gsap.set(headings, {
+      translateX: ANIMATION.hero.fade.initialPosition,
+      opacity: ANIMATION.hero.fade.initialOpacity,
+    });
 
     // Add initial delay
     tl.set({}, {}, ANIMATION.hero.fade.initialDelay);
@@ -350,6 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       fadeTl.to(heading, {
         translateX: ANIMATION.hero.fade.finalPosition,
+        opacity: ANIMATION.hero.fade.finalOpacity,
         duration: ANIMATION.hero.fade.duration,
         ease: ANIMATION.hero.fade.ease,
         onStart: () =>
@@ -369,17 +374,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add shader animation to master timeline
   masterTimeline.add(createShaderAnimation());
 
-  // Add text preparation
-  // masterTimeline.add(createTextAnimation());
-
   // Add swoosh animations
   masterTimeline.add(playSwooshAnimations());
 
   // Add text fade animations
   masterTimeline.add(playTextFadeAnimations());
-
-  // Add text scramble animations
-  // masterTimeline.add(playTextScrambleAnimations());
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
