@@ -25,7 +25,7 @@
       "breakpoints": [
         {
           "name": "Desktop",
-          "props": { "fontSize": 0.13472222222222222 },
+          "props": { "fontSize": 0.18 },
           "max": null,
           "min": 992
         },
@@ -101,18 +101,18 @@
       "isSafari": false,
       "width": 1174,
       "widthMode": "fixed",
-      "height": 232.79999999999998,
+      "height": 328.32,
       "heightMode": "fixed",
       "left": 0.02,
       "leftMode": "relative",
-      "top": 0.7,
+      "top": 0.5999999999999996,
       "topMode": "relative",
       "rotation": 0,
       "trackMouseMove": 0,
-      "fontSize": 0.13472222222222222,
+      "fontSize": 0.19,
       "lineHeight": 1.2,
-      "letterSpacing": -0.05999999999999999,
-      "fontFamily": "Inter",
+      "letterSpacing": -0.01,
+      "fontFamily": "SuisseIntl-Medium",
       "fontStyle": "regular",
       "fontWeight": "400",
       "textAlign": "left",
@@ -122,8 +122,8 @@
       "gradientType": "linear",
       "fontSizeMode": "relative",
       "fontCSS": {
-        "family": "Inter",
-        "src": "https://assets.unicorn.studio/fonts/google_fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf"
+        "family": "SuisseIntl-Medium",
+        "src": "https://assets.unicorn.studio/fonts/custom/BoMFoXuLLybiPMs6t7ig4Fwsrd23/SuisseIntl-Medium/SuisseIntl-Medium.ttf"
       },
       "compiledFragmentShaders": [
         "#version 300 es\nprecision mediump float; in vec2 vTextureCoord; in vec3 vVertexPosition;uniform sampler2D uBgTexture; uniform sampler2D uTexture; uniform vec2 uMousePos; uniform float uOpacity; uniform int uSampleBg;out vec4 fragColor;void main() { vec2 uv = vTextureCoord; vec2 pos = mix(vec2(0), (uMousePos - 0.5), 0.0000);uv = uv - pos;vec4 color = texture(uTexture, uv); vec4 background = vec4(0);if(uSampleBg == 1) { background = texture(uBgTexture, vTextureCoord); }color = mix(background, color / max(color.a, 0.0001), color.a * uOpacity);fragColor = color; }"
