@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialOpacity: 0,
         finalOpacity: 1,
         ease: "power2.out",
-        initialDelay: 0.6,
+        initialDelay: 0,
         staggerDelay: 0.3,
       },
       text: {
