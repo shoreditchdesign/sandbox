@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialPosition: "100%",
         finalPosition: "0%",
         ease: "power2.out",
-        initialDelay: 0.15,
+        initialDelay: -0.2,
         staggerDelay: 0.3,
       },
       fade: {
