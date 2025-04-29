@@ -109,8 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
       finalX: "0px",
       shaderDelay: 2.2,
       shaderFadeOutDuration: 0.6,
-      bgDelay: 1,
-      bgFadeOutDuration: 0.6,
+      bgDelay: 0.3,
+      bgFadeOutDuration: 1.2,
       ease: "power2.inOut",
     },
     hero: {
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialOpacity: 0,
         finalOpacity: 1,
         ease: "power2.out",
-        initialDelay: 0,
+        initialDelay: -0.3,
         staggerDelay: 0.3,
       },
       text: {
