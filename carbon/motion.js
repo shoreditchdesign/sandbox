@@ -108,8 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
       initialX: 0,
       finalX: "0px",
       displayDuration: 3,
-      fadeOutDuration: 1.2,
-      finalDelay: 3,
+      shaderFadeOutDuration: 1.2,
+      bgFadeOutDuration: 1.2,
+      bgDelay: 3,
       ease: "power2.inOut",
     },
     hero: {
@@ -200,18 +201,18 @@ document.addEventListener("DOMContentLoaded", () => {
     tl.to(shaderCanvas, {
       x: ANIMATION.shader.finalX,
       opacity: ANIMATION.shader.finalOpacity,
-      duration: ANIMATION.shader.fadeOutDuration,
+      duration: ANIMATION.shader.shaderFadeOutDuration,
       ease: ANIMATION.shader.ease,
       onStart: () => console.log("Shader fading out"),
     });
 
     // Wait before fading out background
     if (shaderBg) {
-      tl.to({}, { duration: ANIMATION.shader.finalDelay });
+      tl.to({}, { duration: ANIMATION.shader.bgDelay });
 
       tl.to(shaderBg, {
         opacity: 0,
-        duration: ANIMATION.shader.fadeOutDuration,
+        duration: ANIMATION.shader.bgFadeOutDuration,
         ease: ANIMATION.shader.ease,
         onStart: () => console.log("Shader background fading out"),
       });
