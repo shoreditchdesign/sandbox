@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       navbar.setAttribute("data-tuck-state", "default");
     });
 
-    gsap.set(navbars, { yPercent: 0 });
+    gsap.set(navbars, { yPercent: 0, translateY: "0%" });
     const showAnim = gsap
       .from(navbars, {
         yPercent: -100,
