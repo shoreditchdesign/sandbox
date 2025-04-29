@@ -279,9 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: 0,
     });
 
-    // Add initial delay
-    tl.set({}, {}, ANIMATION.hero.swoosh.initialDelay);
-
     // Animate each arrow with stagger
     arrows.forEach((arrow, index) => {
       // Create individual swoosh animation
@@ -325,9 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
       onComplete: () =>
         console.log("Text scramble animations sequence complete"),
     });
-
-    // Add initial delay
-    tl.set({}, {}, ANIMATION.hero.text.initialDelay);
 
     // Animate each heading with stagger
     headings.forEach((heading, index) => {
@@ -389,9 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: ANIMATION.hero.fade.initialOpacity,
     });
 
-    // Add initial delay
-    tl.set({}, {}, ANIMATION.hero.fade.initialDelay);
-
     // Animate each heading with stagger
     headings.forEach((heading, index) => {
       // Create individual fade animation
@@ -416,18 +407,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Create master timeline
   const masterTimeline = gsap.timeline();
 
-  // Add shader animation to master timeline
-  masterTimeline.add(createShaderAnimation());
-
-  // Add swoosh and text fade animations concurrently
+  masterTimeline.add(createShaderAnimation(), 0);
   masterTimeline.add(
     playSwooshAnimations(),
-    "+=" + ANIMATION.hero.swoosh.initialDelay,
+    ANIMATION.hero.swoosh.initialDelay,
   );
   masterTimeline.add(
     playTextFadeAnimations(),
-    "+=" + ANIMATION.hero.fade.initialDelay,
+    ANIMATION.hero.fade.initialDelay,
   );
+
+  // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
 
   console.log("Master timeline created, playing animation");
   masterTimeline.play();
