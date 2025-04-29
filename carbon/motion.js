@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//GSAP for Preloader
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing animations");
   // Animation Constants
