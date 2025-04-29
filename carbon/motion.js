@@ -370,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
   masterTimeline.add(createShaderAnimation());
 
   // Add text preparation
-  masterTimeline.add(createTextAnimation());
+  // masterTimeline.add(createTextAnimation());
 
   // Add swoosh animations
   masterTimeline.add(playSwooshAnimations());
