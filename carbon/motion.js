@@ -98,9 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Home Preloader
+//GSAP for Home Preloader
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing shader animation");
-
+  console.log("DOM loaded, initializing animations");
   // Animation Constants
   const ANIMATION = {
     shader: {
@@ -112,34 +112,46 @@ document.addEventListener("DOMContentLoaded", () => {
       fadeOutDuration: 1.2,
       ease: "power2.inOut",
     },
+    hero: {
+      swoosh: {
+        duration: 0.3,
+        initialPosition: "100%",
+        finalPosition: "0%",
+        ease: "power2.out",
+      },
+      text: {
+        letterDuration: 0.06,
+        staggerDelay: 0.3,
+        ease: "power1.inOut",
+      },
+    },
   };
-
   // Selectors
   const selectors = {
     shader: {
       wrap: '[data-pl-shader="wrap"]',
       canvas: '[data-pl-shader="canvas"]',
     },
+    hero: {
+      headingContainer: "[data-pl-text]",
+      headings: "[data-pl-heading]",
+      spans: "[data-pl-span]",
+      arrows: "[data-pl-arrow]",
+    },
   };
-
   function createShaderAnimation() {
     console.log("Creating shader animation");
-
     const shaderWrap = document.querySelector(selectors.shader.wrap);
     const shaderCanvas = document.querySelector(selectors.shader.canvas);
-
     console.log("Shader elements found:", !!shaderWrap, !!shaderCanvas);
-
     if (!shaderWrap || !shaderCanvas) {
       console.error("Shader elements not found");
       return gsap.timeline();
     }
-
     const tl = gsap.timeline({
       onStart: () => console.log("Starting shader animation"),
       onComplete: () => console.log("Shader animation complete"),
     });
-
     // Set initial state
     gsap.set(shaderWrap, { opacity: 1 });
     gsap.set(shaderCanvas, {
@@ -147,13 +159,11 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: ANIMATION.shader.initialOpacity,
       visibility: "visible",
     });
-
     // Hold the shader in view for specified duration
     tl.to(shaderCanvas, {
       duration: ANIMATION.shader.displayDuration,
       onStart: () => console.log("Shader holding in viewport"),
     });
-
     // Then translate and fade out
     tl.to(shaderCanvas, {
       x: ANIMATION.shader.finalX,
@@ -162,14 +172,90 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: ANIMATION.shader.ease,
       onStart: () => console.log("Shader fading out"),
     });
+    return tl;
+  }
+  // Create text animation functions
+  function createTextAnimation() {
+    console.log("Creating text animation");
+
+    const headingContainer = document.querySelector(
+      selectors.hero.headingContainer,
+    );
+    const headings = document.querySelectorAll(selectors.hero.headings);
+    const spans = document.querySelectorAll(selectors.hero.spans);
+
+    if (!headingContainer || !headings.length || !spans.length) {
+      console.error("Hero text elements not found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text preparation"),
+      onComplete: () => console.log("Text preparation complete"),
+    });
+
+    // Store original widths and split text
+    spans.forEach((span) => {
+      const width = span.offsetWidth;
+      gsap.set(span, { width: width });
+    });
+
+    // Split headings into characters
+    headings.forEach((heading) => {
+      const splitText = new SplitType(heading, { types: "chars" });
+      if (splitText.chars) {
+        gsap.set(splitText.chars, { opacity: 0 });
+      }
+    });
 
     return tl;
   }
 
-  // Create and play the animation
+  function playSwooshAnimation(index) {
+    console.log(`Creating swoosh animation for line ${index}`);
+
+    const arrow = document.querySelector(
+      `${selectors.hero.arrows}:nth-child(${index})`,
+    );
+    if (!arrow) {
+      console.error(`Arrow ${index} not found`);
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log(`Starting swoosh animation for line ${index}`),
+      onComplete: () =>
+        console.log(`Swoosh animation complete for line ${index}`),
+    });
+
+    // Set initial state
+    gsap.set(arrow, { right: ANIMATION.hero.swoosh.initialPosition });
+
+    // Animate arrow from right to left
+    tl.to(arrow, {
+      right: ANIMATION.hero.swoosh.finalPosition,
+      duration: ANIMATION.hero.swoosh.duration,
+      ease: ANIMATION.hero.swoosh.ease,
+    });
+
+    return tl;
+  }
+
+  // Create master timeline
+  const masterTimeline = gsap.timeline();
+
+  // Add shader animation to master timeline
   const shaderTimeline = createShaderAnimation();
-  console.log("Timeline created, playing animation");
-  shaderTimeline.play();
+  masterTimeline.add(shaderTimeline);
+
+  // Add text preparation
+  masterTimeline.add(createTextAnimation());
+
+  // Start arrow swoosh animations
+  // We'll add scramble animations in the next step
+
+  console.log("Master timeline created, playing animation");
+  masterTimeline.play();
 });
 
 //GSAP for Graphene Preloader
