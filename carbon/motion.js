@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power2.out",
         initialDelay: 1.2,
         staggerDelay: 0.3,
+        fadeInDuration: 0.1,
       },
       fade: {
         duration: 0.8,
@@ -286,6 +287,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Create individual swoosh animation
       const swooshTl = gsap.timeline();
 
+      // First fade in the arrow
+      swooshTl.to(arrow, {
+        opacity: 1,
+        duration: ANIMATION.hero.swoosh.fadeInDuration,
+        onStart: () => console.log(`Fading in arrow ${index + 1}`),
+      });
+
+      // Then animate from right to left
       swooshTl.to(arrow, {
         right: ANIMATION.hero.swoosh.finalPosition,
         duration: ANIMATION.hero.swoosh.duration,
