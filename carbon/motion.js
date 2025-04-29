@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       fade: {
         duration: 0.8,
-        initialPosition: "-20px",
+        initialPosition: "-40px",
         finalPosition: "0px",
         initialOpacity: 0,
         finalOpacity: 1,
