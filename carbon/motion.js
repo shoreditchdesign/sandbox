@@ -98,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Home Preloader
-//GSAP for Home Preloader
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing animations");
   // Animation Constants
@@ -118,11 +117,13 @@ document.addEventListener("DOMContentLoaded", () => {
         initialPosition: "100%",
         finalPosition: "0%",
         ease: "power2.out",
+        initialDelay: 3.5,
+        staggerDelay: 0.3,
       },
       text: {
         letterDuration: 0.06,
+        initialDelay: 0.1,
         staggerDelay: 0.3,
-        initialDelay: 3.3,
         ease: "power1.inOut",
       },
     },
@@ -231,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.set(arrows, { right: ANIMATION.hero.swoosh.initialPosition });
 
     // Add initial delay
-    tl.set({}, {}, ANIMATION.hero.text.initialDelay);
+    tl.set({}, {}, ANIMATION.hero.swoosh.initialDelay);
 
     // Animate each arrow with stagger
     arrows.forEach((arrow, index) => {
@@ -247,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Add to main timeline with stagger
-      tl.add(swooshTl, index * ANIMATION.hero.text.staggerDelay);
+      tl.add(swooshTl, index * ANIMATION.hero.swoosh.staggerDelay);
     });
 
     return tl;
