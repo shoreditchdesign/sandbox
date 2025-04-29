@@ -123,13 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
         staggerDelay: 0.3,
       },
       fade: {
-        duration: 0.3,
-        initialPosition: "20px",
+        duration: 0.8,
+        initialPosition: "-20px",
         finalPosition: "0px",
         initialOpacity: 0,
         finalOpacity: 1,
         ease: "power2.out",
-        initialDelay: 3.8,
+        initialDelay: 4.2,
         staggerDelay: 0.3,
       },
       text: {
