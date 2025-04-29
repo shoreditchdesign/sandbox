@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       finalX: "5px",
       displayDuration: 3,
       fadeOutDuration: 1.2,
+      finalDelay: 1.5,
       ease: "power2.inOut",
     },
     hero: {
@@ -127,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initialOpacity: 0,
         finalOpacity: 1,
         ease: "power2.out",
-        initialDelay: 3.8,
+        initialDelay: 3.6,
         staggerDelay: 0.3,
       },
       text: {
@@ -144,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     shader: {
       wrap: '[data-pl-shader="wrap"]',
       canvas: '[data-pl-shader="canvas"]',
+      bg: '[data-pl-shader="bg"]',
     },
     hero: {
       headingContainer: "[data-pl-text]",
@@ -157,15 +159,25 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Creating shader animation");
     const shaderWrap = document.querySelector(selectors.shader.wrap);
     const shaderCanvas = document.querySelector(selectors.shader.canvas);
-    console.log("Shader elements found:", !!shaderWrap, !!shaderCanvas);
+    const shaderBg = document.querySelector(selectors.shader.bg);
+
+    console.log(
+      "Shader elements found:",
+      !!shaderWrap,
+      !!shaderCanvas,
+      !!shaderBg,
+    );
+
     if (!shaderWrap || !shaderCanvas) {
       console.error("Shader elements not found");
       return gsap.timeline();
     }
+
     const tl = gsap.timeline({
       onStart: () => console.log("Starting shader animation"),
       onComplete: () => console.log("Shader animation complete"),
     });
+
     // Set initial state
     gsap.set(shaderWrap, { opacity: 1 });
     gsap.set(shaderCanvas, {
@@ -173,11 +185,17 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: ANIMATION.shader.initialOpacity,
       visibility: "visible",
     });
+
+    if (shaderBg) {
+      gsap.set(shaderBg, { opacity: 1 });
+    }
+
     // Hold the shader in view for specified duration
     tl.to(shaderCanvas, {
       duration: ANIMATION.shader.displayDuration,
       onStart: () => console.log("Shader holding in viewport"),
     });
+
     // Then translate and fade out
     tl.to(shaderCanvas, {
       x: ANIMATION.shader.finalX,
@@ -186,6 +204,19 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: ANIMATION.shader.ease,
       onStart: () => console.log("Shader fading out"),
     });
+
+    // Wait before fading out background
+    if (shaderBg) {
+      tl.to({}, { duration: ANIMATION.shader.finalDelay });
+
+      tl.to(shaderBg, {
+        opacity: 0,
+        duration: ANIMATION.shader.fadeOutDuration,
+        ease: ANIMATION.shader.ease,
+        onStart: () => console.log("Shader background fading out"),
+      });
+    }
+
     return tl;
   }
   // Create text animation functions
