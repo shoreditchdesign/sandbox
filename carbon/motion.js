@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       text: {
         letterDuration: 0.06,
-        initialDelay: 3.6,
+        initialDelay: 0,
         staggerDelay: 0.3,
         ease: "power1.inOut",
       },
