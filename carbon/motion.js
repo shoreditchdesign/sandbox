@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       finalOpacity: 0,
       initialX: 0,
       finalX: "0px",
-      shaderDelay: 3,
+      shaderDelay: 2.8,
       shaderFadeOutDuration: 0.6,
       bgDelay: 1,
       bgFadeOutDuration: 0.6,
