@@ -1,6 +1,6 @@
 console.log("ix deployed");
 
-// Marquee Cards
+// Marquee Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
   function initializeMarqueeCards() {
     try {
@@ -161,45 +161,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Team Card Hover Animation
+// Team Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
-  // Select all card elements
-  const cards = document.querySelectorAll(".s-ab5_card");
-
+  // Select all card elements using data attribute
+  const cards = document.querySelectorAll("[data-ab-card='card']");
   // Track currently open card
   let currentlyOpenCard = null;
-
   // Setup for each card
   cards.forEach((card, index) => {
-    const overlay = card.querySelector(".s-ab5_overlay");
-    const content = card.querySelector(".s-ab5_content");
-    const button = card.querySelector(".s-ab5_btn");
-
+    const overlay = card.querySelector("[data-ab-card='overlay']");
+    const content = card.querySelector("[data-ab-card='content']");
+    const button = card.querySelector("[data-ab-card='button']");
     // Check if elements exist
     if (!overlay) {
       console.error(
-        `Card #${index} is missing overlay element (.s-ab5_overlay)`,
+        `Card #${index} is missing overlay element ([data-ab-card='overlay'])`,
       );
       return;
     }
     if (!content) {
       console.error(
-        `Card #${index} is missing content element (.s-ab5_content)`,
+        `Card #${index} is missing content element ([data-ab-card='content'])`,
       );
       return;
     }
     if (!button) {
-      console.error(`Card #${index} is missing button element (.s-ab5_btn)`);
+      console.error(
+        `Card #${index} is missing button element ([data-ab-card='button'])`,
+      );
       return;
     }
-
-    // Track open/closed state
-    let isOpen = false;
-
+    // Initial state - check data-card-state attribute
+    let isOpen = overlay.getAttribute("data-card-state") === "open";
     // Initial state
     let initialOverlayHeight;
     let finalOverlayHeight;
-
     // Function to calculate heights
     const calculateHeights = () => {
       initialOverlayHeight = parseFloat(
@@ -207,95 +203,85 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
     };
-
     // Calculate on page load
     calculateHeights();
-
     // Set initial styles
-    gsap.set(content, { display: "none", opacity: 0 });
-    gsap.set(overlay, { height: initialOverlayHeight, overflow: "hidden" });
-
+    gsap.set(content, {
+      display: isOpen ? "flex" : "none",
+      opacity: isOpen ? 1 : 0,
+    });
+    gsap.set(overlay, {
+      height: isOpen ? finalOverlayHeight : initialOverlayHeight,
+      overflow: isOpen ? "scroll" : "hidden",
+    });
     // Create quickTo function for the overlay height
     const animateHeight = gsap.quickTo(overlay, "height", {
       duration: 0.4,
       ease: "power2.out",
     });
-
     // Create quickTo function for content opacity
     const animateOpacity = gsap.quickTo(content, "opacity", {
       duration: 0.3,
       ease: "power2.out",
     });
-
     // Function to open the card
     const openCard = () => {
-      if (isOpen) return;
-
+      if (overlay.getAttribute("data-card-state") === "open") return;
       // If another card is open, close it first
       if (currentlyOpenCard && currentlyOpenCard !== card) {
         currentlyOpenCard.closeCard();
       }
-
+      // Update card state attribute
+      overlay.setAttribute("data-card-state", "open");
       // Animate overlay height using quickTo
       animateHeight(finalOverlayHeight);
-
       // Show content and animate opacity
       gsap.set(content, { display: "flex" });
       animateOpacity(1);
-
       // Set overflow to scroll
       gsap.delayedCall(0.3, () => {
         gsap.set(overlay, { overflowY: "scroll" });
       });
-
-      isOpen = true;
       currentlyOpenCard = card;
+      console.log(`Card #${index} opened`);
     };
-
     // Function to close the card
     const closeCard = () => {
-      if (!isOpen) return;
-
+      if (overlay.getAttribute("data-card-state") === "closed") return;
+      // Update card state attribute
+      overlay.setAttribute("data-card-state", "closed");
       // Reset overflow immediately
       gsap.set(overlay, { overflowY: "hidden" });
-
       // Animate overlay back to initial height using quickTo
       animateHeight(initialOverlayHeight);
-
       // Fade out content
       animateOpacity(0);
-
       // Hide content after fade completes
       gsap.delayedCall(0.3, () => {
         gsap.set(content, { display: "none" });
       });
-
-      isOpen = false;
       if (currentlyOpenCard === card) {
         currentlyOpenCard = null;
       }
+      console.log(`Card #${index} closed`);
     };
-
     // Attach the functions to the card object so they can be called externally
     card.openCard = openCard;
     card.closeCard = closeCard;
-
     // Button click handler
     button.addEventListener("click", () => {
-      if (isOpen) {
+      if (overlay.getAttribute("data-card-state") === "open") {
         closeCard();
       } else {
         openCard();
       }
     });
-
     // Window resize handler
     window.addEventListener("resize", () => {
       // Recalculate heights when window is resized
       calculateHeights();
-
       // Update current state if needed
-      if (isOpen) {
+      if (overlay.getAttribute("data-card-state") === "open") {
         gsap.set(overlay, { height: finalOverlayHeight });
       } else {
         gsap.set(overlay, { height: initialOverlayHeight });

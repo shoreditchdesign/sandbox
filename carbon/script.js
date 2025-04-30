@@ -1,5 +1,98 @@
 console.log("script deployed");
 
+//Lenis Smooth Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.innerWidth >= 992) {
+    // Only initialize on desktop (width >= 992px)
+    const lenis = new Lenis({
+      smooth: true,
+      lerp: 0.1,
+      wheelMultiplier: 1,
+      infinite: false,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  }
+});
+
+//Navigation Bar
+document
+  .querySelector('[data-nav-element="menu"]')
+  .addEventListener("click", () => {
+    const navbar = document.querySelector('[data-nav-element="navbar"]');
+    const currentState = navbar.getAttribute("data-nav-state");
+    navbar.setAttribute(
+      "data-nav-state",
+      currentState === "open" ? "closed" : "open",
+    );
+  });
+
+//Navigation Banner
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelector('[data-banner-element="close"]')
+    .addEventListener("click", () => {
+      const banner = document.querySelector('[data-banner-element="banner"]');
+      const currentState = banner.getAttribute("data-banner-state");
+      banner.setAttribute(
+        "data-banner-state",
+        currentState === "visible" ? "hidden" : "visible",
+      );
+    });
+});
+
+//Sitewide Brand Styles
+document.addEventListener("DOMContentLoaded", () => {
+  function mapSourceToTargets() {
+    const sourceElements = document.querySelectorAll("[data-brand-source]");
+    const targetElements = document.querySelectorAll("[data-brand-target]");
+    const sourceMap = {};
+
+    sourceElements.forEach((source) => {
+      const sourceType = source.getAttribute("data-brand-source");
+      const sourceCategory = source.getAttribute("data-source-name");
+
+      // Create nested structure if it doesn't exist
+      if (!sourceMap[sourceCategory]) {
+        sourceMap[sourceCategory] = {};
+      }
+
+      if (!sourceMap[sourceCategory][sourceType]) {
+        sourceMap[sourceCategory][sourceType] = [];
+      }
+
+      // Add source to map
+      sourceMap[sourceCategory][sourceType].push(source);
+    });
+
+    // Process each target and inject matching sources
+    targetElements.forEach((target) => {
+      const targetType = target.getAttribute("data-brand-target");
+      const targetCategory = target.getAttribute("data-target-name");
+
+      // Check if we have matching sources
+      if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
+        const matchingSources = sourceMap[targetCategory][targetType];
+
+        // Inject each matching source into the target
+        matchingSources.forEach((source) => {
+          const clone = source.cloneNode(true);
+          target.appendChild(clone);
+        });
+      } else {
+        console.log(
+          `No matching sources found for ${targetType}/${targetCategory}`,
+        );
+      }
+    });
+  }
+
+  mapSourceToTargets();
+});
+
 //Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize the vertical swiper
@@ -68,78 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Brand styles
-document.addEventListener("DOMContentLoaded", () => {
-  function mapSourceToTargets() {
-    const sourceElements = document.querySelectorAll("[data-brand-source]");
-    const targetElements = document.querySelectorAll("[data-brand-target]");
-    const sourceMap = {};
-
-    sourceElements.forEach((source) => {
-      const sourceType = source.getAttribute("data-brand-source");
-      const sourceCategory = source.getAttribute("data-source-name");
-
-      // Create nested structure if it doesn't exist
-      if (!sourceMap[sourceCategory]) {
-        sourceMap[sourceCategory] = {};
-      }
-
-      if (!sourceMap[sourceCategory][sourceType]) {
-        sourceMap[sourceCategory][sourceType] = [];
-      }
-
-      // Add source to map
-      sourceMap[sourceCategory][sourceType].push(source);
-    });
-
-    // Process each target and inject matching sources
-    targetElements.forEach((target) => {
-      const targetType = target.getAttribute("data-brand-target");
-      const targetCategory = target.getAttribute("data-target-name");
-
-      // Check if we have matching sources
-      if (sourceMap[targetCategory] && sourceMap[targetCategory][targetType]) {
-        const matchingSources = sourceMap[targetCategory][targetType];
-
-        // Inject each matching source into the target
-        matchingSources.forEach((source) => {
-          const clone = source.cloneNode(true);
-          target.appendChild(clone);
-        });
-      } else {
-        console.log(
-          `No matching sources found for ${targetType}/${targetCategory}`,
-        );
-      }
-    });
-  }
-
-  mapSourceToTargets();
-
-  document
-    .querySelector('[data-banner-element="close"]')
-    .addEventListener("click", () => {
-      const banner = document.querySelector('[data-banner-element="banner"]');
-      const currentState = banner.getAttribute("data-banner-state");
-      banner.setAttribute(
-        "data-banner-state",
-        currentState === "visible" ? "hidden" : "visible",
-      );
-    });
-});
-
-//Navigation Bar
-document
-  .querySelector('[data-nav-element="menu"]')
-  .addEventListener("click", () => {
-    const navbar = document.querySelector('[data-nav-element="navbar"]');
-    const currentState = navbar.getAttribute("data-nav-state");
-    navbar.setAttribute(
-      "data-nav-state",
-      currentState === "open" ? "closed" : "open",
-    );
-  });
-
 //Rich Text Table of Contents
 document.addEventListener("DOMContentLoaded", function () {
   const richTextBodies = document.querySelectorAll("[data-toc-body]");
@@ -205,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// CMS Filter Styles
+//News Filter Styles
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
   const categoryFilters = document.querySelectorAll(

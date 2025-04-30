@@ -29,6 +29,400 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//GSAP for Navbar Slide
+document.addEventListener("DOMContentLoaded", () => {
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+  if (isDesktop()) {
+    const navbars = document.querySelectorAll(
+      '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
+    );
+    if (navbars.length === 0) {
+      console.warn("No navbar elements found - animation aborted");
+      return;
+    }
+
+    // Set initial attribute state
+    navbars.forEach((navbar) => {
+      navbar.setAttribute("data-tuck-state", "default");
+    });
+
+    gsap.set(navbars, { yPercent: 0, translateY: "0%" });
+    const showAnim = gsap
+      .from(navbars, {
+        yPercent: -100,
+        paused: true,
+        duration: 0.2,
+      })
+      .progress(1);
+    let lastScrollTop = 0;
+    const downScrollThreshold = 200;
+    const upScrollThreshold = 800;
+    let accumulatedScroll = 0;
+    let navbarVisible = true;
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+      if (
+        (scrollDirection === "down" && accumulatedScroll < 0) ||
+        (scrollDirection === "up" && accumulatedScroll > 0)
+      ) {
+        accumulatedScroll = 0;
+      }
+      accumulatedScroll +=
+        scrollDirection === "down" ? scrollAmount : -scrollAmount;
+      if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+        showAnim.reverse();
+        navbarVisible = false;
+        accumulatedScroll = 0;
+
+        // Set attribute to default when hiding navbar (reverse animation)
+        navbars.forEach((navbar) => {
+          navbar.setAttribute("data-tuck-state", "default");
+          console.log("Navbar state changed to: default");
+        });
+      } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+        showAnim.play();
+        navbarVisible = true;
+        accumulatedScroll = 0;
+
+        // Set attribute to hidden when showing navbar (play animation)
+        navbars.forEach((navbar) => {
+          navbar.setAttribute("data-tuck-state", "hidden");
+          console.log("Navbar state changed to: hidden");
+        });
+      }
+      lastScrollTop = scrollTop;
+    });
+  }
+});
+
+//GSAP for Preloader
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing animations");
+  // Animation Constants
+  const ANIMATION = {
+    shader: {
+      initialOpacity: 1,
+      finalOpacity: 0,
+      initialX: 0,
+      finalX: "0px",
+      shaderDelay: 2.2,
+      shaderFadeOutDuration: 0.6,
+      bgDelay: 0.3,
+      bgFadeOutDuration: 2.4,
+      ease: "power2.inOut",
+    },
+    hero: {
+      swoosh: {
+        duration: 0.3,
+        initialPosition: "100%",
+        finalPosition: "0%",
+        ease: "power2.out",
+        initialDelay: 4.3,
+        staggerDelay: 0.3,
+        fadeInDuration: 0.1,
+      },
+      fade: {
+        duration: 0.8,
+        initialPosition: "-40px",
+        finalPosition: "0px",
+        initialOpacity: 0,
+        finalOpacity: 1,
+        ease: "power2.out",
+        initialDelay: 4.9,
+        staggerDelay: 0.3,
+      },
+      text: {
+        letterDuration: 0.06,
+        initialDelay: 0.1,
+        staggerDelay: 0.3,
+        ease: "power1.inOut",
+      },
+    },
+  };
+
+  // Selectors
+  const selectors = {
+    shader: {
+      wrap: '[data-pl-shader="wrap"]',
+      canvas: '[data-pl-shader="canvas"]',
+      bg: '[data-pl-shader="bg"]',
+    },
+    hero: {
+      headingContainer: "[data-pl-text]",
+      headings: "[data-pl-heading]",
+      spans: "[data-pl-span]",
+      arrows: "[data-pl-arrow]",
+    },
+  };
+
+  function createShaderAnimation() {
+    console.log("Creating shader animation");
+    const shaderWrap = document.querySelector(selectors.shader.wrap);
+    const shaderCanvas = document.querySelector(selectors.shader.canvas);
+    const shaderBg = document.querySelector(selectors.shader.bg);
+
+    console.log(
+      "Shader elements found:",
+      !!shaderWrap,
+      !!shaderCanvas,
+      !!shaderBg,
+    );
+
+    if (!shaderWrap || !shaderCanvas) {
+      console.error("Shader elements not found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting shader animation"),
+      onComplete: () => console.log("Shader animation complete"),
+    });
+
+    // Set initial state
+    gsap.set(shaderWrap, { opacity: 1 });
+    gsap.set(shaderCanvas, {
+      x: ANIMATION.shader.initialX,
+      opacity: ANIMATION.shader.initialOpacity,
+      visibility: "visible",
+    });
+
+    if (shaderBg) {
+      gsap.set(shaderBg, { opacity: 1 });
+    }
+
+    // Hold the shader in view for specified duration
+    tl.to(shaderCanvas, {
+      duration: ANIMATION.shader.shaderDelay,
+      onStart: () => console.log("Shader holding in viewport"),
+    });
+
+    // Then translate and fade out
+    tl.to(shaderCanvas, {
+      x: ANIMATION.shader.finalX,
+      opacity: ANIMATION.shader.finalOpacity,
+      duration: ANIMATION.shader.shaderFadeOutDuration,
+      ease: ANIMATION.shader.ease,
+      onStart: () => console.log("Shader fading out"),
+    });
+
+    // Wait before fading out background
+    if (shaderBg) {
+      tl.to({}, { duration: ANIMATION.shader.bgDelay });
+
+      tl.to(shaderBg, {
+        opacity: 0,
+        duration: ANIMATION.shader.bgFadeOutDuration,
+        ease: ANIMATION.shader.ease,
+        onStart: () => console.log("Shader background fading out"),
+      });
+    }
+
+    return tl;
+  }
+  // Create text animation functions
+  function createTextAnimation() {
+    console.log("Creating text animation");
+
+    const headingContainer = document.querySelector(
+      selectors.hero.headingContainer,
+    );
+    const headings = document.querySelectorAll(selectors.hero.headings);
+    const spans = document.querySelectorAll(selectors.hero.spans);
+
+    if (!headingContainer || !headings.length || !spans.length) {
+      console.error("Hero text elements not found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text preparation"),
+      onComplete: () => console.log("Text preparation complete"),
+    });
+
+    // Store original widths and split text
+    spans.forEach((span) => {
+      const width = span.offsetWidth;
+      gsap.set(span, { width: width });
+    });
+
+    // Split headings into characters
+    headings.forEach((heading) => {
+      const splitText = new SplitType(heading, { types: "chars" });
+      if (splitText.chars) {
+        gsap.set(splitText.chars, { opacity: 0 });
+      }
+    });
+
+    return tl;
+  }
+
+  function playSwooshAnimations() {
+    console.log("Creating swoosh animations for all lines");
+
+    const arrows = document.querySelectorAll(selectors.hero.arrows);
+
+    if (!arrows.length) {
+      console.error("No arrows found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting swoosh animations sequence"),
+      onComplete: () => console.log("Swoosh animations sequence complete"),
+    });
+
+    // Set initial state for all arrows
+    gsap.set(arrows, {
+      right: ANIMATION.hero.swoosh.initialPosition,
+      opacity: 0,
+    });
+
+    // Animate each arrow with stagger
+    arrows.forEach((arrow, index) => {
+      // Create individual swoosh animation
+      const swooshTl = gsap.timeline();
+
+      // First fade in the arrow
+      swooshTl.to(arrow, {
+        opacity: 1,
+        duration: ANIMATION.hero.swoosh.fadeInDuration,
+        onStart: () => console.log(`Fading in arrow ${index + 1}`),
+      });
+
+      // Then animate from right to left
+      swooshTl.to(arrow, {
+        right: ANIMATION.hero.swoosh.finalPosition,
+        duration: ANIMATION.hero.swoosh.duration,
+        ease: ANIMATION.hero.swoosh.ease,
+        onStart: () =>
+          console.log(`Starting swoosh animation for line ${index + 1}`),
+      });
+
+      // Add to main timeline with stagger
+      tl.add(swooshTl, index * ANIMATION.hero.swoosh.staggerDelay);
+    });
+
+    return tl;
+  }
+
+  function playTextScrambleAnimations() {
+    console.log("Creating text scramble animations for all headings");
+
+    const headings = document.querySelectorAll(selectors.hero.headings);
+
+    if (!headings.length) {
+      console.error("No headings found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text scramble animations sequence"),
+      onComplete: () =>
+        console.log("Text scramble animations sequence complete"),
+    });
+
+    // Animate each heading with stagger
+    headings.forEach((heading, index) => {
+      // Get split characters
+      const chars = heading.querySelectorAll(".char");
+
+      if (!chars.length) {
+        console.error(`No characters found in heading ${index + 1}`);
+        return;
+      }
+
+      // Randomize characters for animation order
+      const randomChars = [...chars].sort(() => Math.random() - 0.5);
+
+      // Create individual text animation timeline
+      const textTl = gsap.timeline({
+        onStart: () =>
+          console.log(`Starting text scramble for heading ${index + 1}`),
+      });
+
+      // Animate each character with fade in
+      randomChars.forEach((char, charIndex) => {
+        textTl.to(
+          char,
+          {
+            opacity: 1,
+            duration: ANIMATION.hero.text.letterDuration,
+            ease: ANIMATION.hero.text.ease,
+          },
+          charIndex * ANIMATION.hero.text.letterDuration,
+        );
+      });
+
+      // Add to main timeline with stagger after corresponding swoosh
+      tl.add(textTl, index * ANIMATION.hero.text.staggerDelay);
+    });
+
+    return tl;
+  }
+
+  function playTextFadeAnimations() {
+    console.log("Creating text fade animations for all headings");
+
+    const headings = document.querySelectorAll(selectors.hero.headings);
+
+    if (!headings.length) {
+      console.error("No headings found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => console.log("Starting text fade animations sequence"),
+      onComplete: () => console.log("Text fade animations sequence complete"),
+    });
+
+    // Set initial state for all headings
+    gsap.set(headings, {
+      translateX: ANIMATION.hero.fade.initialPosition,
+      opacity: ANIMATION.hero.fade.initialOpacity,
+    });
+
+    // Animate each heading with stagger
+    headings.forEach((heading, index) => {
+      // Create individual fade animation
+      const fadeTl = gsap.timeline();
+
+      fadeTl.to(heading, {
+        translateX: ANIMATION.hero.fade.finalPosition,
+        opacity: ANIMATION.hero.fade.finalOpacity,
+        duration: ANIMATION.hero.fade.duration,
+        ease: ANIMATION.hero.fade.ease,
+        onStart: () =>
+          console.log(`Starting fade animation for heading ${index + 1}`),
+      });
+
+      // Add to main timeline with stagger
+      tl.add(fadeTl, index * ANIMATION.hero.fade.staggerDelay);
+    });
+
+    return tl;
+  }
+
+  // Create master timeline
+  const masterTimeline = gsap.timeline();
+
+  masterTimeline.add(createShaderAnimation(), 0);
+  masterTimeline.add(
+    playSwooshAnimations(),
+    ANIMATION.hero.swoosh.initialDelay,
+  );
+  masterTimeline.add(
+    playTextFadeAnimations(),
+    ANIMATION.hero.fade.initialDelay,
+  );
+
+  // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
+
+  console.log("Master timeline created, playing animation");
+  masterTimeline.play();
+});
+
 //GSAP for Graphene Preloader
 document.addEventListener("DOMContentLoaded", () => {
   //Variables
@@ -102,8 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    console.log("Preloader component found:", preloaderComponent);
-
     if (typeof gsap === "undefined") {
       console.error("GSAP library not loaded");
       return null;
@@ -128,14 +520,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createPreloaderAnimation = () => {
     const timeline = gsap.timeline({
-      onStart: () => console.log("Animation started"),
-      onComplete: () => console.log("Animation completed"),
-      onUpdate: () => {
-        const progress = Math.round(timeline.progress() * 100);
-        if (progress % 25 === 0) {
-          console.log(`Animation progress: ${progress}%`);
-        }
-      },
+      onStart: () => {},
+      onComplete: () => {},
+      onUpdate: () => {},
     });
 
     //P1 Aniamtion
@@ -194,7 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
         duration:
           ANIMATION.angulars.p1s1.endFade - ANIMATION.angulars.p1s1.startFade,
         ease: ANIMATION.angulars.p1s1.ease,
-        onStart: () => console.log("P1/S1 angular fade started"),
+        onStart: () => {},
       },
       ANIMATION.angulars.p1s1.startFade,
     );
@@ -206,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
         duration:
           ANIMATION.angulars.p2s2.endFade - ANIMATION.angulars.p2s2.startFade,
         ease: ANIMATION.angulars.p2s2.ease,
-        onStart: () => console.log("P2/S2 angular fade started"),
+        onStart: () => {},
       },
       ANIMATION.angulars.p2s2.startFade,
     );
@@ -355,62 +742,251 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 6000);
 });
 
-//GSAP for Navbar slide
+//GSAP for Graphene Marquee
 document.addEventListener("DOMContentLoaded", () => {
-  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+  // Configuration
+  const config = {
+    animation: {
+      duration: 1,
+      ease: "power1.inOut",
+      scrub: true,
+    },
+    selectors: {
+      wrapper: '[data-parallax-marquee="wrap"]',
+      rows: '[data-parallax-marquee="row"]',
+    },
+    translation: {
+      distance: 300, // Translation distance in pixels
+    },
+  };
 
-  if (isDesktop()) {
-    const navbars = document.querySelectorAll(
-      '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
-    );
-    if (navbars.length === 0) {
-      console.warn("No navbar elements found - animation aborted");
+  // Selectors
+  const elements = {
+    wrapper: document.querySelector(config.selectors.wrapper),
+    row1: document.querySelector('[data-marquee-id="1"]'),
+    row2: document.querySelector('[data-marquee-id="2"]'),
+  };
+
+  // Initializers
+  function initMarqueeAnimation() {
+    // Check if required elements exist
+    if (!elements.wrapper || !elements.row1 || !elements.row2) {
+      console.error("Required marquee elements not found in DOM");
       return;
     }
 
-    gsap.set(navbars, { yPercent: 0 });
-    const showAnim = gsap
-      .from(navbars, {
-        yPercent: -100,
-        paused: true,
-        duration: 0.2,
-      })
-      .progress(1);
+    // Set initial state
+    gsap.set([elements.row1, elements.row2], { x: 0 });
 
-    let lastScrollTop = 0;
-    const downScrollThreshold = 200;
-    const upScrollThreshold = 800;
-    let accumulatedScroll = 0;
-    let navbarVisible = true;
+    // Create scroll-triggered animation
+    createMarqueeScrollAnimation();
+  }
 
-    window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-      const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+  // Animation creators
+  function createMarqueeScrollAnimation() {
+    // Create timeline with ScrollTrigger
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: elements.wrapper,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: config.animation.scrub,
+        onEnter: () => {},
+        onLeave: () => {},
+        onEnterBack: () => {},
+        onLeaveBack: () => {},
+      },
+    });
 
-      if (
-        (scrollDirection === "down" && accumulatedScroll < 0) ||
-        (scrollDirection === "up" && accumulatedScroll > 0)
-      ) {
-        accumulatedScroll = 0;
+    // Add animations to timeline
+    tl.to(
+      elements.row1,
+      {
+        x: -config.translation.distance,
+        ease: config.animation.ease,
+        duration: config.animation.duration,
+      },
+      0,
+    );
+
+    tl.to(
+      elements.row2,
+      {
+        x: config.translation.distance,
+        ease: config.animation.ease,
+        duration: config.animation.duration,
+      },
+      0,
+    );
+  }
+
+  // Initialize
+  initMarqueeAnimation();
+});
+
+//GSAP for Graphene Flow
+document.addEventListener("DOMContentLoaded", () => {
+  // Configuration
+  const config = {
+    selectors: {
+      chapter: {
+        container: '[data-sq-list="trigger"]',
+        items: '[data-sq-index][data-sq-item="trigger"]',
+      },
+      video: {
+        container: '[data-sq-list="video"]',
+        items: '[data-sq-index][data-sq-item="video"]',
+      },
+    },
+    animation: {
+      duration: 0.75,
+      ease: "power2.inOut",
+    },
+  };
+
+  // Initializers
+  function initChapterVideoAnimation() {
+    // Check if GSAP and ScrollTrigger are available
+    if (!window.gsap) {
+      console.error("GSAP not found. Please ensure it is loaded.");
+      return;
+    }
+
+    // Register ScrollTrigger plugin
+    if (!window.ScrollTrigger) {
+      console.error(
+        "ScrollTrigger plugin not found. Please ensure it is loaded.",
+      );
+      return;
+    }
+
+    // Register the ScrollTrigger plugin with GSAP
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Get DOM elements
+    const chapterItems = document.querySelectorAll(
+      `${config.selectors.chapter.container} ${config.selectors.chapter.items}`,
+    );
+    const videoItems = document.querySelectorAll(
+      `${config.selectors.video.container} ${config.selectors.video.items}`,
+    );
+
+    // Validate DOM elements
+    if (!chapterItems.length || !videoItems.length) {
+      console.error(
+        "Required DOM elements not found for chapter video animation",
+      );
+      return;
+    }
+
+    // Initialize videos (set all except first to opacity 0)
+    initVideoStates(videoItems);
+
+    // Set up scroll triggers for each chapter
+    createChapterScrollTriggers(chapterItems, videoItems);
+  }
+
+  function initVideoStates(videoItems) {
+    gsap.set(videoItems, { opacity: 0 });
+    gsap.set(videoItems[0], { opacity: 1 });
+  }
+
+  // Animation creators
+  function createChapterScrollTriggers(chapterItems, videoItems) {
+    const lastIndex = chapterItems.length;
+
+    chapterItems.forEach((chapter, idx) => {
+      // Convert to 1-based index to match data-sq-index
+      const currentIndex = idx + 1;
+
+      // For scrolling down - use onEnter
+      ScrollTrigger.create({
+        trigger: chapter,
+        start: "top center",
+        onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
+        markers: false,
+        id: `chapter-${currentIndex}-enter`,
+      });
+
+      // For scrolling up - use onLeave on the next chapter if it exists
+      if (currentIndex < lastIndex) {
+        ScrollTrigger.create({
+          trigger: chapterItems[idx + 1], // Next chapter
+          start: "top bottom",
+          onLeaveBack: () =>
+            handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems),
+          markers: false,
+          id: `chapter-${currentIndex + 1}-leave`,
+        });
       }
-
-      accumulatedScroll +=
-        scrollDirection === "down" ? scrollAmount : -scrollAmount;
-
-      if (accumulatedScroll > downScrollThreshold && navbarVisible) {
-        showAnim.reverse();
-        navbarVisible = false;
-        accumulatedScroll = 0;
-      } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
-        showAnim.play();
-        navbarVisible = true;
-        accumulatedScroll = 0;
-      }
-
-      lastScrollTop = scrollTop;
     });
   }
+
+  function handleChapterEnter(currentIndex, lastIndex, videoItems) {
+    // Skip animation for first chapter (already visible)
+    if (currentIndex === 1) {
+      return;
+    }
+
+    // Create and play transition animation
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 2], // Previous video (currentIndex-1)-1 due to 0-based array
+      videoItems[currentIndex - 1], // Current video (currentIndex-1) due to 0-based array
+    );
+
+    timeline.play();
+  }
+
+  function handleChapterLeaveBack(currentIndex, lastIndex, videoItems) {
+    // Skip animation for first chapter
+    if (currentIndex <= 1) {
+      return;
+    }
+
+    // Create and play transition animation (reverse direction)
+    const timeline = createVideoTransitionTimeline(
+      videoItems[currentIndex - 1], // Current video
+      videoItems[currentIndex - 2], // Previous video
+    );
+
+    timeline.play();
+  }
+
+  function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
+    // Get indices for logging (add 1 to convert from 0-based to 1-based)
+    const fadeOutIndex =
+      Array.from(fadeOutVideo.parentNode.children).indexOf(fadeOutVideo) + 1;
+    const fadeInIndex =
+      Array.from(fadeInVideo.parentNode.children).indexOf(fadeInVideo) + 1;
+
+    const tl = gsap.timeline({
+      onStart: () => {},
+      onComplete: () => {},
+    });
+
+    tl.to(fadeOutVideo, {
+      opacity: 0,
+      duration: config.animation.duration / 2,
+      ease: config.animation.ease,
+      onStart: () => {},
+    });
+
+    tl.to(
+      fadeInVideo,
+      {
+        opacity: 1,
+        duration: config.animation.duration / 2,
+        ease: config.animation.ease,
+        onStart: () => {},
+      },
+      `-=${config.animation.duration / 4}`,
+    ); // Slight overlap for smoother transition
+
+    return tl;
+  }
+
+  // Initialize animation
+  initChapterVideoAnimation();
 });
 
 //GSAP for Headings
@@ -612,7 +1188,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP tp Slide Down
+//GSAP to Slide Down
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
