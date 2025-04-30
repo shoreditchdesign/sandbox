@@ -141,7 +141,6 @@ text-decoration: underline white 2px !important;
 
 .header-nav-folder-content {
     min-height: 80px !important;
-    display: flex !important;
     justify-content: center !important;
     flex-direction: column !important;
     grid-column-gap: 12px !important;
