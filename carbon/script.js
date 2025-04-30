@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize the vertical swiper
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
@@ -115,6 +114,14 @@ document.addEventListener("DOMContentLoaded", function () {
       clickable: true,
     },
     centeredSlides: false,
+    autoplay:
+      window.innerWidth < 768
+        ? {
+            delay: 3000,
+            disableOnInteraction: false,
+          }
+        : false,
+    allowTouchMove: window.innerWidth < 768,
   });
   console.log("Reviews swiper initialized with vertical direction");
 });
