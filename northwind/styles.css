@@ -160,7 +160,7 @@ text-decoration: underline white 2px !important;
     display: flex !important;
     justify-content: start !important;
     flex-direction: column !important;
-    min-height: 32px;
+    // min-height: 32px;
 }
 
 .header-actions a:hover {
