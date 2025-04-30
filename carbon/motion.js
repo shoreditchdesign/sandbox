@@ -226,19 +226,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const PARALLAX = {
     scrollDuration: "100%",
     p1: {
-      speed: -0.8,
-      ease: "none",
-    },
-    p2: {
       speed: -0.6,
       ease: "none",
     },
+    p2: {
+      speed: -0.8,
+      ease: "none",
+    },
     s1: {
-      speed: -0.2,
+      speed: -1,
       ease: "none",
     },
     s2: {
-      speed: -0.4,
+      speed: -0.8,
       ease: "none",
     },
   };
