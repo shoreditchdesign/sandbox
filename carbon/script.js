@@ -168,26 +168,127 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Rich Text Table of Contents
+//Table of Contents
 document.addEventListener("DOMContentLoaded", function () {
+  // Part 1: Add data-stagger-block to children of data-toc-body elements
+  const tocBodyElements = document.querySelectorAll("[data-toc-body]");
+  if (tocBodyElements.length === 0) {
+    console.warn("No elements with [data-toc-body] found");
+  } else {
+    tocBodyElements.forEach(function (tocBody) {
+      const childElements = tocBody.children;
+      if (childElements.length === 0) {
+        console.log("No children found for a data-toc-body element");
+      } else {
+        Array.from(childElements).forEach(function (child) {
+          child.setAttribute("data-stagger-block", "");
+          console.log("Added data-stagger-block to element:", child);
+        });
+        console.log(
+          `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
+        );
+      }
+    });
+  }
+
+  // Part 2: Create table of contents and wrap H2 sections
   const richTextBodies = document.querySelectorAll("[data-toc-body]");
   let allH2s = [];
 
+  // First collect all H2s
   richTextBodies.forEach((body) => {
     const h2s = body.querySelectorAll("h2");
     allH2s = [...allH2s, ...h2s];
   });
 
-  allH2s.forEach((h2, index) => {
-    const id = `id-toc-link-${index + 1}`;
-    h2.setAttribute("id", id);
+  // If no H2s are found, remove template cells from all TOC wrappers
+  if (allH2s.length === 0) {
+    const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+    tocWrappers.forEach((tocWrapper) => {
+      const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+      if (templateCell) {
+        templateCell.remove();
+      }
+      tocWrapper.style.display = "none";
+    });
+    return; // Exit early if no H2s found
+  }
+
+  // Process each data-toc-body container separately
+  richTextBodies.forEach((body) => {
+    // Get all children of the body
+    const allChildren = Array.from(body.children);
+    // Get H2s within this specific body
+    const h2sInBody = Array.from(body.querySelectorAll("h2"));
+
+    // Skip if no H2s in this body
+    if (h2sInBody.length === 0) return;
+
+    // Track processed elements to avoid duplicates
+    const processedElements = new Set();
+
+    // Process each H2
+    h2sInBody.forEach((h2, index) => {
+      const sectionId = `toc-${index + 1}`;
+      const sectionDiv = document.createElement("div");
+      sectionDiv.setAttribute("id", sectionId);
+      sectionDiv.setAttribute("data-toc-section", "");
+
+      // Start with the H2
+      const elementsToGroup = [h2];
+      processedElements.add(h2);
+
+      // Find the index of current H2 in allChildren
+      const h2Index = allChildren.indexOf(h2);
+
+      // Find all elements until the next H2 or the end
+      let nextIndex = h2Index + 1;
+      while (nextIndex < allChildren.length) {
+        const nextElement = allChildren[nextIndex];
+        // Stop if we hit another H2
+        if (nextElement.tagName === "H2") break;
+        elementsToGroup.push(nextElement);
+        processedElements.add(nextElement);
+        nextIndex++;
+      }
+
+      console.log(
+        `Creating section for H2: "${h2.textContent}" with ${elementsToGroup.length} elements`,
+      );
+
+      // Create a document fragment for better performance
+      const fragment = document.createDocumentFragment();
+      elementsToGroup.forEach((el) => fragment.appendChild(el));
+
+      // Add the fragment to the section div
+      sectionDiv.appendChild(fragment);
+
+      // Insert the section div where the H2 was
+      if (
+        h2Index > 0 &&
+        allChildren[h2Index - 1] &&
+        !processedElements.has(allChildren[h2Index - 1])
+      ) {
+        body.insertBefore(sectionDiv, allChildren[h2Index - 1].nextSibling);
+      } else {
+        body.appendChild(sectionDiv);
+      }
+    });
+
+    // Handle elements before the first H2 (leave them as is)
+    // Handle elements that weren't processed (shouldn't be any with our approach)
+    const unprocessedElements = allChildren.filter(
+      (el) => !processedElements.has(el),
+    );
+    console.log(
+      `${unprocessedElements.length} elements weren't included in any section`,
+    );
   });
 
+  // Create TOC using the new section IDs
   const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
-
   tocWrappers.forEach((tocWrapper) => {
     const templateCell = tocWrapper.querySelector("[data-toc-cell]");
-
     if (!templateCell || allH2s.length === 0) {
       tocWrapper.style.display = "none";
       return;
@@ -201,27 +302,35 @@ document.addEventListener("DOMContentLoaded", function () {
     allH2s.forEach((h2, index) => {
       const newCell = templateCell.cloneNode(true);
       const textElement = newCell.querySelector("[data-toc-text]");
-      const id = `id-toc-link-${index + 1}`;
+      const id = `toc-${index + 1}`;
 
-      // Store the id as a data attribute instead of href
+      // Store the id as a data attribute
       newCell.setAttribute("data-toc-target", id);
-      // Remove href to prevent default behavior
-      newCell.removeAttribute("href");
+      // Add href attribute with format #toc-1
+      newCell.setAttribute("href", `#${id}`);
 
       if (textElement) {
         textElement.textContent = h2.textContent;
       }
 
+      // Prevent default anchor behavior for ALL clicks on these elements
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
-        const targetH2 = document.getElementById(id);
-        if (targetH2) {
-          const offset = 200;
-          const targetPosition =
-            targetH2.getBoundingClientRect().top + window.pageYOffset - offset;
-          window.scrollTo({
-            top: targetPosition,
-            behavior: "smooth",
+        console.log("Scroll click triggered for ID:", id);
+        const targetSection = document.getElementById(id);
+        if (targetSection) {
+          console.log("Target section found:", targetSection);
+          requestAnimationFrame(() => {
+            const offset = 200;
+            const targetPosition =
+              targetSection.getBoundingClientRect().top +
+              window.scrollY -
+              offset;
+            console.log("Scrolling to position:", targetPosition);
+            window.scrollTo({
+              top: targetPosition,
+              behavior: "smooth",
+            });
           });
         }
       });
@@ -230,6 +339,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     templateCell.remove();
+  });
+
+  // NEW ADDITION: Prevent default behavior for all links with data-toc-target attribute
+  document.addEventListener("click", function (e) {
+    const tocLink = e.target.closest("[data-toc-target]");
+    if (tocLink) {
+      e.preventDefault();
+      console.log("Prevented default anchor behavior");
+    }
   });
 });
 
