@@ -94,45 +94,87 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Countup Animation
-document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
-  let thisId = "countup" + index;
-  element.id = thisId;
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing countup animations");
 
-  let startNumber = +element.textContent;
-  let endNumber = +element.getAttribute("data-final-number");
-  let decimals = 0;
-  let duration = element.getAttribute("data-countup-duration");
-  let delay = element.getAttribute("data-countup-delay") || 0;
+  // Configuration Constants
+  const CONFIG = {
+    defaultDelay: 0,
+    defaultScrollTriggerStart: "top 80%",
+    defaultScrollTriggerEnd: "bottom top",
+  };
 
-  let myCounter = new CountUp(
-    thisId,
-    startNumber,
-    endNumber,
-    decimals,
-    duration,
-  );
+  // Initialize countup elements
+  function initCountUpElements() {
+    console.log("Initializing countup elements");
 
-  //Scroll out of view trigger
-  ScrollTrigger.create({
-    trigger: element,
-    start: "top bottom",
-    end: "bottom top",
-    onLeaveBack: () => {
-      myCounter.reset();
-    },
-  });
+    document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
+      // Create unique ID
+      const thisId = "countup" + index;
+      element.id = thisId;
 
-  // Scroll into view trigger
-  ScrollTrigger.create({
-    trigger: element,
-    start: "top 80%",
-    end: "bottom top",
-    onEnter: () => {
-      setTimeout(() => {
-        myCounter.start();
-      }, delay);
-    },
-  });
+      // Extract configuration from attributes
+      const startNumber = +element.textContent;
+      const endNumber = +element.getAttribute("data-final-number");
+      const decimals = 0;
+      const duration = +element.getAttribute("data-countup-duration");
+      const delay =
+        +element.getAttribute("data-countup-delay") || CONFIG.defaultDelay;
+
+      console.log(
+        `Configuring countup #${index}: start=${startNumber}, end=${endNumber}, duration=${duration}, delay=${delay}`,
+      );
+
+      // Create counter instance
+      const myCounter = new CountUp(
+        thisId,
+        startNumber,
+        endNumber,
+        decimals,
+        duration,
+      );
+
+      // Initialize scroll triggers
+      createCountUpScrollTriggers(element, myCounter, delay);
+    });
+  }
+
+  // Create scroll triggers for a countup element
+  function createCountUpScrollTriggers(element, counter, delay) {
+    // Reset trigger - when scrolling back up
+    ScrollTrigger.create({
+      trigger: element,
+      start: "top bottom",
+      end: CONFIG.defaultScrollTriggerEnd,
+      onLeaveBack: () => {
+        console.log(`Counter ${element.id} reset`);
+        counter.reset();
+      },
+    });
+
+    // Start trigger - when scrolling down
+    ScrollTrigger.create({
+      trigger: element,
+      start: CONFIG.defaultScrollTriggerStart,
+      end: CONFIG.defaultScrollTriggerEnd,
+      onEnter: () => {
+        console.log(`Counter ${element.id} triggered with ${delay}ms delay`);
+        // Use proper delay implementation
+        if (delay > 0) {
+          setTimeout(() => {
+            counter.start();
+            console.log(`Counter ${element.id} started after delay`);
+          }, delay);
+        } else {
+          counter.start();
+          console.log(`Counter ${element.id} started immediately`);
+        }
+      },
+    });
+  }
+
+  // Initialize everything
+  initCountUpElements();
 });
 
 //Reviews Swiper
