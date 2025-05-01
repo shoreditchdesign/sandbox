@@ -101,7 +101,7 @@ document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
   let startNumber = +element.textContent;
   let endNumber = +element.getAttribute("data-final-number");
   let decimals = 0;
-  let duration = element.getAttribute("data-count-duration");
+  let duration = element.getAttribute("data-countup-duration");
   let delay = element.getAttribute("data-countup-delay") || 0;
 
   let myCounter = new CountUp(
