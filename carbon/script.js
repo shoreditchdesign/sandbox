@@ -108,21 +108,45 @@ document.addEventListener("DOMContentLoaded", () => {
   function initCountUpElements() {
     console.log("Initializing countup elements");
 
-    document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
+    const countupElements = document.querySelectorAll("[data-countup-el]");
+    console.log(`Found ${countupElements.length} countup elements`);
+
+    if (countupElements.length === 0) {
+      console.warn("No countup elements found on page");
+      return;
+    }
+
+    countupElements.forEach((element, index) => {
       // Create unique ID
       const thisId = "countup" + index;
       element.id = thisId;
 
       // Extract configuration from attributes
-      const startNumber = +element.textContent;
-      const endNumber = +element.getAttribute("data-final-number");
-      const decimals = 0;
-      const duration = +element.getAttribute("data-countup-duration");
-      const delay =
-        +element.getAttribute("data-countup-delay") || CONFIG.defaultDelay;
+      const startNumber = parseFloat(element.textContent) || 0;
+      const endNumber =
+        parseFloat(element.getAttribute("data-final-number")) || 0;
+      const decimals =
+        parseInt(element.getAttribute("data-countup-decimals")) || 0;
+      const duration =
+        parseFloat(element.getAttribute("data-countup-duration")) || 2;
+
+      // Parse delay and ensure it's a valid number
+      let delay = 0;
+      const delayAttr = element.getAttribute("data-countup-delay");
+      if (delayAttr !== null && delayAttr !== "") {
+        delay = parseFloat(delayAttr);
+        // Ensure delay is a valid number
+        if (isNaN(delay)) {
+          console.warn(
+            `Invalid delay value "${delayAttr}" for element #${thisId}, using default (0)`,
+          );
+          delay = CONFIG.defaultDelay;
+        }
+      }
 
       console.log(
-        `Configuring countup #${index}: start=${startNumber}, end=${endNumber}, duration=${duration}, delay=${delay}`,
+        `Configuring countup #${index}: start=${startNumber}, end=${endNumber}, ` +
+          `duration=${duration}, delay=${delay}, hasDelayAttr=${delayAttr !== null}`,
       );
 
       // Create counter instance
@@ -134,8 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
         duration,
       );
 
-      // Initialize scroll triggers
-      createCountUpScrollTriggers(element, myCounter, delay);
+      // Check if CountUp initialized properly
+      if (!myCounter.error) {
+        // Initialize scroll triggers
+        createCountUpScrollTriggers(element, myCounter, delay);
+      } else {
+        console.error(
+          `Error initializing CountUp for #${thisId}:`,
+          myCounter.error,
+        );
+      }
     });
   }
 
@@ -159,15 +191,19 @@ document.addEventListener("DOMContentLoaded", () => {
       end: CONFIG.defaultScrollTriggerEnd,
       onEnter: () => {
         console.log(`Counter ${element.id} triggered with ${delay}ms delay`);
-        // Use proper delay implementation
-        if (delay > 0) {
-          setTimeout(() => {
+
+        // Use proper delay implementation with stronger type checking
+        if (typeof delay === "number" && delay > 0) {
+          console.log(`Setting timeout for ${delay}ms`);
+          window.setTimeout(() => {
+            console.log(
+              `Counter ${element.id} starting after ${delay}ms delay`,
+            );
             counter.start();
-            console.log(`Counter ${element.id} started after delay`);
           }, delay);
         } else {
+          console.log(`Counter ${element.id} starting immediately`);
           counter.start();
-          console.log(`Counter ${element.id} started immediately`);
         }
       },
     });
