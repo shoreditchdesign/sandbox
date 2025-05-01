@@ -95,6 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Countups
+
+/*
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing countup animations");
 
@@ -272,21 +274,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize all countups when page loads
   initCountups();
 
-  /*
-  This helper function makes a group of elements animate along the y-axis in a seamless, responsive loop.
-
-  Features:
-   - Uses yPercent so that even if the widths change (like if the window gets resized), it should still work in most cases.
-   - When each item animates up or down enough, it will loop back to the other side
-   - Optionally pass in a config object with values like draggable: true, center: true, speed (default: 1, which travels at roughly 100 pixels per second), paused (boolean), repeat, reversed, enterAnimation, leaveAnimation, and paddingBottom.
-   - The returned timeline will have the following methods added to it:
-     - next() - animates to the next element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
-     - previous() - animates to the previous element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
-     - toIndex() - pass in a zero-based index value of the element that it should animate to, and optionally pass in a vars object to control duration, easing, etc. Always goes in the shortest direction
-     - current() - returns the current index (if an animation is in-progress, it reflects the final index)
-     - times - an Array of the times on the timeline where each element hits the "starting" spot.
-     - elements - an Array of the elements that are being controlled by the timeline
-   */
   function verticalLoop(items, config) {
     let timeline;
     items = gsap.utils.toArray(items);
@@ -559,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return timeline;
   }
-});
+}); */
 
 //GSAP for Preloader
 document.addEventListener("DOMContentLoaded", () => {
