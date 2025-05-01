@@ -181,11 +181,11 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("No children found for a data-toc-body element");
       } else {
         Array.from(childElements).forEach(function (child) {
-          child.setAttribute("data-stagger-block", "");
-          console.log("Added data-stagger-block to element:", child);
+          child.setAttribute("data-motion-state", "blocked");
+          console.log("Added data-motion-state=blocked to element:", child);
         });
         console.log(
-          `Added data-stagger-block to ${childElements.length} children of a data-toc-body element`,
+          `Added data-motion-state=blocked to ${childElements.length} children of a data-toc-body element`,
         );
       }
     });
