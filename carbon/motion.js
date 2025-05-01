@@ -102,9 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const ANIMATION = {
     defaultDelay: 0.5, // Default delay if no attribute is provided
     digit: {
-      duration: 1,
+      duration: 3,
       ease: "power2.inOut",
-      wheelSpacing: 0.3, // Delay between digit animations
+      wheelSpacing: 0.6, // Delay between digit animations
     },
   };
 
