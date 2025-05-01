@@ -95,15 +95,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Countup Animation
 document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
-  // assign ID
   let thisId = "countup" + index;
   element.id = thisId;
-  // create variables
+
   let startNumber = +element.textContent;
   let endNumber = +element.getAttribute("data-final-number");
   let decimals = 0;
   let duration = element.getAttribute("data-count-duration");
-  // animate number
+  let delay = element.getAttribute("data-countup-delay") || 0;
+
   let myCounter = new CountUp(
     thisId,
     startNumber,
@@ -112,15 +112,15 @@ document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
     duration,
   );
 
-  /* Scroll out of view trigger
+  //Scroll out of view trigger
   ScrollTrigger.create({
     trigger: element,
     start: "top bottom",
     end: "bottom top",
     onLeaveBack: () => {
       myCounter.reset();
-    }
-  });*/
+    },
+  });
 
   // Scroll into view trigger
   ScrollTrigger.create({
@@ -128,7 +128,9 @@ document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
     start: "top 80%",
     end: "bottom top",
     onEnter: () => {
-      myCounter.start();
+      setTimeout(() => {
+        myCounter.start();
+      }, delay);
     },
   });
 });
