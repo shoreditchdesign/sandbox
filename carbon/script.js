@@ -93,6 +93,46 @@ document.addEventListener("DOMContentLoaded", () => {
   mapSourceToTargets();
 });
 
+//Countup Animation
+document.querySelectorAll("[data-countup-el]").forEach((element, index) => {
+  // assign ID
+  let thisId = "countup" + index;
+  element.id = thisId;
+  // create variables
+  let startNumber = +element.textContent;
+  let endNumber = +element.getAttribute("data-final-number");
+  let decimals = 0;
+  let duration = element.getAttribute("data-count-duration");
+  // animate number
+  let myCounter = new CountUp(
+    thisId,
+    startNumber,
+    endNumber,
+    decimals,
+    duration,
+  );
+
+  /* Scroll out of view trigger
+  ScrollTrigger.create({
+    trigger: element,
+    start: "top bottom",
+    end: "bottom top",
+    onLeaveBack: () => {
+      myCounter.reset();
+    }
+  });*/
+
+  // Scroll into view trigger
+  ScrollTrigger.create({
+    trigger: element,
+    start: "top 80%",
+    end: "bottom top",
+    onEnter: () => {
+      myCounter.start();
+    },
+  });
+});
+
 //Reviews Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
