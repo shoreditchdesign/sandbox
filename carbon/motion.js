@@ -1481,20 +1481,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Set initial state - center alignment
-    gsap.set(cursorWrap, {
+    // Set initial state - center alignment for the orb
+    gsap.set(cursorOrb, {
       xPercent: -50,
       yPercent: -50,
       opacity: 0,
     });
 
-    // Create optimized animation functions using quickTo
-    const xTo = gsap.quickTo(cursorWrap, "x", {
+    // Create optimized animation functions using quickTo for the orb
+    const xTo = gsap.quickTo(cursorOrb, "x", {
       duration: ANIMATION.cursor.duration,
       ease: ANIMATION.cursor.ease,
     });
 
-    const yTo = gsap.quickTo(cursorWrap, "y", {
+    const yTo = gsap.quickTo(cursorOrb, "y", {
       duration: ANIMATION.cursor.duration,
       ease: ANIMATION.cursor.ease,
     });
@@ -1505,15 +1505,15 @@ document.addEventListener("DOMContentLoaded", () => {
       yTo(e.clientY);
     });
 
-    // Fade in cursor
-    gsap.to(cursorWrap, {
+    // Fade in cursor orb
+    gsap.to(cursorOrb, {
       opacity: 1,
       duration: 0.8,
       ease: "power2.out",
-      onStart: () => console.log("Fading in cursor"),
+      onStart: () => console.log("Fading in cursor orb"),
     });
 
-    // Create pulsating animation
+    // Create pulsating animation for the orb
     createCursorPulseAnimation(cursorOrb);
   }
 
