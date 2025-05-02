@@ -1444,113 +1444,107 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing cursor animation");
 
-  // Get DOM elements
-  const cursorWrap = document.querySelector("[data-cursor-wrap]");
-  const cursorOrb = document.querySelector("[data-cursor-orb]");
-
-  if (!cursorWrap || !cursorOrb) {
-    console.error("Cursor elements not found");
-    return;
-  }
-
   // Animation Constants
   const ANIMATION = {
-    trackingSpeed: 0.2,
-    fadeInDuration: 0.8,
-    pulseDuration: 2,
-    pulseMinScale: 0.95,
-    pulseMaxScale: 1.05,
-    pulseMinOpacity: 0.85,
-    pulseMaxOpacity: 1,
+    cursor: {
+      // Tracking settings
+      duration: 0.6, // Animation duration
+      ease: "power3", // Easing function
+
+      // Pulsating effect
+      pulseDuration: 2, // Duration of one pulse cycle
+      pulseMinScale: 0.95, // Min scale during pulse
+      pulseMaxScale: 1.05, // Max scale during pulse
+      pulseMinOpacity: 0.85, // Min opacity during pulse
+      pulseMaxOpacity: 1, // Max opacity during pulse
+      pulseEase: "sine.inOut", // Smooth sine wave for pulsating
+    },
   };
 
-  // Store mouse position as custom properties on document element
-  // This way we can access it even without events
-  document.documentElement.style.setProperty("--mouse-x", "50vw");
-  document.documentElement.style.setProperty("--mouse-y", "50vh");
+  // Selectors
+  const selectors = {
+    cursor: {
+      wrap: "[data-cursor-wrap]",
+      orb: "[data-cursor-orb]",
+    },
+  };
 
-  // Get initial position from document element or fallback to center
-  let mouseX =
-    parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue("--mouse-x"),
-    ) || window.innerWidth / 2;
-  let mouseY =
-    parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue("--mouse-y"),
-    ) || window.innerHeight / 2;
-  let cursorX = mouseX;
-  let cursorY = mouseY;
+  // Initialize cursor tracking
+  function initCursorTracking() {
+    console.log("Initializing cursor tracking");
 
-  // Update mouse position on document element when it moves
-  document.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
-    document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
-  });
+    const cursorWrap = document.querySelector(selectors.cursor.wrap);
+    const cursorOrb = document.querySelector(selectors.cursor.orb);
 
-  // Position cursor at initial position and hide it
-  gsap.set(cursorWrap, {
-    x: cursorX,
-    y: cursorY,
-    xPercent: -50,
-    yPercent: -50,
-    opacity: 0,
-  });
+    if (!cursorWrap || !cursorOrb) {
+      console.error("Cursor elements not found");
+      return;
+    }
 
-  // Start smooth tracking immediately
-  gsap.ticker.add(() => {
-    // Get current mouse position from document element
-    mouseX =
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--mouse-x",
-        ),
-      ) || mouseX;
-    mouseY =
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--mouse-y",
-        ),
-      ) || mouseY;
-
-    // Smooth tracking formula
-    cursorX += (mouseX - cursorX) * ANIMATION.trackingSpeed;
-    cursorY += (mouseY - cursorY) * ANIMATION.trackingSpeed;
-
-    // Update cursor position
+    // Set initial state - center alignment
     gsap.set(cursorWrap, {
-      x: cursorX,
-      y: cursorY,
+      xPercent: -50,
+      yPercent: -50,
+      opacity: 0,
     });
-  });
 
-  // Fade in cursor
-  gsap.to(cursorWrap, {
-    opacity: 1,
-    duration: ANIMATION.fadeInDuration,
-    ease: "power2.out",
-  });
-
-  // Add pulsing effect
-  const pulseTl = gsap.timeline({
-    repeat: -1,
-    yoyo: true,
-  });
-
-  pulseTl
-    .to(cursorOrb, {
-      scale: ANIMATION.pulseMaxScale,
-      opacity: ANIMATION.pulseMaxOpacity,
-      duration: ANIMATION.pulseDuration / 2,
-      ease: "sine.inOut",
-    })
-    .to(cursorOrb, {
-      scale: ANIMATION.pulseMinScale,
-      opacity: ANIMATION.pulseMinOpacity,
-      duration: ANIMATION.pulseDuration / 2,
-      ease: "sine.inOut",
+    // Create optimized animation functions using quickTo
+    const xTo = gsap.quickTo(cursorWrap, "x", {
+      duration: ANIMATION.cursor.duration,
+      ease: ANIMATION.cursor.ease,
     });
+
+    const yTo = gsap.quickTo(cursorWrap, "y", {
+      duration: ANIMATION.cursor.duration,
+      ease: ANIMATION.cursor.ease,
+    });
+
+    // Add mouse tracking
+    window.addEventListener("mousemove", (e) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    });
+
+    // Fade in cursor
+    gsap.to(cursorWrap, {
+      opacity: 1,
+      duration: 0.8,
+      ease: "power2.out",
+      onStart: () => console.log("Fading in cursor"),
+    });
+
+    // Create pulsating animation
+    createCursorPulseAnimation(cursorOrb);
+  }
+
+  // Create the pulsating animation
+  function createCursorPulseAnimation(cursorElement) {
+    console.log("Creating cursor pulsating animation");
+
+    const tl = gsap.timeline({
+      repeat: -1,
+      yoyo: true,
+      onStart: () => console.log("Starting cursor pulse animation"),
+    });
+
+    tl.to(cursorElement, {
+      scale: ANIMATION.cursor.pulseMaxScale,
+      opacity: ANIMATION.cursor.pulseMaxOpacity,
+      duration: ANIMATION.cursor.pulseDuration / 2,
+      ease: ANIMATION.cursor.pulseEase,
+    }).to(cursorElement, {
+      scale: ANIMATION.cursor.pulseMinScale,
+      opacity: ANIMATION.cursor.pulseMinOpacity,
+      duration: ANIMATION.cursor.pulseDuration / 2,
+      ease: ANIMATION.cursor.pulseEase,
+    });
+
+    return tl;
+  }
+
+  // Initialize the animations
+  initCursorTracking();
+  console.log("Cursor animation initialization complete");
 });
 
 //GSAP for Headings
