@@ -1455,109 +1455,102 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Animation Constants
   const ANIMATION = {
-    trackingSpeed: 0.2, // Lower = smoother, higher = faster
-    fadeInDuration: 0.8, // Duration for initial fade in
-    pulseDuration: 2, // Duration of one pulse cycle
-    pulseMinScale: 0.95, // Min scale during pulse
-    pulseMaxScale: 1.05, // Max scale during pulse
-    pulseMinOpacity: 0.85, // Min opacity during pulse
-    pulseMaxOpacity: 1, // Max opacity during pulse
+    trackingSpeed: 0.2,
+    fadeInDuration: 0.8,
+    pulseDuration: 2,
+    pulseMinScale: 0.95,
+    pulseMaxScale: 1.05,
+    pulseMinOpacity: 0.85,
+    pulseMaxOpacity: 1,
   };
 
-  // Variables
-  let mouseX = 0;
-  let mouseY = 0;
-  let cursorX = 0;
-  let cursorY = 0;
+  // Store mouse position as custom properties on document element
+  // This way we can access it even without events
+  document.documentElement.style.setProperty("--mouse-x", "50vw");
+  document.documentElement.style.setProperty("--mouse-y", "50vh");
 
-  // Hide cursor initially
+  // Get initial position from document element or fallback to center
+  let mouseX =
+    parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--mouse-x"),
+    ) || window.innerWidth / 2;
+  let mouseY =
+    parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--mouse-y"),
+    ) || window.innerHeight / 2;
+  let cursorX = mouseX;
+  let cursorY = mouseY;
+
+  // Update mouse position on document element when it moves
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
+    document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
+  });
+
+  // Position cursor at initial position and hide it
   gsap.set(cursorWrap, {
+    x: cursorX,
+    y: cursorY,
     xPercent: -50,
     yPercent: -50,
     opacity: 0,
   });
 
-  // Create a one-time mousemove handler to get the initial position
-  const captureInitialPosition = (e) => {
-    // Get cursor position
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    cursorX = mouseX;
-    cursorY = mouseY;
+  // Start smooth tracking immediately
+  gsap.ticker.add(() => {
+    // Get current mouse position from document element
+    mouseX =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--mouse-x",
+        ),
+      ) || mouseX;
+    mouseY =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--mouse-y",
+        ),
+      ) || mouseY;
 
-    console.log("Initial cursor position captured:", mouseX, mouseY);
+    // Smooth tracking formula
+    cursorX += (mouseX - cursorX) * ANIMATION.trackingSpeed;
+    cursorY += (mouseY - cursorY) * ANIMATION.trackingSpeed;
 
-    // Position the cursor exactly at mouse position
+    // Update cursor position
     gsap.set(cursorWrap, {
       x: cursorX,
       y: cursorY,
     });
+  });
 
-    // Fade in the cursor
-    gsap.to(cursorWrap, {
-      opacity: 1,
-      duration: ANIMATION.fadeInDuration,
-      ease: "power2.out",
-    });
+  // Fade in cursor
+  gsap.to(cursorWrap, {
+    opacity: 1,
+    duration: ANIMATION.fadeInDuration,
+    ease: "power2.out",
+  });
 
-    // Start tracking ongoing movements
-    document.addEventListener("mousemove", trackMouse);
-    gsap.ticker.add(updateCursor);
+  // Add pulsing effect
+  const pulseTl = gsap.timeline({
+    repeat: -1,
+    yoyo: true,
+  });
 
-    // Add pulsing effect
-    const tl = gsap.timeline({
-      repeat: -1,
-      yoyo: true,
-    });
-
-    tl.to(cursorOrb, {
+  pulseTl
+    .to(cursorOrb, {
       scale: ANIMATION.pulseMaxScale,
       opacity: ANIMATION.pulseMaxOpacity,
       duration: ANIMATION.pulseDuration / 2,
       ease: "sine.inOut",
-    }).to(cursorOrb, {
+    })
+    .to(cursorOrb, {
       scale: ANIMATION.pulseMinScale,
       opacity: ANIMATION.pulseMinOpacity,
       duration: ANIMATION.pulseDuration / 2,
       ease: "sine.inOut",
     });
-
-    // Remove the initial handler
-    document.removeEventListener("mousemove", captureInitialPosition);
-  };
-
-  // Track ongoing mouse movements
-  function trackMouse(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  }
-
-  // Update cursor position with smooth delay
-  function updateCursor() {
-    cursorX += (mouseX - cursorX) * ANIMATION.trackingSpeed;
-    cursorY += (mouseY - cursorY) * ANIMATION.trackingSpeed;
-
-    gsap.set(cursorWrap, {
-      x: cursorX,
-      y: cursorY,
-    });
-  }
-
-  // Add the initial position handler
-  document.addEventListener("mousemove", captureInitialPosition);
-
-  // Simulate a mouse movement to trigger the handler immediately
-  setTimeout(() => {
-    // Create and dispatch a synthetic mouse event
-    const evt = new MouseEvent("mousemove", {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-      clientX: window.innerWidth / 2, // Default to center if no real position yet
-      clientY: window.innerHeight / 2,
-    });
-    document.dispatchEvent(evt);
-  }, 10);
 });
 
 //GSAP for Headings
