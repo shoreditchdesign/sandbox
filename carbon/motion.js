@@ -1440,6 +1440,145 @@ document.addEventListener("DOMContentLoaded", () => {
   initChapterVideoAnimation();
 });
 
+//GSAP for Graphene Cursor
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing cursor animation");
+
+  // Animation Constants
+  const ANIMATION = {
+    cursor: {
+      // Tracking settings
+      trackingSpeed: 0.2, // Lower = smoother, higher = faster
+      initialDelay: 0.8, // Delay before cursor starts tracking on page load
+
+      // Pulsating effect
+      pulseDuration: 2, // Duration of one pulse cycle
+      pulseMinScale: 0.95, // Min scale during pulse
+      pulseMaxScale: 1.05, // Max scale during pulse
+      pulseMinOpacity: 0.85, // Min opacity during pulse
+      pulseMaxOpacity: 1, // Max opacity during pulse
+      pulseEase: "sine.inOut", // Smooth sine wave for pulsating
+    },
+  };
+
+  // Selectors
+  const selectors = {
+    cursor: {
+      wrap: "[data-cursor-wrap]",
+      orb: "[data-cursor-orb]",
+    },
+  };
+
+  // Variables
+  let mouseX = window.innerWidth / 2; // Start in center of viewport
+  let mouseY = window.innerHeight / 2;
+  let cursorX = mouseX;
+  let cursorY = mouseY;
+
+  // Initialize cursor tracking
+  function initCursorTracking() {
+    console.log("Initializing cursor tracking");
+
+    const cursorWrap = document.querySelector(selectors.cursor.wrap);
+    const cursorOrb = document.querySelector(selectors.cursor.orb);
+
+    if (!cursorWrap || !cursorOrb) {
+      console.error("Cursor elements not found");
+      return;
+    }
+
+    // Set initial position
+    gsap.set(cursorWrap, {
+      x: cursorX,
+      y: cursorY,
+      xPercent: -50,
+      yPercent: -50,
+    });
+
+    // Create mouse movement listener
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Create animations
+    createCursorTrackingAnimation(cursorWrap);
+    createCursorPulseAnimation(cursorOrb);
+  }
+
+  // Create the tracking animation
+  function createCursorTrackingAnimation(cursorElement) {
+    console.log("Creating cursor tracking animation");
+
+    // Initial animation from center to cursor position
+    gsap.fromTo(
+      cursorElement,
+      {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        xPercent: -50,
+        yPercent: -50,
+        opacity: 0,
+      },
+      {
+        x: mouseX,
+        y: mouseY,
+        opacity: 1,
+        duration: ANIMATION.cursor.initialDelay,
+        ease: "power2.out",
+        onComplete: () => {
+          console.log("Initial cursor movement complete, starting tracking");
+          startContinuousTracking(cursorElement);
+        },
+      },
+    );
+  }
+
+  // Handle the continuous tracking with gentle delay
+  function startContinuousTracking(cursorElement) {
+    gsap.ticker.add(() => {
+      // Calculate new position with smooth delay
+      cursorX += (mouseX - cursorX) * ANIMATION.cursor.trackingSpeed;
+      cursorY += (mouseY - cursorY) * ANIMATION.cursor.trackingSpeed;
+
+      // Apply the new position
+      gsap.set(cursorElement, {
+        x: cursorX,
+        y: cursorY,
+      });
+    });
+  }
+
+  // Create the pulsating animation
+  function createCursorPulseAnimation(cursorElement) {
+    console.log("Creating cursor pulsating animation");
+
+    const tl = gsap.timeline({
+      repeat: -1,
+      yoyo: true,
+      onStart: () => console.log("Starting cursor pulse animation"),
+    });
+
+    tl.to(cursorElement, {
+      scale: ANIMATION.cursor.pulseMaxScale,
+      opacity: ANIMATION.cursor.pulseMaxOpacity,
+      duration: ANIMATION.cursor.pulseDuration / 2,
+      ease: ANIMATION.cursor.pulseEase,
+    }).to(cursorElement, {
+      scale: ANIMATION.cursor.pulseMinScale,
+      opacity: ANIMATION.cursor.pulseMinOpacity,
+      duration: ANIMATION.cursor.pulseDuration / 2,
+      ease: ANIMATION.cursor.pulseEase,
+    });
+
+    return tl;
+  }
+
+  // Initialize the animations
+  initCursorTracking();
+  console.log("Cursor animation initialization complete");
+});
+
 //GSAP for Headings
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
