@@ -159,7 +159,7 @@ text-decoration: underline white 2px !important;
     padding-bottom: 1rem !important;
     padding-left: 1rem !important;
     text-decoration: none !important;
-    transition: opacity 300ms ease-in !important;
+    transition: opacity 150ms ease-in !important;
 }
 
 .header-nav-item.header-nav-item--folder:hover .header-nav-folder-content {
