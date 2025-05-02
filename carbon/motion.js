@@ -1444,25 +1444,24 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing cursor animation");
 
+  // Get DOM elements
+  const cursorWrap = document.querySelector("[data-cursor-wrap]");
+  const cursorOrb = document.querySelector("[data-cursor-orb]");
+
+  if (!cursorWrap || !cursorOrb) {
+    console.error("Cursor elements not found");
+    return;
+  }
+
   // Animation Constants
   const ANIMATION = {
-    cursor: {
-      trackingSpeed: 0.2, // Lower = smoother, higher = faster
-      fadeInDuration: 0.8, // Duration for initial fade in
-      pulseDuration: 2, // Duration of one pulse cycle
-      pulseMinScale: 0.95, // Min scale during pulse
-      pulseMaxScale: 1.05, // Max scale during pulse
-      pulseMinOpacity: 0.85, // Min opacity during pulse
-      pulseMaxOpacity: 1, // Max opacity during pulse
-    },
-  };
-
-  // Selectors
-  const selectors = {
-    cursor: {
-      wrap: "[data-cursor-wrap]",
-      orb: "[data-cursor-orb]",
-    },
+    trackingSpeed: 0.2, // Lower = smoother, higher = faster
+    fadeInDuration: 0.8, // Duration for initial fade in
+    pulseDuration: 2, // Duration of one pulse cycle
+    pulseMinScale: 0.95, // Min scale during pulse
+    pulseMaxScale: 1.05, // Max scale during pulse
+    pulseMinOpacity: 0.85, // Min opacity during pulse
+    pulseMaxOpacity: 1, // Max opacity during pulse
   };
 
   // Variables
@@ -1471,102 +1470,96 @@ document.addEventListener("DOMContentLoaded", () => {
   let cursorX = 0;
   let cursorY = 0;
 
-  // Initialize cursor
-  function initCursor() {
-    console.log("Initializing cursor");
+  // Hide cursor initially
+  gsap.set(cursorWrap, {
+    xPercent: -50,
+    yPercent: -50,
+    opacity: 0,
+  });
 
-    const cursorWrap = document.querySelector(selectors.cursor.wrap);
-    const cursorOrb = document.querySelector(selectors.cursor.orb);
-
-    if (!cursorWrap || !cursorOrb) {
-      console.error("Cursor elements not found");
-      return;
-    }
-
-    // 1. Get initial cursor position
-    updateMousePosition();
-
-    // 2. Set cursor to that position immediately
+  // Create a one-time mousemove handler to get the initial position
+  const captureInitialPosition = (e) => {
+    // Get cursor position
+    mouseX = e.clientX;
+    mouseY = e.clientY;
     cursorX = mouseX;
     cursorY = mouseY;
 
+    console.log("Initial cursor position captured:", mouseX, mouseY);
+
+    // Position the cursor exactly at mouse position
     gsap.set(cursorWrap, {
       x: cursorX,
       y: cursorY,
-      xPercent: -50,
-      yPercent: -50,
-      opacity: 0,
     });
 
-    // 3. Fade in the cursor
+    // Fade in the cursor
     gsap.to(cursorWrap, {
       opacity: 1,
-      duration: ANIMATION.cursor.fadeInDuration,
+      duration: ANIMATION.fadeInDuration,
       ease: "power2.out",
     });
 
-    // 4. Start tracking and pulsing
-    startTracking(cursorWrap);
-    startPulsing(cursorOrb);
+    // Start tracking ongoing movements
+    document.addEventListener("mousemove", trackMouse);
+    gsap.ticker.add(updateCursor);
 
-    // Listen for mouse movement
-    document.addEventListener("mousemove", updateMousePosition);
-  }
-
-  // Update mouse position
-  function updateMousePosition(e) {
-    if (e) {
-      // If event exists, get position from event
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    } else {
-      // On initialization, check if mouse position is available
-      // or use viewport center as fallback
-      mouseX =
-        window.mouseX !== undefined ? window.mouseX : window.innerWidth / 2;
-      mouseY =
-        window.mouseY !== undefined ? window.mouseY : window.innerHeight / 2;
-    }
-  }
-
-  // Start tracking with smooth delay
-  function startTracking(cursorElement) {
-    gsap.ticker.add(() => {
-      // Smooth tracking formula
-      cursorX += (mouseX - cursorX) * ANIMATION.cursor.trackingSpeed;
-      cursorY += (mouseY - cursorY) * ANIMATION.cursor.trackingSpeed;
-
-      // Update cursor position
-      gsap.set(cursorElement, {
-        x: cursorX,
-        y: cursorY,
-      });
-    });
-  }
-
-  // Start pulsing animation
-  function startPulsing(cursorElement) {
+    // Add pulsing effect
     const tl = gsap.timeline({
       repeat: -1,
       yoyo: true,
     });
 
-    tl.to(cursorElement, {
-      scale: ANIMATION.cursor.pulseMaxScale,
-      opacity: ANIMATION.cursor.pulseMaxOpacity,
-      duration: ANIMATION.cursor.pulseDuration / 2,
+    tl.to(cursorOrb, {
+      scale: ANIMATION.pulseMaxScale,
+      opacity: ANIMATION.pulseMaxOpacity,
+      duration: ANIMATION.pulseDuration / 2,
       ease: "sine.inOut",
-    }).to(cursorElement, {
-      scale: ANIMATION.cursor.pulseMinScale,
-      opacity: ANIMATION.cursor.pulseMinOpacity,
-      duration: ANIMATION.cursor.pulseDuration / 2,
+    }).to(cursorOrb, {
+      scale: ANIMATION.pulseMinScale,
+      opacity: ANIMATION.pulseMinOpacity,
+      duration: ANIMATION.pulseDuration / 2,
       ease: "sine.inOut",
+    });
+
+    // Remove the initial handler
+    document.removeEventListener("mousemove", captureInitialPosition);
+  };
+
+  // Track ongoing mouse movements
+  function trackMouse(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+
+  // Update cursor position with smooth delay
+  function updateCursor() {
+    cursorX += (mouseX - cursorX) * ANIMATION.trackingSpeed;
+    cursorY += (mouseY - cursorY) * ANIMATION.trackingSpeed;
+
+    gsap.set(cursorWrap, {
+      x: cursorX,
+      y: cursorY,
     });
   }
 
-  // Initialize
-  initCursor();
+  // Add the initial position handler
+  document.addEventListener("mousemove", captureInitialPosition);
+
+  // Simulate a mouse movement to trigger the handler immediately
+  setTimeout(() => {
+    // Create and dispatch a synthetic mouse event
+    const evt = new MouseEvent("mousemove", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: window.innerWidth / 2, // Default to center if no real position yet
+      clientY: window.innerHeight / 2,
+    });
+    document.dispatchEvent(evt);
+  }, 10);
 });
+
 //GSAP for Headings
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
