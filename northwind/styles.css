@@ -139,9 +139,16 @@ text-decoration: underline white 2px !important;
     left: 0px !important;
 }
 
+.header-nav-folder-title {
+    display: flex !important;
+    justify-content: start !important;
+    flex-direction: column !important;
+    min-height: 32px;
+}
+
 .header-nav-folder-content {
     display: flex !important;
-
+    opacity: 0;
     min-height: 80px !important;
     justify-content: center !important;
     flex-direction: column !important;
@@ -152,17 +159,11 @@ text-decoration: underline white 2px !important;
     padding-bottom: 1rem !important;
     padding-left: 1rem !important;
     text-decoration: none !important;
+    transition: opacity 300ms ease-in !important;
 }
 
 .header-nav-item.header-nav-item--folder:hover .header-nav-folder-content {
-    display: flex !important;
-}
-
-.header-nav-folder-title {
-    display: flex !important;
-    justify-content: start !important;
-    flex-direction: column !important;
-    min-height: 32px;
+    opacity: 1;
 }
 
 .header-actions a:hover {
