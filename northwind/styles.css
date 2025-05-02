@@ -165,6 +165,10 @@ text-decoration: underline white 2px !important;
     opacity: 1;
 }
 
+.header-nav-folder-content:hover {
+    opacity: 1;
+}
+
 .header-actions a:hover {
     text-decoration: none !important;
 }
