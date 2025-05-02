@@ -1450,6 +1450,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Tracking settings
       duration: 0.6, // Animation duration
       ease: "power3", // Easing function
+      fadeInDelay: 0.3, // Delay before fading in
+      fadeInDuration: 0.8, // Duration for fade in
 
       // Pulsating effect
       pulseDuration: 2, // Duration of one pulse cycle
@@ -1481,11 +1483,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Set initial state - center alignment for the orb
+    // Set initial state - hide cursor wrap
+    gsap.set(cursorWrap, {
+      opacity: 0,
+    });
+
+    // Center alignment for the orb
     gsap.set(cursorOrb, {
       xPercent: -50,
       yPercent: -50,
-      opacity: 0,
     });
 
     // Create optimized animation functions using quickTo for the orb
@@ -1499,18 +1505,28 @@ document.addEventListener("DOMContentLoaded", () => {
       ease: ANIMATION.cursor.ease,
     });
 
+    // Get initial cursor position (center of screen if not available)
+    const initialX = window.innerWidth / 2;
+    const initialY = window.innerHeight / 2;
+
+    // Position orb at initial position immediately
+    xTo(initialX);
+    yTo(initialY);
+
     // Add mouse tracking
     window.addEventListener("mousemove", (e) => {
       xTo(e.clientX);
       yTo(e.clientY);
     });
 
-    // Fade in cursor orb
-    gsap.to(cursorOrb, {
+    // Fade in cursor wrap after a short delay
+    gsap.to(cursorWrap, {
       opacity: 1,
-      duration: 0.8,
+      duration: ANIMATION.cursor.fadeInDuration,
+      delay: ANIMATION.cursor.fadeInDelay,
       ease: "power2.out",
-      onStart: () => console.log("Fading in cursor orb"),
+      onStart: () => console.log("Fading in cursor wrap"),
+      onComplete: () => console.log("Cursor wrap visible"),
     });
 
     // Create pulsating animation for the orb
