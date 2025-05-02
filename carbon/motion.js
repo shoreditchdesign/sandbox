@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .progress(1);
   let lastScrollTop = 0;
   const downScrollThreshold = 200;
-  const upScrollThreshold = 800;
+  const upScrollThreshold = 200;
   let accumulatedScroll = 0;
   let navbarVisible = true;
   window.addEventListener("scroll", () => {
