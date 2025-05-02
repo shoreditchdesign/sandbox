@@ -1447,19 +1447,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Animation Constants
   const ANIMATION = {
     cursor: {
-      // Tracking settings
       trackingSpeed: 0.2, // Lower = smoother, higher = faster
-
-      // Initial appearance
-      fadeInDuration: 1.2, // Duration for initial fade in
-
-      // Pulsating effect
+      fadeInDuration: 0.8, // Duration for initial fade in
       pulseDuration: 2, // Duration of one pulse cycle
       pulseMinScale: 0.95, // Min scale during pulse
       pulseMaxScale: 1.05, // Max scale during pulse
       pulseMinOpacity: 0.85, // Min opacity during pulse
       pulseMaxOpacity: 1, // Max opacity during pulse
-      pulseEase: "sine.inOut", // Smooth sine wave for pulsating
     },
   };
 
@@ -1477,9 +1471,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let cursorX = 0;
   let cursorY = 0;
 
-  // Initialize cursor position and tracking
-  function initCursorTracking() {
-    console.log("Initializing cursor tracking");
+  // Initialize cursor
+  function initCursor() {
+    console.log("Initializing cursor");
 
     const cursorWrap = document.querySelector(selectors.cursor.wrap);
     const cursorOrb = document.querySelector(selectors.cursor.orb);
@@ -1489,15 +1483,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Get initial cursor position from browser
-    mouseX = getCursorPosition().x;
-    mouseY = getCursorPosition().y;
+    // 1. Get initial cursor position
+    updateMousePosition();
+
+    // 2. Set cursor to that position immediately
     cursorX = mouseX;
     cursorY = mouseY;
 
-    console.log("Initial cursor position:", mouseX, mouseY);
-
-    // Set initial state - invisible but at cursor position
     gsap.set(cursorWrap, {
       x: cursorX,
       y: cursorY,
@@ -1506,94 +1498,75 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: 0,
     });
 
-    // Fade in immediately at the cursor position
+    // 3. Fade in the cursor
     gsap.to(cursorWrap, {
       opacity: 1,
       duration: ANIMATION.cursor.fadeInDuration,
       ease: "power2.out",
-      onStart: () => console.log("Fading in cursor at initial position"),
-      onComplete: () => console.log("Initial fade-in complete"),
     });
 
-    // Start tracking and pulsing right away
-    startContinuousTracking(cursorWrap);
-    createCursorPulseAnimation(cursorOrb);
+    // 4. Start tracking and pulsing
+    startTracking(cursorWrap);
+    startPulsing(cursorOrb);
 
-    // Add the mouse movement listener for ongoing tracking
-    document.addEventListener("mousemove", (e) => {
+    // Listen for mouse movement
+    document.addEventListener("mousemove", updateMousePosition);
+  }
+
+  // Update mouse position
+  function updateMousePosition(e) {
+    if (e) {
+      // If event exists, get position from event
       mouseX = e.clientX;
       mouseY = e.clientY;
-    });
-  }
-
-  // Helper function to get cursor position on page load
-  function getCursorPosition() {
-    // Get stored position if available (from previous navigation)
-    const storedX = sessionStorage.getItem("cursorX");
-    const storedY = sessionStorage.getItem("cursorY");
-
-    if (storedX && storedY) {
-      return { x: parseFloat(storedX), y: parseFloat(storedY) };
+    } else {
+      // On initialization, check if mouse position is available
+      // or use viewport center as fallback
+      mouseX =
+        window.mouseX !== undefined ? window.mouseX : window.innerWidth / 2;
+      mouseY =
+        window.mouseY !== undefined ? window.mouseY : window.innerHeight / 2;
     }
-
-    // Default to center of viewport if no stored position
-    return {
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-    };
   }
 
-  // Handle the continuous tracking with gentle delay
-  function startContinuousTracking(cursorElement) {
-    console.log("Starting continuous cursor tracking");
-
+  // Start tracking with smooth delay
+  function startTracking(cursorElement) {
     gsap.ticker.add(() => {
-      // Calculate new position with smooth delay
+      // Smooth tracking formula
       cursorX += (mouseX - cursorX) * ANIMATION.cursor.trackingSpeed;
       cursorY += (mouseY - cursorY) * ANIMATION.cursor.trackingSpeed;
 
-      // Apply the new position
+      // Update cursor position
       gsap.set(cursorElement, {
         x: cursorX,
         y: cursorY,
       });
-
-      // Store current position for page navigation
-      sessionStorage.setItem("cursorX", mouseX);
-      sessionStorage.setItem("cursorY", mouseY);
     });
   }
 
-  // Create the pulsating animation
-  function createCursorPulseAnimation(cursorElement) {
-    console.log("Creating cursor pulsating animation");
-
+  // Start pulsing animation
+  function startPulsing(cursorElement) {
     const tl = gsap.timeline({
       repeat: -1,
       yoyo: true,
-      onStart: () => console.log("Starting cursor pulse animation"),
     });
 
     tl.to(cursorElement, {
       scale: ANIMATION.cursor.pulseMaxScale,
       opacity: ANIMATION.cursor.pulseMaxOpacity,
       duration: ANIMATION.cursor.pulseDuration / 2,
-      ease: ANIMATION.cursor.pulseEase,
+      ease: "sine.inOut",
     }).to(cursorElement, {
       scale: ANIMATION.cursor.pulseMinScale,
       opacity: ANIMATION.cursor.pulseMinOpacity,
       duration: ANIMATION.cursor.pulseDuration / 2,
-      ease: ANIMATION.cursor.pulseEase,
+      ease: "sine.inOut",
     });
-
-    return tl;
   }
 
-  // Initialize the animations
-  initCursorTracking();
-  console.log("Cursor animation initialization complete");
+  // Initialize
+  initCursor();
 });
-
 //GSAP for Headings
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
