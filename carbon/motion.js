@@ -1476,7 +1476,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let mouseY = 0;
   let cursorX = 0;
   let cursorY = 0;
-  let isInitialized = false;
 
   // Initialize cursor position and tracking
   function initCursorTracking() {
@@ -1490,57 +1489,58 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Set initial state - invisible
+    // Get initial cursor position from browser
+    mouseX = getCursorPosition().x;
+    mouseY = getCursorPosition().y;
+    cursorX = mouseX;
+    cursorY = mouseY;
+
+    console.log("Initial cursor position:", mouseX, mouseY);
+
+    // Set initial state - invisible but at cursor position
     gsap.set(cursorWrap, {
+      x: cursorX,
+      y: cursorY,
       xPercent: -50,
       yPercent: -50,
       opacity: 0,
     });
 
-    // Capture initial mouse position
-    const initialPositionHandler = (e) => {
-      if (!isInitialized) {
-        isInitialized = true;
-        console.log("Initial mouse position captured");
+    // Fade in immediately at the cursor position
+    gsap.to(cursorWrap, {
+      opacity: 1,
+      duration: ANIMATION.cursor.fadeInDuration,
+      ease: "power2.out",
+      onStart: () => console.log("Fading in cursor at initial position"),
+      onComplete: () => console.log("Initial fade-in complete"),
+    });
 
-        // Set mouse and cursor positions
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursorX = mouseX;
-        cursorY = mouseY;
+    // Start tracking and pulsing right away
+    startContinuousTracking(cursorWrap);
+    createCursorPulseAnimation(cursorOrb);
 
-        // IMMEDIATELY position at the mouse location
-        gsap.set(cursorWrap, {
-          x: mouseX,
-          y: mouseY,
-        });
+    // Add the mouse movement listener for ongoing tracking
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+  }
 
-        // Now fade in at this position
-        gsap.to(cursorWrap, {
-          opacity: 1,
-          duration: ANIMATION.cursor.fadeInDuration,
-          ease: "power2.out",
-          onStart: () => console.log("Fading in cursor at initial position"),
-          onComplete: () => console.log("Initial fade-in complete"),
-        });
+  // Helper function to get cursor position on page load
+  function getCursorPosition() {
+    // Get stored position if available (from previous navigation)
+    const storedX = sessionStorage.getItem("cursorX");
+    const storedY = sessionStorage.getItem("cursorY");
 
-        // Start tracking and pulsing
-        startContinuousTracking(cursorWrap);
-        createCursorPulseAnimation(cursorOrb);
+    if (storedX && storedY) {
+      return { x: parseFloat(storedX), y: parseFloat(storedY) };
+    }
 
-        // Remove the initial handler
-        document.removeEventListener("mousemove", initialPositionHandler);
-
-        // Add the regular tracking handler
-        document.addEventListener("mousemove", (e) => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-        });
-      }
+    // Default to center of viewport if no stored position
+    return {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
     };
-
-    // Add the initial position handler - executes only once
-    document.addEventListener("mousemove", initialPositionHandler);
   }
 
   // Handle the continuous tracking with gentle delay
@@ -1557,6 +1557,10 @@ document.addEventListener("DOMContentLoaded", () => {
         x: cursorX,
         y: cursorY,
       });
+
+      // Store current position for page navigation
+      sessionStorage.setItem("cursorX", mouseX);
+      sessionStorage.setItem("cursorY", mouseY);
     });
   }
 
