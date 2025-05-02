@@ -154,17 +154,15 @@ text-decoration: underline white 2px !important;
     text-decoration: none !important;
 }
 
-/*
 .header-nav-item.header-nav-item--folder:hover .header-nav-folder-content {
     display: flex !important;
 }
-*/
 
 .header-nav-folder-title {
     display: flex !important;
     justify-content: start !important;
     flex-direction: column !important;
-    // min-height: 32px;
+    min-height: 32px;
 }
 
 .header-actions a:hover {
