@@ -1372,10 +1372,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Ticker animation initializing");
+
+  const isMobile = window.innerWidth <= 991;
+
+  if (!isMobile) {
+    console.log("Not mobile, ticker animation aborted");
+    return;
+  }
 
   const tickerWrap = document.querySelector("[data-ticker-wrap]");
   const tickerItem = document.querySelector("[data-ticker-item]");
@@ -1406,6 +1412,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupTicker() {
+    if (!isMobile) {
+      console.log("Not mobile, ticker setup aborted");
+      return;
+    }
+
     console.log("Setting up ticker");
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
@@ -1440,7 +1451,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Optional: Reinitialize on window resize to adjust for new viewport size
   window.addEventListener("resize", () => {
-    console.log("Window resized, reinitializing ticker");
-    setupTicker();
+    const newIsMobile = window.innerWidth <= 991;
+    if (newIsMobile) {
+      console.log("Window resized, reinitializing ticker");
+      setupTicker();
+    }
   });
 });
