@@ -518,3 +518,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("CMS filter initialization complete");
 });
+
+//Navigation Pusher
+document.addEventListener("DOMContentLoaded", function () {
+  const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
+  if (navWrap) {
+    const navHeight = navWrap.offsetHeight;
+    document.documentElement.style.setProperty(
+      "--global--navigation-height",
+      `${navHeight}px`,
+    );
+  }
+});
