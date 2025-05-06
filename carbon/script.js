@@ -522,11 +522,17 @@ document.addEventListener("DOMContentLoaded", function () {
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
-  if (navWrap) {
-    const navHeight = navWrap.offsetHeight;
-    document.documentElement.style.setProperty(
-      "--global--navigation-height",
-      `${navHeight}px`,
-    );
+
+  function updateNavHeight() {
+    if (navWrap) {
+      const navHeight = navWrap.offsetHeight;
+      document.documentElement.style.setProperty(
+        "--global--navigation-height",
+        `${navHeight}px`,
+      );
+    }
   }
+
+  updateNavHeight(); // Initial calculation
+  window.addEventListener("resize", updateNavHeight); // Recalculate on resize
 });
