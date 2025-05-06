@@ -1372,3 +1372,75 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+//GSAP for Ticker
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Ticker animation initializing");
+
+  const tickerWrap = document.querySelector("[data-ticker-wrap]");
+  const tickerItem = document.querySelector("[data-ticker-item]");
+
+  if (!tickerWrap || !tickerItem) {
+    console.warn("Ticker elements not found");
+    return;
+  }
+
+  console.log("Found ticker elements");
+  const originalContent = tickerItem.outerHTML;
+
+  function calculateRequiredCopies() {
+    const viewportWidth = window.innerWidth;
+    const itemWidth = tickerItem.offsetWidth;
+    // Create a sequence 5 times the viewport width
+    const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+
+    console.log(
+      `Viewport width: ${viewportWidth}, Item width: ${itemWidth}, Copies needed: ${copiesNeeded}`,
+    );
+
+    return {
+      viewportWidth,
+      itemWidth,
+      copiesNeeded,
+    };
+  }
+
+  function setupTicker() {
+    console.log("Setting up ticker");
+    const { copiesNeeded, itemWidth } = calculateRequiredCopies();
+
+    tickerWrap.innerHTML = "";
+
+    for (let i = 0; i < copiesNeeded; i++) {
+      const clone = document.createElement("div");
+      clone.innerHTML = originalContent;
+      const clonedItem = clone.firstElementChild;
+      tickerWrap.appendChild(clonedItem);
+    }
+
+    // Total width of the sequence
+    const totalWidth = itemWidth * copiesNeeded;
+    console.log(`Total ticker width: ${totalWidth}px`);
+
+    gsap.to(tickerWrap, {
+      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
+      duration: totalWidth / 25, // Speed determined by total width
+      ease: "none",
+      repeat: -1,
+      onRepeat: () => {
+        gsap.set(tickerWrap, { x: 0 });
+      },
+    });
+
+    console.log("Ticker animation started");
+  }
+
+  // Initialize the ticker
+  setupTicker();
+
+  // Optional: Reinitialize on window resize to adjust for new viewport size
+  window.addEventListener("resize", () => {
+    console.log("Window resized, reinitializing ticker");
+    setupTicker();
+  });
+});
