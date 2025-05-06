@@ -1435,7 +1435,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gsap.to(tickerWrap, {
       x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
-      duration: totalWidth / 25, // Speed determined by total width
+      duration: totalWidth / 100, // Increased speed by reducing duration divisor from 25 to 100
       ease: "none",
       repeat: -1,
       onRepeat: () => {
