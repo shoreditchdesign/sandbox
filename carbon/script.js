@@ -554,6 +554,42 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Banner Injection
+document.addEventListener("DOMContentLoaded", function () {
+  // Find all parent elements with class w-richtext
+  const richTextElements = document.querySelectorAll(".w-richtext");
+
+  // Find the banner element that we'll use as a replacement
+  const bannerElement = document.querySelector("[data-blog-banner]");
+
+  // If there's no banner element, exit early
+  if (!bannerElement) {
+    console.warn("No element with data-blog-banner attribute found");
+    return;
+  }
+
+  richTextElements.forEach(function (parent) {
+    // Look for paragraphs inside each rich text element
+    const paragraphs = parent.querySelectorAll("p");
+
+    paragraphs.forEach(function (paragraph) {
+      // Check if paragraph contains exactly "{{banner}}"
+      if (paragraph.textContent.trim() === "{{banner}}") {
+        // Clone the banner element to insert (in case we need to use it multiple times)
+        const bannerClone = bannerElement.cloneNode(true);
+
+        // Insert the banner clone before the paragraph
+        parent.insertBefore(bannerClone, paragraph);
+
+        // Remove the original paragraph
+        paragraph.remove();
+      }
+    });
+  });
+
+  bannerElement.remove();
+});
+
 //News Filter Styles
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
