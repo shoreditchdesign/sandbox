@@ -163,15 +163,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Team Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
+  // Animation Constants
+  const ANIMATION = {
+    duration: 0.4,
+    opacityDuration: 0.3,
+    ease: "power2.out",
+  };
+
   // Select all card elements using data attribute
   const cards = document.querySelectorAll("[data-ab-card='card']");
+
   // Track currently open card
   let currentlyOpenCard = null;
+
+  // Check if device is mobile
+  const isMobile = () => window.innerWidth <= 767;
+
   // Setup for each card
   cards.forEach((card, index) => {
     const overlay = card.querySelector("[data-ab-card='overlay']");
     const content = card.querySelector("[data-ab-card='content']");
     const button = card.querySelector("[data-ab-card='button']");
+
     // Check if elements exist
     if (!overlay) {
       console.error(
@@ -191,83 +204,138 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       return;
     }
+
     // Initial state - check data-card-state attribute
     let isOpen = overlay.getAttribute("data-card-state") === "open";
-    // Initial state
+
+    // Height variables
     let initialOverlayHeight;
     let finalOverlayHeight;
-    // Function to calculate heights
+    let contentHeight;
+
+    // Function to calculate heights - different for mobile vs desktop
     const calculateHeights = () => {
       initialOverlayHeight = parseFloat(
         window.getComputedStyle(overlay).height,
       );
-      finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
+
+      // For mobile: initialHeight + contentHeight
+      // For desktop: use card's full height
+      if (isMobile()) {
+        // Make content temporarily visible to measure height
+        const contentDisplay = window.getComputedStyle(content).display;
+        const contentOpacity = window.getComputedStyle(content).opacity;
+
+        gsap.set(content, { display: "flex", opacity: 0 });
+        contentHeight = parseFloat(window.getComputedStyle(content).height);
+
+        // Reset content to original state
+        gsap.set(content, { display: contentDisplay, opacity: contentOpacity });
+
+        finalOverlayHeight = initialOverlayHeight + contentHeight;
+      } else {
+        // Desktop behavior - use card's full height
+        finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
+      }
+
+      console.log(
+        `Card #${index}: Heights calculated - Initial: ${initialOverlayHeight}, Final: ${finalOverlayHeight}`,
+      );
     };
+
     // Calculate on page load
     calculateHeights();
+
     // Set initial styles
     gsap.set(content, {
       display: isOpen ? "flex" : "none",
       opacity: isOpen ? 1 : 0,
     });
+
     gsap.set(overlay, {
       height: isOpen ? finalOverlayHeight : initialOverlayHeight,
-      overflow: isOpen ? "scroll" : "hidden",
+      overflow: isOpen && !isMobile() ? "scroll" : "hidden",
     });
+
     // Create quickTo function for the overlay height
     const animateHeight = gsap.quickTo(overlay, "height", {
-      duration: 0.4,
-      ease: "power2.out",
+      duration: ANIMATION.duration,
+      ease: ANIMATION.ease,
     });
+
     // Create quickTo function for content opacity
     const animateOpacity = gsap.quickTo(content, "opacity", {
-      duration: 0.3,
-      ease: "power2.out",
+      duration: ANIMATION.opacityDuration,
+      ease: ANIMATION.ease,
     });
+
     // Function to open the card
     const openCard = () => {
       if (overlay.getAttribute("data-card-state") === "open") return;
+
       // If another card is open, close it first
       if (currentlyOpenCard && currentlyOpenCard !== card) {
         currentlyOpenCard.closeCard();
       }
+
+      // Recalculate heights to ensure correct measurements
+      calculateHeights();
+
       // Update card state attribute
       overlay.setAttribute("data-card-state", "open");
+
       // Animate overlay height using quickTo
       animateHeight(finalOverlayHeight);
+
       // Show content and animate opacity
       gsap.set(content, { display: "flex" });
       animateOpacity(1);
-      // Set overflow to scroll
-      gsap.delayedCall(0.3, () => {
-        gsap.set(overlay, { overflowY: "scroll" });
-      });
+
+      // Set overflow to scroll ONLY on desktop
+      if (!isMobile()) {
+        gsap.delayedCall(ANIMATION.opacityDuration, () => {
+          gsap.set(overlay, { overflowY: "scroll" });
+        });
+      }
+
       currentlyOpenCard = card;
-      console.log(`Card #${index} opened`);
+      console.log(
+        `Card #${index} opened (${isMobile() ? "Mobile" : "Desktop"} mode)`,
+      );
     };
+
     // Function to close the card
     const closeCard = () => {
       if (overlay.getAttribute("data-card-state") === "closed") return;
+
       // Update card state attribute
       overlay.setAttribute("data-card-state", "closed");
+
       // Reset overflow immediately
       gsap.set(overlay, { overflowY: "hidden" });
+
       // Animate overlay back to initial height using quickTo
       animateHeight(initialOverlayHeight);
+
       // Fade out content
       animateOpacity(0);
+
       // Hide content after fade completes
-      gsap.delayedCall(0.3, () => {
+      gsap.delayedCall(ANIMATION.opacityDuration, () => {
         gsap.set(content, { display: "none" });
       });
+
       if (currentlyOpenCard === card) {
         currentlyOpenCard = null;
       }
+
       console.log(`Card #${index} closed`);
     };
+
     // Attach the functions to the card object so they can be called externally
     card.openCard = openCard;
     card.closeCard = closeCard;
+
     // Button click handler
     button.addEventListener("click", () => {
       if (overlay.getAttribute("data-card-state") === "open") {
@@ -276,10 +344,29 @@ document.addEventListener("DOMContentLoaded", () => {
         openCard();
       }
     });
+
     // Window resize handler
     window.addEventListener("resize", () => {
+      // Check if device type changed
+      const wasMobile = overlay.hasAttribute("data-mobile");
+      const nowMobile = isMobile();
+
+      if (wasMobile !== nowMobile) {
+        if (nowMobile) {
+          overlay.setAttribute("data-mobile", "true");
+        } else {
+          overlay.removeAttribute("data-mobile");
+        }
+
+        // Reset overflow for mobile/desktop switch
+        if (overlay.getAttribute("data-card-state") === "open") {
+          gsap.set(overlay, { overflowY: nowMobile ? "hidden" : "scroll" });
+        }
+      }
+
       // Recalculate heights when window is resized
       calculateHeights();
+
       // Update current state if needed
       if (overlay.getAttribute("data-card-state") === "open") {
         gsap.set(overlay, { height: finalOverlayHeight });
@@ -287,5 +374,10 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(overlay, { height: initialOverlayHeight });
       }
     });
+
+    // Set initial mobile attribute
+    if (isMobile()) {
+      overlay.setAttribute("data-mobile", "true");
+    }
   });
 });
