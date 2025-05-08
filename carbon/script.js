@@ -47,9 +47,22 @@ document.addEventListener("DOMContentLoaded", function () {
 //Sitewide Brand Styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
+    console.log("Running mapSourceToTargets function");
+
+    // Clear existing cloned elements to prevent duplicates
+    document
+      .querySelectorAll("[data-brand-target] [data-brand-source]")
+      .forEach((clone) => {
+        clone.parentNode.removeChild(clone);
+      });
+
     const sourceElements = document.querySelectorAll("[data-brand-source]");
     const targetElements = document.querySelectorAll("[data-brand-target]");
     const sourceMap = {};
+
+    console.log(
+      `Found ${sourceElements.length} source elements and ${targetElements.length} target elements`,
+    );
 
     sourceElements.forEach((source) => {
       const sourceType = source.getAttribute("data-brand-source");
@@ -59,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!sourceMap[sourceCategory]) {
         sourceMap[sourceCategory] = {};
       }
-
       if (!sourceMap[sourceCategory][sourceType]) {
         sourceMap[sourceCategory][sourceType] = [];
       }
@@ -82,6 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
           const clone = source.cloneNode(true);
           target.appendChild(clone);
         });
+
+        console.log(
+          `Mapped ${matchingSources.length} sources to target ${targetType}/${targetCategory}`,
+        );
       } else {
         console.log(
           `No matching sources found for ${targetType}/${targetCategory}`,
@@ -90,7 +106,77 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Run the function initially
   mapSourceToTargets();
+
+  // Add event listener for load-more elements
+  function setupLoadMoreListeners() {
+    const loadMoreButtons = document.querySelectorAll(
+      "[data-brand-element='load-more']",
+    );
+
+    console.log(`Found ${loadMoreButtons.length} load-more buttons`);
+
+    loadMoreButtons.forEach((button, index) => {
+      // Remove existing listeners to prevent duplicates
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+
+      // Add new click listener
+      newButton.addEventListener("click", () => {
+        console.log(`Load more button #${index} clicked`);
+
+        // Wait a short time for the new content to be added to the DOM
+        setTimeout(() => {
+          console.log("Remapping sources to targets after content load");
+          mapSourceToTargets();
+
+          // Set up listeners on any new load-more buttons
+          setupLoadMoreListeners();
+        }, 300); // Adjust timeout as needed based on your pagination rendering time
+      });
+
+      console.log(`Listener added to load more button #${index}`);
+    });
+  }
+
+  // Set up initial listeners
+  setupLoadMoreListeners();
+
+  // Optional: Also listen for any dynamically added load-more buttons using MutationObserver
+  const observer = new MutationObserver((mutations) => {
+    let shouldRemap = false;
+
+    mutations.forEach((mutation) => {
+      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+        // Check if any added nodes contain our load-more buttons
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            // Element node
+            if (
+              node.matches &&
+              node.matches("[data-brand-element='load-more']")
+            ) {
+              shouldRemap = true;
+            } else if (
+              node.querySelector &&
+              node.querySelector("[data-brand-element='load-more']")
+            ) {
+              shouldRemap = true;
+            }
+          }
+        });
+      }
+    });
+
+    if (shouldRemap) {
+      console.log("New load-more buttons detected, setting up listeners");
+      setupLoadMoreListeners();
+    }
+  });
+
+  // Start observing the document for added nodes
+  observer.observe(document.body, { childList: true, subtree: true });
 });
 
 //Countup Animation
