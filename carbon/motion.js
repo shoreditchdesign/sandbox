@@ -1,13 +1,13 @@
 console.log("motion deployed");
 
-//GSAP for Banners
+//GSAP for Popups
 document.addEventListener("DOMContentLoaded", () => {
-  const popup = document.querySelector("[data-share-banner]");
+  const popup = document.querySelector("[data-share-popup]");
   if (popup) {
     gsap.registerPlugin(ScrollTrigger);
     const popupHeight = popup.offsetHeight;
     const conversionDistance =
-      parseFloat(popup.getAttribute("data-share-distance")) || 1.5;
+      parseFloat(popup.getAttribute("data-popup-distance")) || 1.5;
     gsap.fromTo(
       popup,
       { y: popupHeight },
