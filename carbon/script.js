@@ -109,8 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
       "[data-brand-element='load-more']",
     );
 
-    console.log(`Found ${loadMoreButtons.length} load-more buttons`);
-
     loadMoreButtons.forEach((button, index) => {
       // Remove existing listeners to prevent duplicates
       const newButton = button.cloneNode(true);
@@ -175,8 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Countup Animation
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing countup animations");
-
   // Configuration Constants
   const CONFIG = {
     defaultDelay: 0,
@@ -189,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Initializing countup elements");
 
     const countupElements = document.querySelectorAll("[data-countup-el]");
-    console.log(`Found ${countupElements.length} countup elements`);
 
     if (countupElements.length === 0) {
       console.warn("No countup elements found on page");
@@ -223,11 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
           delay = CONFIG.defaultDelay;
         }
       }
-
-      console.log(
-        `Configuring countup #${index}: start=${startNumber}, end=${endNumber}, ` +
-          `duration=${duration}, delay=${delay}, hasDelayAttr=${delayAttr !== null}`,
-      );
 
       // Create counter instance
       const myCounter = new CountUp(
@@ -447,10 +437,6 @@ document.addEventListener("DOMContentLoaded", function () {
         processedElements.add(nextElement);
         nextIndex++;
       }
-
-      console.log(
-        `Creating section for H2: "${h2.textContent}" with ${elementsToGroup.length} elements`,
-      );
 
       // Create a document fragment for better performance
       const fragment = document.createDocumentFragment();
