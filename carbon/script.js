@@ -452,9 +452,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const unprocessedElements = allChildren.filter(
       (el) => !processedElements.has(el),
     );
-    console.log(
-      `${unprocessedElements.length} elements weren't included in any section`,
-    );
   });
 
   // Create TOC using the new section IDs
