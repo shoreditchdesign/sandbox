@@ -178,8 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize countup elements
   function initCountUpElements() {
-    console.log("Initializing countup elements");
-
     const countupElements = document.querySelectorAll("[data-countup-el]");
 
     if (countupElements.length === 0) {
@@ -306,7 +304,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     allowTouchMove: window.innerWidth >= 768,
   });
-  console.log("Reviews swiper initialized with vertical direction");
 });
 
 //Benefits Swiper
