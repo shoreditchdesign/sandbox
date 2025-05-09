@@ -23,13 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("Banner moving up");
         } else {
           gsap.to(popup, { y: 2 * popupHeight });
-          console.log("Banner moving down");
         }
       },
     });
-    console.log("Popup initialized");
   } else {
-    console.warn("Banner element not found - animation aborted");
+    console.warn("Share banner not found");
   }
 });
 
