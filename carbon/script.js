@@ -47,8 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //Sitewide Brand Styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
-    console.log("Running mapSourceToTargets function");
-
     // Clear existing cloned elements to prevent duplicates
     document
       .querySelectorAll("[data-brand-target] [data-brand-source]")
@@ -94,10 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const clone = source.cloneNode(true);
           target.appendChild(clone);
         });
-
-        console.log(
-          `Mapped ${matchingSources.length} sources to target ${targetType}/${targetCategory}`,
-        );
       } else {
         console.log(
           `No matching sources found for ${targetType}/${targetCategory}`,
