@@ -528,17 +528,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
   console.log(`Found ${richTextElements.length} rich text elements`);
 
-  if (richTextElements.length === 0) {
-    console.warn("No rich text elements found on page");
-  }
-
   // Find the banner element that we'll use as a replacement
-  const bannerElement = document.querySelector("div[data-blog-banner]"); // More specific selector
-  console.log("Banner element search result:", {
-    found: bannerElement !== null,
-    element: bannerElement,
-    allBannerElements: document.querySelectorAll("[data-blog-banner]").length,
-  });
+  const bannerElement = document.querySelector("[data-blog-banner]");
+  console.log("Looking for banner element");
+  console.log("Banner element found:", bannerElement ? "YES" : "NO");
 
   // If there's no banner element, exit early
   if (!bannerElement) {
@@ -560,34 +553,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     paragraphs.forEach(function (paragraph, pIndex) {
       const content = paragraph.textContent.trim();
+      console.log(`Checking paragraph ${pIndex + 1} content: "${content}"`);
 
       // Check if paragraph contains exactly "{{banner}}"
       if (content === "{{banner}}") {
         bannerTargetFound = true;
         console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
 
-        // Clone the banner element to insert
-        const bannerClone = bannerElement.cloneNode(true);
-        console.log("Banner element cloned successfully");
+        try {
+          // Clone the banner element to insert
+          const bannerClone = bannerElement.cloneNode(true);
+          console.log("Banner element cloned successfully");
 
-        // Insert the banner clone before the paragraph
-        parent.insertBefore(bannerClone, paragraph);
-        console.log("Banner clone inserted into document");
+          // Store reference to the paragraph's parent
+          const paragraphParent = paragraph.parentNode;
+          console.log("Got paragraph parent:", paragraphParent?.tagName);
 
-        // Remove the original paragraph
-        paragraph.remove();
-        console.log("Original placeholder paragraph removed");
+          // Insert the banner clone before the paragraph
+          paragraphParent.insertBefore(bannerClone, paragraph);
+          console.log("Banner clone inserted into document");
+
+          // Remove the original paragraph
+          paragraph.remove();
+          console.log("Original placeholder paragraph removed");
+
+          // Hide the original banner element
+          bannerElement.style.display = "none";
+          console.log("Original banner hidden");
+        } catch (error) {
+          console.error("Error during banner replacement:", error);
+        }
       }
     });
   });
 
-  if (!bannerTargetFound) {
-    console.warn("No banner target {{banner}} found in content");
-  } else {
-    console.log("Removing original banner template");
-    bannerElement.remove();
-    console.log("Banner injection process complete");
-  }
+  console.log("Banner injection process complete");
 });
 
 //News Filter Styles
