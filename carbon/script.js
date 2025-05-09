@@ -385,7 +385,6 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         Array.from(childElements).forEach(function (child) {
           child.setAttribute("data-motion-state", "blocked");
-          console.log("Added data-motion-state=blocked to element:", child);
         });
         console.log(
           `Added data-motion-state=blocked to ${childElements.length} children of a data-toc-body element`,
