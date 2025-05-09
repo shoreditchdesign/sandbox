@@ -2,12 +2,12 @@ console.log("motion deployed");
 
 //GSAP for Banners
 document.addEventListener("DOMContentLoaded", () => {
-  const popup = document.querySelector(".c-nw_share-wrap");
+  const popup = document.querySelector("[data-share-banner]");
   if (popup) {
     gsap.registerPlugin(ScrollTrigger);
     const popupHeight = popup.offsetHeight;
     const conversionDistance =
-      parseFloat(popup.getAttribute("data-conversion-distance")) || 1.5;
+      parseFloat(popup.getAttribute("data-share-distance")) || 1.5;
     gsap.fromTo(
       popup,
       { y: popupHeight },
@@ -20,12 +20,16 @@ document.addEventListener("DOMContentLoaded", () => {
       onUpdate: (self) => {
         if (self.scroll() > window.innerHeight * conversionDistance) {
           gsap.to(popup, { y: 0 });
+          console.log("Banner moving up");
         } else {
           gsap.to(popup, { y: 2 * popupHeight });
+          console.log("Banner moving down");
         }
       },
     });
     console.log("Popup initialized");
+  } else {
+    console.warn("Banner element not found - animation aborted");
   }
 });
 
