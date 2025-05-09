@@ -522,38 +522,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Banner Injection
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("Starting banner injection process");
+
   // Find all parent elements with class w-richtext
   const richTextElements = document.querySelectorAll(".w-richtext");
+  console.log(`Found ${richTextElements.length} rich text elements`);
+
+  if (richTextElements.length === 0) {
+    console.warn("No rich text elements found on page");
+  }
 
   // Find the banner element that we'll use as a replacement
   const bannerElement = document.querySelector("[data-blog-banner]");
+  console.log("Looking for banner element");
 
   // If there's no banner element, exit early
   if (!bannerElement) {
     console.warn("No element with data-blog-banner attribute found");
     return;
   }
+  console.log("Banner element found successfully");
 
-  richTextElements.forEach(function (parent) {
+  richTextElements.forEach(function (parent, index) {
+    console.log(`Processing rich text element ${index + 1}`);
+
     // Look for paragraphs inside each rich text element
     const paragraphs = parent.querySelectorAll("p");
+    console.log(
+      `Found ${paragraphs.length} paragraphs in rich text element ${index + 1}`,
+    );
 
-    paragraphs.forEach(function (paragraph) {
+    paragraphs.forEach(function (paragraph, pIndex) {
+      console.log(`Checking paragraph ${pIndex + 1} for banner placeholder`);
+
       // Check if paragraph contains exactly "{{banner}}"
       if (paragraph.textContent.trim() === "{{banner}}") {
+        console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
+
         // Clone the banner element to insert (in case we need to use it multiple times)
         const bannerClone = bannerElement.cloneNode(true);
+        console.log("Banner element cloned successfully");
 
         // Insert the banner clone before the paragraph
         parent.insertBefore(bannerClone, paragraph);
+        console.log("Banner clone inserted into document");
 
         // Remove the original paragraph
         paragraph.remove();
+        console.log("Original placeholder paragraph removed");
       }
     });
   });
 
+  console.log("Removing original banner template");
   bannerElement.remove();
+  console.log("Banner injection process complete");
 });
 
 //News Filter Styles
