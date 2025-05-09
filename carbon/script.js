@@ -590,7 +590,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Banner injection process complete");
 });
 
-//News Filter Styles
+//News Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
   const categoryFilters = document.querySelectorAll(
@@ -607,7 +607,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       // Optional: Deactivate all categories when "all" is clicked
       categoryFilters.forEach((el) => el.classList.remove("active"));
-      console.log("All filter activated");
+      // Check all filter checkboxes
+      document
+        .querySelectorAll('[data-cmsfilter-element="checkbox"]')
+        .forEach((checkbox) => (checkbox.checked = true));
     },
     true,
   ); // Using capture phase to try to run before other handlers
@@ -637,8 +640,6 @@ document.addEventListener("DOMContentLoaded", function () {
   categoryFilters.forEach((el) => {
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
-
-  console.log("CMS filter initialization complete");
 });
 
 //Navigation Pusher
