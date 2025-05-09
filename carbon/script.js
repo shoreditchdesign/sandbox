@@ -543,6 +543,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   console.log("Banner element found successfully");
 
+  let bannerTargetFound = false;
+
   richTextElements.forEach(function (parent, index) {
     console.log(`Processing rich text element ${index + 1}`);
 
@@ -557,6 +559,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Check if paragraph contains exactly "{{banner}}"
       if (paragraph.textContent.trim() === "{{banner}}") {
+        bannerTargetFound = true;
         console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
 
         // Clone the banner element to insert (in case we need to use it multiple times)
@@ -573,6 +576,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  if (!bannerTargetFound) {
+    console.warn("No banner target {{banner}} found in content");
+  }
 
   console.log("Removing original banner template");
   bannerElement.remove();
