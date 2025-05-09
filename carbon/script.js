@@ -528,32 +528,65 @@ document.addEventListener("DOMContentLoaded", function () {
   const richTextElements = document.querySelectorAll(".w-richtext");
   console.log(`Found ${richTextElements.length} rich text elements`);
 
-  // Debug: Log each rich text element
-  richTextElements.forEach((el, i) => {
-    console.log(`Rich text element ${i} classes:`, el.className);
-  });
+  if (richTextElements.length === 0) {
+    console.warn("No rich text elements found on page");
+  }
 
   // Find the banner element that we'll use as a replacement
   const bannerElement = document.querySelector("[data-blog-banner]");
+  console.log("Looking for banner element");
+  console.log("Banner element found:", bannerElement ? "YES" : "NO"); // New debug line
 
+  // If there's no banner element, exit early
   if (!bannerElement) {
     console.warn("No element with data-blog-banner attribute found");
     return;
   }
+  console.log("Banner element found successfully");
+
+  let bannerTargetFound = false;
 
   richTextElements.forEach(function (parent, index) {
-    const paragraphs = parent.querySelectorAll("p");
+    console.log(`Processing rich text element ${index + 1}`);
 
-    // Debug: Log each paragraph's content
+    // Look for paragraphs inside each rich text element
+    const paragraphs = parent.querySelectorAll("p");
+    console.log(
+      `Found ${paragraphs.length} paragraphs in rich text element ${index + 1}`,
+    );
+
     paragraphs.forEach(function (paragraph, pIndex) {
-      console.log(`Paragraph ${index}-${pIndex} content:`, {
-        raw: paragraph.textContent,
-        trimmed: paragraph.textContent.trim(),
-        length: paragraph.textContent.trim().length,
-        equals: paragraph.textContent.trim() === "{{banner}}",
-      });
+      console.log(`Checking paragraph ${pIndex + 1} for banner placeholder`);
+      console.log("Paragraph content:", paragraph.textContent.trim()); // New debug line
+
+      // Check if paragraph contains exactly "{{banner}}"
+      if (paragraph.textContent.trim() === "{{banner}}") {
+        bannerTargetFound = true;
+        console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
+        console.log("About to clone banner"); // New debug line
+
+        // Clone the banner element to insert (in case we need to use it multiple times)
+        const bannerClone = bannerElement.cloneNode(true);
+        console.log("Banner element cloned successfully");
+
+        // Insert the banner clone before the paragraph
+        parent.insertBefore(bannerClone, paragraph);
+        console.log("Banner clone inserted into document");
+
+        // Remove the original paragraph
+        paragraph.remove();
+        console.log("Original placeholder paragraph removed");
+      }
     });
   });
+
+  if (!bannerTargetFound) {
+    console.warn("No banner target {{banner}} found in content");
+  }
+
+  console.log("Removing original banner template");
+  bannerElement.remove();
+  console.log("Banner injection process complete");
 });
 
 //News Filter Styles
