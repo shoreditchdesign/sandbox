@@ -594,7 +594,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
   const categoryFilters = document.querySelectorAll(
-    '[data-cmsfilter-element]:not([data-cmsfilter-element="all"])',
+    '[data-cmsfilter-element="radio"]',
   );
 
   // Add a direct click handler for the all filter to ensure it becomes active when clicked
@@ -605,12 +605,34 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!allFilter.classList.contains("active")) {
         allFilter.classList.add("active");
       }
+
       // Optional: Deactivate all categories when "all" is clicked
       categoryFilters.forEach((el) => el.classList.remove("active"));
-      // Check all filter checkboxes
+
+      // Check all filter checkboxes and apply Webflow styling
       document
         .querySelectorAll('[data-cmsfilter-element="checkbox"]')
-        .forEach((checkbox) => (checkbox.checked = true));
+        .forEach((checkbox) => {
+          // Set semantic checked state
+          checkbox.checked = true;
+
+          // Update Webflow styling classes
+          const customCheckbox = checkbox.previousElementSibling;
+          if (
+            customCheckbox &&
+            customCheckbox.classList.contains("w-checkbox-input")
+          ) {
+            customCheckbox.classList.add("w--redirected-checked");
+          }
+
+          // Update parent label with active class
+          const parentLabel = checkbox.closest("label");
+          if (parentLabel) {
+            parentLabel.classList.add("fs-cmsfilter_active");
+          }
+
+          console.log("Checkbox updated:", checkbox.id);
+        });
     },
     true,
   ); // Using capture phase to try to run before other handlers
@@ -621,13 +643,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryMutations = mutations.filter(
       (m) => m.target !== allFilter && m.attributeName === "class",
     );
-
     if (categoryMutations.length > 0) {
       // Check if any category has the active class
       const anyActiveCategories = Array.from(categoryFilters).some((el) =>
         el.classList.contains("active"),
       );
-
       // If any category is active, remove active from "all"
       if (anyActiveCategories && allFilter.classList.contains("active")) {
         allFilter.classList.remove("active");
@@ -640,6 +660,28 @@ document.addEventListener("DOMContentLoaded", function () {
   categoryFilters.forEach((el) => {
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
+
+  // Optional: Add click listeners to individual checkboxes to ensure proper styling
+  document
+    .querySelectorAll('[data-cmsfilter-element="checkbox"]')
+    .forEach((checkbox) => {
+      checkbox.addEventListener("change", function () {
+        const customCheckbox = this.previousElementSibling;
+        const parentLabel = this.closest("label");
+
+        if (this.checked) {
+          if (customCheckbox)
+            customCheckbox.classList.add("w--redirected-checked");
+          if (parentLabel) parentLabel.classList.add("fs-cmsfilter_active");
+        } else {
+          if (customCheckbox)
+            customCheckbox.classList.remove("w--redirected-checked");
+          if (parentLabel) parentLabel.classList.remove("fs-cmsfilter_active");
+        }
+
+        console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
+      });
+    });
 });
 
 //Navigation Pusher
