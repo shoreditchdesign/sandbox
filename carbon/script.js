@@ -58,10 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const targetElements = document.querySelectorAll("[data-brand-target]");
     const sourceMap = {};
 
-    console.log(
-      `Found ${sourceElements.length} source elements and ${targetElements.length} target elements`,
-    );
-
     sourceElements.forEach((source) => {
       const sourceType = source.getAttribute("data-brand-source");
       const sourceCategory = source.getAttribute("data-source-name");
