@@ -533,9 +533,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Find the banner element that we'll use as a replacement
-  const bannerElement = document.querySelector("[data-blog-banner]");
-  console.log("Looking for banner element");
-  console.log("Banner element found:", bannerElement ? "YES" : "NO"); // New debug line
+  const bannerElement = document.querySelector("div[data-blog-banner]"); // More specific selector
+  console.log("Banner element search result:", {
+    found: bannerElement !== null,
+    element: bannerElement,
+    allBannerElements: document.querySelectorAll("[data-blog-banner]").length,
+  });
 
   // If there's no banner element, exit early
   if (!bannerElement) {
@@ -556,16 +559,14 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     paragraphs.forEach(function (paragraph, pIndex) {
-      console.log(`Checking paragraph ${pIndex + 1} for banner placeholder`);
-      console.log("Paragraph content:", paragraph.textContent.trim()); // New debug line
+      const content = paragraph.textContent.trim();
 
       // Check if paragraph contains exactly "{{banner}}"
-      if (paragraph.textContent.trim() === "{{banner}}") {
+      if (content === "{{banner}}") {
         bannerTargetFound = true;
         console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
-        console.log("About to clone banner"); // New debug line
 
-        // Clone the banner element to insert (in case we need to use it multiple times)
+        // Clone the banner element to insert
         const bannerClone = bannerElement.cloneNode(true);
         console.log("Banner element cloned successfully");
 
@@ -582,11 +583,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!bannerTargetFound) {
     console.warn("No banner target {{banner}} found in content");
+  } else {
+    console.log("Removing original banner template");
+    bannerElement.remove();
+    console.log("Banner injection process complete");
   }
-
-  console.log("Removing original banner template");
-  bannerElement.remove();
-  console.log("Banner injection process complete");
 });
 
 //News Filter Styles
