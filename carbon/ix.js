@@ -381,3 +381,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+//News Share Snippet
+document.addEventListener("DOMContentLoaded", () => {
+  // Find all elements with data-blog-share attribute
+  const shareElements = document.querySelectorAll("[data-news-share]");
+
+  // Add click event listeners to each element
+  shareElements.forEach((element) => {
+    element.addEventListener("click", function () {
+      const shareType = this.getAttribute("data-news-share");
+
+      if (shareType === "copy") {
+        // Copy current URL to clipboard
+        navigator.clipboard
+          .writeText(window.location.href)
+          .then(() => {
+            showToast("Copied to clipboard");
+          })
+          .catch((err) => {
+            console.error("Failed to copy URL:", err);
+          });
+      } else if (shareType === "mail") {
+        // Create mailto link and trigger it
+        const mailtoUrl = `mailto:?subject=Check this out&body=${window.location.href}`;
+        window.location.href = mailtoUrl;
+      }
+    });
+  });
+
+  // Simple toast notification function
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.padding = "10px 20px";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.borderRadius = "4px";
+    toast.style.zIndex = "1000";
+
+    document.body.appendChild(toast);
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
+});
