@@ -836,6 +836,10 @@ document.addEventListener("DOMContentLoaded", () => {
         container: '[data-sq-list="video"]',
         items: '[data-sq-index][data-sq-item="video"]',
       },
+      orb: {
+        container: '[data-sq-list="trigger"]',
+        items: '[data-sq-index][data-sq-item="orb"]',
+      },
     },
     animation: {
       duration: 0.75,
@@ -869,29 +873,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoItems = document.querySelectorAll(
       `${config.selectors.video.container} ${config.selectors.video.items}`,
     );
+    const orbItems = document.querySelectorAll(
+      `${config.selectors.orb.container} ${config.selectors.orb.items}`,
+    );
 
     // Validate DOM elements
-    if (!chapterItems.length || !videoItems.length) {
+    if (!chapterItems.length || !videoItems.length || !orbItems.length) {
       console.error(
         "Required DOM elements not found for chapter video animation",
       );
       return;
     }
 
-    // Initialize videos (set all except first to opacity 0)
+    // Initialize videos and orbs (set all except first to opacity 0)
     initVideoStates(videoItems);
+    initVideoStates(orbItems);
 
     // Set up scroll triggers for each chapter
-    createChapterScrollTriggers(chapterItems, videoItems);
+    createChapterScrollTriggers(chapterItems, videoItems, orbItems);
   }
 
-  function initVideoStates(videoItems) {
-    gsap.set(videoItems, { opacity: 0 });
-    gsap.set(videoItems[0], { opacity: 1 });
+  function initVideoStates(items) {
+    gsap.set(items, { opacity: 0 });
+    gsap.set(items[0], { opacity: 1 });
   }
 
   // Animation creators
-  function createChapterScrollTriggers(chapterItems, videoItems) {
+  function createChapterScrollTriggers(chapterItems, videoItems, orbItems) {
     const lastIndex = chapterItems.length;
 
     chapterItems.forEach((chapter, idx) => {
@@ -902,7 +910,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ScrollTrigger.create({
         trigger: chapter,
         start: "top center",
-        onEnter: () => handleChapterEnter(currentIndex, lastIndex, videoItems),
+        onEnter: () => {
+          handleChapterEnter(currentIndex, lastIndex, videoItems);
+          handleChapterEnter(currentIndex, lastIndex, orbItems);
+        },
         markers: false,
         id: `chapter-${currentIndex}-enter`,
       });
@@ -912,8 +923,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ScrollTrigger.create({
           trigger: chapterItems[idx + 1], // Next chapter
           start: "top bottom",
-          onLeaveBack: () =>
-            handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems),
+          onLeaveBack: () => {
+            handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems);
+            handleChapterLeaveBack(currentIndex + 1, lastIndex, orbItems);
+          },
           markers: false,
           id: `chapter-${currentIndex + 1}-leave`,
         });
@@ -921,7 +934,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function handleChapterEnter(currentIndex, lastIndex, videoItems) {
+  function handleChapterEnter(currentIndex, lastIndex, items) {
     // Skip animation for first chapter (already visible)
     if (currentIndex === 1) {
       return;
@@ -929,14 +942,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Create and play transition animation
     const timeline = createVideoTransitionTimeline(
-      videoItems[currentIndex - 2], // Previous video (currentIndex-1)-1 due to 0-based array
-      videoItems[currentIndex - 1], // Current video (currentIndex-1) due to 0-based array
+      items[currentIndex - 2], // Previous item (currentIndex-1)-1 due to 0-based array
+      items[currentIndex - 1], // Current item (currentIndex-1) due to 0-based array
     );
 
     timeline.play();
   }
 
-  function handleChapterLeaveBack(currentIndex, lastIndex, videoItems) {
+  function handleChapterLeaveBack(currentIndex, lastIndex, items) {
     // Skip animation for first chapter
     if (currentIndex <= 1) {
       return;
@@ -944,26 +957,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Create and play transition animation (reverse direction)
     const timeline = createVideoTransitionTimeline(
-      videoItems[currentIndex - 1], // Current video
-      videoItems[currentIndex - 2], // Previous video
+      items[currentIndex - 1], // Current item
+      items[currentIndex - 2], // Previous item
     );
 
     timeline.play();
   }
 
-  function createVideoTransitionTimeline(fadeOutVideo, fadeInVideo) {
+  function createVideoTransitionTimeline(fadeOutItem, fadeInItem) {
     // Get indices for logging (add 1 to convert from 0-based to 1-based)
     const fadeOutIndex =
-      Array.from(fadeOutVideo.parentNode.children).indexOf(fadeOutVideo) + 1;
+      Array.from(fadeOutItem.parentNode.children).indexOf(fadeOutItem) + 1;
     const fadeInIndex =
-      Array.from(fadeInVideo.parentNode.children).indexOf(fadeInVideo) + 1;
+      Array.from(fadeInItem.parentNode.children).indexOf(fadeInItem) + 1;
 
     const tl = gsap.timeline({
       onStart: () => {},
       onComplete: () => {},
     });
 
-    tl.to(fadeOutVideo, {
+    tl.to(fadeOutItem, {
       opacity: 0,
       duration: config.animation.duration / 2,
       ease: config.animation.ease,
@@ -971,7 +984,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     tl.to(
-      fadeInVideo,
+      fadeInItem,
       {
         opacity: 1,
         duration: config.animation.duration / 2,
