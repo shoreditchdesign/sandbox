@@ -592,9 +592,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //News Filters
 document.addEventListener("DOMContentLoaded", function () {
-  const allFilter = document.querySelector('[data-cmsfilter-element="all"]');
+  const allFilter = document.querySelector('data-news-element="all"]');
   const categoryFilters = document.querySelectorAll(
-    '[data-cmsfilter-element="radio"]',
+    'data-news-element="radio"]',
   );
 
   // Add a direct click handler for the all filter to ensure it becomes active when clicked
@@ -611,7 +611,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Check all filter checkboxes and apply Webflow styling
       document
-        .querySelectorAll('[data-cmsfilter-element="checkbox"]')
+        .querySelectorAll('data-news-element="checkbox"]')
         .forEach((checkbox) => {
           // Set semantic checked state
           checkbox.checked = true;
@@ -663,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Optional: Add click listeners to individual checkboxes to ensure proper styling
   document
-    .querySelectorAll('[data-cmsfilter-element="checkbox"]')
+    .querySelectorAll('data-news-element="checkbox"]')
     .forEach((checkbox) => {
       checkbox.addEventListener("change", function () {
         const customCheckbox = this.previousElementSibling;

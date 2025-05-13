@@ -1387,6 +1387,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Ticker animation initializing");
