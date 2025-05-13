@@ -592,11 +592,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //News Filters
 document.addEventListener("DOMContentLoaded", function () {
-  const allFilter = document.querySelector('data-news-element="all"]');
+  const allFilter = document.querySelector('[data-news-element="all"]');
   const categoryFilters = document.querySelectorAll(
-    'data-news-element="radio"]',
+    '[data-news-element="radio"]',
   );
-
   // Add a direct click handler for the all filter to ensure it becomes active when clicked
   allFilter.addEventListener(
     "click",
@@ -605,17 +604,14 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!allFilter.classList.contains("active")) {
         allFilter.classList.add("active");
       }
-
       // Optional: Deactivate all categories when "all" is clicked
       categoryFilters.forEach((el) => el.classList.remove("active"));
-
       // Check all filter checkboxes and apply Webflow styling
       document
-        .querySelectorAll('data-news-element="checkbox"]')
+        .querySelectorAll('[data-news-element="checkbox"]')
         .forEach((checkbox) => {
           // Set semantic checked state
           checkbox.checked = true;
-
           // Update Webflow styling classes
           const customCheckbox = checkbox.previousElementSibling;
           if (
@@ -624,19 +620,16 @@ document.addEventListener("DOMContentLoaded", function () {
           ) {
             customCheckbox.classList.add("w--redirected-checked");
           }
-
           // Update parent label with active class
           const parentLabel = checkbox.closest("label");
           if (parentLabel) {
             parentLabel.classList.add("fs-cmsfilter_active");
           }
-
           console.log("Checkbox updated:", checkbox.id);
         });
     },
     true,
   ); // Using capture phase to try to run before other handlers
-
   // Set up a MutationObserver to watch for class changes on categories
   const observer = new MutationObserver(function (mutations) {
     // Process mutations to check if any category became active
@@ -655,20 +648,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
-
   // Observe category filters for class changes
   categoryFilters.forEach((el) => {
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
   });
-
   // Optional: Add click listeners to individual checkboxes to ensure proper styling
   document
-    .querySelectorAll('data-news-element="checkbox"]')
+    .querySelectorAll('[data-news-element="checkbox"]')
     .forEach((checkbox) => {
       checkbox.addEventListener("change", function () {
         const customCheckbox = this.previousElementSibling;
         const parentLabel = this.closest("label");
-
         if (this.checked) {
           if (customCheckbox)
             customCheckbox.classList.add("w--redirected-checked");
@@ -678,7 +668,6 @@ document.addEventListener("DOMContentLoaded", function () {
             customCheckbox.classList.remove("w--redirected-checked");
           if (parentLabel) parentLabel.classList.remove("fs-cmsfilter_active");
         }
-
         console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
       });
     });
