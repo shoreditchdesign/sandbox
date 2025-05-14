@@ -689,22 +689,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize data attributes
   const totalItems = items.length;
   listElement.setAttribute("data-news-total", totalItems);
-
-  // Determine initial visible count
-  const initialVisible = Math.min(INITIAL_ITEMS, totalItems);
-  listElement.setAttribute("data-news-visible", initialVisible);
+  listElement.setAttribute("data-news-visible", INITIAL_ITEMS);
 
   // Set up items with index and initial visibility
   items.forEach((item, index) => {
     item.setAttribute("data-news-index", index);
     item.setAttribute(
       "data-news-show",
-      index < initialVisible ? "true" : "false",
+      index < INITIAL_ITEMS ? "true" : "false",
     );
   });
 
   // Set initial button visibility
-  if (initialVisible >= totalItems) {
+  if (INITIAL_ITEMS >= totalItems) {
     loadButton.setAttribute("data-load-state", "hide");
   } else {
     loadButton.setAttribute("data-load-state", "show");
@@ -751,13 +748,22 @@ document.addEventListener("DOMContentLoaded", function () {
       // Re-enable button
       loadButton.disabled = false;
 
-      // Hide button AFTER delay if all items are shown
-      if (newVisible >= totalItems) {
+      // Explicitly check and hide button if all items are shown
+      const updatedVisible = parseInt(
+        listElement.getAttribute("data-news-visible"),
+      );
+      const total = parseInt(listElement.getAttribute("data-news-total"));
+
+      console.log(`After delay - visible: ${updatedVisible}, total: ${total}`);
+
+      if (updatedVisible >= total) {
+        console.log("Hiding button - all items shown");
         loadButton.setAttribute("data-load-state", "hide");
       }
     }, CLICK_DELAY);
   });
 });
+
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
