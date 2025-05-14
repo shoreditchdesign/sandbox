@@ -738,27 +738,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update count
     listElement.setAttribute("data-news-visible", newVisible);
 
-    // Add delay
+    // Hide button immediately if all items are shown
+    if (newVisible >= totalItems) {
+      loadButton.setAttribute("data-load-state", "hide");
+    }
+
+    // Add delay for loader animation only
     setTimeout(() => {
       // Hide loader
       if (loader) {
         loader.setAttribute("data-load-state", "hide");
       }
 
-      // Re-enable button
-      loadButton.disabled = false;
-
-      // Explicitly check and hide button if all items are shown
-      const updatedVisible = parseInt(
-        listElement.getAttribute("data-news-visible"),
-      );
-      const total = parseInt(listElement.getAttribute("data-news-total"));
-
-      console.log(`After delay - visible: ${updatedVisible}, total: ${total}`);
-
-      if (updatedVisible >= total) {
-        console.log("Hiding button - all items shown");
-        loadButton.setAttribute("data-load-state", "hide");
+      // Re-enable button only if there are more items
+      if (newVisible < totalItems) {
+        loadButton.disabled = false;
       }
     }, CLICK_DELAY);
   });
