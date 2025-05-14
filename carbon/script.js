@@ -676,7 +676,7 @@ document.addEventListener("DOMContentLoaded", function () {
 //News Pagination
 document.addEventListener("DOMContentLoaded", function () {
   // Configuration constants
-  const INITIAL_ITEMS = 6;
+  const INITIAL_ITEMS = 3;
   const ITEMS_PER_LOAD = 3;
   const CLICK_DELAY = 500;
 
