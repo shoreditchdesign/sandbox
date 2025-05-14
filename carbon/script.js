@@ -690,7 +690,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const totalItems = items.length;
   listElement.setAttribute("data-news-total", totalItems);
 
-  // Determine initial visible count (don't show more than total)
+  // Determine initial visible count
   const initialVisible = Math.min(INITIAL_ITEMS, totalItems);
   listElement.setAttribute("data-news-visible", initialVisible);
 
@@ -751,14 +751,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // Re-enable button
       loadButton.disabled = false;
 
-      // Update button visibility - hide if all items are now visible
+      // Hide button AFTER delay if all items are shown
       if (newVisible >= totalItems) {
         loadButton.setAttribute("data-load-state", "hide");
       }
     }, CLICK_DELAY);
   });
 });
-
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
