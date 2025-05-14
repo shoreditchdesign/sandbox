@@ -673,6 +673,99 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//News Pagination
+document.addEventListener("DOMContentLoaded", function () {
+  // Configuration constants
+  const INITIAL_ITEMS = 6;
+  const ITEMS_PER_LOAD = 3;
+  const FADE_DURATION = 300; // milliseconds
+  const CLICK_DELAY = 500; // milliseconds
+
+  // Initialize pagination
+  initializePagination();
+
+  function initializePagination() {
+    // Get DOM elements
+    const listElement = document.querySelector("[data-news-list]");
+    const items = listElement.querySelectorAll("[data-news-item]");
+    const loadButton = document.querySelector('[data-news-element="load"]');
+    const loader = document.querySelector('[data-news-element="loader"]');
+
+    // Initialize data attributes
+    const totalItems = items.length;
+    listElement.setAttribute("data-news-total", totalItems);
+    listElement.setAttribute("data-news-visible", INITIAL_ITEMS);
+
+    // Set up items with index and initial visibility
+    items.forEach((item, index) => {
+      item.setAttribute("data-news-index", index);
+      item.setAttribute(
+        "data-news-show",
+        index < INITIAL_ITEMS ? "true" : "false",
+      );
+    });
+
+    // Check if load button should be visible
+    updateLoadButtonVisibility(loadButton, INITIAL_ITEMS, totalItems);
+
+    // Add click event to load button
+    loadButton.addEventListener("click", function () {
+      handleLoadMore(listElement, items, loadButton, loader);
+    });
+  }
+
+  function handleLoadMore(listElement, items, loadButton, loader) {
+    // Disable button during loading
+    loadButton.disabled = true;
+
+    // Show loader if it exists
+    if (loader) {
+      loader.setAttribute("data-load-state", "show");
+    }
+
+    // Get current state
+    const currentVisible = parseInt(
+      listElement.getAttribute("data-news-visible"),
+    );
+    const totalItems = parseInt(listElement.getAttribute("data-news-total"));
+
+    // Calculate how many items to show
+    const newVisible = Math.min(currentVisible + ITEMS_PER_LOAD, totalItems);
+
+    // Show the next batch of items
+    for (let i = currentVisible; i < newVisible; i++) {
+      items[i].setAttribute("data-news-show", "true");
+    }
+
+    // Update visible count
+    listElement.setAttribute("data-news-visible", newVisible);
+
+    // Add delay after click
+    setTimeout(() => {
+      // Hide loader
+      if (loader) {
+        loader.setAttribute("data-load-state", "hide");
+      }
+
+      // Re-enable button
+      loadButton.disabled = false;
+
+      // Update button visibility
+      updateLoadButtonVisibility(loadButton, newVisible, totalItems);
+    }, CLICK_DELAY);
+  }
+
+  function updateLoadButtonVisibility(button, visible, total) {
+    if (visible >= total) {
+      button.setAttribute("data-load-state", "hide");
+    } else {
+      button.setAttribute("data-load-state", "show");
+    }
+
+    console.log(`Showing ${visible} of ${total} items`);
+  }
+});
+
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
