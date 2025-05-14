@@ -44,6 +44,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//Navigation Pusher
+document.addEventListener("DOMContentLoaded", function () {
+  const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
+
+  function updateNavHeight() {
+    if (navWrap) {
+      const navHeight = navWrap.offsetHeight;
+      document.documentElement.style.setProperty(
+        "--global--navigation-height",
+        `${navHeight}px`,
+      );
+    }
+  }
+
+  updateNavHeight(); // Initial calculation
+  window.addEventListener("resize", updateNavHeight); // Recalculate on resize
+});
+
 //Sitewide Brand Styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
@@ -756,22 +774,4 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, CLICK_DELAY);
   });
-});
-
-//Navigation Pusher
-document.addEventListener("DOMContentLoaded", function () {
-  const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
-
-  function updateNavHeight() {
-    if (navWrap) {
-      const navHeight = navWrap.offsetHeight;
-      document.documentElement.style.setProperty(
-        "--global--navigation-height",
-        `${navHeight}px`,
-      );
-    }
-  }
-
-  updateNavHeight(); // Initial calculation
-  window.addEventListener("resize", updateNavHeight); // Recalculate on resize
 });
