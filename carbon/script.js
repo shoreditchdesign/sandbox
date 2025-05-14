@@ -693,25 +693,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize data attributes
     const totalItems = items.length;
-    listElement.setAttribute("data-news-total", totalItems);
-    listElement.setAttribute("data-news-visible", INITIAL_ITEMS);
+
+    // Fix: Initialize these attributes only if they don't exist
+    if (!listElement.hasAttribute("data-news-total")) {
+      listElement.setAttribute("data-news-total", totalItems);
+    }
+
+    if (!listElement.hasAttribute("data-news-visible")) {
+      listElement.setAttribute("data-news-visible", INITIAL_ITEMS);
+    }
 
     // Set up items with index and initial visibility
     items.forEach((item, index) => {
-      item.setAttribute("data-news-index", index);
-      item.setAttribute(
-        "data-news-show",
-        index < INITIAL_ITEMS ? "true" : "false",
-      );
+      // Only set attributes if they don't exist
+      if (!item.hasAttribute("data-news-index")) {
+        item.setAttribute("data-news-index", index);
+      }
+
+      if (!item.hasAttribute("data-news-show")) {
+        item.setAttribute(
+          "data-news-show",
+          index < INITIAL_ITEMS ? "true" : "false",
+        );
+      }
     });
 
     // Check if load button should be visible
     updateLoadButtonVisibility(loadButton, INITIAL_ITEMS, totalItems);
 
-    // Add click event to load button
-    loadButton.addEventListener("click", function () {
-      handleLoadMore(listElement, items, loadButton, loader);
-    });
+    // Add click event to load button - check if we already added it
+    if (!loadButton.hasAttribute("data-listener-added")) {
+      loadButton.setAttribute("data-listener-added", "true");
+      loadButton.addEventListener("click", function () {
+        handleLoadMore(listElement, items, loadButton, loader);
+      });
+    }
   }
 
   function handleLoadMore(listElement, items, loadButton, loader) {
