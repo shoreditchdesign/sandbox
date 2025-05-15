@@ -62,6 +62,32 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("resize", updateNavHeight); // Recalculate on resize
 });
 
+//Navbar Border
+document.addEventListener("DOMContentLoaded", () => {
+  const navbarElement = document.querySelector("[data-navbar-border]");
+  const triggerElement = document.querySelector("[data-border-trigger]");
+
+  console.log("Navbar element:", navbarElement);
+  console.log("Trigger element:", triggerElement);
+
+  if (navbarElement && triggerElement) {
+    ScrollTrigger.create({
+      trigger: triggerElement,
+      start: "top bottom",
+      onEnter: () => {
+        navbarElement.setAttribute("data-navbar-border", "on");
+        console.log("Border toggled ON");
+      },
+      onLeaveBack: () => {
+        navbarElement.setAttribute("data-navbar-border", "off");
+        console.log("Border toggled OFF");
+      },
+    });
+
+    console.log("ScrollTrigger created");
+  }
+});
+
 //Sitewide Brand Styles
 document.addEventListener("DOMContentLoaded", () => {
   function mapSourceToTargets() {
