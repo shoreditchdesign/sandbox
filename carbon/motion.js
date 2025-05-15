@@ -98,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Preloader
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing animations");
   // Animation Constants
   const ANIMATION = {
     shader: {
@@ -157,17 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function createShaderAnimation() {
-    console.log("Creating shader animation");
     const shaderWrap = document.querySelector(selectors.shader.wrap);
     const shaderCanvas = document.querySelector(selectors.shader.canvas);
     const shaderBg = document.querySelector(selectors.shader.bg);
-
-    console.log(
-      "Shader elements found:",
-      !!shaderWrap,
-      !!shaderCanvas,
-      !!shaderBg,
-    );
 
     if (!shaderWrap || !shaderCanvas) {
       console.error("Shader elements not found");
@@ -175,8 +166,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log("Starting shader animation"),
-      onComplete: () => console.log("Shader animation complete"),
+      onStart: () => {},
+      onComplete: () => {},
     });
 
     // Set initial state
@@ -194,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Hold the shader in view for specified duration
     tl.to(shaderCanvas, {
       duration: ANIMATION.shader.shaderDelay,
-      onStart: () => console.log("Shader holding in viewport"),
+      onStart: () => {},
     });
 
     // Then translate and fade out
@@ -203,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: ANIMATION.shader.finalOpacity,
       duration: ANIMATION.shader.shaderFadeOutDuration,
       ease: ANIMATION.shader.ease,
-      onStart: () => console.log("Shader fading out"),
+      onStart: () => {},
     });
 
     // Wait before fading out background
@@ -214,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: 0,
         duration: ANIMATION.shader.bgFadeOutDuration,
         ease: ANIMATION.shader.ease,
-        onStart: () => console.log("Shader background fading out"),
+        onStart: () => {},
       });
     }
 
@@ -222,8 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   // Create text animation functions
   function createTextAnimation() {
-    console.log("Creating text animation");
-
     const headingContainer = document.querySelector(
       selectors.hero.headingContainer,
     );
@@ -236,8 +225,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log("Starting text preparation"),
-      onComplete: () => console.log("Text preparation complete"),
+      onStart: () => {},
+      onComplete: () => {},
     });
 
     // Store original widths and split text
@@ -258,8 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playSwooshAnimations() {
-    console.log("Creating swoosh animations for all lines");
-
     const arrows = document.querySelectorAll(selectors.hero.arrows);
 
     if (!arrows.length) {
@@ -268,8 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log("Starting swoosh animations sequence"),
-      onComplete: () => console.log("Swoosh animations sequence complete"),
+      onStart: () => {},
+      onComplete: () => {},
     });
 
     // Set initial state for all arrows
@@ -287,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       swooshTl.to(arrow, {
         opacity: 1,
         duration: ANIMATION.hero.swoosh.fadeInDuration,
-        onStart: () => console.log(`Fading in arrow ${index + 1}`),
+        onStart: () => {},
       });
 
       // Then animate from right to left
@@ -295,8 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
         right: ANIMATION.hero.swoosh.finalPosition,
         duration: ANIMATION.hero.swoosh.duration,
         ease: ANIMATION.hero.swoosh.ease,
-        onStart: () =>
-          console.log(`Starting swoosh animation for line ${index + 1}`),
+        onStart: () => {},
       });
 
       // Add to main timeline with stagger
@@ -307,8 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playTextScrambleAnimations() {
-    console.log("Creating text scramble animations for all headings");
-
     const headings = document.querySelectorAll(selectors.hero.headings);
 
     if (!headings.length) {
@@ -317,9 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log("Starting text scramble animations sequence"),
-      onComplete: () =>
-        console.log("Text scramble animations sequence complete"),
+      onStart: () => {},
+      onComplete: () => {},
     });
 
     // Animate each heading with stagger
@@ -337,8 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Create individual text animation timeline
       const textTl = gsap.timeline({
-        onStart: () =>
-          console.log(`Starting text scramble for heading ${index + 1}`),
+        onStart: () => {},
       });
 
       // Animate each character with fade in
@@ -362,8 +344,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playTextFadeAnimations() {
-    console.log("Creating text fade animations for all headings");
-
     const headings = document.querySelectorAll(selectors.hero.headings);
 
     if (!headings.length) {
@@ -372,8 +352,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tl = gsap.timeline({
-      onStart: () => console.log("Starting text fade animations sequence"),
-      onComplete: () => console.log("Text fade animations sequence complete"),
+      onStart: () => {},
+      onComplete: () => {},
     });
 
     // Set initial state for all headings
@@ -392,8 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: ANIMATION.hero.fade.finalOpacity,
         duration: ANIMATION.hero.fade.duration,
         ease: ANIMATION.hero.fade.ease,
-        onStart: () =>
-          console.log(`Starting fade animation for heading ${index + 1}`),
+        onStart: () => {},
       });
 
       // Add to main timeline with stagger
@@ -418,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
 
-  console.log("Master timeline created, playing animation");
   masterTimeline.play();
 });
 
