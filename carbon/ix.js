@@ -2,7 +2,7 @@ console.log("ix deployed");
 
 // Marquee Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
-  const OPEN_CARD_INTERVAL = 8; // Define the interval for opening cards
+  const OPEN_CARD_INTERVAL = 4; // Define the interval for opening cards
 
   function initializeMarqueeCards() {
     try {
