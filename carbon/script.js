@@ -329,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#benefits-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
-    spaceBetween: 28,
+    spaceBetween: 16,
     grabCursor: true,
     allowTouchMove: true,
     //loop: true,
