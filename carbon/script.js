@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (navbarElement && triggerElement) {
     ScrollTrigger.create({
       trigger: triggerElement,
-      start: "top bottom",
+      start: "top 160",
       onEnter: () => {
         navbarElement.setAttribute("data-navbar-border", "on");
         console.log("Border toggled ON");
