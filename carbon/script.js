@@ -640,7 +640,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Banner injection process complete");
 });
 
-//News Filters
+//Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-news-element="all"]');
   const categoryFilters = document.querySelectorAll(
@@ -736,7 +736,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Get configuration from list element attributes
   const INITIAL_ITEMS =
-    parseInt(listElement.getAttribute("data-pagination-initial")) || 3;
+    parseInt(listElement.getAttribute("data-pagination-initial")) || 6;
   const ITEMS_PER_LOAD =
     parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
 
