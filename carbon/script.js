@@ -19,16 +19,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Navigation Bar
-document
-  .querySelector('[data-nav-element="menu"]')
-  .addEventListener("click", () => {
-    const navbar = document.querySelector('[data-nav-element="navbar"]');
-    const currentState = navbar.getAttribute("data-nav-state");
-    navbar.setAttribute(
-      "data-nav-state",
-      currentState === "open" ? "closed" : "open",
-    );
-  });
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelector('[data-nav-element="menu"]')
+    .addEventListener("click", () => {
+      const navbar = document.querySelector('[data-nav-element="navbar"]');
+      const currentState = navbar.getAttribute("data-nav-state");
+      navbar.setAttribute(
+        "data-nav-state",
+        currentState === "open" ? "closed" : "open",
+      );
+    });
+});
 
 //Navigation Banner
 document.addEventListener("DOMContentLoaded", function () {
