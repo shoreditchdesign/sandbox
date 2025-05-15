@@ -1190,11 +1190,21 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Arrays
+//GSAP for Arrays
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, starting GSAP array animation setup");
+
   // Helper function to check if element is above the fold
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
-    return rect.top < window.innerHeight && rect.bottom > 0;
+    const windowHeight = window.innerHeight;
+    console.log("Element position check:", {
+      elementTop: rect.top,
+      elementBottom: rect.bottom,
+      windowHeight: windowHeight,
+      isVisible: rect.top < windowHeight && rect.bottom > 0,
+    });
+    return rect.top < windowHeight && rect.bottom > 0;
   }
 
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -1202,11 +1212,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
+  console.log("GSAP and ScrollTrigger loaded successfully");
   gsap.registerPlugin(ScrollTrigger);
 
   setTimeout(() => {
+    console.log("Starting animation setup after 200ms delay");
+
     const cardContainers = document.querySelectorAll(
       '[data-motion-element="array"]',
+    );
+
+    console.log(
+      `Found ${cardContainers.length} containers with data-motion-element="array"`,
     );
 
     if (!cardContainers || cardContainers.length === 0) {
@@ -1215,12 +1232,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     cardContainers.forEach((container, containerIndex) => {
+      console.log(`Processing container ${containerIndex + 1}`);
+
       try {
         const delay = container.getAttribute("data-motion-delay")
           ? parseFloat(container.getAttribute("data-motion-delay"))
           : 0;
 
+        console.log(`Container ${containerIndex + 1} delay: ${delay} seconds`);
+
         const cardElements = Array.from(container.children);
+
+        console.log(
+          `Container ${containerIndex + 1} has ${cardElements.length} child elements`,
+        );
 
         if (!cardElements || cardElements.length === 0) {
           console.error(
@@ -1234,6 +1259,9 @@ document.addEventListener("DOMContentLoaded", function () {
           opacity: 0,
           y: 20,
         });
+        console.log(
+          `Set initial state for container ${containerIndex + 1} children`,
+        );
 
         // Create timeline
         const tl = gsap.timeline({
@@ -1248,18 +1276,28 @@ document.addEventListener("DOMContentLoaded", function () {
           ease: "power2.out",
         });
 
+        console.log(`Created timeline for container ${containerIndex + 1}`);
+
         // Check if element is above the fold
-        if (isAboveFold(container)) {
+        const isAbove = isAboveFold(container);
+        console.log(
+          `Container ${containerIndex + 1} is above fold: ${isAbove}`,
+        );
+
+        if (isAbove) {
           console.log(
-            `Container ${containerIndex + 1} is above fold, using DOM load delay`,
+            `Container ${containerIndex + 1} - Setting up DOM load animation with ${delay}s delay`,
           );
           // For above-fold elements, wait delay seconds after DOM load
           setTimeout(() => {
+            console.log(
+              `Playing animation for above-fold container ${containerIndex + 1}`,
+            );
             tl.play(0);
           }, delay * 1000);
         } else {
           console.log(
-            `Container ${containerIndex + 1} is below fold, using ScrollTrigger`,
+            `Container ${containerIndex + 1} - Setting up ScrollTrigger`,
           );
           // For below-fold elements, use ScrollTrigger
           ScrollTrigger.create({
@@ -1268,11 +1306,20 @@ document.addEventListener("DOMContentLoaded", function () {
             markers: false,
             once: true,
             onEnter: () => {
+              console.log(
+                `ScrollTrigger fired for container ${containerIndex + 1}, waiting ${delay}s`,
+              );
               setTimeout(() => {
+                console.log(
+                  `Playing animation for scrolled container ${containerIndex + 1}`,
+                );
                 tl.play(0);
               }, delay * 1000);
             },
           });
+          console.log(
+            `ScrollTrigger created for container ${containerIndex + 1}`,
+          );
         }
       } catch (error) {
         console.error(
@@ -1281,6 +1328,8 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
+
+    console.log("Finished processing all containers");
   }, 200);
 });
 
