@@ -1158,7 +1158,6 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Arrays
-//GSAP for Arrays
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, starting GSAP array animation setup");
 
@@ -1265,9 +1264,9 @@ document.addEventListener("DOMContentLoaded", function () {
           }, delay * 1000);
         } else {
           console.log(
-            `Container ${containerIndex + 1} - Setting up ScrollTrigger`,
+            `Container ${containerIndex + 1} - Setting up ScrollTrigger (no delay)`,
           );
-          // For below-fold elements, use ScrollTrigger
+          // For below-fold elements, use ScrollTrigger with NO DELAY
           ScrollTrigger.create({
             trigger: container,
             start: "top 95%",
@@ -1275,14 +1274,9 @@ document.addEventListener("DOMContentLoaded", function () {
             once: true,
             onEnter: () => {
               console.log(
-                `ScrollTrigger fired for container ${containerIndex + 1}, waiting ${delay}s`,
+                `ScrollTrigger fired for container ${containerIndex + 1}, playing immediately`,
               );
-              setTimeout(() => {
-                console.log(
-                  `Playing animation for scrolled container ${containerIndex + 1}`,
-                );
-                tl.play(0);
-              }, delay * 1000);
+              tl.play(0); // No delay here!
             },
           });
           console.log(
