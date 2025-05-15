@@ -703,29 +703,36 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//News Pagination
+//Pagination
 document.addEventListener("DOMContentLoaded", function () {
   // Configuration constants
-  const INITIAL_ITEMS = 3;
-  const ITEMS_PER_LOAD = 3;
   const CLICK_DELAY = 500;
 
   // Get DOM elements
-  const listElement = document.querySelector("[data-news-list]");
-  const items = listElement.querySelectorAll("[data-news-item]");
-  const loadButton = document.querySelector('[data-news-element="load"]');
-  const loader = document.querySelector('[data-news-element="loader"]');
+  const listElement = document.querySelector("[data-pagination-list]");
+  const items = listElement.querySelectorAll("[data-pagination-item]");
+  const loadButton = document.querySelector('[data-pagination-element="load"]');
+  const loader = document.querySelector('[data-pagination-element="loader"]');
+
+  // Get configuration from list element attributes
+  const INITIAL_ITEMS =
+    parseInt(listElement.getAttribute("data-pagination-initial")) || 3;
+  const ITEMS_PER_LOAD =
+    parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
+
+  console.log("Initial items:", INITIAL_ITEMS);
+  console.log("Items per load:", ITEMS_PER_LOAD);
 
   // Initialize data attributes
   const totalItems = items.length;
-  listElement.setAttribute("data-news-total", totalItems);
-  listElement.setAttribute("data-news-visible", INITIAL_ITEMS);
+  listElement.setAttribute("data-pagination-total", totalItems);
+  listElement.setAttribute("data-pagination-visible", INITIAL_ITEMS);
 
   // Set up items with index and initial visibility
   items.forEach((item, index) => {
-    item.setAttribute("data-news-index", index);
+    item.setAttribute("data-pagination-index", index);
     item.setAttribute(
-      "data-news-show",
+      "data-pagination-show",
       index < INITIAL_ITEMS ? "true" : "false",
     );
   });
@@ -740,6 +747,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add click handler
   loadButton.addEventListener("click", function (e) {
     e.preventDefault();
+    console.log("Load button clicked");
 
     // Disable button during loading
     loadButton.disabled = true;
@@ -751,22 +759,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get current state
     const currentVisible = parseInt(
-      listElement.getAttribute("data-news-visible"),
+      listElement.getAttribute("data-pagination-visible"),
     );
-    const totalItems = parseInt(listElement.getAttribute("data-news-total"));
+    const totalItems = parseInt(
+      listElement.getAttribute("data-pagination-total"),
+    );
 
     // Calculate next batch
     const newVisible = Math.min(currentVisible + ITEMS_PER_LOAD, totalItems);
+    console.log("Showing items from", currentVisible, "to", newVisible);
 
     // Show next items
     for (let i = currentVisible; i < newVisible; i++) {
       if (items[i]) {
-        items[i].setAttribute("data-news-show", "true");
+        items[i].setAttribute("data-pagination-show", "true");
       }
     }
 
     // Update count
-    listElement.setAttribute("data-news-visible", newVisible);
+    listElement.setAttribute("data-pagination-visible", newVisible);
 
     // Hide button immediately if all items are shown
     if (newVisible >= totalItems) {
