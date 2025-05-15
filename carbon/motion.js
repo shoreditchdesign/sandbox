@@ -981,8 +981,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Graphene Cursor
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing cursor animation");
-
   // Animation Constants
   const ANIMATION = {
     cursor: {
@@ -1012,8 +1010,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize cursor tracking
   function initCursorTracking() {
-    console.log("Initializing cursor tracking");
-
     const cursorWrap = document.querySelector(selectors.cursor.wrap);
     const cursorOrb = document.querySelector(selectors.cursor.orb);
 
@@ -1064,8 +1060,6 @@ document.addEventListener("DOMContentLoaded", () => {
       duration: ANIMATION.cursor.fadeInDuration,
       delay: ANIMATION.cursor.fadeInDelay,
       ease: "power2.out",
-      onStart: () => console.log("Fading in cursor wrap"),
-      onComplete: () => console.log("Cursor wrap visible"),
     });
 
     // Create pulsating animation for the orb
@@ -1074,12 +1068,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Create the pulsating animation
   function createCursorPulseAnimation(cursorElement) {
-    console.log("Creating cursor pulsating animation");
-
     const tl = gsap.timeline({
       repeat: -1,
       yoyo: true,
-      onStart: () => console.log("Starting cursor pulse animation"),
     });
 
     tl.to(cursorElement, {
@@ -1099,7 +1090,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the animations
   initCursorTracking();
-  console.log("Cursor animation initialization complete");
 });
 
 //GSAP for Headings
