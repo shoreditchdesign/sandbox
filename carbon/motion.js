@@ -1191,10 +1191,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Arrays
 document.addEventListener("DOMContentLoaded", function () {
+  // Helper function to check if element is above the fold
+  function isAboveFold(element) {
+    const rect = element.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  }
+
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
   }
+
   gsap.registerPlugin(ScrollTrigger);
 
   setTimeout(() => {
@@ -1222,11 +1229,13 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
+        // Set initial state
         gsap.set(cardElements, {
           opacity: 0,
           y: 20,
         });
 
+        // Create timeline
         const tl = gsap.timeline({
           paused: true,
         });
@@ -1239,17 +1248,32 @@ document.addEventListener("DOMContentLoaded", function () {
           ease: "power2.out",
         });
 
-        ScrollTrigger.create({
-          trigger: container,
-          start: "top 95%",
-          markers: false,
-          once: true,
-          onEnter: () => {
-            setTimeout(() => {
-              tl.play(0);
-            }, delay * 1000);
-          },
-        });
+        // Check if element is above the fold
+        if (isAboveFold(container)) {
+          console.log(
+            `Container ${containerIndex + 1} is above fold, using DOM load delay`,
+          );
+          // For above-fold elements, wait delay seconds after DOM load
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        } else {
+          console.log(
+            `Container ${containerIndex + 1} is below fold, using ScrollTrigger`,
+          );
+          // For below-fold elements, use ScrollTrigger
+          ScrollTrigger.create({
+            trigger: container,
+            start: "top 95%",
+            markers: false,
+            once: true,
+            onEnter: () => {
+              setTimeout(() => {
+                tl.play(0);
+              }, delay * 1000);
+            },
+          });
+        }
       } catch (error) {
         console.error(
           `Error in card animation setup for container ${containerIndex + 1}:`,
