@@ -287,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
       start: "top bottom",
       end: CONFIG.defaultScrollTriggerEnd,
       onLeaveBack: () => {
-        console.log(`Counter ${element.id} reset`);
         counter.reset();
       },
     });
@@ -298,19 +297,12 @@ document.addEventListener("DOMContentLoaded", () => {
       start: CONFIG.defaultScrollTriggerStart,
       end: CONFIG.defaultScrollTriggerEnd,
       onEnter: () => {
-        console.log(`Counter ${element.id} triggered with ${delay}ms delay`);
-
         // Use proper delay implementation with stronger type checking
         if (typeof delay === "number" && delay > 0) {
-          console.log(`Setting timeout for ${delay}ms`);
           window.setTimeout(() => {
-            console.log(
-              `Counter ${element.id} starting after ${delay}ms delay`,
-            );
             counter.start();
           }, delay);
         } else {
-          console.log(`Counter ${element.id} starting immediately`);
           counter.start();
         }
       },
