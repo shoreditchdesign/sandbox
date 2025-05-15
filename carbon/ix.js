@@ -360,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Reset overflow for mobile/desktop switch
         if (overlay.getAttribute("data-card-state") === "open") {
-          gsap.set(overlay, { overflowY: nowMobile ? "hidden" : "scroll" });
+          gsap.set(overlay, { overflowY: nowMobile ? "hidden" : "auto" });
         }
       }
 
