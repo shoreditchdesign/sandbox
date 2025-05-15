@@ -2,6 +2,8 @@ console.log("ix deployed");
 
 // Marquee Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
+  const OPEN_CARD_INTERVAL = 8; // Define the interval for opening cards
+
   function initializeMarqueeCards() {
     try {
       const cards = document.querySelectorAll("[data-marquee-card]");
@@ -87,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const firstCard = cards[0]; // Store the first card
   let firstClonedCard;
 
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
     const bgLayer = card.querySelector("[data-marquee-bg]");
     const textLayer = card.querySelector("[data-marquee-text]");
     const easeDuration =
@@ -114,12 +116,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }),
     };
 
+    // Commented out hover interactions
+    /*
     card.addEventListener("mouseenter", () =>
       openCard(card, initialWidth, getHoverWidth, quickAnims),
     );
     card.addEventListener("mouseleave", () =>
       closeCard(card, initialWidth, quickAnims),
     );
+    */
+
+    // Open every 8th card
+    if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
+      console.log(`Opening card at index ${index + 1}`);
+      openCard(card, initialWidth, getHoverWidth, quickAnims);
+    }
 
     // Find the first cloned card after marquee setup
     if (
@@ -131,6 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Commented out first card opening
+  /*
   // Open the first card after all cards have been processed and the marquee is set up
   if (firstClonedCard) {
     const bgLayer = firstClonedCard.querySelector("[data-marquee-bg]");
@@ -159,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     openCard(firstClonedCard, initialWidth, getHoverWidth, quickAnims);
   }
+  */
 });
 
 // Team Cards Hover
