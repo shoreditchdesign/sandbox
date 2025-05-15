@@ -332,7 +332,12 @@ document.addEventListener("DOMContentLoaded", function () {
     spaceBetween: 16,
     grabCursor: true,
     allowTouchMove: true,
-    //loop: true,
+    watchOverflow: true, // Added: Disable navigation when not needed
+    slidesOffsetBefore: 0, // Added: Ensure slides start at container edge
+    slidesOffsetAfter: 0, // Added: Ensure slides end at container edge
+    centeredSlides: false, // Added: Keep slides aligned to left
+    loopedSlides: null, // Added: Prevent loop issues
+    resistanceRatio: 0, // Added: Prevent overscroll
     pagination: {
       el: "#benefits-pagination",
       clickable: true,
@@ -343,27 +348,34 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     breakpoints: {
       0: {
-        slidesPerView: 1.1,
+        slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       480: {
-        slidesPerView: 2.3,
+        slidesPerView: 2,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       767: {
-        slidesPerView: 2.2,
+        slidesPerView: 2,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       992: {
-        slidesPerView: 3.2,
+        slidesPerView: 3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      1200: {
+        slidesPerView: 4,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
     },
   });
+
+  console.log("Swiper initialized:", mySwiper);
 });
 
 //Table of Contents
