@@ -1312,7 +1312,7 @@ document.addEventListener("DOMContentLoaded", function () {
           opacity: 1,
           y: 0,
           duration: 0.5,
-          stagger: 0.15,
+          stagger: 0.3,
           ease: "power2.out",
         });
 
