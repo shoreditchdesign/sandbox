@@ -1402,7 +1402,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         width: "100%",
-        duration: 4,
+        duration: 0.4,
         ease: "power2.in",
       });
 
