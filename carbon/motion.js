@@ -1470,6 +1470,54 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP for Fading Grid
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined") {
+    return;
+  }
+
+  if (typeof ScrollTrigger === "undefined") {
+    return;
+  }
+
+  const grid = document.querySelector('[data-random-grid]');
+  if (!grid) {
+    return;
+  }
+
+  const imageContainers = Array.from(grid.querySelectorAll('[data-random-cell]'));
+  if (!imageContainers.length) {
+    return;
+  }
+
+  gsap.set(imageContainers, { autoAlpha: 0, y: 20 });
+
+  const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: grid,
+      start: "top 80%",
+      once: true,
+      toggleActions: "play none none none",
+      markers: false,
+    },
+  });
+
+  tl.to(randomizedImages, {
+    duration: 0.8,
+    autoAlpha: 1,
+    y: 0,
+    ease: "power2.out",
+    stagger: {
+      each: 0.15,
+      from: "random",
+    },
+  });
+
+  ScrollTrigger.refresh();
+
+
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Ticker animation initializing");
