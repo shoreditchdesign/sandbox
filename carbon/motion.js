@@ -1297,14 +1297,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, starting GSAP single element animation setup");
+
+  // Helper function to check if element is above the fold
+  function isAboveFold(element) {
+    const rect = element.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    console.log("Element position check:", {
+      elementTop: rect.top,
+      elementBottom: rect.bottom,
+      windowHeight: windowHeight,
+      isVisible: rect.top < windowHeight && rect.bottom > 0,
+    });
+    return rect.top < windowHeight && rect.bottom > 0;
+  }
+
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
     return;
   }
+
+  console.log("GSAP and ScrollTrigger loaded successfully");
   gsap.registerPlugin(ScrollTrigger);
+
   const singleElements = document.querySelectorAll(
     '[data-motion-element="single"]',
   );
+
+  console.log(
+    `Found ${singleElements.length} elements with data-motion-element="single"`,
+  );
+
   if (!singleElements || singleElements.length === 0) {
     console.error('Could not find elements with data-motion-element="single"');
     return;
@@ -1316,17 +1339,28 @@ document.addEventListener("DOMContentLoaded", function () {
     return !isBlocked;
   });
 
+  console.log(
+    `${animatableElements.length} elements are animatable (not blocked)`,
+  );
+
   animatableElements.forEach((element, index) => {
     try {
+      console.log(`Processing element ${index + 1}`);
+
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
+      console.log(`Element ${index + 1} delay: ${delay} seconds`);
+
+      // Set initial state
       gsap.set(element, {
         opacity: 0,
         y: 0,
       });
+      console.log(`Set initial state for element ${index + 1}`);
 
+      // Create timeline
       const tl = gsap.timeline({
         paused: true,
       });
@@ -1338,17 +1372,40 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power2.out",
       });
 
-      ScrollTrigger.create({
-        trigger: element,
-        start: "top 95%",
-        markers: false,
-        once: true,
-        onEnter: () => {
-          setTimeout(() => {
-            tl.play(0);
-          }, delay * 1000);
-        },
-      });
+      console.log(`Created timeline for element ${index + 1}`);
+
+      // Check if element is above the fold
+      const isAbove = isAboveFold(element);
+      console.log(`Element ${index + 1} is above fold: ${isAbove}`);
+
+      if (isAbove) {
+        console.log(
+          `Element ${index + 1} - Setting up DOM load animation with ${delay}s delay`,
+        );
+        // For above-fold elements, wait delay seconds after DOM load
+        setTimeout(() => {
+          console.log(`Playing animation for above-fold element ${index + 1}`);
+          tl.play(0);
+        }, delay * 1000);
+      } else {
+        console.log(
+          `Element ${index + 1} - Setting up ScrollTrigger (no delay)`,
+        );
+        // For below-fold elements, use ScrollTrigger with NO DELAY
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 95%",
+          markers: false,
+          once: true,
+          onEnter: () => {
+            console.log(
+              `ScrollTrigger fired for element ${index + 1}, playing immediately`,
+            );
+            tl.play(0); // No delay here!
+          },
+        });
+        console.log(`ScrollTrigger created for element ${index + 1}`);
+      }
     } catch (error) {
       console.error(
         `Error in animation setup for element ${index + 1}:`,
@@ -1356,6 +1413,8 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
   });
+
+  console.log("Finished processing all single elements");
 });
 
 //GSAP to Slide Down
