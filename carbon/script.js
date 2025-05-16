@@ -642,9 +642,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Filters
 document.addEventListener("DOMContentLoaded", function () {
-  const allFilter = document.querySelector('[data-news-element="all"]');
+  const allFilter = document.querySelector('[data-filter-element="all"]');
   const categoryFilters = document.querySelectorAll(
-    '[data-news-element="radio"]',
+    '[data-filter-element="radio"]',
   );
   // Add a direct click handler for the all filter to ensure it becomes active when clicked
   allFilter.addEventListener(
@@ -658,7 +658,7 @@ document.addEventListener("DOMContentLoaded", function () {
       categoryFilters.forEach((el) => el.classList.remove("active"));
       // Check all filter checkboxes and apply Webflow styling
       document
-        .querySelectorAll('[data-news-element="checkbox"]')
+        .querySelectorAll('[data-filter-element="checkbox"]')
         .forEach((checkbox) => {
           // Set semantic checked state
           checkbox.checked = true;
@@ -704,7 +704,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   // Optional: Add click listeners to individual checkboxes to ensure proper styling
   document
-    .querySelectorAll('[data-news-element="checkbox"]')
+    .querySelectorAll('[data-filter-element="checkbox"]')
     .forEach((checkbox) => {
       checkbox.addEventListener("change", function () {
         const customCheckbox = this.previousElementSibling;
@@ -728,46 +728,67 @@ document.addEventListener("DOMContentLoaded", function () {
   // Configuration constants
   const CLICK_DELAY = 500;
 
-  // Get DOM elements
-  const listElement = document.querySelector("[data-pagination-list]");
-  const items = listElement.querySelectorAll("[data-pagination-item]");
-  const loadButton = document.querySelector('[data-pagination-element="load"]');
-  const loader = document.querySelector('[data-pagination-element="loader"]');
-
-  // Get configuration from list element attributes
-  const INITIAL_ITEMS =
-    parseInt(listElement.getAttribute("data-pagination-initial")) || 6;
-  const ITEMS_PER_LOAD =
-    parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
-
-  console.log("Initial items:", INITIAL_ITEMS);
-  console.log("Items per load:", ITEMS_PER_LOAD);
-
-  // Initialize data attributes
-  const totalItems = items.length;
-  listElement.setAttribute("data-pagination-total", totalItems);
-  listElement.setAttribute("data-pagination-visible", INITIAL_ITEMS);
-
-  // Set up items with index and initial visibility
-  items.forEach((item, index) => {
-    item.setAttribute("data-pagination-index", index);
-    item.setAttribute(
-      "data-pagination-show",
-      index < INITIAL_ITEMS ? "true" : "false",
+  // Function to initialize and handle pagination
+  function initializePagination() {
+    // Get DOM elements
+    const listElement = document.querySelector("[data-pagination-list]");
+    const items = listElement.querySelectorAll("[data-pagination-item]");
+    const loadButton = document.querySelector(
+      '[data-pagination-element="load"]',
     );
-  });
+    const loader = document.querySelector('[data-pagination-element="loader"]');
 
-  // Set initial button visibility
-  if (INITIAL_ITEMS >= totalItems) {
-    loadButton.setAttribute("data-load-state", "hide");
-  } else {
-    loadButton.setAttribute("data-load-state", "show");
+    // Get configuration from list element attributes
+    const INITIAL_ITEMS =
+      parseInt(listElement.getAttribute("data-pagination-initial")) || 6;
+    const ITEMS_PER_LOAD =
+      parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
+    console.log("Initial items:", INITIAL_ITEMS);
+    console.log("Items per load:", ITEMS_PER_LOAD);
+
+    // Initialize data attributes
+    const totalItems = items.length;
+    listElement.setAttribute("data-pagination-total", totalItems);
+    listElement.setAttribute("data-pagination-visible", INITIAL_ITEMS);
+
+    // Set up items with index and initial visibility
+    items.forEach((item, index) => {
+      item.setAttribute("data-pagination-index", index);
+      item.setAttribute(
+        "data-pagination-show",
+        index < INITIAL_ITEMS ? "true" : "false",
+      );
+    });
+
+    // Set initial button visibility
+    if (INITIAL_ITEMS >= totalItems) {
+      loadButton.setAttribute("data-load-state", "hide");
+    } else {
+      loadButton.setAttribute("data-load-state", "show");
+    }
+
+    // Clear previous click handler if any
+    loadButton.removeEventListener("click", loadMoreItems);
+
+    // Add click handler
+    loadButton.addEventListener("click", loadMoreItems);
+
+    console.log("Pagination initialized with", totalItems, "total items");
   }
 
-  // Add click handler
-  loadButton.addEventListener("click", function (e) {
+  // Function to handle loading more items
+  function loadMoreItems(e) {
     e.preventDefault();
     console.log("Load button clicked");
+
+    const listElement = document.querySelector("[data-pagination-list]");
+    const items = listElement.querySelectorAll("[data-pagination-item]");
+    const loadButton = document.querySelector(
+      '[data-pagination-element="load"]',
+    );
+    const loader = document.querySelector('[data-pagination-element="loader"]');
+    const ITEMS_PER_LOAD =
+      parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
 
     // Disable button during loading
     loadButton.disabled = true;
@@ -810,11 +831,47 @@ document.addEventListener("DOMContentLoaded", function () {
       if (loader) {
         loader.setAttribute("data-load-state", "hide");
       }
-
       // Re-enable button only if there are more items
       if (newVisible < totalItems) {
         loadButton.disabled = false;
       }
     }, CLICK_DELAY);
-  });
+  }
+
+  // Initialize pagination on load
+  initializePagination();
+
+  // Add event listener to the render element (filter)
+  const renderButton = document.querySelector(
+    '[data-pagination-element="render"]',
+  );
+  if (renderButton) {
+    renderButton.addEventListener("click", function () {
+      console.log("Filter clicked, re-initializing pagination");
+
+      // Reset load button state
+      const loadButton = document.querySelector(
+        '[data-pagination-element="load"]',
+      );
+      if (loadButton) {
+        loadButton.disabled = false;
+      }
+
+      // Hide loader if visible
+      const loader = document.querySelector(
+        '[data-pagination-element="loader"]',
+      );
+      if (loader) {
+        loader.setAttribute("data-load-state", "hide");
+      }
+
+      // Re-initialize pagination
+      initializePagination();
+    });
+    console.log("Filter button listener added");
+  } else {
+    console.log(
+      "Warning: Filter button with data-pagination-element='render' not found",
+    );
+  }
 });
