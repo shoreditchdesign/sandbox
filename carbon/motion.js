@@ -1494,7 +1494,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  gsap.set(imageContainers, { autoAlpha: 0, y: 20 });
+  gsap.set(imageContainers, { autoAlpha: 0, y: 0 });
 
   const randomizedImages = [...imageContainers].sort(() => Math.random() - 0.5);
 
