@@ -1135,7 +1135,7 @@ window.addEventListener("DOMContentLoaded", () => {
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
-        stagger: 0.3,
+        stagger: 0.1,
       });
 
       ScrollTrigger.create({
