@@ -1107,53 +1107,126 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 0);
 });
 window.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, starting text animation setup");
+
+  // Helper function to check if element is above the fold
+  function isAboveFold(element) {
+    const rect = element.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    console.log("Element position check:", {
+      elementTop: rect.top,
+      elementBottom: rect.bottom,
+      windowHeight: windowHeight,
+      isVisible: rect.top < windowHeight && rect.bottom > 0,
+    });
+    return rect.top < windowHeight && rect.bottom > 0;
+  }
+
   setTimeout(() => {
-    if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
-      console.error("GSAP or SplitType is not loaded.");
+    if (
+      typeof gsap === "undefined" ||
+      typeof SplitType === "undefined" ||
+      typeof ScrollTrigger === "undefined"
+    ) {
+      console.error(
+        "Required libraries (GSAP, SplitType, or ScrollTrigger) are not loaded",
+      );
       return;
     }
+
+    console.log("Libraries loaded successfully, registering ScrollTrigger");
+    gsap.registerPlugin(ScrollTrigger);
+
+    console.log("Initializing SplitType for text elements");
     const splitLines = new SplitType("[data-motion-text]", {
       types: "lines",
       tagName: "span",
     });
 
-    document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("u-line-mask");
-      line.parentNode.insertBefore(wrapper, line);
-      wrapper.appendChild(line);
-    });
+    console.log("Creating line wrappers");
+    document
+      .querySelectorAll("[data-motion-text] .line")
+      .forEach((line, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("u-line-mask");
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+        console.log(`Created wrapper for line ${index + 1}`);
+      });
 
-    document.querySelectorAll("[data-motion-text]").forEach((element) => {
+    const textElements = document.querySelectorAll("[data-motion-text]");
+    console.log(`Found ${textElements.length} text elements to animate`);
+
+    textElements.forEach((element, index) => {
+      console.log(`Processing text element ${index + 1}`);
+
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
-      const tl = gsap.timeline({ paused: true, delay: delay });
+      console.log(`Text element ${index + 1} delay: ${delay} seconds`);
+
+      const tl = gsap.timeline({
+        paused: true,
+        onStart: () =>
+          console.log(`Animation starting for text element ${index + 1}`),
+        onComplete: () =>
+          console.log(`Animation complete for text element ${index + 1}`),
+      });
+
       tl.from(element.querySelectorAll(".line"), {
-        y: "0%",
+        y: "100%",
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
         stagger: 0.3,
       });
 
-      ScrollTrigger.create({
-        trigger: element,
-        start: "top 90%",
-        onEnter: () => tl.play(),
-        onEnterBack: () => tl.play(),
-        once: true,
-      });
+      // Check if element is above the fold
+      const isAbove = isAboveFold(element);
+      console.log(`Text element ${index + 1} is above fold: ${isAbove}`);
+
+      if (isAbove) {
+        console.log(
+          `Text element ${index + 1} - Setting up DOM load animation with ${delay}s delay`,
+        );
+        // For above-fold elements, play with delay after DOM load
+        setTimeout(() => {
+          console.log(
+            `Playing animation for above-fold text element ${index + 1}`,
+          );
+          tl.play();
+        }, delay * 1000);
+      } else {
+        console.log(`Text element ${index + 1} - Setting up ScrollTrigger`);
+        // For below-fold elements, use ScrollTrigger
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 90%",
+          markers: false,
+          once: true,
+          onEnter: () => {
+            console.log(
+              `ScrollTrigger fired for text element ${index + 1}, playing immediately`,
+            );
+            tl.play(); // No delay for below-fold elements
+          },
+        });
+        console.log(`ScrollTrigger created for text element ${index + 1}`);
+      }
     });
+
     function splitRevert() {
+      console.log("Reverting SplitType text elements");
       document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
         const wrapper = line.parentNode;
         wrapper.replaceWith(...wrapper.childNodes);
       });
       splitLines.revert();
     }
+
     gsap.set("[data-motion-text]", { opacity: 1 });
+    console.log("Text elements opacity set to 1");
   }, 0);
 });
 
