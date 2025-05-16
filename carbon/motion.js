@@ -1279,9 +1279,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, starting GSAP single element animation setup");
-
-  // Helper function to check if element is above the fold
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
     const windowHeight = window.innerHeight;
