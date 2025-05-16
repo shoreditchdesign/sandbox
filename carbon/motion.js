@@ -1245,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", function () {
         tl.to(cardElements, {
           opacity: 1,
           y: 0,
-          duration: 0.5,
+          duration: 0.8,
           stagger: 0.15,
           ease: "power2.out",
         });
