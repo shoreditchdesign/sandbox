@@ -1175,7 +1175,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       tl.from(element.querySelectorAll(".line"), {
-        y: "100%",
+        y: "0%",
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
