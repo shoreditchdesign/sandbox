@@ -1159,7 +1159,7 @@ window.addEventListener("DOMContentLoaded", () => {
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
-        stagger: 0.3,
+        stagger: 0.15,
       });
 
       const isAbove = isAboveFold(element);
@@ -1246,7 +1246,7 @@ document.addEventListener("DOMContentLoaded", function () {
           opacity: 1,
           y: 0,
           duration: 0.5,
-          stagger: 0.3,
+          stagger: 0.15,
           ease: "power2.out",
         });
 
