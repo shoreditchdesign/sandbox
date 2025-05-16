@@ -728,15 +728,48 @@ document.addEventListener("DOMContentLoaded", function () {
   // Configuration constants
   const CLICK_DELAY = 500;
 
+  // Get DOM elements that will be used across functions
+  const listElement = document.querySelector("[data-pagination-list]");
+  const loadButton = document.querySelector('[data-pagination-element="load"]');
+  const loader = document.querySelector('[data-pagination-element="loader"]');
+  const renderButton = document.querySelector(
+    '[data-pagination-element="render"]',
+  );
+
+  // Function to reset pagination visibility
+  function resetPagination() {
+    console.log("Resetting pagination");
+
+    // Get all items
+    const items = listElement.querySelectorAll("[data-pagination-item]");
+
+    // Reset all items visibility to false
+    items.forEach((item) => {
+      item.setAttribute("data-pagination-show", "false");
+    });
+
+    // Reset visible count to 0
+    listElement.setAttribute("data-pagination-visible", "0");
+
+    // Reset button states
+    if (loadButton) {
+      loadButton.disabled = false;
+      loadButton.setAttribute("data-load-state", "show");
+    }
+
+    if (loader) {
+      loader.setAttribute("data-load-state", "hide");
+    }
+
+    console.log("Pagination reset complete");
+  }
+
   // Function to initialize and handle pagination
   function initializePagination() {
-    // Get DOM elements
-    const listElement = document.querySelector("[data-pagination-list]");
+    console.log("Initializing pagination");
+
+    // Get current items (might have changed due to filtering)
     const items = listElement.querySelectorAll("[data-pagination-item]");
-    const loadButton = document.querySelector(
-      '[data-pagination-element="load"]',
-    );
-    const loader = document.querySelector('[data-pagination-element="loader"]');
 
     // Get configuration from list element attributes
     const INITIAL_ITEMS =
@@ -781,12 +814,8 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     console.log("Load button clicked");
 
-    const listElement = document.querySelector("[data-pagination-list]");
+    // Get current items
     const items = listElement.querySelectorAll("[data-pagination-item]");
-    const loadButton = document.querySelector(
-      '[data-pagination-element="load"]',
-    );
-    const loader = document.querySelector('[data-pagination-element="loader"]');
     const ITEMS_PER_LOAD =
       parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
 
@@ -842,30 +871,14 @@ document.addEventListener("DOMContentLoaded", function () {
   initializePagination();
 
   // Add event listener to the render element (filter)
-  const renderButton = document.querySelector(
-    '[data-pagination-element="render"]',
-  );
   if (renderButton) {
     renderButton.addEventListener("click", function () {
-      console.log("Filter clicked, re-initializing pagination");
+      console.log("Filter clicked, resetting and re-initializing pagination");
 
-      // Reset load button state
-      const loadButton = document.querySelector(
-        '[data-pagination-element="load"]',
-      );
-      if (loadButton) {
-        loadButton.disabled = false;
-      }
+      // First reset all pagination
+      resetPagination();
 
-      // Hide loader if visible
-      const loader = document.querySelector(
-        '[data-pagination-element="loader"]',
-      );
-      if (loader) {
-        loader.setAttribute("data-load-state", "hide");
-      }
-
-      // Re-initialize pagination
+      // Then re-initialize with new filtered items
       initializePagination();
     });
     console.log("Filter button listener added");
