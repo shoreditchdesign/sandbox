@@ -1131,7 +1131,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
-        y: "0%",
+        y: "200%",
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
@@ -1224,7 +1224,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state
         gsap.set(cardElements, {
           opacity: 0,
-          y: 0,
+          y: 20,
         });
         console.log(
           `Set initial state for container ${containerIndex + 1} children`,
