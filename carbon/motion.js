@@ -1135,7 +1135,7 @@ window.addEventListener("DOMContentLoaded", () => {
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
-        stagger: 0.1,
+        stagger: 0.3,
       });
 
       ScrollTrigger.create({
@@ -1224,7 +1224,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state
         gsap.set(cardElements, {
           opacity: 0,
-          y: 20,
+          y: 0,
         });
         console.log(
           `Set initial state for container ${containerIndex + 1} children`,
@@ -1324,7 +1324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       gsap.set(element, {
         opacity: 0,
-        y: 20,
+        y: 0,
       });
 
       const tl = gsap.timeline({
