@@ -1131,7 +1131,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const tl = gsap.timeline({ paused: true, delay: delay });
       tl.from(element.querySelectorAll(".line"), {
-        y: "200%",
+        y: "0%",
         opacity: 0,
         duration: 0.8,
         ease: "power1.out",
