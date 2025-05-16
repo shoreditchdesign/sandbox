@@ -1361,8 +1361,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Draw
 document.addEventListener("DOMContentLoaded", function () {
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+  if (typeof ScrollTrigger === "undefined") {
+    console.error("Required library (ScrollTrigger) is not loaded");
     return;
   }
 
@@ -1373,7 +1373,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   if (!drawElements || drawElements.length === 0) {
-    console.error('Could not find elements with data-motion-element="width"');
+    console.error('Could not find elements with data-motion-element="draw"');
     return;
   }
 
@@ -1383,43 +1383,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return !isBlocked;
   });
 
+  // Set initial data-draw-state attribute
   animatableElements.forEach((element) => {
     element.setAttribute("data-draw-state", "start");
   });
 
   animatableElements.forEach((element, index) => {
     try {
-      gsap.set(element, {
-        width: "0%",
-      });
-
-      const tl = gsap.timeline({
-        paused: true,
-        onComplete: () => {
-          element.setAttribute("data-draw-state", "end");
-        },
-      });
-
-      tl.to(element, {
-        width: "100%",
-        duration: 0.6,
-        ease: "power2.in",
-      });
-
       ScrollTrigger.create({
         trigger: element,
         start: "top 95%",
         markers: false,
         once: true,
         onEnter: () => {
-          tl.play(0);
+          element.setAttribute("data-draw-state", "end");
         },
       });
     } catch (error) {
-      console.error(
-        `Error in animation setup for element ${index + 1}:`,
-        error,
-      );
+      console.error(`Error in setup for element ${index + 1}:`, error);
     }
   });
 });
