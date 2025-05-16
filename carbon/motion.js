@@ -1107,18 +1107,9 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 0);
 });
 window.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, starting text animation setup");
-
-  // Helper function to check if element is above the fold
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
     const windowHeight = window.innerHeight;
-    console.log("Element position check:", {
-      elementTop: rect.top,
-      elementBottom: rect.bottom,
-      windowHeight: windowHeight,
-      isVisible: rect.top < windowHeight && rect.bottom > 0,
-    });
     return rect.top < windowHeight && rect.bottom > 0;
   }
 
@@ -1134,16 +1125,13 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log("Libraries loaded successfully, registering ScrollTrigger");
     gsap.registerPlugin(ScrollTrigger);
 
-    console.log("Initializing SplitType for text elements");
     const splitLines = new SplitType("[data-motion-text]", {
       types: "lines",
       tagName: "span",
     });
 
-    console.log("Creating line wrappers");
     document
       .querySelectorAll("[data-motion-text] .line")
       .forEach((line, index) => {
@@ -1151,27 +1139,19 @@ window.addEventListener("DOMContentLoaded", () => {
         wrapper.classList.add("u-line-mask");
         line.parentNode.insertBefore(wrapper, line);
         wrapper.appendChild(line);
-        console.log(`Created wrapper for line ${index + 1}`);
       });
 
     const textElements = document.querySelectorAll("[data-motion-text]");
-    console.log(`Found ${textElements.length} text elements to animate`);
 
     textElements.forEach((element, index) => {
-      console.log(`Processing text element ${index + 1}`);
-
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
-      console.log(`Text element ${index + 1} delay: ${delay} seconds`);
-
       const tl = gsap.timeline({
         paused: true,
-        onStart: () =>
-          console.log(`Animation starting for text element ${index + 1}`),
-        onComplete: () =>
-          console.log(`Animation complete for text element ${index + 1}`),
+        onStart: () => {},
+        onComplete: () => {},
       });
 
       tl.from(element.querySelectorAll(".line"), {
@@ -1182,42 +1162,26 @@ window.addEventListener("DOMContentLoaded", () => {
         stagger: 0.3,
       });
 
-      // Check if element is above the fold
       const isAbove = isAboveFold(element);
-      console.log(`Text element ${index + 1} is above fold: ${isAbove}`);
 
       if (isAbove) {
-        console.log(
-          `Text element ${index + 1} - Setting up DOM load animation with ${delay}s delay`,
-        );
-        // For above-fold elements, play with delay after DOM load
         setTimeout(() => {
-          console.log(
-            `Playing animation for above-fold text element ${index + 1}`,
-          );
           tl.play();
         }, delay * 1000);
       } else {
-        console.log(`Text element ${index + 1} - Setting up ScrollTrigger`);
-        // For below-fold elements, use ScrollTrigger
         ScrollTrigger.create({
           trigger: element,
           start: "top 90%",
           markers: false,
           once: true,
           onEnter: () => {
-            console.log(
-              `ScrollTrigger fired for text element ${index + 1}, playing immediately`,
-            );
-            tl.play(); // No delay for below-fold elements
+            tl.play(0);
           },
         });
-        console.log(`ScrollTrigger created for text element ${index + 1}`);
       }
     });
 
     function splitRevert() {
-      console.log("Reverting SplitType text elements");
       document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
         const wrapper = line.parentNode;
         wrapper.replaceWith(...wrapper.childNodes);
@@ -1226,24 +1190,14 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     gsap.set("[data-motion-text]", { opacity: 1 });
-    console.log("Text elements opacity set to 1");
   }, 0);
 });
 
 //GSAP for Arrays
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, starting GSAP array animation setup");
-
-  // Helper function to check if element is above the fold
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
     const windowHeight = window.innerHeight;
-    console.log("Element position check:", {
-      elementTop: rect.top,
-      elementBottom: rect.bottom,
-      windowHeight: windowHeight,
-      isVisible: rect.top < windowHeight && rect.bottom > 0,
-    });
     return rect.top < windowHeight && rect.bottom > 0;
   }
 
@@ -1252,18 +1206,11 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log("GSAP and ScrollTrigger loaded successfully");
   gsap.registerPlugin(ScrollTrigger);
 
   setTimeout(() => {
-    console.log("Starting animation setup after 200ms delay");
-
     const cardContainers = document.querySelectorAll(
       '[data-motion-element="array"]',
-    );
-
-    console.log(
-      `Found ${cardContainers.length} containers with data-motion-element="array"`,
     );
 
     if (!cardContainers || cardContainers.length === 0) {
@@ -1272,20 +1219,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     cardContainers.forEach((container, containerIndex) => {
-      console.log(`Processing container ${containerIndex + 1}`);
-
       try {
         const delay = container.getAttribute("data-motion-delay")
           ? parseFloat(container.getAttribute("data-motion-delay"))
           : 0;
 
-        console.log(`Container ${containerIndex + 1} delay: ${delay} seconds`);
-
         const cardElements = Array.from(container.children);
-
-        console.log(
-          `Container ${containerIndex + 1} has ${cardElements.length} child elements`,
-        );
 
         if (!cardElements || cardElements.length === 0) {
           console.error(
@@ -1294,16 +1233,11 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
-        // Set initial state
         gsap.set(cardElements, {
           opacity: 0,
           y: 0,
         });
-        console.log(
-          `Set initial state for container ${containerIndex + 1} children`,
-        );
 
-        // Create timeline
         const tl = gsap.timeline({
           paused: true,
         });
@@ -1316,45 +1250,22 @@ document.addEventListener("DOMContentLoaded", function () {
           ease: "power2.out",
         });
 
-        console.log(`Created timeline for container ${containerIndex + 1}`);
-
-        // Check if element is above the fold
         const isAbove = isAboveFold(container);
-        console.log(
-          `Container ${containerIndex + 1} is above fold: ${isAbove}`,
-        );
 
         if (isAbove) {
-          console.log(
-            `Container ${containerIndex + 1} - Setting up DOM load animation with ${delay}s delay`,
-          );
-          // For above-fold elements, wait delay seconds after DOM load
           setTimeout(() => {
-            console.log(
-              `Playing animation for above-fold container ${containerIndex + 1}`,
-            );
             tl.play(0);
           }, delay * 1000);
         } else {
-          console.log(
-            `Container ${containerIndex + 1} - Setting up ScrollTrigger (no delay)`,
-          );
-          // For below-fold elements, use ScrollTrigger with NO DELAY
           ScrollTrigger.create({
             trigger: container,
             start: "top 95%",
             markers: false,
             once: true,
             onEnter: () => {
-              console.log(
-                `ScrollTrigger fired for container ${containerIndex + 1}, playing immediately`,
-              );
-              tl.play(0); // No delay here!
+              tl.play(0);
             },
           });
-          console.log(
-            `ScrollTrigger created for container ${containerIndex + 1}`,
-          );
         }
       } catch (error) {
         console.error(
@@ -1363,8 +1274,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-
-    console.log("Finished processing all containers");
   }, 200);
 });
 
@@ -1376,12 +1285,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
     const windowHeight = window.innerHeight;
-    console.log("Element position check:", {
-      elementTop: rect.top,
-      elementBottom: rect.bottom,
-      windowHeight: windowHeight,
-      isVisible: rect.top < windowHeight && rect.bottom > 0,
-    });
     return rect.top < windowHeight && rect.bottom > 0;
   }
 
@@ -1390,15 +1293,10 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  console.log("GSAP and ScrollTrigger loaded successfully");
   gsap.registerPlugin(ScrollTrigger);
 
   const singleElements = document.querySelectorAll(
     '[data-motion-element="single"]',
-  );
-
-  console.log(
-    `Found ${singleElements.length} elements with data-motion-element="single"`,
   );
 
   if (!singleElements || singleElements.length === 0) {
@@ -1412,26 +1310,17 @@ document.addEventListener("DOMContentLoaded", function () {
     return !isBlocked;
   });
 
-  console.log(
-    `${animatableElements.length} elements are animatable (not blocked)`,
-  );
-
   animatableElements.forEach((element, index) => {
     try {
-      console.log(`Processing element ${index + 1}`);
-
       const delay = element.getAttribute("data-motion-delay")
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
-
-      console.log(`Element ${index + 1} delay: ${delay} seconds`);
 
       // Set initial state
       gsap.set(element, {
         opacity: 0,
         y: 0,
       });
-      console.log(`Set initial state for element ${index + 1}`);
 
       // Create timeline
       const tl = gsap.timeline({
@@ -1445,25 +1334,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power2.out",
       });
 
-      console.log(`Created timeline for element ${index + 1}`);
-
-      // Check if element is above the fold
       const isAbove = isAboveFold(element);
-      console.log(`Element ${index + 1} is above fold: ${isAbove}`);
 
       if (isAbove) {
-        console.log(
-          `Element ${index + 1} - Setting up DOM load animation with ${delay}s delay`,
-        );
         // For above-fold elements, wait delay seconds after DOM load
         setTimeout(() => {
-          console.log(`Playing animation for above-fold element ${index + 1}`);
           tl.play(0);
         }, delay * 1000);
       } else {
-        console.log(
-          `Element ${index + 1} - Setting up ScrollTrigger (no delay)`,
-        );
         // For below-fold elements, use ScrollTrigger with NO DELAY
         ScrollTrigger.create({
           trigger: element,
@@ -1471,13 +1349,9 @@ document.addEventListener("DOMContentLoaded", function () {
           markers: false,
           once: true,
           onEnter: () => {
-            console.log(
-              `ScrollTrigger fired for element ${index + 1}, playing immediately`,
-            );
             tl.play(0); // No delay here!
           },
         });
-        console.log(`ScrollTrigger created for element ${index + 1}`);
       }
     } catch (error) {
       console.error(
@@ -1486,12 +1360,9 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
   });
-
-  console.log("Finished processing all single elements");
 });
 
 //GSAP for Draw
-//GSAP for Width Animation
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, starting GSAP width animation setup");
 
