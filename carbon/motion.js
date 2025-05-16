@@ -1372,7 +1372,7 @@ document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
 
   const drawElements = document.querySelectorAll(
-    '[data-motion-element="width"]',
+    '[data-motion-element="draw"]',
   );
 
   if (!drawElements || drawElements.length === 0) {
