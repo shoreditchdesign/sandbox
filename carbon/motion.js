@@ -1480,12 +1480,16 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const grid = document.querySelector('[data-random-grid]');
+  gsap.registerPlugin(ScrollTrigger);
+
+  const grid = document.querySelector("[data-random-grid]");
   if (!grid) {
     return;
   }
 
-  const imageContainers = Array.from(grid.querySelectorAll('[data-random-cell]'));
+  const imageContainers = Array.from(
+    grid.querySelectorAll("[data-random-cell]"),
+  );
   if (!imageContainers.length) {
     return;
   }
@@ -1516,7 +1520,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   ScrollTrigger.refresh();
-
+});
 
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
