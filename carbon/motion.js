@@ -1224,7 +1224,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set initial state
         gsap.set(cardElements, {
           opacity: 0,
-          y: 20,
+          y: 0,
         });
         console.log(
           `Set initial state for container ${containerIndex + 1} children`,
