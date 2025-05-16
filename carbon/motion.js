@@ -1402,8 +1402,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         width: "100%",
-        duration: 0.8,
-        ease: "power2.out",
+        duration: 4,
+        ease: "power2.in",
       });
 
       ScrollTrigger.create({
