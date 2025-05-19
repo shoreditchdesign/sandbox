@@ -1263,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", function () {
             markers: false,
             once: true,
             onEnter: () => {
-              tl.play(0.2);
+              tl.play(1);
             },
           });
         }
