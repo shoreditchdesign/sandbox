@@ -1175,7 +1175,7 @@ window.addEventListener("DOMContentLoaded", () => {
           markers: false,
           once: true,
           onEnter: () => {
-            tl.play(0);
+            tl.play(0.2);
           },
         });
       }
@@ -1263,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", function () {
             markers: false,
             once: true,
             onEnter: () => {
-              tl.play(0);
+              tl.play(0.2);
             },
           });
         }
@@ -1346,7 +1346,7 @@ document.addEventListener("DOMContentLoaded", function () {
           markers: false,
           once: true,
           onEnter: () => {
-            tl.play(0); // No delay here!
+            tl.play(0.2);
           },
         });
       }
