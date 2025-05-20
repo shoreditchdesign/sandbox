@@ -408,29 +408,37 @@ document.addEventListener("DOMContentLoaded", () => {
     p1: {
       yStart: "-150vh",
       yEnd: "-80vh",
-      startTime: 0,
-      endTime: 6,
+      startTranslate: 0,
+      endTranslate: 6,
+      startFade: 0,
+      endFade: 1,
       ease: "power1.inOut",
     },
     p2: {
       yStart: "80vh",
       yEnd: "-10vh",
-      startTime: 0,
-      endTime: 4,
+      startTranslate: 0,
+      endTranslate: 4,
+      startFade: 0,
+      endFade: 1.2,
       ease: "power2.out",
     },
     s1: {
       yStart: "30vh",
       yEnd: "0vh",
-      startTime: 0,
-      endTime: 5,
+      startTranslate: 0,
+      endTranslate: 5,
+      startFade: 0,
+      endFade: 1.4,
       ease: "power1.inOut",
     },
     s2: {
       yStart: "0vh",
       yEnd: "0vh",
-      startTime: 0,
-      endTime: 5,
+      startTranslate: 0,
+      endTranslate: 5,
+      startFade: 0,
+      endFade: 1.4,
       ease: "power1.inOut",
     },
     angulars: {
@@ -478,10 +486,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    gsap.set(selectors.hexElements.p1, { y: ANIMATION.p1.yStart });
-    gsap.set(selectors.hexElements.p2, { y: ANIMATION.p2.yStart });
-    gsap.set(selectors.hexElements.s1, { y: ANIMATION.s1.yStart });
-    gsap.set(selectors.hexElements.s2, { y: ANIMATION.s2.yStart });
+    gsap.set(selectors.hexElements.p1, { y: ANIMATION.p1.yStart, opacity: 0 });
+    gsap.set(selectors.hexElements.p2, { y: ANIMATION.p2.yStart, opacity: 0 });
+    gsap.set(selectors.hexElements.s1, { y: ANIMATION.s1.yStart, opacity: 0 });
+    gsap.set(selectors.hexElements.s2, { y: ANIMATION.s2.yStart, opacity: 0 });
     gsap.set(
       [
         selectors.angElements.p1,
@@ -502,16 +510,60 @@ document.addEventListener("DOMContentLoaded", () => {
       onUpdate: () => {},
     });
 
+    timeline.to(
+      selectors.hexElements.p1,
+      {
+        opacity: 1,
+        duration: ANIMATION.p1.endFade - ANIMATION.p1.startFade,
+        ease: ANIMATION.p1.ease,
+        force3D: true,
+      },
+      ANIMATION.p1.startFade,
+    );
+
+    timeline.to(
+      selectors.hexElements.p2,
+      {
+        opacity: 1,
+        duration: ANIMATION.p2.endFade - ANIMATION.p2.startFade,
+        ease: ANIMATION.p2.ease,
+        force3D: true,
+      },
+      ANIMATION.p2.startFade,
+    );
+
+    timeline.to(
+      selectors.hexElements.s1,
+      {
+        opacity: 1,
+        duration: ANIMATION.s1.endFade - ANIMATION.s1.startFade,
+        ease: ANIMATION.s1.ease,
+        force3D: true,
+      },
+      ANIMATION.s1.startFade,
+    );
+
+    timeline.to(
+      selectors.hexElements.s2,
+      {
+        opacity: 1,
+        duration: ANIMATION.s2.endFade - ANIMATION.s2.startFade,
+        ease: ANIMATION.s2.ease,
+        force3D: true,
+      },
+      ANIMATION.s2.startFade,
+    );
+
     //P1 Aniamtion
     timeline.to(
       selectors.hexElements.p1,
       {
         y: ANIMATION.p1.yEnd,
-        duration: ANIMATION.p1.endTime - ANIMATION.p1.startTime,
+        duration: ANIMATION.p1.endTranslate - ANIMATION.p1.startTranslate,
         ease: ANIMATION.p1.ease,
         force3D: true,
       },
-      ANIMATION.p1.startTime,
+      ANIMATION.p1.startTranslate,
     );
 
     //P2 Aniamtion
@@ -519,11 +571,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectors.hexElements.p2,
       {
         y: ANIMATION.p2.yEnd,
-        duration: ANIMATION.p2.endTime - ANIMATION.p2.startTime,
+        duration: ANIMATION.p2.endTranslate - ANIMATION.p2.startTranslate,
         ease: ANIMATION.p2.ease,
         force3D: true,
       },
-      ANIMATION.p2.startTime,
+      ANIMATION.p2.startTranslate,
     );
 
     //S1 Aniamtion
@@ -531,11 +583,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectors.hexElements.s1,
       {
         y: ANIMATION.s1.yEnd,
-        duration: ANIMATION.s1.endTime - ANIMATION.s1.startTime,
+        duration: ANIMATION.s1.endTranslate - ANIMATION.s1.startTranslate,
         ease: ANIMATION.s1.ease,
         force3D: true,
       },
-      ANIMATION.s1.startTime,
+      ANIMATION.s1.startTranslate,
     );
 
     //S2 Aniamtion
@@ -543,11 +595,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectors.hexElements.s2,
       {
         y: ANIMATION.s2.yEnd,
-        duration: ANIMATION.s2.endTime - ANIMATION.s2.startTime,
+        duration: ANIMATION.s2.endTranslate - ANIMATION.s2.startTranslate,
         ease: ANIMATION.s2.ease,
         force3D: true,
       },
-      ANIMATION.s2.startTime,
+      ANIMATION.s2.startTranslate,
     );
 
     //Angulars Aniamtion
