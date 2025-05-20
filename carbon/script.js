@@ -696,8 +696,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     },
     true,
-  ); // Using capture phase to try to run before other handlers
-  // Set up a MutationObserver to watch for class changes on categories
+  );
+
   const observer = new MutationObserver(function (mutations) {
     // Process mutations to check if any category became active
     const categoryMutations = mutations.filter(
