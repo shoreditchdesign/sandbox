@@ -190,6 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Track currently open card
   let currentlyOpenCard = null;
 
+  // Store previous window width to detect actual layout changes
+  let prevWidth = window.innerWidth;
+
   // Check if device is mobile
   const isMobile = () => window.innerWidth <= 767;
 
@@ -359,37 +362,35 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Window resize handler
     window.addEventListener("resize", () => {
-      // Check if device type changed
-      const wasMobile = overlay.hasAttribute("data-mobile");
-      const nowMobile = isMobile();
+      if (window.innerWidth !== prevWidth) {
+        const wasMobile = overlay.hasAttribute("data-mobile");
+        const nowMobile = isMobile();
 
-      if (wasMobile !== nowMobile) {
-        if (nowMobile) {
-          overlay.setAttribute("data-mobile", "true");
-        } else {
-          overlay.removeAttribute("data-mobile");
+        if (wasMobile !== nowMobile) {
+          if (nowMobile) {
+            overlay.setAttribute("data-mobile", "true");
+          } else {
+            overlay.removeAttribute("data-mobile");
+          }
+
+          if (overlay.getAttribute("data-card-state") === "open") {
+            gsap.set(overlay, { overflowY: nowMobile ? "hidden" : "auto" });
+          }
         }
 
-        // Reset overflow for mobile/desktop switch
+        calculateHeights();
+
         if (overlay.getAttribute("data-card-state") === "open") {
-          gsap.set(overlay, { overflowY: nowMobile ? "hidden" : "auto" });
+          gsap.set(overlay, { height: finalOverlayHeight });
+        } else {
+          gsap.set(overlay, { height: initialOverlayHeight });
         }
-      }
 
-      // Recalculate heights when window is resized
-      calculateHeights();
-
-      // Update current state if needed
-      if (overlay.getAttribute("data-card-state") === "open") {
-        gsap.set(overlay, { height: finalOverlayHeight });
-      } else {
-        gsap.set(overlay, { height: initialOverlayHeight });
+        prevWidth = window.innerWidth;
       }
     });
 
-    // Set initial mobile attribute
     if (isMobile()) {
       overlay.setAttribute("data-mobile", "true");
     }
