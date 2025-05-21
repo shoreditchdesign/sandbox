@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       shaderDelay: 2.2,
       shaderFadeOutDuration: 0.6,
       bgDelay: -0.6,
-      bgFadeOutDuration: 1.2,
+      bgFadeOutDuration: 0.6,
       ease: "power2.inOut",
     },
     hero: {
