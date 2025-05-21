@@ -434,18 +434,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Part 2: Create table of contents and wrap H2 sections
+  // Part 2: Create table of contents and wrap H3 sections
   const richTextBodies = document.querySelectorAll("[data-toc-body]");
-  let allH2s = [];
+  let allH3s = [];
 
-  // First collect all H2s
+  // First collect all H3s
   richTextBodies.forEach((body) => {
-    const h2s = body.querySelectorAll("h2");
-    allH2s = [...allH2s, ...h2s];
+    const h3s = body.querySelectorAll("h3");
+    allH3s = [...allH3s, ...h3s];
   });
 
-  // If no H2s are found, remove template cells from all TOC wrappers
-  if (allH2s.length === 0) {
+  // If no H3s are found, remove template cells from all TOC wrappers
+  if (allH3s.length === 0) {
     const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
     tocWrappers.forEach((tocWrapper) => {
       const templateCell = tocWrapper.querySelector("[data-toc-cell]");
@@ -454,42 +454,42 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       tocWrapper.style.display = "none";
     });
-    return; // Exit early if no H2s found
+    return; // Exit early if no H3s found
   }
 
   // Process each data-toc-body container separately
   richTextBodies.forEach((body) => {
     // Get all children of the body
     const allChildren = Array.from(body.children);
-    // Get H2s within this specific body
-    const h2sInBody = Array.from(body.querySelectorAll("h2"));
+    // Get H3s within this specific body
+    const h3sInBody = Array.from(body.querySelectorAll("h3"));
 
-    // Skip if no H2s in this body
-    if (h2sInBody.length === 0) return;
+    // Skip if no H3s in this body
+    if (h3sInBody.length === 0) return;
 
     // Track processed elements to avoid duplicates
     const processedElements = new Set();
 
-    // Process each H2
-    h2sInBody.forEach((h2, index) => {
+    // Process each H3
+    h3sInBody.forEach((h3, index) => {
       const sectionId = `toc-${index + 1}`;
       const sectionDiv = document.createElement("div");
       sectionDiv.setAttribute("id", sectionId);
       sectionDiv.setAttribute("data-toc-section", "");
 
-      // Start with the H2
-      const elementsToGroup = [h2];
-      processedElements.add(h2);
+      // Start with the H3
+      const elementsToGroup = [h3];
+      processedElements.add(h3);
 
-      // Find the index of current H2 in allChildren
-      const h2Index = allChildren.indexOf(h2);
+      // Find the index of current H3 in allChildren
+      const h3Index = allChildren.indexOf(h3);
 
-      // Find all elements until the next H2 or the end
-      let nextIndex = h2Index + 1;
+      // Find all elements until the next H3 or the end
+      let nextIndex = h3Index + 1;
       while (nextIndex < allChildren.length) {
         const nextElement = allChildren[nextIndex];
-        // Stop if we hit another H2
-        if (nextElement.tagName === "H2") break;
+        // Stop if we hit another H3
+        if (nextElement.tagName === "H3") break;
         elementsToGroup.push(nextElement);
         processedElements.add(nextElement);
         nextIndex++;
@@ -502,19 +502,19 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add the fragment to the section div
       sectionDiv.appendChild(fragment);
 
-      // Insert the section div where the H2 was
+      // Insert the section div where the H3 was
       if (
-        h2Index > 0 &&
-        allChildren[h2Index - 1] &&
-        !processedElements.has(allChildren[h2Index - 1])
+        h3Index > 0 &&
+        allChildren[h3Index - 1] &&
+        !processedElements.has(allChildren[h3Index - 1])
       ) {
-        body.insertBefore(sectionDiv, allChildren[h2Index - 1].nextSibling);
+        body.insertBefore(sectionDiv, allChildren[h3Index - 1].nextSibling);
       } else {
         body.appendChild(sectionDiv);
       }
     });
 
-    // Handle elements before the first H2 (leave them as is)
+    // Handle elements before the first H3 (leave them as is)
     // Handle elements that weren't processed (shouldn't be any with our approach)
     const unprocessedElements = allChildren.filter(
       (el) => !processedElements.has(el),
@@ -525,7 +525,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
   tocWrappers.forEach((tocWrapper) => {
     const templateCell = tocWrapper.querySelector("[data-toc-cell]");
-    if (!templateCell || allH2s.length === 0) {
+    if (!templateCell || allH3s.length === 0) {
       tocWrapper.style.display = "none";
       return;
     }
@@ -535,7 +535,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (index !== 0) cell.remove();
     });
 
-    allH2s.forEach((h2, index) => {
+    allH3s.forEach((h3, index) => {
       const newCell = templateCell.cloneNode(true);
       const textElement = newCell.querySelector("[data-toc-text]");
       const id = `toc-${index + 1}`;
@@ -546,7 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
       newCell.setAttribute("href", `#${id}`);
 
       if (textElement) {
-        textElement.textContent = h2.textContent;
+        textElement.textContent = h3.textContent;
       }
 
       // Prevent default anchor behavior for ALL clicks on these elements
