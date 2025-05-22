@@ -915,6 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Prevent scrolling
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden"; // For cross-browser compatibility
+    window.scrollTo(0, 0);
 
     // Re-enable scrolling after 4 seconds
     setTimeout(() => {
