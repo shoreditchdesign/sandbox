@@ -683,6 +683,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializePagination() {
     console.log("Initializing pagination");
 
+    // Set initial opacity to 0
+    listPaginate.style.opacity = 0;
+
     // Get current items (might have changed due to filtering)
     const items = listPaginate.querySelectorAll("[data-pagination-item]");
 
@@ -723,6 +726,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update filter counts
     filterCount();
+
+    // Fade in with ease after filterCount
+    setTimeout(() => {
+      listPaginate.style.transition = "opacity 0.3s ease-in";
+      listPaginate.style.opacity = 1;
+    }, 100);
 
     console.log("Pagination initialized with", totalItems, "total items");
   }
