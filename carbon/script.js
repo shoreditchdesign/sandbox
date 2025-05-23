@@ -657,201 +657,128 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Banner injection process complete");
 });
 
-//Filters
+//Paginations + Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-filter-element="all"]');
-  const categoryFilters = document.querySelectorAll(
+  const radioFilters = document.querySelectorAll(
     '[data-filter-element="radio"]',
   );
-  // Add a direct click handler for the all filter to ensure it becomes active when clicked
-  allFilter.addEventListener(
-    "click",
-    function () {
-      // Ensure "all" is active when clicked
-      if (!allFilter.classList.contains("active")) {
-        allFilter.classList.add("active");
-      }
-      // Optional: Deactivate all categories when "all" is clicked
-      categoryFilters.forEach((el) => el.classList.remove("active"));
-      // Check all filter checkboxes and apply Webflow styling
-      document
-        .querySelectorAll('[data-filter-element="checkbox"]')
-        .forEach((checkbox) => {
-          // Check if checkbox is not already checked before updating
-          if (!checkbox.checked) {
-            // Set semantic checked state
-            checkbox.checked = true;
-            // Update Webflow styling classes
-            const customCheckbox = checkbox.previousElementSibling;
-            if (
-              customCheckbox &&
-              customCheckbox.classList.contains("w-checkbox-input")
-            ) {
-              customCheckbox.classList.add("w--redirected-checked");
-            }
-            // Update parent label with active class
-            const parentLabel = checkbox.closest("label");
-            if (parentLabel) {
-              parentLabel.classList.add("fs-cmsfilter_active");
-            }
-            console.log("Checkbox updated:", checkbox.id);
-          }
-        });
-    },
-    true,
+  const checkboxFilters = document.querySelectorAll(
+    '[data-filter-element="checkbox"]',
   );
-  const observer = new MutationObserver(function (mutations) {
-    // Process mutations to check if any category became active
-    const categoryMutations = mutations.filter(
-      (m) => m.target !== allFilter && m.attributeName === "class",
-    );
-    if (categoryMutations.length > 0) {
-      // Check if any category has the active class
-      const anyActiveCategories = Array.from(categoryFilters).some((el) =>
-        el.classList.contains("active"),
-      );
-      // If any category is active, remove active from "all"
-      if (anyActiveCategories && allFilter.classList.contains("active")) {
-        allFilter.classList.remove("active");
-        console.log("All filter deactivated due to category selection");
-      }
-    }
-  });
-  // Observe category filters for class changes
-  categoryFilters.forEach((el) => {
-    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
-  });
-  // Optional: Add click listeners to individual checkboxes to ensure proper styling
-  document
-    .querySelectorAll('[data-filter-element="checkbox"]')
-    .forEach((checkbox) => {
-      checkbox.addEventListener("change", function () {
-        const customCheckbox = this.previousElementSibling;
-        const parentLabel = this.closest("label");
-        if (this.checked) {
-          if (customCheckbox)
-            customCheckbox.classList.add("w--redirected-checked");
-          if (parentLabel) parentLabel.classList.add("fs-cmsfilter_active");
-        } else {
-          if (customCheckbox)
-            customCheckbox.classList.remove("w--redirected-checked");
-          if (parentLabel) parentLabel.classList.remove("fs-cmsfilter_active");
-        }
-        console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
-      });
-    });
-});
 
-//Pagination
-document.addEventListener("DOMContentLoaded", function () {
-  // Configuration constants
-  const CLICK_DELAY = 500;
-
-  // Get DOM elements that will be used across functions
-  const listElement = document.querySelector("[data-pagination-list]");
-  const loadButton = document.querySelector('[data-pagination-element="load"]');
-  const loader = document.querySelector('[data-pagination-element="loader"]');
-  const renderButton = document.querySelector(
+  const listPaginate = document.querySelector(
+    '[data-pagination-element="list"]',
+  );
+  const loaderPaginate = document.querySelector(
+    '[data-pagination-element="loader"]',
+  );
+  const loadPaginate = document.querySelector(
+    '[data-pagination-element="load"]',
+  );
+  const renderPaginate = document.querySelector(
     '[data-pagination-element="render"]',
   );
 
-  // Function to reset pagination visibility
-  function resetPagination() {
-    console.log("Resetting pagination");
-
-    // Get all items
-    const items = listElement.querySelectorAll("[data-pagination-item]");
-
-    // Reset all items visibility to false
-    items.forEach((item) => {
-      item.setAttribute("data-pagination-show", "false");
-    });
-
-    // Reset visible count to 0
-    listElement.setAttribute("data-pagination-visible", "0");
-
-    // Reset button states
-    if (loadButton) {
-      loadButton.disabled = false;
-      loadButton.setAttribute("data-load-state", "show");
-    }
-
-    if (loader) {
-      loader.setAttribute("data-load-state", "hide");
-    }
-
-    console.log("Pagination reset complete");
-  }
+  // PAGINATION CODE
 
   // Function to initialize and handle pagination
   function initializePagination() {
     console.log("Initializing pagination");
 
     // Get current items (might have changed due to filtering)
-    const items = listElement.querySelectorAll("[data-pagination-item]");
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
 
     // Get configuration from list element attributes
     const INITIAL_ITEMS =
-      parseInt(listElement.getAttribute("data-pagination-initial")) || 6;
+      parseInt(listPaginate.getAttribute("data-pagination-initial")) || 6;
     const ITEMS_PER_LOAD =
-      parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
+      parseInt(listPaginate.getAttribute("data-pagination-unit")) || 3;
     console.log("Initial items:", INITIAL_ITEMS);
     console.log("Items per load:", ITEMS_PER_LOAD);
 
     // Initialize data attributes
     const totalItems = items.length;
-    listElement.setAttribute("data-pagination-total", totalItems);
-    listElement.setAttribute("data-pagination-visible", INITIAL_ITEMS);
+    listPaginate.setAttribute("data-pagination-total", totalItems);
+    listPaginate.setAttribute("data-pagination-visible", INITIAL_ITEMS);
 
     // Set up items with index and initial visibility
     items.forEach((item, index) => {
       item.setAttribute("data-pagination-index", index);
       item.setAttribute(
-        "data-pagination-show",
-        index < INITIAL_ITEMS ? "true" : "false",
+        "data-item-state",
+        index < INITIAL_ITEMS ? "show" : "hide",
       );
     });
 
     // Set initial button visibility
     if (INITIAL_ITEMS >= totalItems) {
-      loadButton.setAttribute("data-load-state", "hide");
+      loadPaginate.setAttribute("data-load-state", "hide");
     } else {
-      loadButton.setAttribute("data-load-state", "show");
+      loadPaginate.setAttribute("data-load-state", "show");
     }
 
     // Clear previous click handler if any
-    loadButton.removeEventListener("click", loadMoreItems);
+    loadPaginate.removeEventListener("click", runPagination);
 
     // Add click handler
-    loadButton.addEventListener("click", loadMoreItems);
+    loadPaginate.addEventListener("click", runPagination);
 
     console.log("Pagination initialized with", totalItems, "total items");
   }
 
+  // Function to reset pagination visibility
+  function resetPagination() {
+    console.log("Resetting pagination");
+
+    // Get all items
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
+
+    // Reset all items visibility to hide
+    items.forEach((item) => {
+      item.setAttribute("data-item-state", "hide");
+    });
+
+    // Reset visible count to 0
+    listPaginate.setAttribute("data-pagination-visible", "0");
+
+    // Reset button states
+    if (loadPaginate) {
+      loadPaginate.disabled = false;
+      loadPaginate.setAttribute("data-load-state", "show");
+    }
+
+    if (loaderPaginate) {
+      loaderPaginate.setAttribute("data-load-state", "hide");
+    }
+
+    console.log("Pagination reset complete");
+  }
+
   // Function to handle loading more items
-  function loadMoreItems(e) {
+  function runPagination(e) {
     e.preventDefault();
     console.log("Load button clicked");
 
     // Get current items
-    const items = listElement.querySelectorAll("[data-pagination-item]");
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
     const ITEMS_PER_LOAD =
-      parseInt(listElement.getAttribute("data-pagination-unit")) || 3;
+      parseInt(listPaginate.getAttribute("data-pagination-unit")) || 3;
 
     // Disable button during loading
-    loadButton.disabled = true;
+    loadPaginate.disabled = true;
 
     // Show loader if it exists
-    if (loader) {
-      loader.setAttribute("data-load-state", "show");
+    if (loaderPaginate) {
+      loaderPaginate.setAttribute("data-load-state", "show");
     }
 
     // Get current state
     const currentVisible = parseInt(
-      listElement.getAttribute("data-pagination-visible"),
+      listPaginate.getAttribute("data-pagination-visible"),
     );
     const totalItems = parseInt(
-      listElement.getAttribute("data-pagination-total"),
+      listPaginate.getAttribute("data-pagination-total"),
     );
 
     // Calculate next batch
@@ -861,51 +788,128 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show next items
     for (let i = currentVisible; i < newVisible; i++) {
       if (items[i]) {
-        items[i].setAttribute("data-pagination-show", "true");
+        items[i].setAttribute("data-item-state", "show");
       }
     }
 
     // Update count
-    listElement.setAttribute("data-pagination-visible", newVisible);
+    listPaginate.setAttribute("data-pagination-visible", newVisible);
 
     // Hide button immediately if all items are shown
     if (newVisible >= totalItems) {
-      loadButton.setAttribute("data-load-state", "hide");
+      loadPaginate.setAttribute("data-load-state", "hide");
     }
 
     // Add delay for loader animation only
     setTimeout(() => {
       // Hide loader
-      if (loader) {
-        loader.setAttribute("data-load-state", "hide");
+      if (loaderPaginate) {
+        loaderPaginate.setAttribute("data-load-state", "hide");
       }
       // Re-enable button only if there are more items
       if (newVisible < totalItems) {
-        loadButton.disabled = false;
+        loadPaginate.disabled = false;
       }
-    }, CLICK_DELAY);
+    }, 500);
   }
 
   // Initialize pagination on load
   initializePagination();
 
-  // Add event listener to the render element (filter)
-  if (renderButton) {
-    renderButton.addEventListener("click", function () {
-      console.log("Filter clicked, resetting and re-initializing pagination");
+  // FILTER CODE
 
-      // First reset all pagination
-      resetPagination();
-
-      // Then re-initialize with new filtered items
-      initializePagination();
+  // Function to handle filter reset when "all" is clicked
+  function filterReset() {
+    // Ensure "all" is active when clicked
+    if (!allFilter.classList.contains("active")) {
+      allFilter.classList.add("active");
+    }
+    // Deactivate all categories when "all" is clicked
+    radioFilters.forEach((el) => el.classList.remove("active"));
+    // Check all filter checkboxes
+    checkboxFilters.forEach((checkbox) => {
+      // Check if checkbox is not already checked before updating
+      if (!checkbox.checked) {
+        // Set semantic checked state
+        checkbox.checked = true;
+        // Update parent label with active class
+        const parentLabel = checkbox.closest("label");
+        if (parentLabel) {
+          parentLabel.classList.add("fs-cmsfilter_active");
+        }
+        console.log("Checkbox updated:", checkbox.id);
+      }
     });
-    console.log("Filter button listener added");
-  } else {
-    console.log(
-      "Warning: Filter button with data-pagination-element='render' not found",
-    );
   }
+
+  // Add a direct click handler for the all filter
+  allFilter.addEventListener("click", filterReset, true);
+
+  // Function to handle automatic "all" filter deactivation
+  function allReset(mutations) {
+    // Process mutations to check if any category became active
+    const categoryMutations = mutations.filter(
+      (m) => m.target !== allFilter && m.attributeName === "class",
+    );
+    if (categoryMutations.length > 0) {
+      // Check if any category has the active class
+      const anyActiveCategories = Array.from(radioFilters).some((el) =>
+        el.classList.contains("active"),
+      );
+      // If any category is active, remove active from "all"
+      if (anyActiveCategories && allFilter.classList.contains("active")) {
+        allFilter.classList.remove("active");
+        console.log("All filter deactivated due to category selection");
+      }
+    }
+  }
+
+  const observer = new MutationObserver(allReset);
+
+  // Observe category filters for class changes
+  radioFilters.forEach((el) => {
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+  });
+
+  // Function to handle individual checkbox changes
+  function checkboxReset() {
+    const parentLabel = this.closest("label");
+    if (
+      this.checked &&
+      !parentLabel.classList.contains("fs-cmsfilter_active")
+    ) {
+      parentLabel.classList.add("fs-cmsfilter_active");
+    } else if (
+      !this.checked &&
+      parentLabel.classList.contains("fs-cmsfilter_active")
+    ) {
+      parentLabel.classList.remove("fs-cmsfilter_active");
+    }
+    console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
+  }
+
+  // Add click listeners to individual checkboxes
+  checkboxFilters.forEach((checkbox) => {
+    checkbox.addEventListener("change", checkboxReset);
+  });
+
+  // Function to handle pagination reset and reinitialization when filters change
+  function renderPaginate() {
+    console.log("Filter changed, updating pagination");
+    // Reset pagination to initial state
+    resetPagination();
+    // Reinitialize with new filtered items
+    initializePagination();
+  }
+
+  // Add click listeners to all filters for pagination updates
+  allFilter.addEventListener("click", renderPaginate);
+  radioFilters.forEach((filter) => {
+    filter.addEventListener("click", renderPaginate);
+  });
+  checkboxFilters.forEach((checkbox) => {
+    checkbox.addEventListener("change", renderPaginate);
+  });
 });
 
 //Scroll Blocker
