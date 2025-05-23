@@ -814,6 +814,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Initialize pagination on load
+  console.log("Running pagination initialization on page load");
   initializePagination();
 
   // FILTER CODE
