@@ -827,11 +827,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Deactivate all categories when "all" is clicked
     radioFilters.forEach((el) => el.classList.remove("active"));
 
-    // Simulate clicks on all checkboxes to trigger proper Finsweet and Webflow behavior
-    checkboxFilters.forEach((checkbox) => {
-      checkbox.click();
-      console.log("Simulated click on checkbox:", checkbox.id);
-    });
+    // Simulate clicks on all checkboxes with delay to avoid race condition
+    setTimeout(() => {
+      checkboxFilters.forEach((checkbox) => {
+        checkbox.click();
+        console.log("Simulated click on checkbox:", checkbox.id);
+      });
+    }, 100);
   }
 
   // Add a direct click handler for the all filter
