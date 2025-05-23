@@ -128,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Open every 8th card
     if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
-      console.log(`Opening card at index ${index + 1}`);
       openCard(card, initialWidth, getHoverWidth, quickAnims);
     }
 
