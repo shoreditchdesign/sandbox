@@ -79,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set attribute to default when hiding navbar (reverse animation)
       navbars.forEach((navbar) => {
         navbar.setAttribute("data-tuck-state", "default");
-        console.log("Navbar state changed to: default");
       });
     } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
       showAnim.play();
@@ -89,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set attribute to hidden when showing navbar (play animation)
       navbars.forEach((navbar) => {
         navbar.setAttribute("data-tuck-state", "hidden");
-        console.log("Navbar state changed to: hidden");
       });
     }
     lastScrollTop = scrollTop;
