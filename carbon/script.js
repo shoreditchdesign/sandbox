@@ -676,9 +676,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const loadPaginate = document.querySelector(
     '[data-pagination-element="load"]',
   );
-  const renderPaginate = document.querySelector(
-    '[data-pagination-element="render"]',
-  );
 
   // PAGINATION CODE
 
