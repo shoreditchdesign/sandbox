@@ -757,7 +757,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize parallax with a 6-second delay
   setTimeout(() => {
-    console.log("Starting parallax animation after 6-second delay");
     const parallaxTimeline = initParallax();
 
     // Handle window resize to update parallax values
