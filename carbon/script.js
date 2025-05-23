@@ -721,6 +721,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add click handler
     loadPaginate.addEventListener("click", runPagination);
 
+    // Update filter counts
+    filterCount();
+
     console.log("Pagination initialized with", totalItems, "total items");
   }
 
@@ -883,6 +886,39 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   //Commented out checkboxReset() eventListener
+
+  // Function to count checked checkboxes and update dropdown counts
+  function filterCount() {
+    console.log("Updating filter counts");
+
+    // Find all dropdown containers with count indices
+    const dropdowns = document.querySelectorAll(
+      '[data-filter-element="dropdown"]',
+    );
+
+    dropdowns.forEach((dropdown) => {
+      // Get the count index for this dropdown
+      const countIndex = dropdown.getAttribute("data-count-index");
+
+      // Count checkboxes with w--redirected-checked class within this dropdown
+      const checkedBoxes = dropdown.querySelectorAll(
+        ".w-checkbox-input.w--redirected-checked",
+      );
+      const checkedCount = checkedBoxes.length;
+
+      // Find the corresponding count display element
+      const countDisplay = document.querySelector(
+        `[data-filter-element="count"][data-count-index="${countIndex}"]`,
+      );
+
+      if (countDisplay) {
+        countDisplay.textContent = checkedCount;
+        console.log(
+          `Updated count for dropdown ${countIndex}: ${checkedCount}`,
+        );
+      }
+    });
+  }
 
   // Function to handle pagination reset and reinitialization when filters change
   function renderPaginate() {
