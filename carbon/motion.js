@@ -1576,12 +1576,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Ticker animation initializing");
-
   const isMobile = window.innerWidth <= 991;
 
   if (!isMobile) {
-    console.log("Not mobile, ticker animation aborted");
     return;
   }
 
