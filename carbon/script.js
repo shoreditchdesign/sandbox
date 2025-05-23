@@ -826,19 +826,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Deactivate all categories when "all" is clicked
     radioFilters.forEach((el) => el.classList.remove("active"));
-    // Check all filter checkboxes
+
+    // Simulate clicks on all checkboxes to trigger proper Finsweet and Webflow behavior
     checkboxFilters.forEach((checkbox) => {
-      // Check if checkbox is not already checked before updating
-      if (!checkbox.checked) {
-        // Set semantic checked state
-        checkbox.checked = true;
-        // Update parent label with active class
-        const parentLabel = checkbox.closest("label");
-        if (parentLabel) {
-          parentLabel.classList.add("fs-cmsfilter_active");
-        }
-        console.log("Checkbox updated:", checkbox.id);
-      }
+      checkbox.click();
+      console.log("Simulated click on checkbox:", checkbox.id);
     });
   }
 
@@ -888,10 +880,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
   }
 
-  // Add click listeners to individual checkboxes
-  checkboxFilters.forEach((checkbox) => {
-    checkbox.addEventListener("change", checkboxReset);
-  });
+  //Commented out checkboxReset() eventListener
 
   // Function to handle pagination reset and reinitialization when filters change
   function renderPaginate() {
@@ -906,22 +895,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add click listeners to all filters for pagination updates
   allFilter.addEventListener("click", () => {
-    console.log("All filter clicked, triggering renderPaginate");
+    console.log("All filter clicked, rendering pagination");
     renderPaginate();
   });
   radioFilters.forEach((filter) => {
     filter.addEventListener("click", () => {
-      console.log("Radio filter clicked, triggering renderPaginate");
+      console.log("Radio filter clicked, rendering pagination");
       renderPaginate();
     });
   });
   checkboxFilters.forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
-      console.log("Checkbox filter changed, triggering renderPaginate");
+      console.log("Checkbox filter changed, rendering pagination");
       renderPaginate();
     });
   });
 });
+
 //Scroll Blocker
 document.addEventListener("DOMContentLoaded", () => {
   // Check if an element with the data-pl-shader attribute exists
