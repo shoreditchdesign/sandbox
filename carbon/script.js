@@ -901,12 +901,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Add click listeners to all filters for pagination updates
-  allFilter.addEventListener("click", renderPaginate);
+  allFilter.addEventListener("click", function () {
+    console.log("All filter clicked, triggering renderPaginate");
+    renderPaginate();
+  });
   radioFilters.forEach((filter) => {
-    filter.addEventListener("click", renderPaginate);
+    filter.addEventListener("click", function () {
+      console.log("Radio filter clicked, triggering renderPaginate");
+      renderPaginate();
+    });
   });
   checkboxFilters.forEach((checkbox) => {
-    checkbox.addEventListener("change", renderPaginate);
+    checkbox.addEventListener("change", function () {
+      console.log("Checkbox filter changed, triggering renderPaginate");
+      renderPaginate();
+    });
   });
 });
 
