@@ -810,9 +810,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 500);
   }
 
-  // Initialize pagination on load
+  // Initialize pagination on load with delay to avoid race condition with Finsweet
   console.log("Running pagination initialization on page load");
-  initializePagination();
+  setTimeout(() => {
+    initializePagination();
+  }, 500);
 
   // FILTER CODE
 
@@ -896,29 +898,30 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Filter changed, updating pagination");
     // Reset pagination to initial state
     resetPagination();
-    // Reinitialize with new filtered items
-    initializePagination();
+    // Reinitialize with new filtered items after delay
+    setTimeout(() => {
+      initializePagination();
+    }, 100);
   }
 
   // Add click listeners to all filters for pagination updates
-  allFilter.addEventListener("click", function () {
+  allFilter.addEventListener("click", () => {
     console.log("All filter clicked, triggering renderPaginate");
     renderPaginate();
   });
   radioFilters.forEach((filter) => {
-    filter.addEventListener("click", function () {
+    filter.addEventListener("click", () => {
       console.log("Radio filter clicked, triggering renderPaginate");
       renderPaginate();
     });
   });
   checkboxFilters.forEach((checkbox) => {
-    checkbox.addEventListener("change", function () {
+    checkbox.addEventListener("change", () => {
       console.log("Checkbox filter changed, triggering renderPaginate");
       renderPaginate();
     });
   });
 });
-
 //Scroll Blocker
 document.addEventListener("DOMContentLoaded", () => {
   // Check if an element with the data-pl-shader attribute exists
