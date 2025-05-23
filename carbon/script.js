@@ -677,27 +677,29 @@ document.addEventListener("DOMContentLoaded", function () {
       document
         .querySelectorAll('[data-filter-element="checkbox"]')
         .forEach((checkbox) => {
-          // Set semantic checked state
-          checkbox.checked = true;
-          // Update Webflow styling classes
-          const customCheckbox = checkbox.previousElementSibling;
-          if (
-            customCheckbox &&
-            customCheckbox.classList.contains("w-checkbox-input")
-          ) {
-            customCheckbox.classList.add("w--redirected-checked");
+          // Check if checkbox is not already checked before updating
+          if (!checkbox.checked) {
+            // Set semantic checked state
+            checkbox.checked = true;
+            // Update Webflow styling classes
+            const customCheckbox = checkbox.previousElementSibling;
+            if (
+              customCheckbox &&
+              customCheckbox.classList.contains("w-checkbox-input")
+            ) {
+              customCheckbox.classList.add("w--redirected-checked");
+            }
+            // Update parent label with active class
+            const parentLabel = checkbox.closest("label");
+            if (parentLabel) {
+              parentLabel.classList.add("fs-cmsfilter_active");
+            }
+            console.log("Checkbox updated:", checkbox.id);
           }
-          // Update parent label with active class
-          const parentLabel = checkbox.closest("label");
-          if (parentLabel) {
-            parentLabel.classList.add("fs-cmsfilter_active");
-          }
-          console.log("Checkbox updated:", checkbox.id);
         });
     },
     true,
   );
-
   const observer = new MutationObserver(function (mutations) {
     // Process mutations to check if any category became active
     const categoryMutations = mutations.filter(
