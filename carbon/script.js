@@ -556,12 +556,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const targetSection = document.getElementById(id);
         if (targetSection) {
           console.log("Target section found:", targetSection);
+          // Wait for next frame to ensure all layout calculations are complete
           requestAnimationFrame(() => {
-            const offset = 800;
-            const targetPosition =
-              targetSection.getBoundingClientRect().top +
-              window.scrollY -
-              offset;
+            // Use a smaller offset, maybe based on header height or a fixed smaller value
+            const offset = 180; // Try a smaller value like 100px
+            const targetPosition = targetSection.offsetTop - offset;
             console.log("Scrolling to position:", targetPosition);
             window.scrollTo({
               top: targetPosition,
