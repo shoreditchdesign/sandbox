@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
   updateNavHeight(); // Initial calculation
   window.addEventListener("resize", updateNavHeight); // Recalculate on resize
 });
+
 //Navbar Border
 document.addEventListener("DOMContentLoaded", () => {
   const navbarElement = document.querySelector("[data-navbar-border]");
