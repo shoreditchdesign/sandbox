@@ -807,7 +807,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Initialize pagination on load with delay to avoid race condition with Finsweet
-  console.log("Running pagination initialization on page load");
   setTimeout(() => {
     initializePagination();
   }, 500);
