@@ -593,16 +593,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Banner Injection
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Starting banner injection process");
-
   // Find all parent elements with class w-richtext
   const richTextElements = document.querySelectorAll(".w-richtext");
-  console.log(`Found ${richTextElements.length} rich text elements`);
 
   // Find the banner element that we'll use as a replacement
   const bannerElement = document.querySelector("[data-blog-banner]");
-  console.log("Looking for banner element");
-  console.log("Banner element found:", bannerElement ? "YES" : "NO");
 
   // If there's no banner element, exit early
   if (!bannerElement) {
@@ -612,11 +607,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let bannerTargetFound = false;
 
-  richTextElements.forEach(function (parent, index) {
+  richTextElements.forEach(function (parent) {
     // Look for paragraphs inside each rich text element
     const paragraphs = parent.querySelectorAll("p");
 
-    paragraphs.forEach(function (paragraph, pIndex) {
+    paragraphs.forEach(function (paragraph) {
       const content = paragraph.textContent.trim();
 
       // Check if paragraph contains exactly "{{banner}}"
@@ -626,7 +621,6 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           // Clone the banner element to insert
           const bannerClone = bannerElement.cloneNode(true);
-          console.log("Banner element cloned successfully");
 
           // Store reference to the paragraph's parent
           const paragraphParent = paragraph.parentNode;
@@ -645,8 +639,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-
-  console.log("Banner injection process complete");
 });
 
 //Paginations + Filters
