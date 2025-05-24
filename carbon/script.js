@@ -604,27 +604,19 @@ document.addEventListener("DOMContentLoaded", function () {
     console.warn("No element with data-blog-banner attribute found");
     return;
   }
-  console.log("Banner element found successfully");
 
   let bannerTargetFound = false;
 
   richTextElements.forEach(function (parent, index) {
-    console.log(`Processing rich text element ${index + 1}`);
-
     // Look for paragraphs inside each rich text element
     const paragraphs = parent.querySelectorAll("p");
-    console.log(
-      `Found ${paragraphs.length} paragraphs in rich text element ${index + 1}`,
-    );
 
     paragraphs.forEach(function (paragraph, pIndex) {
       const content = paragraph.textContent.trim();
-      console.log(`Checking paragraph ${pIndex + 1} content: "${content}"`);
 
       // Check if paragraph contains exactly "{{banner}}"
       if (content === "{{banner}}") {
         bannerTargetFound = true;
-        console.log(`Found banner placeholder in paragraph ${pIndex + 1}`);
 
         try {
           // Clone the banner element to insert
@@ -633,19 +625,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Store reference to the paragraph's parent
           const paragraphParent = paragraph.parentNode;
-          console.log("Got paragraph parent:", paragraphParent?.tagName);
 
           // Insert the banner clone before the paragraph
           paragraphParent.insertBefore(bannerClone, paragraph);
-          console.log("Banner clone inserted into document");
 
           // Remove the original paragraph
           paragraph.remove();
-          console.log("Original placeholder paragraph removed");
 
           // Hide the original banner element
           bannerElement.style.display = "none";
-          console.log("Original banner hidden");
         } catch (error) {
           console.error("Error during banner replacement:", error);
         }
