@@ -557,7 +557,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (targetSection) {
           console.log("Target section found:", targetSection);
           requestAnimationFrame(() => {
-            const offset = 200;
+            const offset = 800;
             const targetPosition =
               targetSection.getBoundingClientRect().top +
               window.scrollY -
