@@ -566,28 +566,23 @@ document.addEventListener("DOMContentLoaded", function () {
         if (targetSection) {
           console.log("Target section found:", targetSection);
 
-          // Temporarily disable Lenis if it exists
+          const offset = 120;
+          const targetPosition = targetSection.offsetTop - offset;
+          console.log("Scrolling to position:", targetPosition);
+
+          // Use Lenis scroll method if available, otherwise fallback to window.scrollTo
           if (window.lenis) {
-            window.lenis.stop();
-          }
-
-          requestAnimationFrame(() => {
-            const offset = 120; // Reduced offset
-            const targetPosition = targetSection.offsetTop - offset;
-            console.log("Scrolling to position:", targetPosition);
-
+            window.lenis.scrollTo(targetPosition, {
+              duration: 1.2,
+              easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            });
+          } else {
+            // Fallback for non-Lenis scroll
             window.scrollTo({
               top: targetPosition,
               behavior: "smooth",
             });
-
-            // Re-enable Lenis after scroll completes
-            setTimeout(() => {
-              if (window.lenis) {
-                window.lenis.start();
-              }
-            }, 1000); // Adjust timing as needed
-          });
+          }
         }
       });
 
