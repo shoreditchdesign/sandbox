@@ -553,19 +553,40 @@ document.addEventListener("DOMContentLoaded", function () {
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
         console.log("Scroll click triggered for ID:", id);
+
+        // Remove active class from all TOC cells first
+        document.querySelectorAll("[data-toc-target]").forEach((cell) => {
+          cell.classList.remove("active");
+        });
+
+        // Add active class to clicked cell
+        newCell.classList.add("active");
+
         const targetSection = document.getElementById(id);
         if (targetSection) {
           console.log("Target section found:", targetSection);
-          // Wait for next frame to ensure all layout calculations are complete
+
+          // Temporarily disable Lenis if it exists
+          if (window.lenis) {
+            window.lenis.stop();
+          }
+
           requestAnimationFrame(() => {
-            // Use a smaller offset, maybe based on header height or a fixed smaller value
-            const offset = 180; // Try a smaller value like 100px
+            const offset = 120; // Reduced offset
             const targetPosition = targetSection.offsetTop - offset;
             console.log("Scrolling to position:", targetPosition);
+
             window.scrollTo({
               top: targetPosition,
               behavior: "smooth",
             });
+
+            // Re-enable Lenis after scroll completes
+            setTimeout(() => {
+              if (window.lenis) {
+                window.lenis.start();
+              }
+            }, 1000); // Adjust timing as needed
           });
         }
       });
