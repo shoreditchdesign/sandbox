@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
       onUpdate: (self) => {
         if (self.scroll() > window.innerHeight * conversionDistance) {
           gsap.to(popup, { y: 0 });
-          console.log("Banner moving up");
         } else {
           gsap.to(popup, { y: 2 * popupHeight });
         }
