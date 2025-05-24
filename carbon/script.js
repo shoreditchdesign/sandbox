@@ -63,14 +63,10 @@ document.addEventListener("DOMContentLoaded", function () {
   updateNavHeight(); // Initial calculation
   window.addEventListener("resize", updateNavHeight); // Recalculate on resize
 });
-
 //Navbar Border
 document.addEventListener("DOMContentLoaded", () => {
   const navbarElement = document.querySelector("[data-navbar-border]");
   const triggerElement = document.querySelector("[data-border-trigger]");
-
-  console.log("Navbar element:", navbarElement);
-  console.log("Trigger element:", triggerElement);
 
   if (navbarElement && triggerElement) {
     ScrollTrigger.create({
@@ -78,15 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
       start: "top 160",
       onEnter: () => {
         navbarElement.setAttribute("data-navbar-border", "on");
-        console.log("Border toggled ON");
       },
       onLeaveBack: () => {
         navbarElement.setAttribute("data-navbar-border", "off");
-        console.log("Border toggled OFF");
       },
     });
-
-    console.log("ScrollTrigger created");
   }
 });
 
@@ -552,7 +544,6 @@ document.addEventListener("DOMContentLoaded", function () {
       // Prevent default anchor behavior for ALL clicks on these elements
       newCell.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log("Scroll click triggered for ID:", id);
 
         // Remove active class from all TOC cells first
         document.querySelectorAll("[data-toc-target]").forEach((cell) => {
@@ -564,11 +555,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const targetSection = document.getElementById(id);
         if (targetSection) {
-          console.log("Target section found:", targetSection);
-
           const offset = 120;
           const targetPosition = targetSection.offsetTop - offset;
-          console.log("Scrolling to position:", targetPosition);
 
           // Use Lenis scroll method if available, otherwise fallback to window.scrollTo
           if (window.lenis) {
