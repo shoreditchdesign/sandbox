@@ -408,8 +408,10 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Swiper initialized:", mySwiper);
 });
 
-//Table of Contents
+//Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, initializing TOC system");
+
   // Part 1: Add data-stagger-block to children of data-toc-body elements
   const tocBodyElements = document.querySelectorAll("[data-toc-body]");
   if (tocBodyElements.length === 0) {
@@ -581,7 +583,7 @@ document.addEventListener("DOMContentLoaded", function () {
     templateCell.remove();
   });
 
-  // NEW ADDITION: Prevent default behavior for all links with data-toc-target attribute
+  // Prevent default behavior for all links with data-toc-target attribute
   document.addEventListener("click", function (e) {
     const tocLink = e.target.closest("[data-toc-target]");
     if (tocLink) {
@@ -589,6 +591,54 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Prevented default anchor behavior");
     }
   });
+
+  // GSAP ScrollTrigger Integration
+  function initScrollTriggers() {
+    console.log("Initializing ScrollTrigger for TOC sections");
+
+    const tocSections = document.querySelectorAll("[data-toc-section]");
+    const tocLinks = document.querySelectorAll("[data-toc-target]");
+
+    if (tocSections.length === 0) {
+      console.warn("No TOC sections found for ScrollTrigger");
+      return;
+    }
+
+    console.log(`Creating ScrollTriggers for ${tocSections.length} sections`);
+
+    tocSections.forEach((section) => {
+      const sectionId = section.id;
+      const correspondingLink = document.querySelector(
+        `[data-toc-target="${sectionId}"]`,
+      );
+
+      if (!correspondingLink) {
+        console.warn(`No corresponding link found for section ${sectionId}`);
+        return;
+      }
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => {
+          console.log(`Section ${sectionId} entered viewport`);
+          // Remove active class from all links
+          tocLinks.forEach((link) => link.classList.remove("active"));
+          // Add active class to corresponding link
+          correspondingLink.classList.add("active");
+        },
+      });
+    });
+  }
+
+  // Initialize ScrollTriggers after TOC creation
+  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+    initScrollTriggers();
+  } else {
+    console.warn("GSAP or ScrollTrigger not available");
+  }
 });
 
 //Banner Injection
