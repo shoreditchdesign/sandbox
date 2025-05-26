@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Table of Contents with ScrollTrigger
+//Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing TOC system");
 
@@ -622,7 +623,14 @@ document.addEventListener("DOMContentLoaded", function () {
         start: "top center",
         end: "bottom center",
         onEnter: () => {
-          console.log(`Section ${sectionId} entered viewport`);
+          console.log(`Section ${sectionId} entered viewport (scrolling down)`);
+          // Remove active class from all links
+          tocLinks.forEach((link) => link.classList.remove("active"));
+          // Add active class to corresponding link
+          correspondingLink.classList.add("active");
+        },
+        onEnterBack: () => {
+          console.log(`Section ${sectionId} entered viewport (scrolling up)`);
           // Remove active class from all links
           tocLinks.forEach((link) => link.classList.remove("active"));
           // Add active class to corresponding link
