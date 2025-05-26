@@ -549,7 +549,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const rect = targetSection.getBoundingClientRect();
             const currentScroll = window.pageYOffset;
             const targetPosition =
-              currentScroll + rect.top - window.innerHeight * 0.5;
+              currentScroll + rect.top - window.innerHeight * 0.3;
 
             gsap.to(window, {
               scrollTo: targetPosition,
@@ -605,8 +605,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ScrollTrigger.create({
           trigger: section,
-          start: "top center",
-          end: "bottom center",
+          start: "top 30%",
+          end: "bottom 30%",
           onEnter: () => {
             console.log(
               `Section ${sectionId} entered viewport (scrolling down)`,
