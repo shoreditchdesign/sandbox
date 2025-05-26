@@ -605,8 +605,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ScrollTrigger.create({
           trigger: section,
-          start: "top 30%",
-          end: "bottom 30%",
+          start: "top center",
+          end: "bottom center",
           onEnter: () => {
             console.log(
               `Section ${sectionId} entered viewport (scrolling down)`,
