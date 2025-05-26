@@ -547,22 +547,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const targetSection = document.getElementById(id);
           if (targetSection) {
-            const scrollContainer = document.querySelector("[data-toc-scroll]");
-            if (scrollContainer) {
-              const containerRect = scrollContainer.getBoundingClientRect();
-              const sectionRect = targetSection.getBoundingClientRect();
-              const targetPosition =
-                scrollContainer.scrollTop +
-                sectionRect.top -
-                containerRect.top -
-                window.innerHeight * 0.5;
+            const targetPosition =
+              targetSection.offsetTop - window.innerHeight * 0.5;
 
-              gsap.to(scrollContainer, {
-                scrollTop: targetPosition,
-                duration: 1.2,
-                ease: "power2.inOut",
-              });
-            }
+            gsap.to(window, {
+              scrollTo: targetPosition,
+              duration: 1.2,
+              ease: "power2.inOut",
+            });
           }
         });
 
