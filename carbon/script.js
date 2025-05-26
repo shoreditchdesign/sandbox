@@ -410,13 +410,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, initializing TOC system");
-
   let allH3s = [];
 
   function contentSetup() {
-    console.log("Setting up content and sections");
-
     // Add data-motion-state to children of data-toc-body elements
     const tocBodyElements = document.querySelectorAll("[data-toc-body]");
     if (tocBodyElements.length === 0) {
@@ -507,8 +503,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function linkSetup() {
-    console.log("Setting up TOC links and click handlers");
-
     const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
 
     tocWrappers.forEach((tocWrapper) => {
@@ -567,21 +561,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function scrollSetup() {
-    console.log("Setting up scroll behavior and ScrollTrigger");
-
     // Prevent default behavior for TOC links
     document.addEventListener("click", function (e) {
       const tocLink = e.target.closest("[data-toc-target]");
       if (tocLink) {
         e.preventDefault();
-        console.log("Prevented default anchor behavior");
       }
     });
 
     // GSAP ScrollTrigger Integration
     function initScrollTriggers() {
-      console.log("Initializing ScrollTrigger for TOC sections");
-
       const tocSections = document.querySelectorAll("[data-toc-section]");
       const tocLinks = document.querySelectorAll("[data-toc-target]");
 
@@ -589,8 +578,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("No TOC sections found for ScrollTrigger");
         return;
       }
-
-      console.log(`Creating ScrollTriggers for ${tocSections.length} sections`);
 
       tocSections.forEach((section) => {
         const sectionId = section.id;
@@ -608,14 +595,10 @@ document.addEventListener("DOMContentLoaded", function () {
           start: "top center",
           end: "bottom center",
           onEnter: () => {
-            console.log(
-              `Section ${sectionId} entered viewport (scrolling down)`,
-            );
             tocLinks.forEach((link) => link.classList.remove("active"));
             correspondingLink.classList.add("active");
           },
           onEnterBack: () => {
-            console.log(`Section ${sectionId} entered viewport (scrolling up)`);
             tocLinks.forEach((link) => link.classList.remove("active"));
             correspondingLink.classList.add("active");
           },
