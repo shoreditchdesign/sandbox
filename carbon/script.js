@@ -409,243 +409,237 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Table of Contents with ScrollTrigger
-//Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing TOC system");
 
-  // Part 1: Add data-stagger-block to children of data-toc-body elements
-  const tocBodyElements = document.querySelectorAll("[data-toc-body]");
-  if (tocBodyElements.length === 0) {
-    console.warn("No elements with [data-toc-body] found");
-  } else {
-    tocBodyElements.forEach(function (tocBody) {
-      const childElements = tocBody.children;
-      if (childElements.length === 0) {
-        console.log("No children found for a data-toc-body element");
-      } else {
-        Array.from(childElements).forEach(function (child) {
-          child.setAttribute("data-motion-state", "blocked");
-        });
-      }
-    });
-  }
-
-  // Part 2: Create table of contents and wrap H3 sections
-  const richTextBodies = document.querySelectorAll("[data-toc-body]");
   let allH3s = [];
 
-  // First collect all H3s
-  richTextBodies.forEach((body) => {
-    const h3s = body.querySelectorAll("h3");
-    allH3s = [...allH3s, ...h3s];
-  });
+  function contentSetup() {
+    console.log("Setting up content and sections");
 
-  // If no H3s are found, remove template cells from all TOC wrappers
-  if (allH3s.length === 0) {
-    const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
-    tocWrappers.forEach((tocWrapper) => {
-      const templateCell = tocWrapper.querySelector("[data-toc-cell]");
-      if (templateCell) {
-        templateCell.remove();
-      }
-      tocWrapper.style.display = "none";
-    });
-    return; // Exit early if no H3s found
-  }
-
-  // Process each data-toc-body container separately
-  richTextBodies.forEach((body) => {
-    // Get all children of the body
-    const allChildren = Array.from(body.children);
-    // Get H3s within this specific body
-    const h3sInBody = Array.from(body.querySelectorAll("h3"));
-
-    // Skip if no H3s in this body
-    if (h3sInBody.length === 0) return;
-
-    // Track processed elements to avoid duplicates
-    const processedElements = new Set();
-
-    // Process each H3
-    h3sInBody.forEach((h3, index) => {
-      const sectionId = `toc-${index + 1}`;
-      const sectionDiv = document.createElement("div");
-      sectionDiv.setAttribute("id", sectionId);
-      sectionDiv.setAttribute("data-toc-section", "");
-
-      // Start with the H3
-      const elementsToGroup = [h3];
-      processedElements.add(h3);
-
-      // Find the index of current H3 in allChildren
-      const h3Index = allChildren.indexOf(h3);
-
-      // Find all elements until the next H3 or the end
-      let nextIndex = h3Index + 1;
-      while (nextIndex < allChildren.length) {
-        const nextElement = allChildren[nextIndex];
-        // Stop if we hit another H3
-        if (nextElement.tagName === "H3") break;
-        elementsToGroup.push(nextElement);
-        processedElements.add(nextElement);
-        nextIndex++;
-      }
-
-      // Create a document fragment for better performance
-      const fragment = document.createDocumentFragment();
-      elementsToGroup.forEach((el) => fragment.appendChild(el));
-
-      // Add the fragment to the section div
-      sectionDiv.appendChild(fragment);
-
-      // Insert the section div where the H3 was
-      if (
-        h3Index > 0 &&
-        allChildren[h3Index - 1] &&
-        !processedElements.has(allChildren[h3Index - 1])
-      ) {
-        body.insertBefore(sectionDiv, allChildren[h3Index - 1].nextSibling);
-      } else {
-        body.appendChild(sectionDiv);
-      }
-    });
-
-    // Handle elements before the first H3 (leave them as is)
-    // Handle elements that weren't processed (shouldn't be any with our approach)
-    const unprocessedElements = allChildren.filter(
-      (el) => !processedElements.has(el),
-    );
-  });
-
-  // Create TOC using the new section IDs
-  const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
-  tocWrappers.forEach((tocWrapper) => {
-    const templateCell = tocWrapper.querySelector("[data-toc-cell]");
-    if (!templateCell || allH3s.length === 0) {
-      tocWrapper.style.display = "none";
-      return;
-    }
-
-    const existingCells = tocWrapper.querySelectorAll("[data-toc-cell]");
-    existingCells.forEach((cell, index) => {
-      if (index !== 0) cell.remove();
-    });
-
-    allH3s.forEach((h3, index) => {
-      const newCell = templateCell.cloneNode(true);
-      const textElement = newCell.querySelector("[data-toc-text]");
-      const id = `toc-${index + 1}`;
-
-      // Store the id as a data attribute
-      newCell.setAttribute("data-toc-target", id);
-      // Add href attribute with format #toc-1
-      newCell.setAttribute("href", `#${id}`);
-
-      if (textElement) {
-        textElement.textContent = h3.textContent;
-      }
-
-      // Prevent default anchor behavior for ALL clicks on these elements
-      newCell.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        // Remove active class from all TOC cells first
-        document.querySelectorAll("[data-toc-target]").forEach((cell) => {
-          cell.classList.remove("active");
-        });
-
-        // Add active class to clicked cell
-        newCell.classList.add("active");
-
-        const targetSection = document.getElementById(id);
-        if (targetSection) {
-          const offset = 120;
-          const targetPosition = targetSection.offsetTop - offset;
-
-          // Use Lenis scroll method if available, otherwise fallback to window.scrollTo
-          if (window.lenis) {
-            window.lenis.scrollTo(targetPosition, {
-              duration: 1.2,
-              easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            });
-          } else {
-            // Fallback for non-Lenis scroll
-            window.scrollTo({
-              top: targetPosition,
-              behavior: "smooth",
-            });
-          }
+    // Add data-motion-state to children of data-toc-body elements
+    const tocBodyElements = document.querySelectorAll("[data-toc-body]");
+    if (tocBodyElements.length === 0) {
+      console.warn("No elements with [data-toc-body] found");
+    } else {
+      tocBodyElements.forEach(function (tocBody) {
+        const childElements = tocBody.children;
+        if (childElements.length === 0) {
+          console.log("No children found for a data-toc-body element");
+        } else {
+          Array.from(childElements).forEach(function (child) {
+            child.setAttribute("data-motion-state", "blocked");
+          });
         }
       });
+    }
 
-      tocWrapper.appendChild(newCell);
+    // Create sections and collect H3s
+    const richTextBodies = document.querySelectorAll("[data-toc-body]");
+
+    // First collect all H3s
+    richTextBodies.forEach((body) => {
+      const h3s = body.querySelectorAll("h3");
+      allH3s = [...allH3s, ...h3s];
     });
 
-    templateCell.remove();
-  });
-
-  // Prevent default behavior for all links with data-toc-target attribute
-  document.addEventListener("click", function (e) {
-    const tocLink = e.target.closest("[data-toc-target]");
-    if (tocLink) {
-      e.preventDefault();
-      console.log("Prevented default anchor behavior");
-    }
-  });
-
-  // GSAP ScrollTrigger Integration
-  function initScrollTriggers() {
-    console.log("Initializing ScrollTrigger for TOC sections");
-
-    const tocSections = document.querySelectorAll("[data-toc-section]");
-    const tocLinks = document.querySelectorAll("[data-toc-target]");
-
-    if (tocSections.length === 0) {
-      console.warn("No TOC sections found for ScrollTrigger");
-      return;
+    // If no H3s are found, hide TOC wrappers and exit
+    if (allH3s.length === 0) {
+      const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+      tocWrappers.forEach((tocWrapper) => {
+        const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+        if (templateCell) {
+          templateCell.remove();
+        }
+        tocWrapper.style.display = "none";
+      });
+      return false; // Signal no content to process
     }
 
-    console.log(`Creating ScrollTriggers for ${tocSections.length} sections`);
+    // Process each data-toc-body container separately
+    richTextBodies.forEach((body) => {
+      const allChildren = Array.from(body.children);
+      const h3sInBody = Array.from(body.querySelectorAll("h3"));
 
-    tocSections.forEach((section) => {
-      const sectionId = section.id;
-      const correspondingLink = document.querySelector(
-        `[data-toc-target="${sectionId}"]`,
-      );
+      if (h3sInBody.length === 0) return;
 
-      if (!correspondingLink) {
-        console.warn(`No corresponding link found for section ${sectionId}`);
+      const processedElements = new Set();
+
+      // Process each H3
+      h3sInBody.forEach((h3, index) => {
+        const sectionId = `toc-${index + 1}`;
+        const sectionDiv = document.createElement("div");
+        sectionDiv.setAttribute("id", sectionId);
+        sectionDiv.setAttribute("data-toc-section", "");
+
+        const elementsToGroup = [h3];
+        processedElements.add(h3);
+
+        const h3Index = allChildren.indexOf(h3);
+
+        let nextIndex = h3Index + 1;
+        while (nextIndex < allChildren.length) {
+          const nextElement = allChildren[nextIndex];
+          if (nextElement.tagName === "H3") break;
+          elementsToGroup.push(nextElement);
+          processedElements.add(nextElement);
+          nextIndex++;
+        }
+
+        const fragment = document.createDocumentFragment();
+        elementsToGroup.forEach((el) => fragment.appendChild(el));
+
+        sectionDiv.appendChild(fragment);
+
+        if (
+          h3Index > 0 &&
+          allChildren[h3Index - 1] &&
+          !processedElements.has(allChildren[h3Index - 1])
+        ) {
+          body.insertBefore(sectionDiv, allChildren[h3Index - 1].nextSibling);
+        } else {
+          body.appendChild(sectionDiv);
+        }
+      });
+    });
+
+    return true; // Signal successful content setup
+  }
+
+  function linkSetup() {
+    console.log("Setting up TOC links and click handlers");
+
+    const tocWrappers = document.querySelectorAll("[data-toc-wrap]");
+
+    tocWrappers.forEach((tocWrapper) => {
+      const templateCell = tocWrapper.querySelector("[data-toc-cell]");
+      if (!templateCell || allH3s.length === 0) {
+        tocWrapper.style.display = "none";
         return;
       }
 
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => {
-          console.log(`Section ${sectionId} entered viewport (scrolling down)`);
-          // Remove active class from all links
-          tocLinks.forEach((link) => link.classList.remove("active"));
-          // Add active class to corresponding link
-          correspondingLink.classList.add("active");
-        },
-        onEnterBack: () => {
-          console.log(`Section ${sectionId} entered viewport (scrolling up)`);
-          // Remove active class from all links
-          tocLinks.forEach((link) => link.classList.remove("active"));
-          // Add active class to corresponding link
-          correspondingLink.classList.add("active");
-        },
+      const existingCells = tocWrapper.querySelectorAll("[data-toc-cell]");
+      existingCells.forEach((cell, index) => {
+        if (index !== 0) cell.remove();
       });
+
+      allH3s.forEach((h3, index) => {
+        const newCell = templateCell.cloneNode(true);
+        const textElement = newCell.querySelector("[data-toc-text]");
+        const id = `toc-${index + 1}`;
+
+        newCell.setAttribute("data-toc-target", id);
+        newCell.setAttribute("href", `#${id}`);
+
+        if (textElement) {
+          textElement.textContent = h3.textContent;
+        }
+
+        newCell.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          document.querySelectorAll("[data-toc-target]").forEach((cell) => {
+            cell.classList.remove("active");
+          });
+
+          newCell.classList.add("active");
+
+          const targetSection = document.getElementById(id);
+          if (targetSection) {
+            const offset = 120;
+            const targetPosition = targetSection.offsetTop - offset;
+
+            if (window.lenis) {
+              window.lenis.scrollTo(targetPosition, {
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+              });
+            } else {
+              window.scrollTo({
+                top: targetPosition,
+                behavior: "smooth",
+              });
+            }
+          }
+        });
+
+        tocWrapper.appendChild(newCell);
+      });
+
+      templateCell.remove();
     });
   }
 
-  // Initialize ScrollTriggers after TOC creation
-  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-    initScrollTriggers();
-  } else {
-    console.warn("GSAP or ScrollTrigger not available");
+  function scrollSetup() {
+    console.log("Setting up scroll behavior and ScrollTrigger");
+
+    // Prevent default behavior for TOC links
+    document.addEventListener("click", function (e) {
+      const tocLink = e.target.closest("[data-toc-target]");
+      if (tocLink) {
+        e.preventDefault();
+        console.log("Prevented default anchor behavior");
+      }
+    });
+
+    // GSAP ScrollTrigger Integration
+    function initScrollTriggers() {
+      console.log("Initializing ScrollTrigger for TOC sections");
+
+      const tocSections = document.querySelectorAll("[data-toc-section]");
+      const tocLinks = document.querySelectorAll("[data-toc-target]");
+
+      if (tocSections.length === 0) {
+        console.warn("No TOC sections found for ScrollTrigger");
+        return;
+      }
+
+      console.log(`Creating ScrollTriggers for ${tocSections.length} sections`);
+
+      tocSections.forEach((section) => {
+        const sectionId = section.id;
+        const correspondingLink = document.querySelector(
+          `[data-toc-target="${sectionId}"]`,
+        );
+
+        if (!correspondingLink) {
+          console.warn(`No corresponding link found for section ${sectionId}`);
+          return;
+        }
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top center",
+          end: "bottom center",
+          onEnter: () => {
+            console.log(
+              `Section ${sectionId} entered viewport (scrolling down)`,
+            );
+            tocLinks.forEach((link) => link.classList.remove("active"));
+            correspondingLink.classList.add("active");
+          },
+          onEnterBack: () => {
+            console.log(`Section ${sectionId} entered viewport (scrolling up)`);
+            tocLinks.forEach((link) => link.classList.remove("active"));
+            correspondingLink.classList.add("active");
+          },
+        });
+      });
+    }
+
+    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
+      initScrollTriggers();
+    } else {
+      console.warn("GSAP or ScrollTrigger not available");
+    }
+  }
+
+  // Execute functions in sequence
+  const hasContent = contentSetup();
+  if (hasContent) {
+    linkSetup();
+    scrollSetup();
   }
 });
 
