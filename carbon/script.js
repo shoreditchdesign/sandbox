@@ -409,7 +409,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Table of Contents with ScrollTrigger
-//Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing TOC system");
 
@@ -547,8 +546,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const targetSection = document.getElementById(id);
           if (targetSection) {
+            const rect = targetSection.getBoundingClientRect();
+            const currentScroll = window.pageYOffset;
             const targetPosition =
-              targetSection.offsetTop - window.innerHeight * 0.5;
+              currentScroll + rect.top - window.innerHeight * 0.5;
 
             gsap.to(window, {
               scrollTo: targetPosition,
