@@ -547,14 +547,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const targetSection = document.getElementById(id);
           if (targetSection) {
-            const targetPosition =
-              targetSection.offsetTop - window.innerHeight * 0.5;
+            const scrollContainer = document.querySelector("[data-toc-scroll]");
+            if (scrollContainer) {
+              const containerRect = scrollContainer.getBoundingClientRect();
+              const sectionRect = targetSection.getBoundingClientRect();
+              const targetPosition =
+                scrollContainer.scrollTop +
+                sectionRect.top -
+                containerRect.top -
+                window.innerHeight * 0.5;
 
-            gsap.to(window, {
-              scrollTo: targetPosition,
-              duration: 1.2,
-              ease: "power2.inOut",
-            });
+              gsap.to(scrollContainer, {
+                scrollTop: targetPosition,
+                duration: 1.2,
+                ease: "power2.inOut",
+              });
+            }
           }
         });
 
@@ -604,8 +612,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ScrollTrigger.create({
           trigger: section,
-          start: "top 60%",
-          end: "bottom 60%",
+          start: "top center",
+          end: "bottom center",
           onEnter: () => {
             console.log(
               `Section ${sectionId} entered viewport (scrolling down)`,
