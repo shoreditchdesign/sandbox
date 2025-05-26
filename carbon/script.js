@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Table of Contents with ScrollTrigger
+//Table of Contents with ScrollTrigger
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing TOC system");
 
@@ -546,20 +547,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const targetSection = document.getElementById(id);
           if (targetSection) {
-            const offset = 120;
-            const targetPosition = targetSection.offsetTop - offset;
+            const targetPosition =
+              targetSection.offsetTop - window.innerHeight * 0.5;
 
-            if (window.lenis) {
-              window.lenis.scrollTo(targetPosition, {
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-              });
-            } else {
-              window.scrollTo({
-                top: targetPosition,
-                behavior: "smooth",
-              });
-            }
+            gsap.to(window, {
+              scrollTo: targetPosition,
+              duration: 1.2,
+              ease: "power2.inOut",
+            });
           }
         });
 
@@ -609,8 +604,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ScrollTrigger.create({
           trigger: section,
-          start: "top center",
-          end: "bottom center",
+          start: "top 60%",
+          end: "bottom 60%",
           onEnter: () => {
             console.log(
               `Section ${sectionId} entered viewport (scrolling down)`,
