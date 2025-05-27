@@ -1145,31 +1145,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Hover Blocker
-document.addEventListener("DOMContentLoaded", () => {
-  function disableHoverOnTouch() {
-    if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
-      const style = document.createElement("style");
-      style.innerHTML = `
-        @media (hover: none) {
-          *:hover {
-            /* Reset all hover styles */
-          }
-        }
-
-        /* More aggressive approach - disable all hover pseudo-classes */
-        .no-hover *:hover {
-          all: unset !important;
-          /* Restore non-hover styles */
-          display: revert !important;
-          position: revert !important;
-        }
-      `;
-
-      document.head.appendChild(style);
-      document.body.classList.add("no-hover");
-    }
-  }
-
-  // Run on page load
-  disableHoverOnTouch();
-});
