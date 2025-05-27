@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Swiper initialized:", mySwiper);
 });
 
-//Table of Contents with ScrollTrigger
+//Table of Contents
 document.addEventListener("DOMContentLoaded", function () {
   let allH3s = [];
 
@@ -990,4 +990,65 @@ document.addEventListener("DOMContentLoaded", () => {
       document.documentElement.style.overflow = "";
     }, 4000); // 4000 milliseconds = 4 seconds
   }
+});
+
+//Card Resizer
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing card resizer");
+
+  // Configuration
+  const config = {
+    desktopBreakpoint: 1024,
+    selectors: {
+      imageCards: '[data-news-card="image"]',
+      fillCards: '[data-news-card="fill"]',
+    },
+  };
+
+  function isDesktop() {
+    return window.innerWidth >= config.desktopBreakpoint;
+  }
+
+  function cardResizer() {
+    console.log("Running cardResizer");
+
+    if (!isDesktop()) {
+      console.log("Mobile detected, skipping resize");
+      return;
+    }
+
+    const imageCards = document.querySelectorAll(config.selectors.imageCards);
+    const fillCards = document.querySelectorAll(config.selectors.fillCards);
+
+    console.log(
+      `Found ${imageCards.length} image cards, ${fillCards.length} fill cards`,
+    );
+
+    if (imageCards.length === 0) {
+      console.log("No image cards found");
+      return;
+    }
+
+    // Get heights of all image cards
+    const heights = Array.from(imageCards).map((card) => card.offsetHeight);
+    const minHeight = Math.min(...heights);
+
+    console.log(`Image card heights: ${heights}, minimum: ${minHeight}px`);
+
+    // Apply min-height to all fill cards
+    fillCards.forEach((card) => {
+      card.style.minHeight = `${minHeight}px`;
+    });
+
+    console.log(
+      `Applied min-height of ${minHeight}px to ${fillCards.length} fill cards`,
+    );
+  }
+
+  // Initialize
+  cardResizer();
+
+  // Rerun on window resize
+  window.addEventListener("resize", cardResizer);
+  console.log("Card resizer initialized with resize listener");
 });
