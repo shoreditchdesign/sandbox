@@ -346,10 +346,13 @@ document.addEventListener("DOMContentLoaded", function () {
       clickable: true,
     },
     centeredSlides: false,
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
-    },
+    autoplay:
+      window.innerWidth >= 768
+        ? {
+            delay: 3000,
+            disableOnInteraction: false,
+          }
+        : false,
     allowTouchMove: window.innerWidth >= 768,
   });
 });
