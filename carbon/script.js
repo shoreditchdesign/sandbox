@@ -1029,11 +1029,21 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Get heights of all image cards
-    const heights = Array.from(imageCards).map((card) => card.offsetHeight);
+    // Get heights of all image cards (excluding 0 heights)
+    const heights = Array.from(imageCards)
+      .map((card) => card.offsetHeight)
+      .filter((height) => height > 0);
+
+    if (heights.length === 0) {
+      console.log("No image cards with height > 0 found");
+      return;
+    }
+
     const minHeight = Math.min(...heights);
 
-    console.log(`Image card heights: ${heights}, minimum: ${minHeight}px`);
+    console.log(
+      `Image card heights: ${heights}, minimum (excluding 0): ${minHeight}px`,
+    );
 
     // Apply min-height to all fill cards
     fillCards.forEach((card) => {
