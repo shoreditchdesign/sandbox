@@ -362,6 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
     spaceBetween: 16,
     grabCursor: true,
     allowTouchMove: true,
+    autoHeight: false,
     watchOverflow: true, // Added: Disable navigation when not needed
     slidesOffsetBefore: 0, // Added: Ensure slides start at container edge
     slidesOffsetAfter: 0, // Added: Ensure slides end at container edge
