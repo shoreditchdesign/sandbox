@@ -2,8 +2,11 @@ console.log("script deployed");
 
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
-  if (window.innerWidth >= 992) {
-    // Only initialize on desktop (width >= 992px)
+  // Check if Safari browser
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  if (window.innerWidth >= 992 && !isSafari) {
+    // Only initialize on desktop (width >= 992px) and not Safari
     const lenis = new Lenis({
       smooth: true,
       lerp: 0.1,
@@ -15,9 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+    console.log("Lenis initialized - not Safari");
+  } else if (isSafari) {
+    console.log("Lenis skipped - Safari detected");
   }
 });
-
 //Navigation Bar
 document.addEventListener("DOMContentLoaded", function () {
   document
