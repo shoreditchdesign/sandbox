@@ -1066,3 +1066,78 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", cardResizer);
   console.log("Card resizer initialized with resize listener");
 });
+
+//Viewport Height checkboxFilters// Script to find all elements using viewport height units (100vh, svh, dvh)
+function findViewportHeightElements() {
+  console.log("🔍 Searching for elements using viewport height units...");
+
+  // Get all elements in the DOM
+  const allElements = document.querySelectorAll("*");
+  const viewportHeightElements = [];
+
+  // Regex to match viewport height units
+  const viewportHeightRegex = /(100vh|svh|dvh)/gi;
+
+  allElements.forEach((element, index) => {
+    const computedStyle = window.getComputedStyle(element);
+    const inlineStyle = element.style;
+
+    // Properties to check
+    const propertiesToCheck = ["height", "minHeight", "maxHeight"];
+
+    propertiesToCheck.forEach((property) => {
+      // Check computed styles
+      const computedValue = computedStyle[property];
+      if (computedValue && viewportHeightRegex.test(computedValue)) {
+        viewportHeightElements.push({
+          element: element,
+          property: property,
+          value: computedValue,
+          source: "computed",
+          tagName: element.tagName,
+          className: element.className,
+          id: element.id,
+        });
+      }
+
+      // Check inline styles
+      const inlineValue = inlineStyle[property];
+      if (inlineValue && viewportHeightRegex.test(inlineValue)) {
+        viewportHeightElements.push({
+          element: element,
+          property: property,
+          value: inlineValue,
+          source: "inline",
+          tagName: element.tagName,
+          className: element.className,
+          id: element.id,
+        });
+      }
+    });
+
+    // Reset regex lastIndex to avoid issues with global flag
+    viewportHeightRegex.lastIndex = 0;
+  });
+
+  // Log results
+  console.log(
+    `📊 Found ${viewportHeightElements.length} elements using viewport height units:`,
+  );
+
+  viewportHeightElements.forEach((item, index) => {
+    console.group(`🎯 Element ${index + 1}:`);
+    console.log("Element:", item.element);
+    console.log("Tag:", item.tagName);
+    console.log("ID:", item.id || "none");
+    console.log("Class:", item.className || "none");
+    console.log("Property:", item.property);
+    console.log("Value:", item.value);
+    console.log("Source:", item.source);
+    console.groupEnd();
+  });
+
+  return viewportHeightElements;
+}
+
+// Run the function
+findViewportHeightElements();
