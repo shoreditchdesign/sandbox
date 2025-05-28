@@ -981,6 +981,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // Convert to 1-based index to match data-sq-index
       const currentIndex = idx + 1;
 
+      // Skip first orb as it's handled separately
+      if (currentIndex === 1) {
+        return;
+      }
+
       // For scrolling down - use onEnter
       ScrollTrigger.create({
         trigger: chapter,
