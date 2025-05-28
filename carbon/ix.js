@@ -1,7 +1,164 @@
 console.log("ix deployed");
 
 // Unified Marquee/Ticker Cards Script
+// Unified Marquee/Ticker Cards Script
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("Initializing unified marquee/ticker script");
+
+  // Configuration
+  const OPEN_CARD_INTERVAL = 4;
+
+  // Mobile detection
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  function shouldBlockMotionOnMobile() {
+    const marqueeWrap = document.querySelector("[data-marquee-wrap]");
+    return (
+      marqueeWrap && marqueeWrap.getAttribute("data-motion-block") === "mobile"
+    );
+  }
+
+  // Clone cards function
+  function cloneCards() {
+    console.log("Starting card cloning");
+
+    const marqueeWrap = document.querySelector("[data-marquee-wrap]");
+    const marqueeItem = document.querySelector("[data-marquee-item]");
+
+    if (!marqueeWrap || !marqueeItem) {
+      console.error("Marquee elements not found");
+      return;
+    }
+
+    const originalContent = marqueeItem.outerHTML;
+
+    function calculateRequiredCopies() {
+      // On mobile with motion block, use fixed number of copies
+      if (isMobile() && shouldBlockMotionOnMobile()) {
+        return {
+          viewportWidth: window.innerWidth,
+          itemWidth: marqueeItem.offsetWidth,
+          copiesNeeded: 3,
+        };
+      }
+
+      // Original logic for desktop
+      const viewportWidth = window.innerWidth;
+      const itemWidth = marqueeItem.offsetWidth;
+      // Create a sequence 5 times the viewport width
+      const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+
+      return {
+        viewportWidth,
+        itemWidth,
+        copiesNeeded,
+      };
+    }
+
+    const { copiesNeeded, itemWidth } = calculateRequiredCopies();
+    marqueeWrap.innerHTML = "";
+
+    for (let i = 0; i < copiesNeeded; i++) {
+      const clone = document.createElement("div");
+      clone.innerHTML = originalContent;
+      const clonedItem = clone.firstElementChild;
+      marqueeWrap.appendChild(clonedItem);
+    }
+
+    console.log(
+      `Cloned ${copiesNeeded} cards for ${isMobile() ? "mobile" : "desktop"}`,
+    );
+    return { itemWidth, copiesNeeded };
+  }
+
+  // Move cards function (desktop only)
+  function moveCards(itemWidth, copiesNeeded) {
+    // Check if we should block motion on mobile
+    if (isMobile()) {
+      console.log("Mobile detected - skipping card movement");
+      return;
+    }
+
+    console.log("Starting desktop marquee animation");
+
+    const marqueeWrap = document.querySelector("[data-marquee-wrap]");
+    if (!marqueeWrap) {
+      console.error("Marquee wrap not found for animation");
+      return;
+    }
+
+    // Total width of the sequence
+    const totalWidth = itemWidth * copiesNeeded;
+
+    gsap.to(marqueeWrap, {
+      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
+      duration: totalWidth / 25, // Slowed down the speed for longer animation
+      ease: "none",
+      repeat: -1,
+      onRepeat: () => {
+        gsap.set(marqueeWrap, { x: 0 });
+      },
+    });
+
+    console.log("Desktop marquee animation started");
+  }
+
+  // Open cards function
+  function openCards() {
+    console.log("Setting card states");
+
+    const cards = document.querySelectorAll("[data-marquee-card]");
+    if (!cards.length) {
+      console.warn("No marquee cards found");
+      return;
+    }
+
+    cards.forEach((card, index) => {
+      // Set default state
+      card.setAttribute("data-marquee-card", "off");
+
+      // Open every 4th card using same logic as original
+      if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
+        card.setAttribute("data-marquee-card", "on");
+        console.log(`Opened card ${index + 1}`);
+      }
+    });
+
+    console.log(`Processed ${cards.length} cards`);
+  }
+
+  // Main initialization
+  function runCards() {
+    console.log("Running card system");
+
+    const cloneData = cloneCards();
+    if (!cloneData) return;
+
+    const { itemWidth, copiesNeeded } = cloneData;
+
+    if (isMobile()) {
+      console.log("Mobile detected - static display");
+      if (shouldBlockMotionOnMobile()) {
+        console.log("Motion blocked on mobile");
+      }
+    } else {
+      console.log("Desktop detected - starting animation");
+      moveCards(itemWidth, copiesNeeded);
+    }
+
+    // Set card states for both mobile and desktop
+    openCards();
+
+    console.log("Card system complete");
+  }
+
+  // Start the initialization
+  runCards();
+});
+
+/* document.addEventListener("DOMContentLoaded", () => {
   console.log("Initializing unified marquee/ticker script");
 
   // Configuration
@@ -202,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Start the initialization
   initializeCards();
-});
+}); */
 
 // Team Cards Hover
 document.addEventListener("DOMContentLoaded", () => {
