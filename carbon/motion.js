@@ -921,6 +921,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initVideoStates(items) {
+    // Skip init on mobile (768px and below)
+    if (window.innerWidth <= 768) {
+      return;
+    }
+
     gsap.set(items, { opacity: 0 });
     gsap.set(items[0], { opacity: 1 });
   }
