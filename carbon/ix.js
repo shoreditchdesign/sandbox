@@ -119,10 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set default state
       card.setAttribute("data-marquee-card", "off");
 
-      // Open every 4th card using same logic as original
-      if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
+      // Open cards at indices 0, 4, 8, 12, etc.
+      if (index % 4 === 0) {
         card.setAttribute("data-marquee-card", "on");
-        console.log(`Opened card ${index + 1}`);
+        console.log(`Opened card ${index}`);
       }
     });
 
