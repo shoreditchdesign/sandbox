@@ -911,9 +911,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Initialize videos and orbs (set all except first to opacity 0)
-    initItemStates(videoItems);
-    initItemStates(orbItems);
+    // Initialize videos and orbs
+    initVideoStates(videoItems);
+    initOrbStates(orbItems);
 
     // Set up scroll triggers for each chapter
     createVideoScrollTriggers(chapterItems, videoItems);
@@ -921,14 +921,23 @@ document.addEventListener("DOMContentLoaded", () => {
     createFirstOrbScrollTrigger(orbItems);
   }
 
-  function initItemStates(items) {
+  function initVideoStates(items) {
     // Skip init on mobile (768px and below)
     if (window.innerWidth <= 768) {
       return;
     }
 
     gsap.set(items, { opacity: 0 });
-    //gsap.set(items[0], { opacity: 1 });
+    gsap.set(items[0], { opacity: 1 }); // First video visible
+  }
+
+  function initOrbStates(items) {
+    // Skip init on mobile (768px and below)
+    if (window.innerWidth <= 768) {
+      return;
+    }
+
+    gsap.set(items, { opacity: 0 }); // All orbs hidden
   }
 
   // Animation creators
