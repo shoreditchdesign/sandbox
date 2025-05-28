@@ -1123,7 +1123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 
-  // Initialize animations
+  // Initialize animation
   initChapterAnimations();
 });
 
