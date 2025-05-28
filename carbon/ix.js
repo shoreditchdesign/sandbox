@@ -39,6 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function calculateRequiredCopies() {
+    // On mobile with motion block, use fixed number of copies
+    if (isMobile() && shouldBlockMotionOnMobile()) {
+      return {
+        viewportWidth: window.innerWidth,
+        itemWidth: marqueeItem.offsetWidth,
+        copiesNeeded: 3,
+      };
+    }
+
+    // Original logic for desktop
     const viewportWidth = window.innerWidth;
     const itemWidth = marqueeItem.offsetWidth;
     // Create a sequence 5 times the viewport width
