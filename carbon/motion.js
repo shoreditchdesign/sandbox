@@ -1025,7 +1025,7 @@ document.addEventListener("DOMContentLoaded", () => {
       onEnter: () => {
         handleFirstEnter(orbItems[0]);
       },
-      markers: false,
+      markers: true,
       id: "first-orb-enter",
     });
 
@@ -1036,7 +1036,7 @@ document.addEventListener("DOMContentLoaded", () => {
       onLeaveBack: () => {
         handleFirstLeaveBack(orbItems[0]);
       },
-      markers: false,
+      markers: true,
       id: "first-orb-leave",
     });
   }
