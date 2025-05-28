@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Lenis skipped - Safari detected");
   }
 });
+
 //Navigation Bar
 document.addEventListener("DOMContentLoaded", function () {
   document
@@ -1072,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Card resizer initialized with resize listener");
 });
 
-//Viewport Height checkboxFilters// Script to find all elements using viewport height units (100vh, svh, dvh)
+//Viewport Height Checker
 document.addEventListener("DOMContentLoaded", () => {
   function findViewportHeightElements() {
     console.log("🔍 Searching for elements using viewport height units...");
@@ -1148,5 +1149,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // Run the function
   findViewportHeightElements();
 });
-
-//Hover Blocker
