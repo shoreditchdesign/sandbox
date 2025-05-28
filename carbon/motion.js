@@ -1013,6 +1013,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createFirstOrbScrollTrigger(orbItems) {
+    console.log(
+      "createFirstOrbScrollTrigger called with:",
+      orbItems.length,
+      "items",
+    );
+
     if (!orbItems.length) {
       console.error("No orb items found for first orb trigger");
       return;
@@ -1020,23 +1026,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // For scrolling down - use onEnter
     ScrollTrigger.create({
-      trigger: chapterItems[0],
-      start: "top 32rem",
+      trigger: orbItems[0],
+      start: "top 16rem",
       onEnter: () => {
-        handleFirstEnter(chapterItems[0]);
+        handleFirstEnter(orbItems[0]);
       },
-      markers: true,
+      markers: false,
       id: "first-orb-enter",
     });
 
     // For scrolling up - use onLeaveBack
     ScrollTrigger.create({
-      trigger: chapterItems[0],
-      start: "top 32rem",
+      trigger: orbItems[0],
+      start: "top 16rem",
       onLeaveBack: () => {
-        handleFirstLeaveBack(chapterItems[0]);
+        handleFirstLeaveBack(orbItems[0]);
       },
-      markers: true,
+      markers: false,
       id: "first-orb-leave",
     });
   }
