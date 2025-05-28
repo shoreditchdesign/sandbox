@@ -1,13 +1,33 @@
 console.log("ix deployed");
 
-// Marquee Cards Hover
+// Unified Marquee/Ticker Cards Script
 document.addEventListener("DOMContentLoaded", () => {
-  const OPEN_CARD_INTERVAL = 4; // Define the interval for opening cards
+  console.log("Initializing unified marquee/ticker script");
 
+  // Configuration
+  const OPEN_CARD_INTERVAL = 4;
+
+  // Mobile detection
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  function shouldBlockMotionOnMobile() {
+    const marqueeWrap = document.querySelector("[data-marquee-wrap]");
+    return (
+      marqueeWrap && marqueeWrap.getAttribute("data-motion-block") === "mobile"
+    );
+  }
+
+  // Card initialization
   function initializeMarqueeCards() {
+    console.log("Initializing card dimensions");
     try {
       const cards = document.querySelectorAll("[data-marquee-card]");
-      if (!cards.length) return;
+      if (!cards.length) {
+        console.warn("No marquee cards found");
+        return;
+      }
 
       cards.forEach((card) => {
         if (card && card.parentElement) {
@@ -16,54 +36,36 @@ document.addEventListener("DOMContentLoaded", () => {
           card.style.width = `${width}px`;
         }
       });
+
+      console.log(`Initialized ${cards.length} cards`);
     } catch (error) {
-      console.warn("Marquee card calculation error:", error);
+      console.error("Marquee card calculation error:", error);
     }
   }
 
-  initializeMarqueeCards();
+  // Desktop marquee setup
+  function setupDesktopMarquee() {
+    console.log("Setting up desktop marquee");
 
-  const marqueeWrap = document.querySelector("[data-marquee-wrap]");
-  const marqueeItem = document.querySelector("[data-marquee-item]");
-  const originalContent = marqueeItem.outerHTML;
+    const marqueeWrap = document.querySelector("[data-marquee-wrap]");
+    const marqueeItem = document.querySelector("[data-marquee-item]");
 
-  // Add mobile check functions
-  function isMobile() {
-    return window.innerWidth <= 768; // You can adjust this breakpoint as needed
-  }
-
-  function shouldBlockMotionOnMobile() {
-    return (
-      marqueeWrap && marqueeWrap.getAttribute("data-motion-block") === "mobile"
-    );
-  }
-
-  function calculateRequiredCopies() {
-    // On mobile with motion block, use fixed number of copies
-    if (isMobile() && shouldBlockMotionOnMobile()) {
-      return {
-        viewportWidth: window.innerWidth,
-        itemWidth: marqueeItem.offsetWidth,
-        copiesNeeded: 3,
-      };
+    if (!marqueeWrap || !marqueeItem) {
+      console.error("Marquee elements not found");
+      return;
     }
 
-    // Original logic for desktop
-    const viewportWidth = window.innerWidth;
-    const itemWidth = marqueeItem.offsetWidth;
-    // Create a sequence 5 times the viewport width
-    const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+    const originalContent = marqueeItem.outerHTML;
 
-    return {
-      viewportWidth,
-      itemWidth,
-      copiesNeeded,
-    };
-  }
+    function calculateRequiredCopies() {
+      const viewportWidth = window.innerWidth;
+      const itemWidth = marqueeItem.offsetWidth;
+      const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
 
-  function setupMarquee() {
+      return { viewportWidth, itemWidth, copiesNeeded };
+    }
+
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
-
     marqueeWrap.innerHTML = "";
 
     for (let i = 0; i < copiesNeeded; i++) {
@@ -73,31 +75,51 @@ document.addEventListener("DOMContentLoaded", () => {
       marqueeWrap.appendChild(clonedItem);
     }
 
-    // Check if we should block motion on mobile AFTER cloning
-    if (isMobile() && shouldBlockMotionOnMobile()) {
-      console.log(
-        "Marquee animation blocked on mobile device (cloning still active)",
-      );
-      return; // Exit early, don't start the animation but keep the clones
-    }
-
-    // Total width of the sequence
     const totalWidth = itemWidth * copiesNeeded;
 
     gsap.to(marqueeWrap, {
-      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
-      duration: totalWidth / 25, // Slowed down the speed for longer animation
+      x: -totalWidth + itemWidth,
+      duration: totalWidth / 25,
       ease: "none",
       repeat: -1,
       onRepeat: () => {
         gsap.set(marqueeWrap, { x: 0 });
       },
     });
+
+    console.log("Desktop marquee animation started");
   }
 
-  setupMarquee();
-  initializeMarqueeCards();
+  // Mobile ticker setup
+  function setupMobileTicker() {
+    console.log("Setting up mobile ticker");
 
+    const tickerList = document.querySelector("[data-ticker-list]");
+    if (!tickerList) {
+      console.warn("Ticker list not found");
+      return;
+    }
+
+    const tickerCards = tickerList.querySelectorAll(
+      ".w-dyn-items [data-ticker-card]",
+    );
+    if (!tickerCards.length) {
+      console.warn("No ticker cards found");
+      return;
+    }
+
+    Array.from(tickerCards).forEach((card, index) => {
+      if (index % 4 === 0) {
+        card.setAttribute("data-ticker-card", "on");
+      }
+    });
+
+    console.log(
+      `Mobile ticker setup complete - ${tickerCards.length} cards processed`,
+    );
+  }
+
+  // Card interaction functions
   function openCard(card, initialWidth, getHoverWidth, quickAnims) {
     const targetWidth = getHoverWidth();
     quickAnims.width(targetWidth);
@@ -113,96 +135,73 @@ document.addEventListener("DOMContentLoaded", () => {
     card.setAttribute("data-marquee-state", "default");
   }
 
-  const cards = document.querySelectorAll("[data-marquee-card]");
-  const firstCard = cards[0]; // Store the first card
-  let firstClonedCard;
+  // Main initialization
+  function initializeCards() {
+    console.log("Initializing card interactions");
 
-  cards.forEach((card, index) => {
-    const bgLayer = card.querySelector("[data-marquee-bg]");
-    const textLayer = card.querySelector("[data-marquee-text]");
-    const easeDuration =
-      parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
+    initializeMarqueeCards();
 
-    gsap.set(textLayer, { opacity: 0 });
-    const initialWidth = card.offsetWidth;
-    const getHoverWidth = () => {
-      const currentHeight = card.offsetHeight;
-      return (currentHeight * 16) / 9;
-    };
-    const quickAnims = {
-      width: gsap.quickTo(card, "width", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-      bg: gsap.quickTo(bgLayer, "opacity", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-      textOpacity: gsap.quickTo(textLayer, "opacity", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-    };
-
-    // Commented out hover interactions
-    /*
-    card.addEventListener("mouseenter", () =>
-      openCard(card, initialWidth, getHoverWidth, quickAnims),
-    );
-    card.addEventListener("mouseleave", () =>
-      closeCard(card, initialWidth, quickAnims),
-    );
-    */
-
-    // Skip marquee open logic on mobile
-    if (!isMobile()) {
-      // Open every 4th card (only on desktop)
-      if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
-        openCard(card, initialWidth, getHoverWidth, quickAnims);
+    if (isMobile()) {
+      console.log("Mobile detected - setting up ticker");
+      if (shouldBlockMotionOnMobile()) {
+        console.log("Motion blocked on mobile - static display");
       }
+      setupMobileTicker();
+    } else {
+      console.log("Desktop detected - setting up marquee");
+      setupDesktopMarquee();
     }
 
-    // Find the first cloned card after marquee setup
-    if (
-      !firstClonedCard &&
-      card.closest("[data-marquee-wrap]") &&
-      card !== firstCard
-    ) {
-      firstClonedCard = card;
-    }
-  });
+    // Setup card interactions for both desktop and mobile
+    const cards = document.querySelectorAll("[data-marquee-card]");
+    console.log(`Setting up interactions for ${cards.length} cards`);
 
-  // Commented out first card opening
-  /*
-  // Open the first card after all cards have been processed and the marquee is set up
-  if (firstClonedCard) {
-    const bgLayer = firstClonedCard.querySelector("[data-marquee-bg]");
-    const textLayer = firstClonedCard.querySelector("[data-marquee-text]");
-    const easeDuration =
-      parseFloat(firstClonedCard.getAttribute("data-marquee-ease")) || 0.4;
+    cards.forEach((card, index) => {
+      const bgLayer = card.querySelector("[data-marquee-bg]");
+      const textLayer = card.querySelector("[data-marquee-text]");
+      const easeDuration =
+        parseFloat(card.getAttribute("data-marquee-ease")) || 0.4;
 
-    const initialWidth = firstClonedCard.offsetWidth;
-    const getHoverWidth = () => {
-      const currentHeight = firstClonedCard.offsetHeight;
-      return (currentHeight * 16) / 9;
-    };
-    const quickAnims = {
-      width: gsap.quickTo(firstClonedCard, "width", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-      bg: gsap.quickTo(bgLayer, "opacity", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-      textOpacity: gsap.quickTo(textLayer, "opacity", {
-        duration: easeDuration,
-        ease: "power2.inOut",
-      }),
-    };
-    openCard(firstClonedCard, initialWidth, getHoverWidth, quickAnims);
+      if (!bgLayer || !textLayer) {
+        console.warn(`Missing layers for card ${index}`);
+        return;
+      }
+
+      gsap.set(textLayer, { opacity: 0 });
+
+      const initialWidth = card.offsetWidth;
+      const getHoverWidth = () => {
+        const currentHeight = card.offsetHeight;
+        return (currentHeight * 16) / 9;
+      };
+
+      const quickAnims = {
+        width: gsap.quickTo(card, "width", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+        bg: gsap.quickTo(bgLayer, "opacity", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+        textOpacity: gsap.quickTo(textLayer, "opacity", {
+          duration: easeDuration,
+          ease: "power2.inOut",
+        }),
+      };
+
+      // Desktop-only: Open every 4th card
+      if (!isMobile() && (index + 1) % OPEN_CARD_INTERVAL === 0) {
+        openCard(card, initialWidth, getHoverWidth, quickAnims);
+        console.log(`Opened card ${index + 1} (desktop interval)`);
+      }
+    });
+
+    console.log("Card initialization complete");
   }
-  */
+
+  // Start the initialization
+  initializeCards();
 });
 
 // Team Cards Hover

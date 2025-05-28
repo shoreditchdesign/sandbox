@@ -225,23 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
-//News Ticker
-document.addEventListener("DOMContentLoaded", () => {
-  const tickerList = document.querySelector("[data-ticker-list]");
-  if (!tickerList) return;
-
-  const tickerCards = tickerList.querySelectorAll(
-    ".w-dyn-items [data-ticker-card]",
-  );
-  if (!tickerCards.length) return;
-
-  Array.from(tickerCards).forEach((card, index) => {
-    if (index % 4 === 0) {
-      card.setAttribute("data-ticker-card", "on");
-    }
-  });
-});
-
 //Countup Animation
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration Constants
