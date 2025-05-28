@@ -52,12 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupMarquee() {
-    // Check if we should block motion on mobile
-    if (isMobile() && shouldBlockMotionOnMobile()) {
-      console.log("Marquee animation blocked on mobile device");
-      return; // Exit early, don't start the animation
-    }
-
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
     marqueeWrap.innerHTML = "";
@@ -67,6 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
       clone.innerHTML = originalContent;
       const clonedItem = clone.firstElementChild;
       marqueeWrap.appendChild(clonedItem);
+    }
+
+    // Check if we should block motion on mobile AFTER cloning
+    if (isMobile() && shouldBlockMotionOnMobile()) {
+      console.log(
+        "Marquee animation blocked on mobile device (cloning still active)",
+      );
+      return; // Exit early, don't start the animation but keep the clones
     }
 
     // Total width of the sequence
