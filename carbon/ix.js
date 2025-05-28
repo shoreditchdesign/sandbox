@@ -1,7 +1,6 @@
 console.log("ix deployed");
 
-// Unified Marquee/Ticker Cards Script
-// Unified Marquee/Ticker Cards Script
+// Marquee
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Initializing unified marquee/ticker script");
 

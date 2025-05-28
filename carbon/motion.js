@@ -916,7 +916,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initVideoStates(orbItems);
 
     // Set up scroll triggers for each chapter
-    createChapterScrollTriggers(chapterItems, videoItems, orbItems);
+    createVideoScrollTriggers(chapterItems, videoItems);
+    createOrbScrollTriggers(chapterItems, orbItems);
   }
 
   function initVideoStates(items) {
@@ -925,7 +926,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Animation creators
-  function createChapterScrollTriggers(chapterItems, videoItems, orbItems) {
+  function createVideoScrollTriggers(chapterItems, videoItems) {
     const lastIndex = chapterItems.length;
 
     chapterItems.forEach((chapter, idx) => {
@@ -938,10 +939,9 @@ document.addEventListener("DOMContentLoaded", () => {
         start: "top center",
         onEnter: () => {
           handleChapterEnter(currentIndex, lastIndex, videoItems);
-          handleChapterEnter(currentIndex, lastIndex, orbItems);
         },
         markers: false,
-        id: `chapter-${currentIndex}-enter`,
+        id: `chapter-${currentIndex}-video-enter`,
       });
 
       // For scrolling up - use onLeave on the next chapter if it exists
@@ -951,10 +951,42 @@ document.addEventListener("DOMContentLoaded", () => {
           start: "top bottom",
           onLeaveBack: () => {
             handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems);
+          },
+          markers: false,
+          id: `chapter-${currentIndex + 1}-video-leave`,
+        });
+      }
+    });
+  }
+
+  function createOrbScrollTriggers(chapterItems, orbItems) {
+    const lastIndex = chapterItems.length;
+
+    chapterItems.forEach((chapter, idx) => {
+      // Convert to 1-based index to match data-sq-index
+      const currentIndex = idx + 1;
+
+      // For scrolling down - use onEnter
+      ScrollTrigger.create({
+        trigger: chapter,
+        start: "top 16rem",
+        onEnter: () => {
+          handleChapterEnter(currentIndex, lastIndex, orbItems);
+        },
+        markers: false,
+        id: `chapter-${currentIndex}-orb-enter`,
+      });
+
+      // For scrolling up - use onLeave on the next chapter if it exists
+      if (currentIndex < lastIndex) {
+        ScrollTrigger.create({
+          trigger: chapterItems[idx + 1], // Next chapter
+          start: "top bottom",
+          onLeaveBack: () => {
             handleChapterLeaveBack(currentIndex + 1, lastIndex, orbItems);
           },
           markers: false,
-          id: `chapter-${currentIndex + 1}-leave`,
+          id: `chapter-${currentIndex + 1}-orb-leave`,
         });
       }
     });
