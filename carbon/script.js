@@ -1,9 +1,71 @@
 console.log("script deployed");
 
-//Viewport Resizer
+//Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
-  let vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty("--vh", `${vh}px`);
+  // Check if iOS device
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  if (!isIOS) return;
+
+  console.log("iOS detected - initializing viewport height lock");
+
+  let currentOrientation = screen.orientation?.angle || window.orientation || 0;
+
+  function lockViewportHeights() {
+    const vh = window.innerHeight;
+    const elements = document.querySelectorAll("[data-vh-lock]");
+
+    console.log(`Locking ${elements.length} elements to ${vh}px viewport`);
+
+    elements.forEach((el) => {
+      const lockType = el.getAttribute("data-vh-lock");
+      const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
+      const pixelValue = (vh * vhValue) / 100;
+
+      switch (lockType) {
+        case "base":
+          el.style.height = `${pixelValue}px`;
+          break;
+        case "min":
+          el.style.minHeight = `${pixelValue}px`;
+          break;
+        case "max":
+          el.style.maxHeight = `${pixelValue}px`;
+          break;
+        case "all":
+          el.style.height = `${pixelValue}px`;
+          el.style.minHeight = `${pixelValue}px`;
+          el.style.maxHeight = `${pixelValue}px`;
+          break;
+      }
+
+      console.log(
+        `${el.tagName} [${lockType}] -> ${pixelValue}px (${vhValue}vh)`,
+      );
+    });
+  }
+
+  // Initial lock
+  lockViewportHeights();
+
+  // Re-lock on orientation change only
+  window.addEventListener("orientationchange", function () {
+    setTimeout(function () {
+      const newOrientation =
+        screen.orientation?.angle || window.orientation || 0;
+
+      if (
+        Math.abs(newOrientation - currentOrientation) === 90 ||
+        Math.abs(newOrientation - currentOrientation) === 270
+      ) {
+        console.log("Orientation changed - re-locking viewport heights");
+        lockViewportHeights();
+        currentOrientation = newOrientation;
+      }
+    }, 100);
+  });
 });
 
 //Lenis Smooth Scroll
