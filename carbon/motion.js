@@ -1027,7 +1027,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // For scrolling down - use onEnter
     ScrollTrigger.create({
       trigger: orbItems[0],
-      start: "top 16rem",
+      start: "top 48rem",
       onEnter: () => {
         handleFirstEnter(orbItems[0]);
       },
@@ -1038,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // For scrolling up - use onLeaveBack
     ScrollTrigger.create({
       trigger: orbItems[0],
-      start: "top 16rem",
+      start: "top 48rem",
       onLeaveBack: () => {
         handleFirstLeaveBack(orbItems[0]);
       },
