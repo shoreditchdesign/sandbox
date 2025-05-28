@@ -927,7 +927,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     gsap.set(items, { opacity: 0 });
-    gsap.set(items[0], { opacity: 1 });
+    //gsap.set(items[0], { opacity: 1 });
   }
 
   // Animation creators
