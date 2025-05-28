@@ -3,7 +3,20 @@ console.log("script deployed");
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  {
+    {
+      REWRITTEN_CODE;
+    }
+  }
+  const isSafari = (() => {
+    const safariCheck = /^((?!chrome|android).)*safari/i.test(
+      navigator.userAgent,
+    );
+    if (safariCheck) {
+      console.warn("Lenis has been skipped");
+    }
+    return safariCheck;
+  })();
 
   if (window.innerWidth >= 992 && !isSafari) {
     // Only initialize on desktop (width >= 992px) and not Safari
