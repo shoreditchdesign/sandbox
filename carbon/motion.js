@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   } else {
-    console.warn("Share banner not found");
+    console.error("Share banner not found");
   }
 });
 
@@ -796,7 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMarqueeAnimation() {
     // Check if required elements exist
     if (!elements.wrapper || !elements.row1 || !elements.row2) {
-      console.error("Required marquee elements not found in DOM");
+      console.error("Graphene marquee elements not found");
       return;
     }
 
@@ -905,9 +905,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Validate DOM elements
     if (!chapterItems.length || !videoItems.length || !orbItems.length) {
-      console.error(
-        "Required DOM elements not found for chapter video animation",
-      );
+      console.error("Graphene flow not found");
       return;
     }
 

@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
           target.appendChild(clone);
         });
       } else {
-        console.log(
+        console.warn(
           `No matching sources found for ${targetType}/${targetCategory}`,
         );
       }
@@ -478,8 +478,6 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
-
-  console.log("Swiper initialized:", mySwiper);
 });
 
 //Table of Contents
@@ -770,13 +768,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to initialize and handle pagination
   function initializePagination() {
-    console.log("Initializing pagination");
-
     // Set initial opacity to 0
     listPaginate.style.opacity = 0;
 
     // Get current items (might have changed due to filtering)
     const items = listPaginate.querySelectorAll("[data-pagination-item]");
+
+    if (!items || items.length === 0) {
+      console.error("No items found with the selector [data-pagination-item]");
+      return;
+    }
 
     // Get configuration from list element attributes
     const INITIAL_ITEMS =
@@ -1068,8 +1069,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Card Resizer
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing card resizer");
-
   // Configuration
   const config = {
     desktopBreakpoint: 1024,
@@ -1084,22 +1083,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function cardResizer() {
-    console.log("Running cardResizer");
-
     if (!isDesktop()) {
-      console.log("Mobile detected, skipping resize");
+      console.warn("Card resizer skipped");
       return;
     }
 
     const imageCards = document.querySelectorAll(config.selectors.imageCards);
     const fillCards = document.querySelectorAll(config.selectors.fillCards);
 
-    console.log(
-      `Found ${imageCards.length} image cards, ${fillCards.length} fill cards`,
-    );
-
     if (imageCards.length === 0) {
-      console.log("No image cards found");
       return;
     }
 
@@ -1109,24 +1101,15 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter((height) => height > 0);
 
     if (heights.length === 0) {
-      console.log("No image cards with height > 0 found");
       return;
     }
 
     const minHeight = Math.min(...heights);
 
-    console.log(
-      `Image card heights: ${heights}, minimum (excluding 0): ${minHeight}px`,
-    );
-
     // Apply min-height to all fill cards
     fillCards.forEach((card) => {
       card.style.minHeight = `${minHeight}px`;
     });
-
-    console.log(
-      `Applied min-height of ${minHeight}px to ${fillCards.length} fill cards`,
-    );
   }
 
   // Initialize
@@ -1134,82 +1117,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Rerun on window resize
   window.addEventListener("resize", cardResizer);
-  console.log("Card resizer initialized with resize listener");
-});
-
-//Viewport Height Checker
-document.addEventListener("DOMContentLoaded", () => {
-  function findViewportHeightElements() {
-    console.log("🔍 Searching for elements using viewport height units...");
-
-    // Get all elements in the DOM
-    const allElements = document.querySelectorAll("*");
-    const viewportHeightElements = [];
-
-    // Regex to match viewport height units
-    const viewportHeightRegex = /(100vh|svh|dvh)/gi;
-
-    allElements.forEach((element, index) => {
-      const computedStyle = window.getComputedStyle(element);
-      const inlineStyle = element.style;
-
-      // Properties to check
-      const propertiesToCheck = ["height", "minHeight", "maxHeight"];
-
-      propertiesToCheck.forEach((property) => {
-        // Check computed styles
-        const computedValue = computedStyle[property];
-        if (computedValue && viewportHeightRegex.test(computedValue)) {
-          viewportHeightElements.push({
-            element: element,
-            property: property,
-            value: computedValue,
-            source: "computed",
-            tagName: element.tagName,
-            className: element.className,
-            id: element.id,
-          });
-        }
-
-        // Check inline styles
-        const inlineValue = inlineStyle[property];
-        if (inlineValue && viewportHeightRegex.test(inlineValue)) {
-          viewportHeightElements.push({
-            element: element,
-            property: property,
-            value: inlineValue,
-            source: "inline",
-            tagName: element.tagName,
-            className: element.className,
-            id: element.id,
-          });
-        }
-      });
-
-      // Reset regex lastIndex to avoid issues with global flag
-      viewportHeightRegex.lastIndex = 0;
-    });
-
-    // Log results
-    console.log(
-      `📊 Found ${viewportHeightElements.length} elements using viewport height units:`,
-    );
-
-    viewportHeightElements.forEach((item, index) => {
-      console.group(`🎯 Element ${index + 1}:`);
-      console.log("Element:", item.element);
-      console.log("Tag:", item.tagName);
-      console.log("ID:", item.id || "none");
-      console.log("Class:", item.className || "none");
-      console.log("Property:", item.property);
-      console.log("Value:", item.value);
-      console.log("Source:", item.source);
-      console.groupEnd();
-    });
-
-    return viewportHeightElements;
-  }
-
-  // Run the function
-  findViewportHeightElements();
 });

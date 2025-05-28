@@ -2,8 +2,6 @@ console.log("ix deployed");
 
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Initializing unified marquee/ticker script");
-
   // Configuration
   const OPEN_CARD_INTERVAL = 4;
 
@@ -21,8 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Clone cards function
   function cloneCards() {
-    console.log("Starting card cloning");
-
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
     const marqueeItem = document.querySelector("[data-marquee-item]");
 
@@ -130,8 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Main initialization
   function runCards() {
-    console.log("Running card system");
-
     const cloneData = cloneCards();
     if (!cloneData) return;
 
