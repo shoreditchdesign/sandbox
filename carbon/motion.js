@@ -874,7 +874,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initializers
-  function initChapterVideoAnimation() {
+  function initChapterAnimations() {
     // Check if GSAP and ScrollTrigger are available
     if (!window.gsap) {
       console.error("GSAP not found. Please ensure it is loaded.");
@@ -912,15 +912,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Initialize videos and orbs (set all except first to opacity 0)
-    initVideoStates(videoItems);
-    initVideoStates(orbItems);
+    initItemStates(videoItems);
+    initItemStates(orbItems);
 
     // Set up scroll triggers for each chapter
     createVideoScrollTriggers(chapterItems, videoItems);
     createOrbScrollTriggers(chapterItems, orbItems);
+    createFirstOrbScrollTrigger(orbItems);
   }
 
-  function initVideoStates(items) {
+  function initItemStates(items) {
     // Skip init on mobile (768px and below)
     if (window.innerWidth <= 768) {
       return;
@@ -943,7 +944,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: chapter,
         start: "top center",
         onEnter: () => {
-          handleChapterEnter(currentIndex, lastIndex, videoItems);
+          handleItemEnter(currentIndex, lastIndex, videoItems);
         },
         markers: false,
         id: `chapter-${currentIndex}-video-enter`,
@@ -955,7 +956,7 @@ document.addEventListener("DOMContentLoaded", () => {
           trigger: chapterItems[idx + 1], // Next chapter
           start: "top bottom",
           onLeaveBack: () => {
-            handleChapterLeaveBack(currentIndex + 1, lastIndex, videoItems);
+            handleItemLeaveBack(currentIndex + 1, lastIndex, videoItems);
           },
           markers: false,
           id: `chapter-${currentIndex + 1}-video-leave`,
@@ -976,7 +977,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: chapter,
         start: "top 16rem",
         onEnter: () => {
-          handleChapterEnter(currentIndex, lastIndex, orbItems);
+          handleItemEnter(currentIndex, lastIndex, orbItems);
         },
         markers: false,
         id: `chapter-${currentIndex}-orb-enter`,
@@ -988,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
           trigger: chapterItems[idx + 1], // Next chapter
           start: "top bottom",
           onLeaveBack: () => {
-            handleChapterLeaveBack(currentIndex + 1, lastIndex, orbItems);
+            handleItemLeaveBack(currentIndex + 1, lastIndex, orbItems);
           },
           markers: false,
           id: `chapter-${currentIndex + 1}-orb-leave`,
@@ -997,11 +998,56 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function handleChapterEnter(currentIndex, lastIndex, items) {
-    // Skip animation for first chapter (already visible)
+  function createFirstOrbScrollTrigger(orbItems) {
+    if (!orbItems.length) {
+      console.error("No orb items found for first orb trigger");
+      return;
+    }
 
+    // For scrolling down - use onEnter
+    ScrollTrigger.create({
+      trigger: orbItems[0],
+      start: "top 16rem",
+      onEnter: () => {
+        handleFirstEnter(orbItems[0]);
+      },
+      markers: false,
+      id: "first-orb-enter",
+    });
+
+    // For scrolling up - use onLeaveBack
+    ScrollTrigger.create({
+      trigger: orbItems[0],
+      start: "top 16rem",
+      onLeaveBack: () => {
+        handleFirstLeaveBack(orbItems[0]);
+      },
+      markers: false,
+      id: "first-orb-leave",
+    });
+  }
+
+  function handleFirstEnter(orbItem) {
+    gsap.to(orbItem, {
+      opacity: 1,
+      duration: config.animation.duration / 2,
+      ease: config.animation.ease,
+      onStart: () => console.log("First orb fading in"),
+    });
+  }
+
+  function handleFirstLeaveBack(orbItem) {
+    gsap.to(orbItem, {
+      opacity: 0,
+      duration: config.animation.duration / 2,
+      ease: config.animation.ease,
+      onStart: () => console.log("First orb fading out"),
+    });
+  }
+
+  function handleItemEnter(currentIndex, lastIndex, items) {
     // Create and play transition animation
-    const timeline = createVideoTransitionTimeline(
+    const timeline = createTransitionTimeline(
       items[currentIndex - 2], // Previous item (currentIndex-1)-1 due to 0-based array
       items[currentIndex - 1], // Current item (currentIndex-1) due to 0-based array
     );
@@ -1009,14 +1055,14 @@ document.addEventListener("DOMContentLoaded", () => {
     timeline.play();
   }
 
-  function handleChapterLeaveBack(currentIndex, lastIndex, items) {
+  function handleItemLeaveBack(currentIndex, lastIndex, items) {
     // Skip animation for first chapter
     if (currentIndex <= 1) {
       return;
     }
 
     // Create and play transition animation (reverse direction)
-    const timeline = createVideoTransitionTimeline(
+    const timeline = createTransitionTimeline(
       items[currentIndex - 1], // Current item
       items[currentIndex - 2], // Previous item
     );
@@ -1024,7 +1070,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timeline.play();
   }
 
-  function createVideoTransitionTimeline(fadeOutItem, fadeInItem) {
+  function createTransitionTimeline(fadeOutItem, fadeInItem) {
     // Get indices for logging (add 1 to convert from 0-based to 1-based)
     const fadeOutIndex =
       Array.from(fadeOutItem.parentNode.children).indexOf(fadeOutItem) + 1;
@@ -1058,7 +1104,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Initialize animation
-  initChapterVideoAnimation();
+  initChapterAnimations();
 });
 
 //GSAP for Graphene Cursor
