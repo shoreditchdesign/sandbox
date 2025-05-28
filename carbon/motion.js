@@ -999,9 +999,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleChapterEnter(currentIndex, lastIndex, items) {
     // Skip animation for first chapter (already visible)
-    /* if (currentIndex === 1) {
+    if (currentIndex === 1) {
       return;
-      } */
+    }
 
     // Create and play transition animation
     const timeline = createVideoTransitionTimeline(
