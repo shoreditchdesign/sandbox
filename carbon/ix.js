@@ -27,6 +27,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const marqueeItem = document.querySelector("[data-marquee-item]");
   const originalContent = marqueeItem.outerHTML;
 
+  // Add mobile check functions
+  function isMobile() {
+    return window.innerWidth <= 768; // You can adjust this breakpoint as needed
+  }
+
+  function shouldBlockMotionOnMobile() {
+    return (
+      marqueeWrap && marqueeWrap.getAttribute("data-motion-block") === "mobile"
+    );
+  }
+
   function calculateRequiredCopies() {
     const viewportWidth = window.innerWidth;
     const itemWidth = marqueeItem.offsetWidth;
@@ -41,6 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupMarquee() {
+    // Check if we should block motion on mobile
+    if (isMobile() && shouldBlockMotionOnMobile()) {
+      console.log("Marquee animation blocked on mobile device");
+      return; // Exit early, don't start the animation
+    }
+
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
     marqueeWrap.innerHTML = "";
@@ -67,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setupMarquee();
-  initializeMarqueeCards();
   initializeMarqueeCards();
 
   function openCard(card, initialWidth, getHoverWidth, quickAnims) {
