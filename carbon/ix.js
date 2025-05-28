@@ -154,9 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     */
 
-    // Open every 8th card
-    if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
-      openCard(card, initialWidth, getHoverWidth, quickAnims);
+    // Skip marquee open logic on mobile
+    if (!isMobile()) {
+      // Open every 4th card (only on desktop)
+      if ((index + 1) % OPEN_CARD_INTERVAL === 0) {
+        openCard(card, initialWidth, getHoverWidth, quickAnims);
+      }
     }
 
     // Find the first cloned card after marquee setup
