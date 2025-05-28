@@ -918,7 +918,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set up scroll triggers for each chapter
     createVideoScrollTriggers(chapterItems, videoItems);
     createOrbScrollTriggers(chapterItems, orbItems);
-    createFirstOrbScrollTrigger(orbItems);
   }
 
   function initVideoStates(items) {
@@ -938,6 +937,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     gsap.set(items, { opacity: 0 }); // All orbs hidden
+    gsap.set(items[0], { opacity: 1 }); // First orb visible
   }
 
   // Animation creators
@@ -981,7 +981,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Convert to 1-based index to match data-sq-index
       const currentIndex = idx + 1;
 
-      // Skip first orb as it's handled separately
+      // Skip first orb as it's visible by default
       if (currentIndex === 1) {
         return;
       }
@@ -1012,35 +1012,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function createFirstOrbScrollTrigger(orbItems) {
+  function createFirstOrbScrollTrigger(chapterItems, orbItems) {
     console.log(
       "createFirstOrbScrollTrigger called with:",
       orbItems.length,
       "items",
     );
 
-    if (!orbItems.length) {
-      console.error("No orb items found for first orb trigger");
+    if (!orbItems.length || !chapterItems.length) {
+      console.error(
+        "No orb items or chapter items found for first orb trigger",
+      );
       return;
     }
 
-    // For scrolling down - use onEnter
+    // For scrolling down - use onEnter with first chapter as trigger
     ScrollTrigger.create({
       trigger: chapterItems[0],
-      start: "top 48rem",
+      start: "top 16rem",
       onEnter: () => {
-        handleFirstEnter(chapterItems[0]);
+        handleFirstEnter(orbItems[0]);
       },
       markers: false,
       id: "first-orb-enter",
     });
 
-    // For scrolling up - use onLeaveBack
+    // For scrolling up - use onLeaveBack with first chapter as trigger
     ScrollTrigger.create({
       trigger: chapterItems[0],
-      start: "top 48rem",
+      start: "top 16rem",
       onLeaveBack: () => {
-        handleFirstLeaveBack(chapterItems[0]);
+        handleFirstLeaveBack(orbItems[0]);
       },
       markers: false,
       id: "first-orb-leave",
