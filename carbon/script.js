@@ -1,5 +1,11 @@
 console.log("script deployed");
 
+//Viewport Resizer
+document.addEventListener("DOMContentLoaded", function () {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+});
+
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
