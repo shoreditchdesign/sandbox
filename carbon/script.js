@@ -4,23 +4,29 @@ console.log("script deployed, stable release 1");
 document.addEventListener("DOMContentLoaded", function () {
   // Remove iOS device check - apply to all devices
   console.log("Initializing viewport height lock (applying to all devices)");
-
   let currentOrientation = screen.orientation?.angle || window.orientation || 0;
 
   function lockViewportHeights() {
     const vh = window.innerHeight;
     const elements = document.querySelectorAll("[data-vh-lock]");
+    console.log(`Found ${elements.length} elements with data-vh-lock`);
+    console.log(`Viewport height: ${vh}px`);
 
-    console.log(`Locking ${elements.length} elements to ${vh}px viewport`);
-
-    elements.forEach((el) => {
+    elements.forEach((el, index) => {
       const lockType = el.getAttribute("data-vh-lock");
       const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
       const pixelValue = (vh * vhValue) / 100;
 
+      console.log(`Element ${index}:`, {
+        element: el,
+        lockType,
+        vhValue,
+        pixelValue,
+        currentHeight: el.offsetHeight,
+      });
+
       // Split comma-separated values and process each one
       const lockTypes = lockType.split(",").map((type) => type.trim());
-
       lockTypes.forEach((type) => {
         switch (type) {
           case "base":
@@ -39,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
             break;
         }
       });
-
       console.log(
         `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh) !important`,
       );
@@ -54,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
       const newOrientation =
         screen.orientation?.angle || window.orientation || 0;
-
       if (
         Math.abs(newOrientation - currentOrientation) === 90 ||
         Math.abs(newOrientation - currentOrientation) === 270
