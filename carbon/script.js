@@ -488,7 +488,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add data-motion-state to children of data-toc-body elements
     const tocBodyElements = document.querySelectorAll("[data-toc-body]");
     if (tocBodyElements.length === 0) {
-      console.warn("No elements with [data-toc-body] found");
+      console.warn("News rich text not found");
+      return;
     } else {
       tocBodyElements.forEach(function (tocBody) {
         const childElements = tocBody.children;
@@ -704,7 +705,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // If there's no banner element, exit early
   if (!bannerElement) {
-    console.warn("No element with data-blog-banner attribute found");
+    console.warn("News banner not found");
     return;
   }
 
@@ -775,7 +776,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const items = listPaginate.querySelectorAll("[data-pagination-item]");
 
     if (!items || items.length === 0) {
-      console.error("No items found with the selector [data-pagination-item]");
+      console.warn("Pagination element not found");
       return;
     }
 

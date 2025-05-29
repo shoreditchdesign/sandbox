@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   } else {
-    console.error("Share banner not found");
+    console.warn("Share banner not found");
   }
 });
 
@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const shaderBg = document.querySelector(selectors.shader.bg);
 
     if (!shaderWrap || !shaderCanvas) {
-      console.error("Shader elements not found");
+      console.warn("Preloader: Shader elements not found");
       return gsap.timeline();
     }
 
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const spans = document.querySelectorAll(selectors.hero.spans);
 
     if (!headingContainer || !headings.length || !spans.length) {
-      console.error("Hero text elements not found");
+      console.error("Preloader: Hero text elements not found");
       return gsap.timeline();
     }
 
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const arrows = document.querySelectorAll(selectors.hero.arrows);
 
     if (!arrows.length) {
-      console.error("No arrows found");
+      console.error("Preloader: Arrow elements not found");
       return gsap.timeline();
     }
 
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const headings = document.querySelectorAll(selectors.hero.headings);
 
     if (!headings.length) {
-      console.error("No headings found");
+      console.error("Preloader: Text elements not found");
       return gsap.timeline();
     }
 
@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const chars = heading.querySelectorAll(".char");
 
       if (!chars.length) {
-        console.error(`No characters found in heading ${index + 1}`);
+        console.error(`Preloader: Scramble failed at heading ${index + 1}`);
         return;
       }
 
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const headings = document.querySelectorAll(selectors.hero.headings);
 
     if (!headings.length) {
-      console.error("No headings found");
+      console.error("Preloader: Heading elements not found");
       return gsap.timeline();
     }
 
@@ -474,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const initPreloader = () => {
     const preloaderComponent = document.querySelector(selectors.component);
     if (!preloaderComponent) {
-      console.error("Preloader component not found");
+      console.warn("Graphene Preloader: component not found");
       return null;
     }
 
@@ -678,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const initParallax = () => {
     const parallaxComponent = document.querySelector(selectors.component);
     if (!parallaxComponent) {
-      console.error("Parallax component not found");
+      console.error("Graphene Preloader: Parallax component not found");
       return null;
     }
 
@@ -732,7 +732,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addHexParallax = (timeline, selector, config) => {
     const element = document.querySelector(selector);
     if (!element) {
-      console.error(`Element not found: ${selector}`);
+      console.error(`Graphene Preloader: Hex selector failed at: ${selector}`);
       return;
     }
 
@@ -796,7 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMarqueeAnimation() {
     // Check if required elements exist
     if (!elements.wrapper || !elements.row1 || !elements.row2) {
-      console.error("Graphene marquee elements not found");
+      console.warn("Graphene marquee elements not found");
       return;
     }
 
@@ -905,7 +905,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Validate DOM elements
     if (!chapterItems.length || !videoItems.length || !orbItems.length) {
-      console.error("Graphene flow not found");
+      console.warn("Graphene flow not found");
       return;
     }
 
@@ -1018,9 +1018,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (!orbItems.length || !chapterItems.length) {
-      console.error(
-        "No orb items or chapter items found for first orb trigger",
-      );
+      console.error("Graphene Flow: Intial orb (or chapter) not found");
       return;
     }
 
@@ -1162,7 +1160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cursorOrb = document.querySelector(selectors.cursor.orb);
 
     if (!cursorWrap || !cursorOrb) {
-      console.error("Cursor elements not found");
+      console.warn("Cursor elements not found");
       return;
     }
 
@@ -1362,7 +1360,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (!cardContainers || cardContainers.length === 0) {
-      console.error('Could not find elements with data-motion-element="array"');
+      console.warn('Motion: Array elements not found"');
       return;
     }
 
@@ -1375,9 +1373,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cardElements = Array.from(container.children);
 
         if (!cardElements || cardElements.length === 0) {
-          console.error(
-            `Container ${containerIndex + 1} has no child elements`,
-          );
+          console.error(`Array ${containerIndex + 1} has no child elements`);
           return;
         }
 
@@ -1417,7 +1413,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       } catch (error) {
         console.error(
-          `Error in card animation setup for container ${containerIndex + 1}:`,
+          `Motion: Array setup failed at ${containerIndex + 1}:`,
           error,
         );
       }
@@ -1445,7 +1441,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   if (!singleElements || singleElements.length === 0) {
-    console.error('Could not find elements with data-motion-element="single"');
+    console.warn("Moiton: Single elements not found");
     return;
   }
 
@@ -1500,7 +1496,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (error) {
       console.error(
-        `Error in animation setup for element ${index + 1}:`,
+        `Motion: Single animation setup failed at ${index + 1}:`,
         error,
       );
     }
@@ -1521,7 +1517,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   if (!drawElements || drawElements.length === 0) {
-    console.error('Could not find elements with data-motion-element="draw"');
+    console.warn("Motion: Draw elements not found");
     return;
   }
 
@@ -1548,7 +1544,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
     } catch (error) {
-      console.error(`Error in setup for element ${index + 1}:`, error);
+      console.error(`Motion: Draw animation failed at ${index + 1}:`, error);
     }
   });
 });
@@ -1566,7 +1562,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   if (!slideElements || slideElements.length === 0) {
-    console.error('Could not find elements with data-motion-element="slide"');
+    console.warn("Motion: Slide elements not found");
     return;
   }
 
@@ -1610,10 +1606,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
     } catch (error) {
-      console.error(
-        `Error in slide animation setup for element ${index + 1}:`,
-        error,
-      );
+      console.error(`Motion: Slide animation failed at ${index + 1}:`, error);
     }
   });
 });

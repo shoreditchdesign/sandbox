@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const marqueeItem = document.querySelector("[data-marquee-item]");
 
     if (!marqueeWrap || !marqueeItem) {
-      console.error("Marquee elements not found");
+      console.warn("Marquee elements not found");
       return;
     }
 
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
     if (!marqueeWrap) {
-      console.error("Marquee wrap not found for animation");
+      console.warn("News Marquee not found");
       return;
     }
 
