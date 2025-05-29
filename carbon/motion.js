@@ -850,7 +850,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Graphene Flow
-//GSAP for Graphene Flow
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -870,7 +869,11 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     animation: {
       duration: 0.75,
+      orbDuration: 0.375,
       ease: "power2.inOut",
+    },
+    triggers: {
+      orbStart: "top top",
     },
   };
 
@@ -920,11 +923,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initVideoStates(items) {
-    // Skip init on mobile (768px and below)
-    if (window.innerWidth <= 768) {
-      return;
-    }
-
     gsap.set(items, { opacity: 0 });
     gsap.set(items[0], { opacity: 1 }); // First video visible
   }
@@ -977,7 +975,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Create single ScrollTrigger for enter and leaveBack
       ScrollTrigger.create({
         trigger: chapter,
-        start: "top top",
+        start: config.triggers.orbStart,
         onEnter: () => {
           handleOrbEnter(currentOrb, currentIndex);
         },
@@ -991,18 +989,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleOrbEnter(orbItem, index) {
+    if (!orbItem) {
+      console.error(`Orb ${index} not found`);
+      return;
+    }
+
     gsap.to(orbItem, {
       opacity: 1,
-      duration: config.animation.duration / 2,
+      duration: config.animation.orbDuration,
       ease: config.animation.ease,
       onStart: () => console.log(`Orb ${index} fading in`),
     });
   }
 
   function handleOrbLeaveBack(orbItem, index) {
+    if (!orbItem) {
+      console.error(`Orb ${index} not found`);
+      return;
+    }
+
     gsap.to(orbItem, {
       opacity: 0,
-      duration: config.animation.duration / 2,
+      duration: config.animation.orbDuration,
       ease: config.animation.ease,
       onStart: () => console.log(`Orb ${index} fading out`),
     });
@@ -1034,12 +1042,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createTransitionTimeline(fadeOutItem, fadeInItem) {
-    // Get indices for logging (add 1 to convert from 0-based to 1-based)
-    const fadeOutIndex =
-      Array.from(fadeOutItem.parentNode.children).indexOf(fadeOutItem) + 1;
-    const fadeInIndex =
-      Array.from(fadeInItem.parentNode.children).indexOf(fadeInItem) + 1;
-
     const tl = gsap.timeline({
       onStart: () => {},
       onComplete: () => {},
@@ -1068,6 +1070,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize animation
   initChapterAnimations();
+
+  // Cleanup function for SPA environments
+  function cleanup() {
+    ScrollTrigger.killAll();
+  }
+
+  // Expose cleanup for external use if needed
+  window.grapheneFlowCleanup = cleanup;
 });
 
 //GSAP for Graphene Cursor
