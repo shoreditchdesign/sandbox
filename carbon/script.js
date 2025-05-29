@@ -145,6 +145,25 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Scroll Blocker
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if an element with the data-pl-shader attribute exists
+  const shaderElement = document.querySelector("[data-pl-shader]");
+
+  if (shaderElement) {
+    // Prevent scrolling
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden"; // For cross-browser compatibility
+    window.scrollTo(0, 0);
+
+    // Re-enable scrolling after 4 seconds
+    setTimeout(() => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }, 4000); // 4000 milliseconds = 4 seconds
+  }
+});
+
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
@@ -651,25 +670,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-});
-
-//Scroll Blocker
-document.addEventListener("DOMContentLoaded", () => {
-  // Check if an element with the data-pl-shader attribute exists
-  const shaderElement = document.querySelector("[data-pl-shader]");
-
-  if (shaderElement) {
-    // Prevent scrolling
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden"; // For cross-browser compatibility
-    window.scrollTo(0, 0);
-
-    // Re-enable scrolling after 4 seconds
-    setTimeout(() => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-    }, 4000); // 4000 milliseconds = 4 seconds
-  }
 });
 
 //Card Resizer
