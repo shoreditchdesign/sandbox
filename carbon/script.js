@@ -18,25 +18,30 @@ document.addEventListener("DOMContentLoaded", function () {
       const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
       const pixelValue = (vh * vhValue) / 100;
 
-      switch (lockType) {
-        case "base":
-          el.style.setProperty("height", `${pixelValue}px`, "!important");
-          break;
-        case "min":
-          el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-          break;
-        case "max":
-          el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-          break;
-        case "all":
-          el.style.setProperty("height", `${pixelValue}px`, "!important");
-          el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-          el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-          break;
-      }
+      // Split comma-separated values and process each one
+      const lockTypes = lockType.split(",").map((type) => type.trim());
+
+      lockTypes.forEach((type) => {
+        switch (type) {
+          case "base":
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            break;
+          case "min":
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            break;
+          case "max":
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            break;
+          case "all":
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            break;
+        }
+      });
 
       console.log(
-        `${el.tagName} [${lockType}] -> ${pixelValue}px (${vhValue}vh) !important`,
+        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh) !important`,
       );
     });
   }
