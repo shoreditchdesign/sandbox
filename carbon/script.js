@@ -9,44 +9,37 @@ document.addEventListener("DOMContentLoaded", function () {
   function lockViewportHeights() {
     const vh = window.innerHeight;
     const elements = document.querySelectorAll("[data-vh-lock]");
-    console.log(`Found ${elements.length} elements with data-vh-lock`);
-    console.log(`Viewport height: ${vh}px`);
+    console.log(`Locking ${elements.length} elements to ${vh}px viewport`);
 
-    elements.forEach((el, index) => {
+    elements.forEach((el) => {
       const lockType = el.getAttribute("data-vh-lock");
       const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
       const pixelValue = (vh * vhValue) / 100;
 
-      console.log(`Element ${index}:`, {
-        element: el,
-        lockType,
-        vhValue,
-        pixelValue,
-        currentHeight: el.offsetHeight,
-      });
-
       // Split comma-separated values and process each one
       const lockTypes = lockType.split(",").map((type) => type.trim());
+
       lockTypes.forEach((type) => {
         switch (type) {
           case "base":
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            el.style.height = `${pixelValue}px`;
             break;
           case "min":
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            el.style.minHeight = `${pixelValue}px`;
             break;
           case "max":
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            el.style.maxHeight = `${pixelValue}px`;
             break;
           case "all":
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            el.style.height = `${pixelValue}px`;
+            el.style.minHeight = `${pixelValue}px`;
+            el.style.maxHeight = `${pixelValue}px`;
             break;
         }
       });
+
       console.log(
-        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh) !important`,
+        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh)`,
       );
     });
   }
@@ -70,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 100);
   });
 });
-
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
