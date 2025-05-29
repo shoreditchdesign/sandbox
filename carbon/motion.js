@@ -850,7 +850,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Graphene Flow
-//GSAP for Graphene Flow
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -978,11 +977,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Convert to 1-based index to match data-sq-index
       const currentIndex = idx + 1;
       const currentOrb = orbItems[idx]; // 0-based array index
-
-      // Skip first orb as it's visible by default
-      if (currentIndex === 1) {
-        return;
-      }
 
       // Create single ScrollTrigger for enter and leaveBack
       ScrollTrigger.create({
