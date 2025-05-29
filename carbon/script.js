@@ -1007,7 +1007,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (countDisplay) {
         countDisplay.textContent = checkedCount;
         console.log(
-          `Updated count for dropdown ${countIndex}: ${checkedCount}`,
+          `Pagination: Updated count for Dropdown ${countIndex}: ${checkedCount}`,
         );
       }
     });
