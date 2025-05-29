@@ -1,5 +1,137 @@
 console.log("ix deployed");
 
+//Navigation Bar
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelector('[data-nav-element="menu"]')
+    .addEventListener("click", () => {
+      const navbar = document.querySelector('[data-nav-element="navbar"]');
+      const currentState = navbar.getAttribute("data-nav-state");
+      navbar.setAttribute(
+        "data-nav-state",
+        currentState === "open" ? "closed" : "open",
+      );
+    });
+});
+
+//Navigation Banner
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelector('[data-banner-element="close"]')
+    .addEventListener("click", () => {
+      const banner = document.querySelector('[data-banner-element="banner"]');
+      const currentState = banner.getAttribute("data-banner-state");
+      banner.setAttribute(
+        "data-banner-state",
+        currentState === "visible" ? "hidden" : "visible",
+      );
+    });
+});
+
+//Navbar Border
+document.addEventListener("DOMContentLoaded", () => {
+  const navbarElement = document.querySelector("[data-navbar-border]");
+  const triggerElement = document.querySelector("[data-border-trigger]");
+
+  if (navbarElement && triggerElement) {
+    ScrollTrigger.create({
+      trigger: triggerElement,
+      start: "top 160",
+      onEnter: () => {
+        navbarElement.setAttribute("data-navbar-border", "on");
+      },
+      onLeaveBack: () => {
+        navbarElement.setAttribute("data-navbar-border", "off");
+      },
+    });
+  }
+});
+
+//Swiper (Reviews)
+document.addEventListener("DOMContentLoaded", function () {
+  var reviewsSwiper = new Swiper("#reviews-swiper", {
+    direction: "vertical",
+    slidesPerView: 1.2,
+    spaceBetween: 20,
+    mousewheel: false,
+    grabCursor: true,
+    loop: true,
+    slidesOffsetBefore: 0,
+    // Navigation arrows
+    navigation: {
+      nextEl: "#reviews-next",
+      prevEl: "#reviews-prev",
+    },
+    // Pagination
+    pagination: {
+      el: "#reviews-pagination",
+      clickable: true,
+    },
+    centeredSlides: false,
+    autoplay:
+      window.innerWidth >= 768
+        ? {
+            delay: 3000,
+            disableOnInteraction: false,
+          }
+        : false,
+    allowTouchMove: window.innerWidth >= 768,
+  });
+});
+
+//Swiper (Benefits)
+document.addEventListener("DOMContentLoaded", function () {
+  var mySwiper = new Swiper("#benefits-swiper", {
+    slidesPerView: 4,
+    slidesPerGroup: 1,
+    spaceBetween: 16,
+    grabCursor: true,
+    allowTouchMove: true,
+    autoHeight: false,
+    watchOverflow: true, // Added: Disable navigation when not needed
+    slidesOffsetBefore: 0, // Added: Ensure slides start at container edge
+    slidesOffsetAfter: 0, // Added: Ensure slides end at container edge
+    centeredSlides: false, // Added: Keep slides aligned to left
+    loopedSlides: null, // Added: Prevent loop issues
+    resistanceRatio: 0, // Added: Prevent overscroll
+    pagination: {
+      el: "#benefits-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: "#benefits-next",
+      prevEl: "#benefits-prev",
+    },
+    breakpoints: {
+      0: {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      480: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      767: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      1200: {
+        slidesPerView: 4,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+    },
+  });
+});
+
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
@@ -336,7 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeCards();
 }); */
 
-// Team Cards Hover
+// Cards Overlays
 document.addEventListener("DOMContentLoaded", () => {
   // Animation Constants
   const ANIMATION = {
@@ -554,7 +686,311 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//News Share Snippet
+//Paginations + Filters
+document.addEventListener("DOMContentLoaded", function () {
+  const allFilter = document.querySelector('[data-filter-element="all"]');
+  const radioFilters = document.querySelectorAll(
+    '[data-filter-element="radio"]',
+  );
+  const checkboxFilters = document.querySelectorAll(
+    '[data-filter-element="checkbox"]',
+  );
+
+  const listPaginate = document.querySelector(
+    '[data-pagination-element="list"]',
+  );
+  const loaderPaginate = document.querySelector(
+    '[data-pagination-element="loader"]',
+  );
+  const loadPaginate = document.querySelector(
+    '[data-pagination-element="load"]',
+  );
+
+  // PAGINATION CODE
+
+  // Function to initialize and handle pagination
+  function initializePagination() {
+    // Set initial opacity to 0
+    listPaginate.style.opacity = 0;
+
+    // Get current items (might have changed due to filtering)
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
+
+    if (!items || items.length === 0) {
+      console.warn("Pagination element not found");
+      return;
+    }
+
+    // Get configuration from list element attributes
+    const INITIAL_ITEMS =
+      parseInt(listPaginate.getAttribute("data-pagination-initial")) || 6;
+    const ITEMS_PER_LOAD =
+      parseInt(listPaginate.getAttribute("data-pagination-unit")) || 3;
+    console.log("Pagination: Initial items:", INITIAL_ITEMS);
+    console.log("Pagination: Items per load:", ITEMS_PER_LOAD);
+
+    // Initialize data attributes
+    const totalItems = items.length;
+    listPaginate.setAttribute("data-pagination-total", totalItems);
+    listPaginate.setAttribute("data-pagination-visible", INITIAL_ITEMS);
+
+    // Set up items with index and initial visibility
+    items.forEach((item, index) => {
+      item.setAttribute("data-pagination-index", index);
+      item.setAttribute(
+        "data-item-state",
+        index < INITIAL_ITEMS ? "show" : "hide",
+      );
+    });
+
+    // Set initial button visibility
+    if (INITIAL_ITEMS >= totalItems) {
+      loadPaginate.setAttribute("data-load-state", "hide");
+    } else {
+      loadPaginate.setAttribute("data-load-state", "show");
+    }
+
+    // Clear previous click handler if any
+    loadPaginate.removeEventListener("click", runPagination);
+
+    // Add click handler
+    loadPaginate.addEventListener("click", runPagination);
+
+    // Update filter counts
+    filterCount();
+
+    // Fade in with ease after filterCount
+    setTimeout(() => {
+      listPaginate.style.transition = "opacity 0.3s ease-in";
+      listPaginate.style.opacity = 1;
+    }, 100);
+
+    console.log("Pagination:", totalItems, "total items");
+  }
+
+  // Function to reset pagination visibility
+  function resetPagination() {
+    console.log("Resetting pagination");
+
+    // Get all items
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
+
+    // Reset all items visibility to hide
+    items.forEach((item) => {
+      item.setAttribute("data-item-state", "hide");
+    });
+
+    // Reset visible count to 0
+    listPaginate.setAttribute("data-pagination-visible", "0");
+
+    // Reset button states
+    if (loadPaginate) {
+      loadPaginate.disabled = false;
+      loadPaginate.setAttribute("data-load-state", "show");
+    }
+
+    if (loaderPaginate) {
+      loaderPaginate.setAttribute("data-load-state", "hide");
+    }
+
+    console.log("Pagination reset complete");
+  }
+
+  // Function to handle loading more items
+  function runPagination(e) {
+    e.preventDefault();
+    console.log("Load button clicked");
+
+    // Get current items
+    const items = listPaginate.querySelectorAll("[data-pagination-item]");
+    const ITEMS_PER_LOAD =
+      parseInt(listPaginate.getAttribute("data-pagination-unit")) || 3;
+
+    // Disable button during loading
+    loadPaginate.disabled = true;
+
+    // Show loader if it exists
+    if (loaderPaginate) {
+      loaderPaginate.setAttribute("data-load-state", "show");
+    }
+
+    // Get current state
+    const currentVisible = parseInt(
+      listPaginate.getAttribute("data-pagination-visible"),
+    );
+    const totalItems = parseInt(
+      listPaginate.getAttribute("data-pagination-total"),
+    );
+
+    // Calculate next batch
+    const newVisible = Math.min(currentVisible + ITEMS_PER_LOAD, totalItems);
+    console.log("Showing items from", currentVisible, "to", newVisible);
+
+    // Show next items
+    for (let i = currentVisible; i < newVisible; i++) {
+      if (items[i]) {
+        items[i].setAttribute("data-item-state", "show");
+      }
+    }
+
+    // Update count
+    listPaginate.setAttribute("data-pagination-visible", newVisible);
+
+    // Hide button immediately if all items are shown
+    if (newVisible >= totalItems) {
+      loadPaginate.setAttribute("data-load-state", "hide");
+    }
+
+    // Add delay for loader animation only
+    setTimeout(() => {
+      // Hide loader
+      if (loaderPaginate) {
+        loaderPaginate.setAttribute("data-load-state", "hide");
+      }
+      // Re-enable button only if there are more items
+      if (newVisible < totalItems) {
+        loadPaginate.disabled = false;
+      }
+    }, 500);
+  }
+
+  // Initialize pagination on load with delay to avoid race condition with Finsweet
+  setTimeout(() => {
+    initializePagination();
+  }, 500);
+
+  // FILTER CODE
+
+  // Function to handle filter reset when "all" is clicked
+  function filterReset() {
+    // Ensure "all" is active when clicked
+    if (!allFilter.classList.contains("active")) {
+      allFilter.classList.add("active");
+    }
+    // Deactivate all categories when "all" is clicked
+    radioFilters.forEach((el) => el.classList.remove("active"));
+
+    // Simulate clicks on all checkboxes with delay to avoid race condition
+    setTimeout(() => {
+      checkboxFilters.forEach((checkbox) => {
+        checkbox.click();
+        console.log("Simulated click on checkbox:", checkbox.id);
+      });
+    }, 100);
+  }
+
+  // Add a direct click handler for the all filter
+  allFilter.addEventListener("click", filterReset, true);
+
+  // Function to handle automatic "all" filter deactivation
+  function allReset(mutations) {
+    // Process mutations to check if any category became active
+    const categoryMutations = mutations.filter(
+      (m) => m.target !== allFilter && m.attributeName === "class",
+    );
+    if (categoryMutations.length > 0) {
+      // Check if any category has the active class
+      const anyActiveCategories = Array.from(radioFilters).some((el) =>
+        el.classList.contains("active"),
+      );
+      // If any category is active, remove active from "all"
+      if (anyActiveCategories && allFilter.classList.contains("active")) {
+        allFilter.classList.remove("active");
+        console.log("All filter deactivated due to category selection");
+      }
+    }
+  }
+
+  const observer = new MutationObserver(allReset);
+
+  // Observe category filters for class changes
+  radioFilters.forEach((el) => {
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+  });
+
+  // Function to handle individual checkbox changes
+  function checkboxReset() {
+    const parentLabel = this.closest("label");
+    if (
+      this.checked &&
+      !parentLabel.classList.contains("fs-cmsfilter_active")
+    ) {
+      parentLabel.classList.add("fs-cmsfilter_active");
+    } else if (
+      !this.checked &&
+      parentLabel.classList.contains("fs-cmsfilter_active")
+    ) {
+      parentLabel.classList.remove("fs-cmsfilter_active");
+    }
+    console.log("Checkbox toggled:", this.id, "Checked:", this.checked);
+  }
+
+  //Commented out checkboxReset() eventListener
+
+  // Function to count checked checkboxes and update dropdown counts
+  function filterCount() {
+    console.log("Pagination: Updating filter counts");
+
+    // Find all dropdown containers with count indices
+    const dropdowns = document.querySelectorAll(
+      '[data-filter-element="dropdown"]',
+    );
+
+    dropdowns.forEach((dropdown) => {
+      // Get the count index for this dropdown
+      const countIndex = dropdown.getAttribute("data-count-index");
+
+      // Count checkboxes with w--redirected-checked class within this dropdown
+      const checkedBoxes = dropdown.querySelectorAll(
+        ".w-checkbox-input.w--redirected-checked",
+      );
+      const checkedCount = checkedBoxes.length;
+
+      // Find the corresponding count display element
+      const countDisplay = document.querySelector(
+        `[data-filter-element="count"][data-count-index="${countIndex}"]`,
+      );
+
+      if (countDisplay) {
+        countDisplay.textContent = checkedCount;
+        console.log(
+          `Pagination: Updated count for Dropdown ${countIndex}: ${checkedCount}`,
+        );
+      }
+    });
+  }
+
+  // Function to handle pagination reset and reinitialization when filters change
+  function renderPaginate() {
+    console.log("Filter changed, updating pagination");
+    // Reset pagination to initial state
+    resetPagination();
+    // Reinitialize with new filtered items after delay
+    setTimeout(() => {
+      initializePagination();
+    }, 100);
+  }
+
+  // Add click listeners to all filters for pagination updates
+  allFilter.addEventListener("click", () => {
+    console.log("All filter clicked, rendering pagination");
+    renderPaginate();
+  });
+  radioFilters.forEach((filter) => {
+    filter.addEventListener("click", () => {
+      console.log("Radio filter clicked, rendering pagination");
+      renderPaginate();
+    });
+  });
+  checkboxFilters.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      console.log("Checkbox filter changed, rendering pagination");
+      renderPaginate();
+    });
+  });
+});
+
+//Share Snippet
 document.addEventListener("DOMContentLoaded", () => {
   // Find all elements with data-blog-share attribute
   const shareElements = document.querySelectorAll("[data-news-share]");
