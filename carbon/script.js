@@ -2,20 +2,45 @@ console.log("script deployed, stable release 1");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
-  // Remove iOS device check - apply to all devices
-  console.log("Initializing viewport height lock (applying to all devices)");
-  let currentOrientation = screen.orientation?.angle || window.orientation || 0;
+  // Check if the device is iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  if (!isIOS) {
+    console.log("Viewport height lock skipped: Not an iOS device.");
+    return; // Exit if not iOS
+  }
+
+  console.log("Initializing viewport height lock (applying to iOS devices)");
+  let currentOrientation = screen.orientation?.angle || window.orientation || 0; // window.orientation is deprecated, but kept for compatibility
 
   function lockViewportHeights() {
-    const vh = window.innerHeight;
+    // Use the vh unit based on the visual viewport if available and different from layout viewport (common on iOS)
+    // Fallback to window.innerHeight
+    const vh = window.visualViewport
+      ? window.visualViewport.height
+      : window.innerHeight;
     const elements = document.querySelectorAll("[data-vh-lock]");
+
+    if (elements.length === 0) {
+      console.log("No elements found with data-vh-lock");
+      return; // Exit if no elements are found
+    }
+
     console.log(`Found ${elements.length} elements`);
-    console.log(`Viewport height: ${vh}px`);
+    console.log(`Viewport height (likely visual viewport on iOS): ${vh}px`);
 
     elements.forEach((el, index) => {
       const lockType = el.getAttribute("data-vh-lock");
-      const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
+      const vhValue = parseFloat(el.getAttribute("data-vh-value")) || 100; // Use parseFloat for potentially non-integer vh values
       const pixelValue = (vh * vhValue) / 100;
+
+      // Ensure pixelValue is a valid number, default to current style if not
+      if (isNaN(pixelValue) || !isFinite(pixelValue)) {
+        console.warn(
+          `Calculated invalid pixel value for element ${index}. vh: ${vh}, vhValue: ${vhValue}. Skipping.`,
+        );
+        return; // Skip this element if calculation failed
+      }
 
       // Split comma-separated values and process each one
       const lockTypes = lockType.split(",").map((type) => type.trim());
@@ -42,34 +67,63 @@ document.addEventListener("DOMContentLoaded", function () {
             el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
             el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
             break;
+          default:
+            console.warn(
+              `Unknown data-vh-lock type "${type}" on element ${index}.`,
+            );
+            break;
         }
       });
 
       // Debug: Check what actually got applied
-      console.log(`Element ${index} [${lockTypes.join(",")}]:`);
-      console.log(`  Set: ${pixelValue}px`);
-      console.log(`  Inline style: ${el.style.cssText}`);
+      // console.log(`Element ${index} [${lockTypes.join(",")}]:`);
+      // console.log(`  Set: ${pixelValue}px`);
+      // console.log(`  Inline style: ${el.style.cssText}`); // Can be noisy
     });
   }
 
   // Initial lock
-  lockViewportHeights();
+  // Add a small delay to allow the layout to settle, especially on load
+  setTimeout(lockViewportHeights, 50);
 
-  // Re-lock on orientation change only
+  // Re-lock on orientation change OR visual viewport resize (more reliable on iOS)
   window.addEventListener("orientationchange", function () {
+    // Add a timeout to allow the orientation change to complete and the viewport to update
     setTimeout(function () {
       const newOrientation =
         screen.orientation?.angle || window.orientation || 0;
-      if (
-        Math.abs(newOrientation - currentOrientation) === 90 ||
-        Math.abs(newOrientation - currentOrientation) === 270
-      ) {
+      // Check if orientation actually changed significantly (e.g., 90 or 270 degrees difference)
+      // This helps avoid triggering on slight angle fluctuations if window.orientation is used.
+      const angleDiff = Math.abs(newOrientation - currentOrientation);
+      const significantChange =
+        angleDiff === 90 ||
+        angleDiff === 270 ||
+        (angleDiff === 0 && (currentOrientation !== 0 || newOrientation !== 0)); // Also trigger if going from/to 0
+
+      if (significantChange) {
         console.log("Orientation changed - re-locking viewport heights");
         lockViewportHeights();
         currentOrientation = newOrientation;
+      } else {
+        //console.log("Orientation angle change not significant, skipping re-lock.");
       }
-    }, 100);
+    }, 100); // Short delay to wait for viewport update
   });
+
+  // Add listener for visual viewport resize, which happens when keyboard appears/disappears on iOS
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", function () {
+      console.log("Visual viewport resized - re-locking viewport heights");
+      // Add a small delay as visual viewport might update multiple times
+      setTimeout(lockViewportHeights, 50);
+    });
+  } else {
+    // Fallback for older browsers/non-iOS, though the main logic is iOS-specific
+    window.addEventListener("resize", function () {
+      console.log("Window resized - re-locking viewport heights (fallback)");
+      setTimeout(lockViewportHeights, 50);
+    });
+  }
 });
 
 //Lenis Smooth Scroll
