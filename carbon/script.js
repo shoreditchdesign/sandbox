@@ -22,24 +22,24 @@ document.addEventListener("DOMContentLoaded", function () {
       lockTypes.forEach((type) => {
         switch (type) {
           case "base":
-            el.style.height = `${pixelValue}px`;
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
             break;
           case "min":
-            el.style.minHeight = `${pixelValue}px`;
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
             break;
           case "max":
-            el.style.maxHeight = `${pixelValue}px`;
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
             break;
           case "all":
-            el.style.height = `${pixelValue}px`;
-            el.style.minHeight = `${pixelValue}px`;
-            el.style.maxHeight = `${pixelValue}px`;
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
             break;
         }
       });
 
       console.log(
-        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh)`,
+        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh) !important`,
       );
     });
   }
@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 100);
   });
 });
+
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
