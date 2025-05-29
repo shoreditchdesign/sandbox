@@ -102,6 +102,49 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//Lenis Blockers
+document.addEventListener("DOMContentLoaded", function () {
+  // Start scroll elements
+  const startElements = document.querySelectorAll("[data-lenis-start]");
+  console.log("Found start elements:", startElements.length);
+
+  startElements.forEach((element) => {
+    element.addEventListener("click", function () {
+      console.log("Starting lenis");
+      lenis.start();
+    });
+  });
+
+  // Stop scroll elements
+  const stopElements = document.querySelectorAll("[data-lenis-stop]");
+  console.log("Found stop elements:", stopElements.length);
+
+  stopElements.forEach((element) => {
+    element.addEventListener("click", function () {
+      console.log("Stopping lenis");
+      lenis.stop();
+    });
+  });
+
+  // Toggle scroll elements
+  const toggleElements = document.querySelectorAll("[data-lenis-toggle]");
+  console.log("Found toggle elements:", toggleElements.length);
+
+  toggleElements.forEach((element) => {
+    element.addEventListener("click", function () {
+      this.classList.toggle("stop-scroll");
+
+      if (this.classList.contains("stop-scroll")) {
+        console.log("Toggle: stopping lenis");
+        lenis.stop();
+      } else {
+        console.log("Toggle: starting lenis");
+        lenis.start();
+      }
+    });
+  });
+});
+
 //Navigation Pusher
 document.addEventListener("DOMContentLoaded", function () {
   const navWrap = document.querySelector('[data-nav-element="navbar-wrap"]');
