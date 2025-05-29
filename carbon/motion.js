@@ -748,7 +748,7 @@ document.addEventListener("DOMContentLoaded", () => {
       0,
     );
 
-    console.log(`Added parallax for ${selector} with speed ${config.speed}`);
+    //console.log(`Added parallax for ${selector} with speed ${config.speed}`);
     return timeline;
   };
 
