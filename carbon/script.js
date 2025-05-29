@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!isIOS) {
     console.log("Not an iOS device - skipping viewport height lock");
-    //return;
+    return;
   }
 
   console.log("iOS detected - initializing viewport height lock");
