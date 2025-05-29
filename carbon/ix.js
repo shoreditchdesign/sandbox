@@ -433,10 +433,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Desktop behavior - use card's full height
         finalOverlayHeight = parseFloat(window.getComputedStyle(card).height);
       }
-
-      console.log(
-        `Card #${index}: Heights calculated - Initial: ${initialOverlayHeight}, Final: ${finalOverlayHeight}`,
-      );
     };
 
     // Calculate on page load
