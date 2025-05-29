@@ -779,8 +779,8 @@ document.addEventListener("DOMContentLoaded", function () {
       parseInt(listPaginate.getAttribute("data-pagination-initial")) || 6;
     const ITEMS_PER_LOAD =
       parseInt(listPaginate.getAttribute("data-pagination-unit")) || 3;
-    console.log("Initial items:", INITIAL_ITEMS);
-    console.log("Items per load:", ITEMS_PER_LOAD);
+    console.log("Pagination: Initial items:", INITIAL_ITEMS);
+    console.log("Pagination: Items per load:", ITEMS_PER_LOAD);
 
     // Initialize data attributes
     const totalItems = items.length;
@@ -818,7 +818,7 @@ document.addEventListener("DOMContentLoaded", function () {
       listPaginate.style.opacity = 1;
     }, 100);
 
-    console.log("Pagination initialized with", totalItems, "total items");
+    console.log("Pagination:", totalItems, "total items");
   }
 
   // Function to reset pagination visibility
@@ -982,7 +982,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to count checked checkboxes and update dropdown counts
   function filterCount() {
-    console.log("Updating filter counts");
+    console.log("Pagination: Updating filter counts");
 
     // Find all dropdown containers with count indices
     const dropdowns = document.querySelectorAll(
