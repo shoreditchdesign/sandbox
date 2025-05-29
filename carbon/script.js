@@ -94,9 +94,8 @@ document.addEventListener("DOMContentLoaded", function () {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
-    console.log("Lenis initialized - not Safari");
   } else if (isSafari) {
-    console.log("Lenis skipped - Safari detected");
+    console.warn("Lenis blocker: Safari detected, skipping Lenis");
   }
 });
 
