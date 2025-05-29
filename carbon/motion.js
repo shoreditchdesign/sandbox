@@ -923,6 +923,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initVideoStates(items) {
+    // On mobile, show all videos
+    if (window.innerWidth <= 768) {
+      gsap.set(items, { opacity: 1 });
+      return;
+    }
+
     gsap.set(items, { opacity: 0 });
     gsap.set(items[0], { opacity: 1 }); // First video visible
   }
@@ -934,6 +940,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Animation creators
   function createVideoScrollTriggers(chapterItems, videoItems) {
+    // Skip video scroll triggers on mobile
+    if (window.innerWidth <= 768) {
+      return;
+    }
+
     const lastIndex = chapterItems.length;
 
     chapterItems.forEach((chapter, idx) => {
