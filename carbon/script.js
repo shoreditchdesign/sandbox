@@ -7,7 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  if (!isIOS) return;
+  if (!isIOS) {
+    console.log("Not an iOS device - skipping viewport height lock");
+    return;
+  }
 
   console.log("iOS detected - initializing viewport height lock");
 
