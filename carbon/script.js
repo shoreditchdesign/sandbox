@@ -71,11 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
-  {
-    {
-      REWRITTEN_CODE;
-    }
-  }
   const isSafari = (() => {
     const safariCheck = /^((?!chrome|android).)*safari/i.test(
       navigator.userAgent,
