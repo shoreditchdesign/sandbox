@@ -20,23 +20,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
       switch (lockType) {
         case "base":
-          el.style.height = `${pixelValue}px`;
+          el.style.setProperty("height", `${pixelValue}px`, "!important");
           break;
         case "min":
-          el.style.minHeight = `${pixelValue}px`;
+          el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
           break;
         case "max":
-          el.style.maxHeight = `${pixelValue}px`;
+          el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
           break;
         case "all":
-          el.style.height = `${pixelValue}px`;
-          el.style.minHeight = `${pixelValue}px`;
-          el.style.maxHeight = `${pixelValue}px`;
+          el.style.setProperty("height", `${pixelValue}px`, "!important");
+          el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+          el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
           break;
       }
 
       console.log(
-        `${el.tagName} [${lockType}] -> ${pixelValue}px (${vhValue}vh)`,
+        `${el.tagName} [${lockType}] -> ${pixelValue}px (${vhValue}vh) !important`,
       );
     });
   }
