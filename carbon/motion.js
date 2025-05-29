@@ -850,6 +850,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Graphene Flow
+//GSAP for Graphene Flow
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -935,7 +936,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     gsap.set(items, { opacity: 0 }); // All orbs hidden
-    gsap.set(items[0], { opacity: 1 }); // First orb visible
+    // gsap.set(items[0], { opacity: 1 }); // First orb visible
   }
 
   // Animation creators
@@ -983,14 +984,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Create single ScrollTrigger for both enter and enterBack
+      // Create single ScrollTrigger for enter and leaveBack
       ScrollTrigger.create({
         trigger: chapter,
         start: "top top",
         onEnter: () => {
           handleOrbEnter(currentOrb, currentIndex);
         },
-        onEnterBack: () => {
+        onLeaveBack: () => {
           handleOrbLeaveBack(currentOrb, currentIndex);
         },
         markers: false,
