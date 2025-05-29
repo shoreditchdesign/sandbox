@@ -9,39 +9,75 @@ document.addEventListener("DOMContentLoaded", function () {
   function lockViewportHeights() {
     const vh = window.innerHeight;
     const elements = document.querySelectorAll("[data-vh-lock]");
-    console.log(`Locking ${elements.length} elements to ${vh}px viewport`);
+    console.log(`Found ${elements.length} elements`);
+    console.log(`Viewport height: ${vh}px`);
 
-    elements.forEach((el) => {
+    elements.forEach((el, index) => {
+      console.log(`Processing element ${index}`);
       const lockType = el.getAttribute("data-vh-lock");
       const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
       const pixelValue = (vh * vhValue) / 100;
 
+      console.log(
+        `Element ${index}: lockType="${lockType}", vhValue=${vhValue}, pixelValue=${pixelValue}`,
+      );
+
       // Split comma-separated values and process each one
       const lockTypes = lockType.split(",").map((type) => type.trim());
+      console.log(`Lock types:`, lockTypes);
 
-      lockTypes.forEach((type) => {
-        switch (type) {
-          case "base":
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
-            break;
-          case "min":
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-            break;
-          case "max":
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-            break;
-          case "all":
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-            break;
+      lockTypes.forEach((type, typeIndex) => {
+        console.log(`Applying type "${type}" (${typeIndex})`);
+        try {
+          switch (type) {
+            case "base":
+              el.style.setProperty("height", `${pixelValue}px`, "!important");
+              console.log(`Set height to ${pixelValue}px !important`);
+              break;
+            case "min":
+              el.style.setProperty(
+                "minHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              console.log(`Set minHeight to ${pixelValue}px !important`);
+              break;
+            case "max":
+              el.style.setProperty(
+                "maxHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              console.log(`Set maxHeight to ${pixelValue}px !important`);
+              break;
+            case "all":
+              el.style.setProperty("height", `${pixelValue}px`, "!important");
+              el.style.setProperty(
+                "minHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              el.style.setProperty(
+                "maxHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              console.log(
+                `Set all height properties to ${pixelValue}px !important`,
+              );
+              break;
+            default:
+              console.log(`Unknown lock type: "${type}"`);
+          }
+        } catch (error) {
+          console.error(`Error applying "${type}":`, error);
         }
       });
 
-      console.log(
-        `${el.tagName} [${lockTypes.join(",")}] -> ${pixelValue}px (${vhValue}vh) !important`,
-      );
+      console.log(`Completed element ${index}`);
     });
+
+    console.log("Finished processing all elements");
   }
 
   // Initial lock
