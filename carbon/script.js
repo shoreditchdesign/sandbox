@@ -2,17 +2,8 @@ console.log("script deployed, stable release 1");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
-  // Check if iOS device
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-  if (!isIOS) {
-    console.log("Not an iOS device - skipping viewport height lock");
-    return;
-  }
-
-  console.log("iOS detected - initializing viewport height lock");
+  // Remove iOS device check - apply to all devices
+  console.log("Initializing viewport height lock (applying to all devices)");
 
   let currentOrientation = screen.orientation?.angle || window.orientation || 0;
 
