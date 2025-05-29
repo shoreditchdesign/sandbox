@@ -850,6 +850,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Graphene Flow
+//GSAP for Graphene Flow
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -929,11 +930,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initOrbStates(items) {
-    // Skip init on mobile (768px and below)
-    if (window.innerWidth <= 768) {
-      return;
-    }
-
     gsap.set(items, { opacity: 0 }); // All orbs hidden
     // gsap.set(items[0], { opacity: 1 }); // First orb visible
   }
