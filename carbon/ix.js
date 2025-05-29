@@ -62,9 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
       marqueeWrap.appendChild(clonedItem);
     }
 
-    console.log(
-      `Cloned ${copiesNeeded} cards for ${isMobile() ? "mobile" : "desktop"}`,
-    );
     return { itemWidth, copiesNeeded };
   }
 
@@ -72,11 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function moveCards(itemWidth, copiesNeeded) {
     // Check if we should block motion on mobile
     if (isMobile()) {
-      console.log("Mobile detected - skipping card movement");
       return;
     }
-
-    console.log("Starting desktop marquee animation");
 
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
     if (!marqueeWrap) {
@@ -96,14 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(marqueeWrap, { x: 0 });
       },
     });
-
-    console.log("Desktop marquee animation started");
   }
 
   // Open cards function
   function openCards() {
-    console.log("Setting card states");
-
     const cards = document.querySelectorAll("[data-marquee-card]");
     if (!cards.length) {
       console.warn("No marquee cards found");
@@ -117,11 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Open cards at indices 0, 4, 8, 12, etc.
       if (index % 4 === 0) {
         card.setAttribute("data-marquee-card", "on");
-        console.log(`Opened card ${index}`);
       }
     });
-
-    console.log(`Processed ${cards.length} cards`);
   }
 
   // Main initialization
@@ -132,19 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const { itemWidth, copiesNeeded } = cloneData;
 
     if (isMobile()) {
-      console.log("Mobile detected - static display");
       if (shouldBlockMotionOnMobile()) {
-        console.log("Motion blocked on mobile");
       }
     } else {
-      console.log("Desktop detected - starting animation");
       moveCards(itemWidth, copiesNeeded);
     }
 
     // Set card states for both mobile and desktop
     openCards();
-
-    console.log("Card system complete");
   }
 
   // Start the initialization
