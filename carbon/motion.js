@@ -973,93 +973,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createOrbScrollTriggers(chapterItems, orbItems) {
-    const lastIndex = chapterItems.length;
-
     chapterItems.forEach((chapter, idx) => {
       // Convert to 1-based index to match data-sq-index
       const currentIndex = idx + 1;
+      const currentOrb = orbItems[idx]; // 0-based array index
 
       // Skip first orb as it's visible by default
       if (currentIndex === 1) {
         return;
       }
 
-      // For scrolling down - use onEnter
+      // Create single ScrollTrigger for both enter and enterBack
       ScrollTrigger.create({
         trigger: chapter,
-        start: "top 16rem",
+        start: "top top",
         onEnter: () => {
-          handleItemEnter(currentIndex, lastIndex, orbItems);
+          handleOrbEnter(currentOrb, currentIndex);
+        },
+        onEnterBack: () => {
+          handleOrbLeaveBack(currentOrb, currentIndex);
         },
         markers: false,
-        id: `chapter-${currentIndex}-orb-enter`,
+        id: `chapter-${currentIndex}-orb`,
       });
-
-      // For scrolling up - use onLeave on the next chapter if it exists
-      if (currentIndex < lastIndex) {
-        ScrollTrigger.create({
-          trigger: chapterItems[idx + 1], // Next chapter
-          start: "top bottom",
-          onLeaveBack: () => {
-            handleItemLeaveBack(currentIndex + 1, lastIndex, orbItems);
-          },
-          markers: false,
-          id: `chapter-${currentIndex + 1}-orb-leave`,
-        });
-      }
     });
   }
 
-  function createFirstOrbScrollTrigger(chapterItems, orbItems) {
-    console.log(
-      "createFirstOrbScrollTrigger called with:",
-      orbItems.length,
-      "items",
-    );
-
-    if (!orbItems.length || !chapterItems.length) {
-      console.error("Graphene Flow: Intial orb (or chapter) not found");
-      return;
-    }
-
-    // For scrolling down - use onEnter with first chapter as trigger
-    ScrollTrigger.create({
-      trigger: chapterItems[0],
-      start: "top 16rem",
-      onEnter: () => {
-        handleFirstEnter(orbItems[0]);
-      },
-      markers: false,
-      id: "first-orb-enter",
-    });
-
-    // For scrolling up - use onLeaveBack with first chapter as trigger
-    ScrollTrigger.create({
-      trigger: chapterItems[0],
-      start: "top 16rem",
-      onLeaveBack: () => {
-        handleFirstLeaveBack(orbItems[0]);
-      },
-      markers: false,
-      id: "first-orb-leave",
-    });
-  }
-
-  function handleFirstEnter(orbItem) {
+  function handleOrbEnter(orbItem, index) {
     gsap.to(orbItem, {
       opacity: 1,
       duration: config.animation.duration / 2,
       ease: config.animation.ease,
-      onStart: () => console.log("First orb fading in"),
+      onStart: () => console.log(`Orb ${index} fading in`),
     });
   }
 
-  function handleFirstLeaveBack(orbItem) {
+  function handleOrbLeaveBack(orbItem, index) {
     gsap.to(orbItem, {
       opacity: 0,
       duration: config.animation.duration / 2,
       ease: config.animation.ease,
-      onStart: () => console.log("First orb fading out"),
+      onStart: () => console.log(`Orb ${index} fading out`),
     });
   }
 
