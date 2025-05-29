@@ -2,47 +2,9 @@ console.log("script deployed, stable release 1");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
+  // Remove iOS device check - apply to all devices
   console.log("Initializing viewport height lock (applying to all devices)");
-
-  // Mobile detection
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    ) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
   let currentOrientation = screen.orientation?.angle || window.orientation || 0;
-
-  function applyMobileContainerFix() {
-    if (!isMobile) return;
-
-    console.log("Applying mobile container fix");
-
-    // Apply body styles
-    document.body.style.setProperty("position", "fixed", "important");
-    document.body.style.setProperty("width", "100%", "important");
-    document.body.style.setProperty("height", "100vh", "important");
-    document.body.style.setProperty("overflow", "clip", "important");
-
-    // Apply main styles
-    const main = document.querySelector("main");
-    if (main) {
-      main.style.setProperty("position", "absolute", "important");
-      main.style.setProperty("top", "0", "important");
-      main.style.setProperty("left", "0", "important");
-      main.style.setProperty("right", "0", "important");
-      main.style.setProperty("bottom", "0", "important");
-      main.style.setProperty("overflow-y", "auto", "important");
-      main.style.setProperty(
-        "-webkit-overflow-scrolling",
-        "touch",
-        "important",
-      );
-      console.log("Mobile container fix applied to body and main");
-    } else {
-      console.warn("Main element not found - container fix not applied");
-    }
-  }
 
   function lockViewportHeights() {
     const vh = window.innerHeight;
@@ -61,18 +23,24 @@ document.addEventListener("DOMContentLoaded", function () {
       lockTypes.forEach((type) => {
         switch (type) {
           case "base":
-            el.style.setProperty("height", `${pixelValue}px`, "important");
+            el.style.height = `${pixelValue}px`;
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
             break;
           case "min":
-            el.style.setProperty("min-height", `${pixelValue}px`, "important");
+            el.style.minHeight = `${pixelValue}px`;
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
             break;
           case "max":
-            el.style.setProperty("max-height", `${pixelValue}px`, "important");
+            el.style.maxHeight = `${pixelValue}px`;
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
             break;
           case "all":
-            el.style.setProperty("height", `${pixelValue}px`, "important");
-            el.style.setProperty("min-height", `${pixelValue}px`, "important");
-            el.style.setProperty("max-height", `${pixelValue}px`, "important");
+            el.style.height = `${pixelValue}px`;
+            el.style.minHeight = `${pixelValue}px`;
+            el.style.maxHeight = `${pixelValue}px`;
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
             break;
         }
       });
@@ -84,10 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Apply mobile fix first
-  applyMobileContainerFix();
-
-  // Initial viewport lock
+  // Initial lock
   lockViewportHeights();
 
   // Re-lock on orientation change only
@@ -95,13 +60,11 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
       const newOrientation =
         screen.orientation?.angle || window.orientation || 0;
-
       if (
         Math.abs(newOrientation - currentOrientation) === 90 ||
         Math.abs(newOrientation - currentOrientation) === 270
       ) {
-        console.log("Orientation changed - re-applying fixes");
-        applyMobileContainerFix();
+        console.log("Orientation changed - re-locking viewport heights");
         lockViewportHeights();
         currentOrientation = newOrientation;
       }
