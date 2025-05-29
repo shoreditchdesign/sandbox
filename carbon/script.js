@@ -1,4 +1,4 @@
-console.log("script deployed");
+console.log("script deployed, stable release 1");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
