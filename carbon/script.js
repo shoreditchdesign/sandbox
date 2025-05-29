@@ -13,71 +13,40 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(`Viewport height: ${vh}px`);
 
     elements.forEach((el, index) => {
-      console.log(`Processing element ${index}`);
       const lockType = el.getAttribute("data-vh-lock");
       const vhValue = parseInt(el.getAttribute("data-vh-value")) || 100;
       const pixelValue = (vh * vhValue) / 100;
 
-      console.log(
-        `Element ${index}: lockType="${lockType}", vhValue=${vhValue}, pixelValue=${pixelValue}`,
-      );
-
       // Split comma-separated values and process each one
       const lockTypes = lockType.split(",").map((type) => type.trim());
-      console.log(`Lock types:`, lockTypes);
 
-      lockTypes.forEach((type, typeIndex) => {
-        console.log(`Applying type "${type}" (${typeIndex})`);
-        try {
-          switch (type) {
-            case "base":
-              el.style.setProperty("height", `${pixelValue}px`, "!important");
-              console.log(`Set height to ${pixelValue}px !important`);
-              break;
-            case "min":
-              el.style.setProperty(
-                "minHeight",
-                `${pixelValue}px`,
-                "!important",
-              );
-              console.log(`Set minHeight to ${pixelValue}px !important`);
-              break;
-            case "max":
-              el.style.setProperty(
-                "maxHeight",
-                `${pixelValue}px`,
-                "!important",
-              );
-              console.log(`Set maxHeight to ${pixelValue}px !important`);
-              break;
-            case "all":
-              el.style.setProperty("height", `${pixelValue}px`, "!important");
-              el.style.setProperty(
-                "minHeight",
-                `${pixelValue}px`,
-                "!important",
-              );
-              el.style.setProperty(
-                "maxHeight",
-                `${pixelValue}px`,
-                "!important",
-              );
-              console.log(
-                `Set all height properties to ${pixelValue}px !important`,
-              );
-              break;
-            default:
-              console.log(`Unknown lock type: "${type}"`);
-          }
-        } catch (error) {
-          console.error(`Error applying "${type}":`, error);
+      lockTypes.forEach((type) => {
+        switch (type) {
+          case "base":
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            break;
+          case "min":
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            break;
+          case "max":
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            break;
+          case "all":
+            el.style.setProperty("height", `${pixelValue}px`, "!important");
+            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
+            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
+            break;
         }
       });
 
-      console.log(`Completed element ${index}`);
+      // Debug: Check what actually got applied
+      console.log(`Element ${index} [${lockTypes.join(",")}]:`);
+      console.log(`  Set: ${pixelValue}px`);
+      console.log(`  Computed height: ${getComputedStyle(el).height}`);
+      console.log(`  Computed minHeight: ${getComputedStyle(el).minHeight}`);
+      console.log(`  Computed maxHeight: ${getComputedStyle(el).maxHeight}`);
+      console.log(`  Inline style: ${el.style.cssText}`);
     });
-
-    console.log("Finished processing all elements");
   }
 
   // Initial lock
@@ -99,7 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 100);
   });
 });
-
 //Lenis Smooth Scroll
 document.addEventListener("DOMContentLoaded", function () {
   // Check if Safari browser
