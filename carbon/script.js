@@ -2,15 +2,18 @@ console.log("script deployed, stable release 1");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
-  // Check if the device is iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // Check if the device is a mobile device
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
 
-  if (!isIOS) {
-    console.log("Viewport height lock skipped: Not an iOS device.");
-    return; // Exit if not iOS
+  if (!isMobile) {
+    console.log("Viewport height lock skipped: Not a mobile device.");
+    return; // Exit if not mobile
   }
 
-  console.log("Initializing viewport height lock (applying to iOS devices)");
+  console.log("Initializing viewport height lock (applying to mobile devices)");
   let currentOrientation = screen.orientation?.angle || window.orientation || 0; // window.orientation is deprecated, but kept for compatibility
 
   function lockViewportHeights() {
