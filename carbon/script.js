@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add a small delay to allow the layout to settle, especially on load
   setTimeout(lockViewportHeights, 50);
 
-  // Re-lock on orientation change OR visual viewport resize (more reliable on iOS)
+  // Re-lock on orientation change only
   window.addEventListener("orientationchange", function () {
     // Add a timeout to allow the orientation change to complete and the viewport to update
     setTimeout(function () {
@@ -112,21 +112,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 100); // Short delay to wait for viewport update
   });
-
-  // Add listener for visual viewport resize, which happens when keyboard appears/disappears on iOS
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", function () {
-      console.log("Visual viewport resized - re-locking viewport heights");
-      // Add a small delay as visual viewport might update multiple times
-      setTimeout(lockViewportHeights, 50);
-    });
-  } else {
-    // Fallback for older browsers/non-iOS, though the main logic is iOS-specific
-    window.addEventListener("resize", function () {
-      console.log("Window resized - re-locking viewport heights (fallback)");
-      setTimeout(lockViewportHeights, 50);
-    });
-  }
 });
 
 //Lenis Smooth Scroll
