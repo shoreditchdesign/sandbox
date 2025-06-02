@@ -1577,6 +1577,58 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP to Pop Up
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+  const popElements = document.querySelectorAll('[data-motion-element="pop"]');
+  if (!popElements || popElements.length === 0) {
+    console.warn("Motion: Pop elements not found");
+    return;
+  }
+  const animatableElements = Array.from(popElements).filter((element) => {
+    const motionState = element.getAttribute("data-motion-state");
+    const isBlocked = motionState === "blocked";
+    return !isBlocked;
+  });
+  animatableElements.forEach((element, index) => {
+    try {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
+      gsap.set(element, {
+        opacity: 1,
+        y: 100,
+      });
+      const tl = gsap.timeline({
+        paused: true,
+      });
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      });
+      ScrollTrigger.create({
+        trigger: element,
+        start: "top 95%",
+        markers: false,
+        once: true,
+        onEnter: () => {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        },
+      });
+    } catch (error) {
+      console.error(`Motion: Pop animation failed at ${index + 1}:`, error);
+    }
+  });
+});
+
 //GSAP for Fading Grid
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined") {

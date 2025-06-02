@@ -47,20 +47,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//Cookie Banner
+//Cookie Wrap
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Cookie banner state management initialized");
 
-  // Banner triggers
-  document.querySelectorAll("[data-banner-trigger]").forEach((trigger) => {
+  // Wrap triggers
+  document.querySelectorAll("[data-wrap-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
       console.log("Banner trigger clicked");
-      const banner = document.querySelector('[data-ck-item="banner"]');
-      const triggerType = trigger.getAttribute("data-banner-trigger");
+      const wrap = document.querySelector('[data-cookie-item="banner"]');
+      const triggerType = trigger.getAttribute("data-wrap-trigger");
 
-      if (banner) {
+      if (wrap) {
         const newState = triggerType === "open" ? "show" : "hide";
-        banner.setAttribute("data-banner-state", newState);
+        wrap.setAttribute("data-wrap-state", newState);
         console.log(`Banner state set to: ${newState}`);
       }
     });
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-pref-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
       console.log("Pref trigger clicked");
-      const pref = document.querySelector('[data-ck-item="pref"]');
+      const pref = document.querySelector('[data-cookie-item="pref"]');
       const triggerType = trigger.getAttribute("data-pref-trigger");
 
       if (pref) {
