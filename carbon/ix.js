@@ -47,6 +47,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//Cookie Banner
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Cookie banner state management initialized");
+
+  // Banner triggers
+  document.querySelectorAll("[data-banner-trigger]").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      console.log("Banner trigger clicked");
+      const banner = document.querySelector('[data-ck-item="banner"]');
+      const triggerType = trigger.getAttribute("data-banner-trigger");
+
+      if (banner) {
+        const newState = triggerType === "open" ? "show" : "hide";
+        banner.setAttribute("data-banner-state", newState);
+        console.log(`Banner state set to: ${newState}`);
+      }
+    });
+  });
+
+  // Pref triggers
+  document.querySelectorAll("[data-pref-trigger]").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      console.log("Pref trigger clicked");
+      const pref = document.querySelector('[data-ck-item="pref"]');
+      const triggerType = trigger.getAttribute("data-pref-trigger");
+
+      if (pref) {
+        const newState = triggerType === "open" ? "show" : "hide";
+        pref.setAttribute("data-pref-state", newState);
+        console.log(`Pref state set to: ${newState}`);
+      }
+    });
+  });
+});
+
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
