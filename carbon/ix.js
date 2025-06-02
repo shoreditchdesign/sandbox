@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-wrap-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
       console.log("Banner trigger clicked");
+      console.log("Wrap trigger click registered");
       const wrap = document.querySelector('[data-cookie-item="banner"]');
       const triggerType = trigger.getAttribute("data-wrap-trigger");
 
@@ -70,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-pref-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
       console.log("Pref trigger clicked");
+      console.log("Pref trigger click registered");
       const pref = document.querySelector('[data-cookie-item="pref"]');
       const triggerType = trigger.getAttribute("data-pref-trigger");
 
