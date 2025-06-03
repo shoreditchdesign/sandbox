@@ -86,44 +86,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  var reviewsSwiper = new Swiper("#reviews-swiper", {
-    direction: "vertical",
-    slidesPerView: 1.2,
-    spaceBetween: 20,
-    mousewheel: false,
+  var mySwiper = new Swiper("#benefits-swiper", {
+    slidesPerView: 4,
+    slidesPerGroup: 1,
+    spaceBetween: 16,
     grabCursor: true,
-    loop: true,
+    allowTouchMove: true,
+    autoHeight: false,
+    watchOverflow: true,
     slidesOffsetBefore: 0,
-    // Navigation arrows
-    navigation: {
-      nextEl: "#reviews-next",
-      prevEl: "#reviews-prev",
-    },
-    // Pagination
+    slidesOffsetAfter: 0,
+    centeredSlides: false,
+    loopedSlides: null,
+    resistanceRatio: 0,
     pagination: {
-      el: "#reviews-pagination",
+      el: "#benefits-pagination",
       clickable: true,
     },
-    centeredSlides: false,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false,
+    navigation: {
+      nextEl: "#benefits-next",
+      prevEl: "#benefits-prev",
     },
-    speed: 800,
-    allowTouchMove: window.innerWidth >= 768,
 
     // Accessibility module
     a11y: {
       enabled: true,
-      prevSlideMessage: "Previous review",
-      nextSlideMessage: "Next review",
-      firstSlideMessage: "This is the first review",
-      lastSlideMessage: "This is the last review",
-      paginationBulletMessage: "Go to review {{index}}",
+      prevSlideMessage: "Previous benefit",
+      nextSlideMessage: "Next benefit",
+      firstSlideMessage: "This is the first benefit",
+      lastSlideMessage: "This is the last benefit",
+      paginationBulletMessage: "Go to benefit {{index}}",
       notificationClass: "swiper-notification",
-      containerMessage: "Reviews carousel",
+      containerMessage: "Benefits carousel",
       containerRoleDescriptionMessage: "carousel",
-      itemRoleDescriptionMessage: "review slide",
+      itemRoleDescriptionMessage: "benefit slide",
+      containerRole: null,
+      slideRole: null,
     },
 
     // Keyboard control
@@ -135,6 +133,34 @@ document.addEventListener("DOMContentLoaded", function () {
     // Focus handling
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
+
+    breakpoints: {
+      0: {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      480: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      767: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      1200: {
+        slidesPerView: 4,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+    },
   });
 });
 
@@ -214,8 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
-
-  console.log("Accessible benefits swiper initialized");
 });
 
 // Marquee
