@@ -52,13 +52,13 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Cookie banner state management initialized");
 
   // Initialize banner with delay
-  const wrap = document.querySelector('[data-cookie-item="wrap"]');
+  const wrap = document.querySelector('[data-cc-item="wrap"]');
   if (wrap) {
-    const delay = parseInt(wrap.getAttribute("data-wrap-delay")) || 0;
+    const delay = parseInt(wrap.getAttribute("data-cc-delay")) || 0;
     console.log(`Banner initializer set with ${delay}ms delay`);
 
     setTimeout(() => {
-      wrap.setAttribute("data-wrap-state", "show");
+      wrap.setAttribute("data-cc-state", "show");
       console.log("Banner state initialized to: show");
     }, delay * 1000);
   }
@@ -68,11 +68,11 @@ document.addEventListener("DOMContentLoaded", function () {
     trigger.addEventListener("click", () => {
       console.log("Banner trigger clicked");
       console.log("Wrap trigger click registered");
-      const wrap = document.querySelector('[data-cookie-item="wrap"]');
+      const wrap = document.querySelector('[data-cc-item="wrap"]');
       const triggerType = trigger.getAttribute("data-wrap-trigger");
       if (wrap) {
         const newState = triggerType === "open" ? "show" : "hide";
-        wrap.setAttribute("data-wrap-state", newState);
+        wrap.setAttribute("data-cc-state", newState);
         console.log(`Banner state set to: ${newState}`);
       }
     });
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
     trigger.addEventListener("click", () => {
       console.log("Pref trigger clicked");
       console.log("Pref trigger click registered");
-      const pref = document.querySelector('[data-cookie-item="pref"]');
+      const pref = document.querySelector('[data-cc-item="pref"]');
       const triggerType = trigger.getAttribute("data-pref-trigger");
       if (pref) {
         const newState = triggerType === "open" ? "show" : "hide";
