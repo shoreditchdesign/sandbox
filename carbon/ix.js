@@ -916,7 +916,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Add a direct click handler for the all filter
-  allFilter.addEventListener("click", filterReset, true);
+  if (allFilter) {
+    allFilter.addEventListener("click", filterReset, true);
+  }
 
   // Function to handle automatic "all" filter deactivation
   function allReset(mutations) {
@@ -1008,10 +1010,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Add click listeners to all filters for pagination updates
-  allFilter.addEventListener("click", () => {
-    console.log("All filter clicked, rendering pagination");
-    renderPaginate();
-  });
+  if (allFilter) {
+    allFilter.addEventListener("click", () => {
+      console.log("All filter clicked, rendering pagination");
+      renderPaginate();
+    });
+  }
   radioFilters.forEach((filter) => {
     filter.addEventListener("click", () => {
       console.log("Radio filter clicked, rendering pagination");
