@@ -186,11 +186,18 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     centeredSlides: false,
     autoplay: {
-      delay: 5000, // Adjust delay to control animation speed (milliseconds)
+      delay: 5000,
       disableOnInteraction: false,
     },
-    speed: 800, // Adjust speed to control animation speed (milliseconds)
+    speed: 800,
     allowTouchMove: window.innerWidth >= 768,
+
+    // Minimal accessibility fix
+    a11y: {
+      enabled: true,
+      containerRole: null,
+      slideRole: null,
+    },
   });
 });
 
