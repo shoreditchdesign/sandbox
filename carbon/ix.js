@@ -105,13 +105,11 @@ document.addEventListener("DOMContentLoaded", function () {
       clickable: true,
     },
     centeredSlides: false,
-    autoplay:
-      window.innerWidth >= 768
-        ? {
-            delay: 3000,
-            disableOnInteraction: false,
-          }
-        : false,
+    autoplay: {
+      delay: 5000, // Adjust delay to control animation speed (milliseconds)
+      disableOnInteraction: false,
+    },
+    speed: 800, // Adjust speed to control animation speed (milliseconds)
     allowTouchMove: window.innerWidth >= 768,
   });
 });
