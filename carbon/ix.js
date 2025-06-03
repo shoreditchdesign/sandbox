@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Cookie banner state management initialized");
 
   // Initialize banner with delay
-  const wrap = document.querySelector('[data-cookie-item="banner"]');
+  const wrap = document.querySelector('[data-cookie-item="wrap"]');
   if (wrap) {
     const delay = parseInt(wrap.getAttribute("data-wrap-delay")) || 0;
     console.log(`Banner initializer set with ${delay}ms delay`);
@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
