@@ -55,39 +55,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const wrap = document.querySelector('[data-cc-item="wrap"]');
   if (wrap) {
     const delay = parseInt(wrap.getAttribute("data-cc-delay")) || 0;
-    console.log(`Banner initializer set with ${delay}ms delay`);
 
     setTimeout(() => {
       wrap.setAttribute("data-cc-state", "show");
-      console.log("Banner state initialized to: show");
     }, delay * 1000);
   }
 
   // Wrap triggers
   document.querySelectorAll("[data-cc-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
-      console.log("Banner trigger clicked");
-      console.log("Wrap trigger click registered");
       const wrap = document.querySelector('[data-cc-item="wrap"]');
       const triggerType = trigger.getAttribute("data-cc-trigger");
       if (wrap) {
         const newState = triggerType === "open" ? "show" : "hide";
         wrap.setAttribute("data-cc-state", newState);
-        console.log(`Banner state set to: ${newState}`);
       }
     });
   });
   // Pref triggers
   document.querySelectorAll("[data-pref-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
-      console.log("Pref trigger clicked");
-      console.log("Pref trigger click registered");
       const pref = document.querySelector('[data-cc-item="pref"]');
       const triggerType = trigger.getAttribute("data-pref-trigger");
       if (pref) {
         const newState = triggerType === "open" ? "show" : "hide";
         pref.setAttribute("data-pref-state", newState);
-        console.log(`Pref state set to: ${newState}`);
       }
     });
   });
