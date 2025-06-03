@@ -688,8 +688,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    console.log("Parallax component found:", parallaxComponent);
-
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.error("GSAP or ScrollTrigger library not loaded");
       return null;
