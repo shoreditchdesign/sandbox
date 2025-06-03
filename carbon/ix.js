@@ -64,12 +64,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Wrap triggers
-  document.querySelectorAll("[data-wrap-trigger]").forEach((trigger) => {
+  document.querySelectorAll("[data-cc-trigger]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
       console.log("Banner trigger clicked");
       console.log("Wrap trigger click registered");
       const wrap = document.querySelector('[data-cc-item="wrap"]');
-      const triggerType = trigger.getAttribute("data-wrap-trigger");
+      const triggerType = trigger.getAttribute("data-cc-trigger");
       if (wrap) {
         const newState = triggerType === "open" ? "show" : "hide";
         wrap.setAttribute("data-cc-state", newState);
@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
   var reviewsSwiper = new Swiper("#reviews-swiper", {
