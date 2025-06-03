@@ -678,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const initParallax = () => {
     const parallaxComponent = document.querySelector(selectors.component);
     if (!parallaxComponent) {
-      console.error("Graphene Preloader: Parallax component not found");
+      console.warn("Graphene Preloader: Parallax component not found");
       return null;
     }
 
