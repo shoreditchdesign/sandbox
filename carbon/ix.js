@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
     trigger.addEventListener("click", () => {
       console.log("Banner trigger clicked");
       console.log("Wrap trigger click registered");
-      const wrap = document.querySelector('[data-cookie-item="banner"]');
+      const wrap = document.querySelector('[data-cookie-item="wrap"]');
       const triggerType = trigger.getAttribute("data-wrap-trigger");
       if (wrap) {
         const newState = triggerType === "open" ? "show" : "hide";
