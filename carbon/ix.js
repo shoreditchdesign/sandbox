@@ -49,8 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Cookie Wrap
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Cookie banner state management initialized");
-
   // Initialize banner with delay
   const wrap = document.querySelector('[data-cc-item="wrap"]');
   if (wrap) {
