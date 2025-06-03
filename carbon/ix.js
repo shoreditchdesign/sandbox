@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  var reviewsSwiper = new Swiper("#reviews-swiper", {
+  const reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
     spaceBetween: 20,
@@ -103,6 +103,21 @@ document.addEventListener("DOMContentLoaded", function () {
     pagination: {
       el: "#reviews-pagination",
       clickable: true,
+      renderBullet: function (index, className) {
+        return (
+          '<span class="' +
+          className +
+          '" aria-label="Go to slide ' +
+          (index + 1) +
+          '"></span>'
+        );
+      },
+    },
+    a11y: {
+      enabled: true,
+      prevSlideMessage: "Previous slide",
+      nextSlideMessage: "Next slide",
+      slideLabelMessage: "Slide {{index}} of {{slidesLength}}",
     },
     centeredSlides: false,
     autoplay: {
@@ -112,11 +127,20 @@ document.addEventListener("DOMContentLoaded", function () {
     speed: 800, // Adjust speed to control animation speed (milliseconds)
     allowTouchMove: window.innerWidth >= 768,
   });
+  const reviewsNextButton = document.querySelector("#reviews-next");
+  if (reviewsNextButton) {
+    reviewsNextButton.setAttribute("aria-label", "Next Review");
+  }
+
+  const reviewsPrevButton = document.querySelector("#reviews-prev");
+  if (reviewsPrevButton) {
+    reviewsPrevButton.setAttribute("aria-label", "Previous Review");
+  }
 });
 
 //Swiper (Benefits)
 document.addEventListener("DOMContentLoaded", function () {
-  var mySwiper = new Swiper("#benefits-swiper", {
+  const benefitsSwiper = new Swiper("#benefits-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
     spaceBetween: 16,
@@ -132,6 +156,21 @@ document.addEventListener("DOMContentLoaded", function () {
     pagination: {
       el: "#benefits-pagination",
       clickable: true,
+      renderBullet: function (index, className) {
+        return (
+          '<span class="' +
+          className +
+          '" aria-label="Go to slide ' +
+          (index + 1) +
+          '"></span>'
+        );
+      },
+    },
+    a11y: {
+      enabled: true,
+      prevSlideMessage: "Previous slide",
+      nextSlideMessage: "Next slide",
+      slideLabelMessage: "Slide {{index}} of {{slidesLength}}",
     },
     navigation: {
       nextEl: "#benefits-next",
@@ -165,6 +204,16 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
+
+  const benefitsNextButton = document.querySelector("#benefits-next");
+  if (benefitsNextButton) {
+    benefitsNextButton.setAttribute("aria-label", "Next Benefit");
+  }
+
+  const benefitsPrevButton = document.querySelector("#benefits-prev");
+  if (benefitsPrevButton) {
+    benefitsPrevButton.setAttribute("aria-label", "Previous Benefit");
+  }
 });
 
 // Marquee
