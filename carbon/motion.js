@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const preloaderContainer = document.querySelector('[data-pl-shader="wrap"]');
 
   if (!preloaderContainer) {
-    console.log("Preloader: Component not found, skipping animations");
+    console.warn("Preloader: Component not found, skipping animations");
     return;
   }
   // Animation Constants
