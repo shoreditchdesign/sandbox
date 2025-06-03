@@ -746,14 +746,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to initialize and handle pagination
   function initializePagination() {
-    // Set initial opacity to 0
+    // Check if listPaginate exists first
+    if (!listPaginate) {
+      console.warn("Pagination element not found");
+      return;
+    }
+
     listPaginate.style.opacity = 0;
 
-    // Get current items (might have changed due to filtering)
     const items = listPaginate.querySelectorAll("[data-pagination-item]");
 
     if (!items || items.length === 0) {
-      console.warn("Pagination element not found");
+      console.warn("No pagination items found");
       return;
     }
 
