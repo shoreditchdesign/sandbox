@@ -166,79 +166,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Benefits)
 document.addEventListener("DOMContentLoaded", function () {
-  var mySwiper = new Swiper("#benefits-swiper", {
-    slidesPerView: 4,
-    slidesPerGroup: 1,
-    spaceBetween: 16,
+  var reviewsSwiper = new Swiper("#reviews-swiper", {
+    direction: "vertical",
+    slidesPerView: 1.2,
+    spaceBetween: 20,
+    mousewheel: false,
     grabCursor: true,
-    allowTouchMove: true,
-    autoHeight: false,
-    watchOverflow: true,
+    loop: true,
     slidesOffsetBefore: 0,
-    slidesOffsetAfter: 0,
-    centeredSlides: false,
-    loopedSlides: null,
-    resistanceRatio: 0,
+    // Navigation arrows
+    navigation: {
+      nextEl: "#reviews-next",
+      prevEl: "#reviews-prev",
+    },
+    // Pagination
     pagination: {
-      el: "#benefits-pagination",
+      el: "#reviews-pagination",
       clickable: true,
     },
-    navigation: {
-      nextEl: "#benefits-next",
-      prevEl: "#benefits-prev",
+    centeredSlides: false,
+    autoplay: {
+      delay: 5000, // Adjust delay to control animation speed (milliseconds)
+      disableOnInteraction: false,
     },
-
-    // Accessibility module
-    a11y: {
-      enabled: true,
-      prevSlideMessage: "Previous benefit",
-      nextSlideMessage: "Next benefit",
-      firstSlideMessage: "This is the first benefit",
-      lastSlideMessage: "This is the last benefit",
-      paginationBulletMessage: "Go to benefit {{index}}",
-      notificationClass: "swiper-notification",
-      containerMessage: "Benefits carousel",
-      containerRoleDescriptionMessage: "carousel",
-      itemRoleDescriptionMessage: "benefit slide",
-    },
-
-    // Keyboard control
-    keyboard: {
-      enabled: true,
-      onlyInViewport: true,
-    },
-
-    // Focus handling
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
-
-    breakpoints: {
-      0: {
-        slidesPerView: 1,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      480: {
-        slidesPerView: 2,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      767: {
-        slidesPerView: 2,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      992: {
-        slidesPerView: 3,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      1200: {
-        slidesPerView: 4,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-    },
+    speed: 800, // Adjust speed to control animation speed (milliseconds)
+    allowTouchMove: window.innerWidth >= 768,
   });
 });
 
