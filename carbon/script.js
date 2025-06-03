@@ -1,4 +1,4 @@
-console.log("script deployed, stable release 1");
+console.log("script deployed");
 
 //Viewport Locker
 document.addEventListener("DOMContentLoaded", function () {
@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
   if (!isMobile) {
-    console.log("Viewport height lock skipped: Not a mobile device.");
     return; // Exit if not mobile
   }
 
