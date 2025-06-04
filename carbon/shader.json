@@ -24,7 +24,7 @@
     {
       "breakpoints": [
         {
-          "props": { "fontSize": 0.135 },
+          "props": { "fontSize": 0.135, "top": 0.75 },
           "max": null,
           "name": "Desktop",
           "min": 992
@@ -115,7 +115,7 @@
       "heightMode": "fixed",
       "left": 0.02,
       "leftMode": "relative",
-      "top": 0.7,
+      "top": 0.75,
       "topMode": "relative",
       "rotation": 0,
       "fontSize": 0.135,
@@ -151,7 +151,7 @@
       "layerType": "effect",
       "type": "sdf_shape",
       "usesPingPong": false,
-      "pos": { "type": "Vec2", "_x": 0.0006537656903765691, "_y": 0.909 },
+      "pos": { "type": "Vec2", "_x": 0.0006537656903765691, "_y": 1 },
       "texture": {
         "src": "https://assets.unicorn.studio/images/BoMFoXuLLybiPMs6t7ig4Fwsrd23/vector_combined_1749045495711.png",
         "thumb": "https://firebasestorage.googleapis.com/v0/b/unicorn-studio.appspot.com/o/BoMFoXuLLybiPMs6t7ig4Fwsrd23%2Fvector_%40thumbnail.svg?alt=media&token=1f1eb8be-e2b6-407a-9a22-566b40fb7023",
@@ -183,8 +183,8 @@
             },
             "complete": false,
             "progress": 0,
-            "value": { "type": "Vec2", "_x": 0.0006537656903765691, "_y": 0.9 },
-            "endValue": { "type": "Vec2", "_x": 1.2, "_y": 0.9 },
+            "value": { "type": "Vec2", "_x": 0.0006537656903765691, "_y": 1 },
+            "endValue": { "type": "Vec2", "_x": 1.2, "_y": 1 },
             "initialized": false,
             "breakpoints": [],
             "uniformData": { "type": "2f", "name": "uPos" }
