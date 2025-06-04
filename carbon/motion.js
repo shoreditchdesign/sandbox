@@ -1297,13 +1297,18 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    function splitRevert() {
-      document.querySelectorAll("[data-motion-text] .line").forEach((line) => {
-        const wrapper = line.parentNode;
-        wrapper.replaceWith(...wrapper.childNodes);
+    function partialCleanup() {
+      // Only clean up ScrollTrigger instances, keep DOM structure
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars.trigger && trigger.vars.trigger.hasAttribute('data-motion-text')) {
+          trigger.kill();
+        }
       });
-      splitLines.revert();
+      // Don't call splitLines.revert() or DOM manipulation to preserve layout
     }
+
+    // Expose partial cleanup for external use
+    window.grapheneTextCleanup = partialCleanup;
 
     gsap.set("[data-motion-text]", { opacity: 1 });
   }, 0);
