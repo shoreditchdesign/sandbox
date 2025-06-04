@@ -1546,7 +1546,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // For below-fold elements, use ScrollTrigger with NO DELAY
         ScrollTrigger.create({
           trigger: element,
-          start: "top 50%",
+          start: "top 80%",
           markers: false,
           once: true,
           onEnter: () => {
