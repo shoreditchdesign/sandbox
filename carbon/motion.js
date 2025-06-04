@@ -1299,8 +1299,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function partialCleanup() {
       // Only clean up ScrollTrigger instances, keep DOM structure
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars.trigger && trigger.vars.trigger.hasAttribute('data-motion-text')) {
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (
+          trigger.vars.trigger &&
+          trigger.vars.trigger.hasAttribute("data-motion-text")
+        ) {
           trigger.kill();
         }
       });
@@ -1517,7 +1520,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Set initial state
       gsap.set(element, {
         opacity: 0,
-        y: 20,
+        yPercent: 50,
       });
 
       // Create timeline
@@ -1527,7 +1530,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         opacity: 1,
-        y: 0,
+        yPercent: 0,
         duration: 0.8,
         ease: "power2.out",
       });
