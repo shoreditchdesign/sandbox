@@ -86,6 +86,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
+  var reviewsSwiper = new Swiper("#reviews-swiper", {
+    direction: "vertical",
+    slidesPerView: 1.2,
+    spaceBetween: 20,
+    mousewheel: false,
+    grabCursor: true,
+    loop: true,
+    slidesOffsetBefore: 0,
+    // Navigation arrows
+    navigation: {
+      nextEl: "#reviews-next",
+      prevEl: "#reviews-prev",
+    },
+    // Pagination
+    pagination: {
+      el: "#reviews-pagination",
+      clickable: true,
+    },
+    centeredSlides: false,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    },
+    speed: 800,
+    allowTouchMove: window.innerWidth >= 768,
+
+    // Minimal accessibility fix
+    a11y: {
+      enabled: true,
+      containerRole: null,
+      slideRole: null,
+    },
+  });
+});
+
+//Swiper (Benefits)
+document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#benefits-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
@@ -160,43 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
-    },
-  });
-});
-
-//Swiper (Benefits)
-document.addEventListener("DOMContentLoaded", function () {
-  var reviewsSwiper = new Swiper("#reviews-swiper", {
-    direction: "vertical",
-    slidesPerView: 1.2,
-    spaceBetween: 20,
-    mousewheel: false,
-    grabCursor: true,
-    loop: true,
-    slidesOffsetBefore: 0,
-    // Navigation arrows
-    navigation: {
-      nextEl: "#reviews-next",
-      prevEl: "#reviews-prev",
-    },
-    // Pagination
-    pagination: {
-      el: "#reviews-pagination",
-      clickable: true,
-    },
-    centeredSlides: false,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false,
-    },
-    speed: 800,
-    allowTouchMove: window.innerWidth >= 768,
-
-    // Minimal accessibility fix
-    a11y: {
-      enabled: true,
-      containerRole: null,
-      slideRole: null,
     },
   });
 });
