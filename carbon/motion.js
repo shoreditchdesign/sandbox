@@ -1478,6 +1478,88 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP for Fade Up Elements
+document.addEventListener("DOMContentLoaded", function () {
+  function isAboveFold(element) {
+    const rect = element.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    return rect.top < windowHeight && rect.bottom > 0;
+  }
+
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const fadeUpElements = document.querySelectorAll(
+    '[data-motion-element="fadeup"]',
+  );
+
+  if (!fadeUpElements || fadeUpElements.length === 0) {
+    console.warn("Motion: Fade up elements not found");
+    return;
+  }
+
+  const animatableElements = Array.from(fadeUpElements).filter((element) => {
+    const motionState = element.getAttribute("data-motion-state");
+    const isBlocked = motionState === "blocked";
+    return !isBlocked;
+  });
+
+  animatableElements.forEach((element, index) => {
+    try {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
+
+      // Set initial state
+      gsap.set(element, {
+        opacity: 0,
+        y: 20,
+      });
+
+      // Create timeline
+      const tl = gsap.timeline({
+        paused: true,
+      });
+
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      });
+
+      const isAbove = isAboveFold(element);
+
+      if (isAbove) {
+        // For above-fold elements, wait delay seconds after DOM load
+        setTimeout(() => {
+          tl.play(0);
+        }, delay * 1000);
+      } else {
+        // For below-fold elements, use ScrollTrigger with NO DELAY
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 95%",
+          markers: false,
+          once: true,
+          onEnter: () => {
+            tl.play(0); // No delay here!
+          },
+        });
+      }
+    } catch (error) {
+      console.error(
+        `Motion: Fade up animation setup failed at ${index + 1}:`,
+        error,
+      );
+    }
+  });
+});
+
 //GSAP for Draw
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof ScrollTrigger === "undefined") {
