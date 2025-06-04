@@ -86,6 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
+  // Check if device is mobile
+  const isMobile = window.innerWidth < 768;
+
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
@@ -105,8 +108,9 @@ document.addEventListener("DOMContentLoaded", function () {
       clickable: true,
     },
     centeredSlides: false,
+    // Autoplay with different delays
     autoplay: {
-      delay: 5000,
+      delay: isMobile ? 3000 : 5000, // 3sec mobile, 5sec desktop
       disableOnInteraction: false,
     },
     speed: 800,
