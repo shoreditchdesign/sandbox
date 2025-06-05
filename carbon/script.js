@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Extract configuration from attributes
       const startNumber = parseFloat(element.textContent) || 0;
       const endNumber =
-        parseFloat(element.getAttribute("data-final-number")) || 0;
+        parseFloat(element.getAttribute("data-stats-final")) || 0;
       const decimals =
         parseInt(element.getAttribute("data-stats-decimals")) || 0;
       const duration =
