@@ -342,8 +342,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Stats Intialiser
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Stats counter initializing");
-
   // Get today's date and calculate days from 2025-01-01
   function getDays() {
     const today = new Date();
@@ -441,14 +439,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Formula: base + (increment * days/30) + random
     const finalValue = base + (increment * daysFromStart) / 30 + randomValue;
 
-    console.log(`${type} calculation:`, {
-      base,
-      increment,
-      daysFromStart,
-      randomValue,
-      finalValue: Math.round(finalValue),
-    });
-
     return {
       final: Math.round(finalValue),
       initial: Math.round((finalValue * startPerc) / 100),
@@ -462,7 +452,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (!displayComponent) {
-      console.log(`No display component found for ${type}`);
       return;
     }
 
@@ -475,9 +464,6 @@ document.addEventListener("DOMContentLoaded", () => {
         formatted.final.decimals,
       );
       statsElement.textContent = formatted.initial.value; // Set initial display value
-      console.log(
-        `Updated ${type} - Final: ${formatted.final.value}, Initial: ${formatted.initial.value}, Decimals: ${formatted.final.decimals}`,
-      );
     }
 
     // Update postfix
@@ -486,9 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (postfixElement && formatted.final.postfix) {
       postfixElement.textContent = formatted.final.postfix.toLowerCase();
-      console.log(
-        `Updated ${type} postfix: ${formatted.final.postfix.toLowerCase()}`,
-      );
     }
   }
 
@@ -497,11 +480,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const initializers = document.querySelectorAll("[data-stats-init]");
 
     if (initializers.length === 0) {
-      console.log("No stats initializers found");
       return;
     }
-
-    console.log(`Found ${initializers.length} stats initializers`);
 
     initializers.forEach((initializer) => {
       // Check if parent component has a valid type (skip static components)
@@ -511,7 +491,6 @@ document.addEventListener("DOMContentLoaded", () => {
         : null;
 
       if (!type || type === "") {
-        console.log("Static component found, skipping math");
         return;
       }
 
@@ -532,8 +511,6 @@ document.addEventListener("DOMContentLoaded", () => {
           initial: runFormat(calculated.initial),
         };
 
-        console.log(`${type} formatted:`, formatted);
-
         // Update display component if it exists
         runUpdate(type, calculated, formatted);
       } catch (error) {
@@ -544,7 +521,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Start the initialization
   runInit();
-  console.log("Stats counter initialization complete");
 });
 
 //Countup Animation

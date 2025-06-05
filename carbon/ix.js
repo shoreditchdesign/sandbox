@@ -287,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
-    console.log(`Marquee type: ${marqueeType}, Copies needed: ${copiesNeeded}`);
 
     marqueeWrap.innerHTML = "";
     for (let i = 0; i < copiesNeeded; i++) {
@@ -313,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Banner type: animate on desktop, skip on mobile
     if (marqueeType === "banner") {
       if (isMobile()) {
-        console.log("Banner type on mobile: skipping animation");
         return;
       }
     }
@@ -321,14 +319,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ticker type: animate on mobile, skip on desktop
     if (marqueeType === "ticker") {
       if (!isMobile()) {
-        console.log("Ticker type on desktop: skipping animation");
         return;
       }
     }
 
     // Run animation
     const totalWidth = itemWidth * copiesNeeded;
-    console.log("Starting GSAP animation");
     gsap.to(marqueeWrap, {
       x: -totalWidth + itemWidth,
       duration: totalWidth / 25,
