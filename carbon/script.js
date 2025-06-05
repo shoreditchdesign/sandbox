@@ -340,6 +340,177 @@ document.addEventListener("DOMContentLoaded", () => {
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
+//Stats Intialiser
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Stats counter initializing");
+
+  // Get today's date and calculate days from 2025-01-01
+  function getDays() {
+    const today = new Date();
+    const startDate = new Date("2025-01-01");
+    const diffTime = today - startDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  // Get or generate random number for today
+  function getRandom(type, min, max) {
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+    const storageKey = "statCounterRandoms";
+
+    let randomData = {};
+    try {
+      const stored = localStorage.getItem(storageKey);
+      randomData = stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      console.warn("LocalStorage unavailable, using fresh random");
+    }
+
+    // Check if we have today's random for this type
+    if (!randomData[today] || !randomData[today][type]) {
+      if (!randomData[today]) randomData[today] = {};
+      randomData[today][type] =
+        Math.floor(Math.random() * (max - min + 1)) + min;
+
+      // Clean up old entries (keep only today)
+      const cleanData = { [today]: randomData[today] };
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(cleanData));
+      } catch (e) {
+        console.warn("Could not save to localStorage");
+      }
+    }
+
+    return randomData[today][type];
+  }
+
+  // Format number with M/K and return both number and postfix
+  function runFormat(num) {
+    if (num >= 1000000) {
+      return {
+        value: Math.round(num / 1000000),
+        postfix: "M",
+      };
+    } else if (num >= 1000) {
+      return {
+        value: Math.round(num / 1000),
+        postfix: "K",
+      };
+    } else {
+      return {
+        value: Math.round(num),
+        postfix: "",
+      };
+    }
+  }
+
+  // Calculate final value using the formula
+  function getValue(config, type) {
+    const base = parseInt(config.getAttribute("data-stats-base"));
+    const increment = parseInt(config.getAttribute("data-stats-increment"));
+    const min = parseInt(config.getAttribute("data-stats-min"));
+    const max = parseInt(config.getAttribute("data-stats-max"));
+    const startPerc = parseInt(config.getAttribute("data-stats-startperc"));
+
+    const daysFromStart = getDays();
+    const randomValue = getRandom(type, min, max);
+
+    // Formula: base + (increment * days/30) + random
+    const finalValue = base + (increment * daysFromStart) / 30 + randomValue;
+
+    console.log(`${type} calculation:`, {
+      base,
+      increment,
+      daysFromStart,
+      randomValue,
+      finalValue: Math.round(finalValue),
+    });
+
+    return {
+      final: Math.round(finalValue),
+      initial: Math.round((finalValue * startPerc) / 100),
+    };
+  }
+
+  // Update display component
+  function runUpdate(type, calculated, formatted) {
+    const displayComponent = document.querySelector(
+      `[data-stats-component="${type}"]`,
+    );
+
+    if (!displayComponent) {
+      console.log(`No display component found for ${type}`);
+      return;
+    }
+
+    // Update final value for CountUp
+    const statsElement = displayComponent.querySelector("[data-stats-element]");
+    if (statsElement) {
+      statsElement.setAttribute("data-stats-final", formatted.final.value);
+      statsElement.textContent = formatted.initial.value; // Set initial display value
+      console.log(
+        `Updated ${type} - Final: ${formatted.final.value}, Initial: ${formatted.initial.value}`,
+      );
+    }
+
+    // Update postfix
+    const postfixElement = displayComponent.querySelector(
+      "[data-stats-postfix]",
+    );
+    if (postfixElement && formatted.final.postfix) {
+      postfixElement.textContent = formatted.final.postfix.toLowerCase();
+      console.log(
+        `Updated ${type} postfix: ${formatted.final.postfix.toLowerCase()}`,
+      );
+    }
+  }
+
+  // Main initialization function
+  function runInit() {
+    const initializers = document.querySelectorAll("[data-stats-init]");
+
+    if (initializers.length === 0) {
+      console.log("No stats initializers found");
+      return;
+    }
+
+    console.log(`Found ${initializers.length} stats initializers`);
+
+    initializers.forEach((initializer) => {
+      const type = initializer.getAttribute("data-stats-init");
+      const config = initializer.querySelector("[data-stats-config]");
+
+      if (!config) {
+        console.error(`No config found for ${type} initializer`);
+        return;
+      }
+
+      try {
+        // Calculate values
+        const calculated = getValue(config, type);
+
+        // Format values
+        const formatted = {
+          final: runFormat(calculated.final),
+          initial: runFormat(calculated.initial),
+        };
+
+        console.log(`${type} formatted:`, formatted);
+
+        // Update display component if it exists
+        runUpdate(type, calculated, formatted);
+      } catch (error) {
+        console.error(`Error processing ${type} stats:`, error);
+      }
+    });
+  }
+
+  // Start the initialization
+  runInit();
+  console.log("Stats counter initialization complete");
+});
+
 //Countup Animation
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration Constants
