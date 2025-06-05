@@ -478,7 +478,17 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(`Found ${initializers.length} stats initializers`);
 
     initializers.forEach((initializer) => {
-      const type = initializer.getAttribute("data-stats-init");
+      // Check if parent component has a valid type (skip static components)
+      const parentComponent = initializer.closest("[data-stats-component]");
+      const type = parentComponent
+        ? parentComponent.getAttribute("data-stats-component")
+        : null;
+
+      if (!type || type === "") {
+        console.log("Static component found, skipping math");
+        return;
+      }
+
       const config = initializer.querySelector("[data-stats-config]");
 
       if (!config) {
