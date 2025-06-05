@@ -209,47 +209,76 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const OPEN_CARD_INTERVAL = 4;
-
   // Mobile detection
   function isMobile() {
     return window.innerWidth <= 768;
   }
 
-  function shouldBlockMotionOnMobile() {
+  function getMarqueeType() {
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
-    return (
-      marqueeWrap && marqueeWrap.getAttribute("data-motion-block") === "mobile"
-    );
+    return marqueeWrap ? marqueeWrap.getAttribute("data-marquee-type") : null;
   }
 
   // Clone cards function
   function cloneCards() {
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
     const marqueeItem = document.querySelector("[data-marquee-item]");
-
     if (!marqueeWrap || !marqueeItem) {
       console.warn("Marquee elements not found");
       return;
     }
 
+    const marqueeType = getMarqueeType();
     const originalContent = marqueeItem.outerHTML;
 
     function calculateRequiredCopies() {
-      // On mobile with motion block, use fixed number of copies
-      if (isMobile() && shouldBlockMotionOnMobile()) {
-        return {
-          viewportWidth: window.innerWidth,
-          itemWidth: marqueeItem.offsetWidth,
-          copiesNeeded: 3,
-        };
+      // Banner type logic
+      if (marqueeType === "banner") {
+        if (isMobile()) {
+          return {
+            viewportWidth: window.innerWidth,
+            itemWidth: marqueeItem.offsetWidth,
+            copiesNeeded: 3,
+          };
+        } else {
+          // Desktop: calculated copies
+          const viewportWidth = window.innerWidth;
+          const itemWidth = marqueeItem.offsetWidth;
+          const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+          return {
+            viewportWidth,
+            itemWidth,
+            copiesNeeded,
+          };
+        }
       }
 
-      // Original logic for desktop
+      // Ticker type logic
+      if (marqueeType === "ticker") {
+        if (isMobile()) {
+          // Mobile: calculated copies
+          const viewportWidth = window.innerWidth;
+          const itemWidth = marqueeItem.offsetWidth;
+          const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+          return {
+            viewportWidth,
+            itemWidth,
+            copiesNeeded,
+          };
+        } else {
+          // Desktop: no copies (original only)
+          return {
+            viewportWidth: window.innerWidth,
+            itemWidth: marqueeItem.offsetWidth,
+            copiesNeeded: 1,
+          };
+        }
+      }
+
+      // Default fallback
       const viewportWidth = window.innerWidth;
       const itemWidth = marqueeItem.offsetWidth;
-      // Create a sequence 5 times the viewport width
       const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
-
       return {
         viewportWidth,
         itemWidth,
@@ -258,8 +287,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
-    marqueeWrap.innerHTML = "";
+    console.log(`Marquee type: ${marqueeType}, Copies needed: ${copiesNeeded}`);
 
+    marqueeWrap.innerHTML = "";
     for (let i = 0; i < copiesNeeded; i++) {
       const clone = document.createElement("div");
       clone.innerHTML = originalContent;
@@ -270,25 +300,38 @@ document.addEventListener("DOMContentLoaded", () => {
     return { itemWidth, copiesNeeded };
   }
 
-  // Move cards function (desktop only)
+  // Move cards function
   function moveCards(itemWidth, copiesNeeded) {
-    // Check if we should block motion on mobile
-    if (isMobile()) {
-      return;
-    }
-
     const marqueeWrap = document.querySelector("[data-marquee-wrap]");
     if (!marqueeWrap) {
       console.warn("News Marquee not found");
       return;
     }
 
-    // Total width of the sequence
-    const totalWidth = itemWidth * copiesNeeded;
+    const marqueeType = getMarqueeType();
 
+    // Banner type: animate on desktop, skip on mobile
+    if (marqueeType === "banner") {
+      if (isMobile()) {
+        console.log("Banner type on mobile: skipping animation");
+        return;
+      }
+    }
+
+    // Ticker type: animate on mobile, skip on desktop
+    if (marqueeType === "ticker") {
+      if (!isMobile()) {
+        console.log("Ticker type on desktop: skipping animation");
+        return;
+      }
+    }
+
+    // Run animation
+    const totalWidth = itemWidth * copiesNeeded;
+    console.log("Starting GSAP animation");
     gsap.to(marqueeWrap, {
-      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
-      duration: totalWidth / 25, // Slowed down the speed for longer animation
+      x: -totalWidth + itemWidth,
+      duration: totalWidth / 25,
       ease: "none",
       repeat: -1,
       onRepeat: () => {
@@ -306,10 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     cards.forEach((card, index) => {
-      // Set default state
       card.setAttribute("data-marquee-card", "off");
-
-      // Open cards at indices 0, 4, 8, 12, etc.
       if (index % 4 === 0) {
         card.setAttribute("data-marquee-card", "on");
       }
@@ -322,15 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cloneData) return;
 
     const { itemWidth, copiesNeeded } = cloneData;
-
-    if (isMobile()) {
-      if (shouldBlockMotionOnMobile()) {
-      }
-    } else {
-      moveCards(itemWidth, copiesNeeded);
-    }
-
-    // Set card states for both mobile and desktop
+    moveCards(itemWidth, copiesNeeded);
     openCards();
   }
 
