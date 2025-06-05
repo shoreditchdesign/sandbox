@@ -522,11 +522,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Countup Animation
-{
-  {
-    REWRITTEN_CODE;
-  }
-}
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration Constants
   const CONFIG = {
