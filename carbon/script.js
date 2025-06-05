@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize countup elements
   function initCountUpElements() {
-    const countupElements = document.querySelectorAll("[data-countup-el]");
+    const countupElements = document.querySelectorAll("[data-stats-element]");
 
     if (countupElements.length === 0) {
       console.warn("No countup elements found on page");
@@ -368,13 +368,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const endNumber =
         parseFloat(element.getAttribute("data-final-number")) || 0;
       const decimals =
-        parseInt(element.getAttribute("data-countup-decimals")) || 0;
+        parseInt(element.getAttribute("data-stats-decimals")) || 0;
       const duration =
-        parseFloat(element.getAttribute("data-countup-duration")) || 2;
+        parseFloat(element.getAttribute("data-stats-duration")) || 2;
 
       // Parse delay and ensure it's a valid number
       let delay = 0;
-      const delayAttr = element.getAttribute("data-countup-delay");
+      const delayAttr = element.getAttribute("data-stats-delay");
       if (delayAttr !== null && delayAttr !== "") {
         delay = parseFloat(delayAttr);
         // Ensure delay is a valid number
