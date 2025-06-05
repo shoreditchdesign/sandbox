@@ -388,21 +388,43 @@ document.addEventListener("DOMContentLoaded", () => {
   // Format number with M/K and return both number and postfix
   function runFormat(num) {
     if (num >= 1000000) {
+      const value = num / 1000000;
+      const rounded = Math.round(value * 100) / 100; // Keep 2 decimals for calculation
       return {
-        value: Math.round(num / 1000000),
+        value: rounded,
         postfix: "M",
+        decimals: getRequiredDecimals(rounded),
       };
     } else if (num >= 1000) {
+      const value = num / 1000;
+      const rounded = Math.round(value * 100) / 100; // Keep 2 decimals for calculation
       return {
-        value: Math.round(num / 1000),
+        value: rounded,
         postfix: "K",
+        decimals: getRequiredDecimals(rounded),
       };
     } else {
       return {
         value: Math.round(num),
         postfix: "",
+        decimals: 0,
       };
     }
+  }
+
+  // Calculate required decimal places for 3-digit display
+  function getRequiredDecimals(value) {
+    const integerPart = Math.floor(Math.abs(value));
+    const digitCount = integerPart.toString().length;
+
+    if (digitCount >= 3) {
+      return 0; // 403M, 123K etc
+    } else if (digitCount === 2) {
+      return 1; // 34.0M, 56.0K etc
+    } else if (digitCount === 1) {
+      return 2; // 1.00M, 7.00K etc
+    }
+    return 0;
   }
 
   // Calculate final value using the formula
@@ -448,9 +470,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const statsElement = displayComponent.querySelector("[data-stats-element]");
     if (statsElement) {
       statsElement.setAttribute("data-stats-final", formatted.final.value);
+      statsElement.setAttribute(
+        "data-stats-decimals",
+        formatted.final.decimals,
+      );
       statsElement.textContent = formatted.initial.value; // Set initial display value
       console.log(
-        `Updated ${type} - Final: ${formatted.final.value}, Initial: ${formatted.initial.value}`,
+        `Updated ${type} - Final: ${formatted.final.value}, Initial: ${formatted.initial.value}, Decimals: ${formatted.final.decimals}`,
       );
     }
 
