@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return; // Exit if not mobile
   }
 
-  console.log("Initializing viewport height lock (applying to mobile devices)");
   let currentOrientation = screen.orientation?.angle || window.orientation || 0; // window.orientation is deprecated, but kept for compatibility
 
   function lockViewportHeights() {
@@ -24,12 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const elements = document.querySelectorAll("[data-vh-lock]");
 
     if (elements.length === 0) {
-      console.log("No elements found with data-vh-lock");
       return; // Exit if no elements are found
     }
-
-    console.log(`Found ${elements.length} elements`);
-    console.log(`Viewport height (likely visual viewport on iOS): ${vh}px`);
 
     elements.forEach((el, index) => {
       const lockType = el.getAttribute("data-vh-lock");
@@ -103,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
         (angleDiff === 0 && (currentOrientation !== 0 || newOrientation !== 0)); // Also trigger if going from/to 0
 
       if (significantChange) {
-        console.log("Orientation changed - re-locking viewport heights");
         lockViewportHeights();
         currentOrientation = newOrientation;
       } else {
