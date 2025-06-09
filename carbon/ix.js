@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check if device is mobile
   const isMobile = window.innerWidth < 768;
 
-  var reviewsSwiper = new Swiper("#reviews-swiper", {
+  const reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
     spaceBetween: 20,
@@ -102,11 +102,20 @@ document.addEventListener("DOMContentLoaded", function () {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
     },
-    // Pagination
-    pagination: {
-      el: "#reviews-pagination",
-      clickable: true,
-    },
+    // Multiple pagination elements
+    pagination: [
+      {
+        el: "#reviews-pagination-fraction",
+        type: "fraction", // Shows "1 / 5" format
+        clickable: false,
+      },
+      {
+        el: "#reviews-pagination-dots",
+        type: "bullets", // Shows clickable dots
+        clickable: true,
+        dynamicBullets: true, // Makes dots more compact when many slides
+      },
+    ],
     centeredSlides: false,
     // Autoplay with different delays
     autoplay: {
@@ -115,7 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     speed: 800,
     allowTouchMove: window.innerWidth >= 768,
-
     // Minimal accessibility fix
     a11y: {
       enabled: true,
