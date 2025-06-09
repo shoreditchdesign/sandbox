@@ -8,104 +8,123 @@ document.addEventListener("DOMContentLoaded", function () {
       navigator.userAgent,
     );
 
-  if (!isMobile) {
-    console.log("Not a mobile device");
-    return; // Exit if not mobile
-  }
+  if (isMobile) {
+    console.log("Mobile device detected - running viewport locker");
 
-  let currentOrientation = screen.orientation?.angle || window.orientation || 0; // window.orientation is deprecated, but kept for compatibility
+    let currentOrientation =
+      screen.orientation?.angle || window.orientation || 0; // window.orientation is deprecated, but kept for compatibility
 
-  function lockViewportHeights() {
-    // Use the vh unit based on the visual viewport if available and different from layout viewport (common on iOS)
-    // Fallback to window.innerHeight
-    const vh = window.visualViewport
-      ? window.visualViewport.height
-      : window.innerHeight;
-    const elements = document.querySelectorAll("[data-vh-lock]");
+    function lockViewportHeights() {
+      // Use the vh unit based on the visual viewport if available and different from layout viewport (common on iOS)
+      // Fallback to window.innerHeight
+      const vh = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+      const elements = document.querySelectorAll("[data-vh-lock]");
 
-    if (elements.length === 0) {
-      return; // Exit if no elements are found
+      if (elements.length === 0) {
+        return; // Exit if no elements are found
+      }
+
+      elements.forEach((el, index) => {
+        const lockType = el.getAttribute("data-vh-lock");
+        const vhValue = parseFloat(el.getAttribute("data-vh-value")) || 100; // Use parseFloat for potentially non-integer vh values
+        const pixelValue = (vh * vhValue) / 100;
+
+        // Ensure pixelValue is a valid number, default to current style if not
+        if (isNaN(pixelValue) || !isFinite(pixelValue)) {
+          console.warn(
+            `Calculated invalid pixel value for element ${index}. vh: ${vh}, vhValue: ${vhValue}. Skipping.`,
+          );
+          return; // Skip this element if calculation failed
+        }
+
+        // Split comma-separated values and process each one
+        const lockTypes = lockType.split(",").map((type) => type.trim());
+
+        lockTypes.forEach((type) => {
+          switch (type) {
+            case "base":
+              el.style.height = `${pixelValue}px`;
+              el.style.setProperty("height", `${pixelValue}px`, "!important");
+              break;
+            case "min":
+              el.style.minHeight = `${pixelValue}px`;
+              el.style.setProperty(
+                "minHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              break;
+            case "max":
+              el.style.maxHeight = `${pixelValue}px`;
+              el.style.setProperty(
+                "maxHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              break;
+            case "all":
+              el.style.height = `${pixelValue}px`;
+              el.style.minHeight = `${pixelValue}px`;
+              el.style.maxHeight = `${pixelValue}px`;
+              el.style.setProperty("height", `${pixelValue}px`, "!important");
+              el.style.setProperty(
+                "minHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              el.style.setProperty(
+                "maxHeight",
+                `${pixelValue}px`,
+                "!important",
+              );
+              break;
+            default:
+              console.warn(
+                `Unknown data-vh-lock type "${type}" on element ${index}.`,
+              );
+              break;
+          }
+        });
+
+        // Debug: Check what actually got applied
+        // console.log(`Element ${index} [${lockTypes.join(",")}]:`);
+        // console.log(`  Set: ${pixelValue}px`);
+        // console.log(`  Inline style: ${el.style.cssText}`); // Can be noisy
+      });
     }
 
-    elements.forEach((el, index) => {
-      const lockType = el.getAttribute("data-vh-lock");
-      const vhValue = parseFloat(el.getAttribute("data-vh-value")) || 100; // Use parseFloat for potentially non-integer vh values
-      const pixelValue = (vh * vhValue) / 100;
+    // Initial lock
+    // Add a small delay to allow the layout to settle, especially on load
+    setTimeout(lockViewportHeights, 50);
 
-      // Ensure pixelValue is a valid number, default to current style if not
-      if (isNaN(pixelValue) || !isFinite(pixelValue)) {
-        console.warn(
-          `Calculated invalid pixel value for element ${index}. vh: ${vh}, vhValue: ${vhValue}. Skipping.`,
-        );
-        return; // Skip this element if calculation failed
-      }
+    // Re-lock on orientation change only
+    window.addEventListener("orientationchange", function () {
+      // Add a timeout to allow the orientation change to complete and the viewport to update
+      setTimeout(function () {
+        const newOrientation =
+          screen.orientation?.angle || window.orientation || 0;
+        // Check if orientation actually changed significantly (e.g., 90 or 270 degrees difference)
+        // This helps avoid triggering on slight angle fluctuations if window.orientation is used.
+        const angleDiff = Math.abs(newOrientation - currentOrientation);
+        const significantChange =
+          angleDiff === 90 ||
+          angleDiff === 270 ||
+          (angleDiff === 0 &&
+            (currentOrientation !== 0 || newOrientation !== 0)); // Also trigger if going from/to 0
 
-      // Split comma-separated values and process each one
-      const lockTypes = lockType.split(",").map((type) => type.trim());
-
-      lockTypes.forEach((type) => {
-        switch (type) {
-          case "base":
-            el.style.height = `${pixelValue}px`;
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
-            break;
-          case "min":
-            el.style.minHeight = `${pixelValue}px`;
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-            break;
-          case "max":
-            el.style.maxHeight = `${pixelValue}px`;
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-            break;
-          case "all":
-            el.style.height = `${pixelValue}px`;
-            el.style.minHeight = `${pixelValue}px`;
-            el.style.maxHeight = `${pixelValue}px`;
-            el.style.setProperty("height", `${pixelValue}px`, "!important");
-            el.style.setProperty("minHeight", `${pixelValue}px`, "!important");
-            el.style.setProperty("maxHeight", `${pixelValue}px`, "!important");
-            break;
-          default:
-            console.warn(
-              `Unknown data-vh-lock type "${type}" on element ${index}.`,
-            );
-            break;
+        if (significantChange) {
+          lockViewportHeights();
+          currentOrientation = newOrientation;
+        } else {
+          //console.log("Orientation angle change not significant, skipping re-lock.");
         }
-      });
-
-      // Debug: Check what actually got applied
-      // console.log(`Element ${index} [${lockTypes.join(",")}]:`);
-      // console.log(`  Set: ${pixelValue}px`);
-      // console.log(`  Inline style: ${el.style.cssText}`); // Can be noisy
+      }, 100); // Short delay to wait for viewport update
     });
+  } else {
+    console.log("Not a mobile device - skipping viewport locker");
   }
-
-  // Initial lock
-  // Add a small delay to allow the layout to settle, especially on load
-  setTimeout(lockViewportHeights, 50);
-
-  // Re-lock on orientation change only
-  window.addEventListener("orientationchange", function () {
-    // Add a timeout to allow the orientation change to complete and the viewport to update
-    setTimeout(function () {
-      const newOrientation =
-        screen.orientation?.angle || window.orientation || 0;
-      // Check if orientation actually changed significantly (e.g., 90 or 270 degrees difference)
-      // This helps avoid triggering on slight angle fluctuations if window.orientation is used.
-      const angleDiff = Math.abs(newOrientation - currentOrientation);
-      const significantChange =
-        angleDiff === 90 ||
-        angleDiff === 270 ||
-        (angleDiff === 0 && (currentOrientation !== 0 || newOrientation !== 0)); // Also trigger if going from/to 0
-
-      if (significantChange) {
-        lockViewportHeights();
-        currentOrientation = newOrientation;
-      } else {
-        //console.log("Orientation angle change not significant, skipping re-lock.");
-      }
-    }, 100); // Short delay to wait for viewport update
-  });
 });
 
 //Lenis Smooth Scroll
