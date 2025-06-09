@@ -86,9 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  // Check if device is mobile
-  const isMobile = window.innerWidth < 768;
+  console.log("Initializing swiper with fractions");
 
+  const isMobile = window.innerWidth < 768;
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
@@ -97,32 +97,52 @@ document.addEventListener("DOMContentLoaded", function () {
     grabCursor: true,
     loop: true,
     slidesOffsetBefore: 0,
-    // Navigation arrows
     navigation: {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
     },
-    // Pagination
     pagination: {
       el: "#reviews-pagination",
       clickable: true,
+      type: "bullets",
     },
     centeredSlides: false,
-    // Autoplay with different delays
     autoplay: {
-      delay: isMobile ? 3000 : 5000, // 3sec mobile, 5sec desktop
+      delay: isMobile ? 3000 : 5000,
       disableOnInteraction: false,
     },
     speed: 800,
     allowTouchMove: window.innerWidth >= 768,
-
-    // Minimal accessibility fix
     a11y: {
       enabled: true,
       containerRole: null,
       slideRole: null,
     },
+    on: {
+      init: function () {
+        console.log("Swiper initialized - updating fractions");
+        updateFractions(this);
+      },
+      slideChange: function () {
+        updateFractions(this);
+      },
+    },
   });
+
+  function updateFractions(swiper) {
+    const currentSlide = swiper.realIndex + 1;
+    const totalSlides = swiper.slides.filter(
+      (slide) => !slide.classList.contains("swiper-slide-duplicate"),
+    ).length;
+
+    const currentEl = document.getElementById("reviews-current-slide");
+    const totalEl = document.getElementById("reviews-total-slides");
+
+    if (currentEl) currentEl.textContent = currentSlide;
+    if (totalEl) totalEl.textContent = totalSlides;
+
+    console.log(`Updated: ${currentSlide} / ${totalSlides}`);
+  }
 });
 
 //Swiper (Benefits)
