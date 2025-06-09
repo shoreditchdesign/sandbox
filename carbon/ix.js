@@ -86,10 +86,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing reviews swiper");
-
+  // Check if device is mobile
   const isMobile = window.innerWidth < 768;
-  const reviewsSwiper = new Swiper("#reviews-swiper", {
+
+  var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 1.2,
     spaceBetween: 20,
@@ -97,70 +97,32 @@ document.addEventListener("DOMContentLoaded", function () {
     grabCursor: true,
     loop: true,
     slidesOffsetBefore: 0,
+    // Navigation arrows
     navigation: {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
     },
+    // Pagination
     pagination: {
       el: "#reviews-pagination",
       clickable: true,
-      type: "bullets",
-      dynamicBullets: true,
     },
     centeredSlides: false,
+    // Autoplay with different delays
     autoplay: {
-      delay: isMobile ? 3000 : 5000,
+      delay: isMobile ? 3000 : 5000, // 3sec mobile, 5sec desktop
       disableOnInteraction: false,
     },
     speed: 800,
     allowTouchMove: window.innerWidth >= 768,
+
+    // Minimal accessibility fix
     a11y: {
       enabled: true,
       containerRole: null,
       slideRole: null,
     },
-    on: {
-      init: function () {
-        console.log("Swiper initialized");
-        updateReviewsCount(this);
-      },
-      slideChange: function () {
-        updateReviewsCount(this);
-      },
-    },
   });
-
-  function updateReviewsCount(swiper) {
-    // Get real slide count excluding duplicates
-    const realSlides = swiper.slides.filter(
-      (slide) => !slide.classList.contains("swiper-slide-duplicate"),
-    );
-    const totalSlides = realSlides.length;
-
-    // Handle realIndex edge cases for loops
-    let currentSlide = swiper.realIndex + 1;
-
-    // Ensure currentSlide stays within bounds
-    if (currentSlide > totalSlides) {
-      currentSlide = 1;
-    } else if (currentSlide < 1) {
-      currentSlide = totalSlides;
-    }
-
-    const currentCountElement = document.getElementById(
-      "reviews-current-slide",
-    );
-    const totalCountElement = document.getElementById("reviews-total-slides");
-
-    if (currentCountElement) {
-      currentCountElement.textContent = currentSlide;
-    }
-    if (totalCountElement) {
-      totalCountElement.textContent = totalSlides;
-    }
-
-    console.log(`Slide ${currentSlide} of ${totalSlides}`);
-  }
 });
 
 //Swiper (Benefits)
