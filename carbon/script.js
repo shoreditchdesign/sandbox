@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
   if (!isMobile) {
+    console.log("Not a mobile device");
     return; // Exit if not mobile
   }
 
