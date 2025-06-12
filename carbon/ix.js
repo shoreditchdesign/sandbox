@@ -118,7 +118,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     on: {
       init: function () {
-        console.log("Swiper initialized - updating fractions");
         updateFractions(this);
       },
       slideChange: function () {
@@ -138,8 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (currentEl) currentEl.textContent = currentSlide;
     if (totalEl) totalEl.textContent = totalSlides;
-
-    console.log(`Updated: ${currentSlide} / ${totalSlides}`);
   }
 });
 
