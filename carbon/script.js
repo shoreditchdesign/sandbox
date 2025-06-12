@@ -558,9 +558,6 @@ document.addEventListener("DOMContentLoaded", () => {
     countupElements.forEach((element, index) => {
       // Skip elements explicitly marked as blocked
       if (element.getAttribute("data-stats-state") === "blocked") {
-        console.log(
-          `Skipping countup initialization for element with data-stats-state="blocked"`,
-        );
         return; // Skip this element and move to the next
       }
 
