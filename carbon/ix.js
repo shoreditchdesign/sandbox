@@ -86,8 +86,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing swiper with fractions");
-
   const isMobile = window.innerWidth < 768;
   var reviewsSwiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
