@@ -141,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power1.inOut",
       },
     },
+    body: {
+      duration: 0.8,
+      ease: "power2.out",
+    },
   };
 
   // Selectors
@@ -156,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       spans: "[data-pl-span]",
       arrows: "[data-pl-arrow]",
     },
+    main: "main",
   };
 
   function createShaderAnimation() {
@@ -214,6 +219,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return tl;
   }
+
+  function createShowBodyAnimation() {
+    const mainElement = document.querySelector(selectors.main);
+
+    if (!mainElement) {
+      console.warn("Preloader: Main element not found");
+      return gsap.timeline();
+    }
+
+    const tl = gsap.timeline({
+      onStart: () => {},
+      onComplete: () => {},
+    });
+
+    // Set initial state
+    gsap.set(mainElement, { opacity: 0 });
+
+    // Fade in body
+    tl.to(mainElement, {
+      opacity: 1,
+      duration: ANIMATION.body.duration,
+      ease: ANIMATION.body.ease,
+      onStart: () => {},
+    });
+
+    return tl;
+  }
+
   // Create text animation functions
   function createTextAnimation() {
     const headingContainer = document.querySelector(
@@ -385,10 +418,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return tl;
   }
 
+  // Calculate body show timing (halfway between shader and swoosh)
+  const bodyShowDelay =
+    (ANIMATION.shader.shaderDelay + ANIMATION.hero.swoosh.initialDelay) / 2;
+
   // Create master timeline
   const masterTimeline = gsap.timeline();
 
   masterTimeline.add(createShaderAnimation(), 0);
+  masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
   masterTimeline.add(
     playSwooshAnimations(),
     ANIMATION.hero.swoosh.initialDelay,
