@@ -101,344 +101,359 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Preloader: Component not found, skipping animations");
     return;
   }
-  // Animation Constants
-  const ANIMATION = {
-    shader: {
-      initialOpacity: 1,
-      finalOpacity: 0,
-      initialX: 0,
-      finalX: "0px",
-      shaderDelay: 2.2,
-      shaderFadeOutDuration: 0.6,
-      bgDelay: -0.6,
-      bgFadeOutDuration: 1.2,
-      ease: "power2.inOut",
-    },
-    hero: {
-      swoosh: {
-        duration: 0.3,
-        initialPosition: "100%",
-        finalPosition: "0%",
+
+  // Wait for video ready signal before starting
+  function startGSAPTimeline() {
+    console.log("Starting GSAP preloader sequence");
+    initializeAnimations();
+  }
+
+  if (window.videoReady) {
+    startGSAPTimeline();
+  } else {
+    document.addEventListener("videoReady", startGSAPTimeline);
+  }
+
+  function initializeAnimations() {
+    // Animation Constants
+    const ANIMATION = {
+      shader: {
+        initialOpacity: 1,
+        finalOpacity: 0,
+        initialX: 0,
+        finalX: "0px",
+        shaderDelay: 2.2,
+        shaderFadeOutDuration: 0.6,
+        bgDelay: -0.6,
+        bgFadeOutDuration: 1.2,
+        ease: "power2.inOut",
+      },
+      hero: {
+        swoosh: {
+          duration: 0.3,
+          initialPosition: "100%",
+          finalPosition: "0%",
+          ease: "power2.out",
+          initialDelay: 2.6,
+          staggerDelay: 0.3,
+          fadeInDuration: 0.1,
+        },
+        fade: {
+          duration: 0.8,
+          initialPosition: "-40px",
+          finalPosition: "0px",
+          initialOpacity: 0,
+          finalOpacity: 1,
+          ease: "power2.out",
+          initialDelay: 3.2,
+          staggerDelay: 0.3,
+        },
+        text: {
+          letterDuration: 0.06,
+          initialDelay: 0.1,
+          staggerDelay: 0.3,
+          ease: "power1.inOut",
+        },
+      },
+      body: {
+        duration: 0.2,
         ease: "power2.out",
-        initialDelay: 2.6,
-        staggerDelay: 0.3,
-        fadeInDuration: 0.1,
       },
-      fade: {
-        duration: 0.8,
-        initialPosition: "-40px",
-        finalPosition: "0px",
-        initialOpacity: 0,
-        finalOpacity: 1,
-        ease: "power2.out",
-        initialDelay: 3.2,
-        staggerDelay: 0.3,
+    };
+
+    // Selectors
+    const selectors = {
+      shader: {
+        wrap: '[data-pl-shader="wrap"]',
+        canvas: '[data-pl-shader="canvas"]',
+        bg: '[data-pl-shader="bg"]',
       },
-      text: {
-        letterDuration: 0.06,
-        initialDelay: 0.1,
-        staggerDelay: 0.3,
-        ease: "power1.inOut",
+      hero: {
+        headingContainer: "[data-pl-text]",
+        headings: "[data-pl-heading]",
+        spans: "[data-pl-span]",
+        arrows: "[data-pl-arrow]",
       },
-    },
-    body: {
-      duration: 0.2,
-      ease: "power2.out",
-    },
-  };
+      main: "main",
+    };
 
-  // Selectors
-  const selectors = {
-    shader: {
-      wrap: '[data-pl-shader="wrap"]',
-      canvas: '[data-pl-shader="canvas"]',
-      bg: '[data-pl-shader="bg"]',
-    },
-    hero: {
-      headingContainer: "[data-pl-text]",
-      headings: "[data-pl-heading]",
-      spans: "[data-pl-span]",
-      arrows: "[data-pl-arrow]",
-    },
-    main: "main",
-  };
+    function createShaderAnimation() {
+      const shaderWrap = document.querySelector(selectors.shader.wrap);
+      const shaderCanvas = document.querySelector(selectors.shader.canvas);
+      const shaderBg = document.querySelector(selectors.shader.bg);
 
-  function createShaderAnimation() {
-    const shaderWrap = document.querySelector(selectors.shader.wrap);
-    const shaderCanvas = document.querySelector(selectors.shader.canvas);
-    const shaderBg = document.querySelector(selectors.shader.bg);
+      if (!shaderWrap || !shaderCanvas) {
+        console.warn("Preloader: Shader elements not found");
+        return gsap.timeline();
+      }
 
-    if (!shaderWrap || !shaderCanvas) {
-      console.warn("Preloader: Shader elements not found");
-      return gsap.timeline();
-    }
+      const tl = gsap.timeline({
+        onStart: () => {},
+        onComplete: () => {},
+      });
 
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
+      // Set initial state
+      gsap.set(shaderWrap, { opacity: 1 });
+      gsap.set(shaderCanvas, {
+        x: ANIMATION.shader.initialX,
+        opacity: ANIMATION.shader.initialOpacity,
+        visibility: "visible",
+      });
 
-    // Set initial state
-    gsap.set(shaderWrap, { opacity: 1 });
-    gsap.set(shaderCanvas, {
-      x: ANIMATION.shader.initialX,
-      opacity: ANIMATION.shader.initialOpacity,
-      visibility: "visible",
-    });
+      if (shaderBg) {
+        gsap.set(shaderBg, { opacity: 1 });
+      }
 
-    if (shaderBg) {
-      gsap.set(shaderBg, { opacity: 1 });
-    }
+      // Hold the shader in view for specified duration
+      tl.to(shaderCanvas, {
+        duration: ANIMATION.shader.shaderDelay,
+        onStart: () => {},
+      });
 
-    // Hold the shader in view for specified duration
-    tl.to(shaderCanvas, {
-      duration: ANIMATION.shader.shaderDelay,
-      onStart: () => {},
-    });
-
-    // Then translate and fade out
-    tl.to(shaderCanvas, {
-      x: ANIMATION.shader.finalX,
-      opacity: ANIMATION.shader.finalOpacity,
-      duration: ANIMATION.shader.shaderFadeOutDuration,
-      ease: ANIMATION.shader.ease,
-      onStart: () => {},
-    });
-
-    // Wait before fading out background
-    if (shaderBg) {
-      tl.to({}, { duration: ANIMATION.shader.bgDelay });
-
-      tl.to(shaderBg, {
-        opacity: 0,
-        duration: ANIMATION.shader.bgFadeOutDuration,
+      // Then translate and fade out
+      tl.to(shaderCanvas, {
+        x: ANIMATION.shader.finalX,
+        opacity: ANIMATION.shader.finalOpacity,
+        duration: ANIMATION.shader.shaderFadeOutDuration,
         ease: ANIMATION.shader.ease,
         onStart: () => {},
       });
-    }
 
-    return tl;
-  }
+      // Wait before fading out background
+      if (shaderBg) {
+        tl.to({}, { duration: ANIMATION.shader.bgDelay });
 
-  function createShowBodyAnimation() {
-    const mainElement = document.querySelector(selectors.main);
-
-    if (!mainElement) {
-      console.warn("Preloader: Main element not found");
-      return gsap.timeline();
-    }
-
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
-
-    // Set initial state
-    gsap.set(mainElement, { opacity: 0 });
-
-    // Fade in body
-    tl.to(mainElement, {
-      opacity: 1,
-      duration: ANIMATION.body.duration,
-      ease: ANIMATION.body.ease,
-      onStart: () => {},
-    });
-
-    return tl;
-  }
-
-  // Create text animation functions
-  function createTextAnimation() {
-    const headingContainer = document.querySelector(
-      selectors.hero.headingContainer,
-    );
-    const headings = document.querySelectorAll(selectors.hero.headings);
-    const spans = document.querySelectorAll(selectors.hero.spans);
-
-    if (!headingContainer || !headings.length || !spans.length) {
-      console.error("Preloader: Hero text elements not found");
-      return gsap.timeline();
-    }
-
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
-
-    // Store original widths and split text
-    spans.forEach((span) => {
-      const width = span.offsetWidth;
-      gsap.set(span, { width: width });
-    });
-
-    // Split headings into characters
-    headings.forEach((heading) => {
-      const splitText = new SplitType(heading, { types: "chars" });
-      if (splitText.chars) {
-        gsap.set(splitText.chars, { opacity: 0 });
+        tl.to(shaderBg, {
+          opacity: 0,
+          duration: ANIMATION.shader.bgFadeOutDuration,
+          ease: ANIMATION.shader.ease,
+          onStart: () => {},
+        });
       }
-    });
 
-    return tl;
-  }
-
-  function playSwooshAnimations() {
-    const arrows = document.querySelectorAll(selectors.hero.arrows);
-
-    if (!arrows.length) {
-      console.error("Preloader: Arrow elements not found");
-      return gsap.timeline();
+      return tl;
     }
 
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
+    function createShowBodyAnimation() {
+      const mainElement = document.querySelector(selectors.main);
 
-    // Set initial state for all arrows
-    gsap.set(arrows, {
-      right: ANIMATION.hero.swoosh.initialPosition,
-      opacity: 0,
-    });
+      if (!mainElement) {
+        console.warn("Preloader: Main element not found");
+        return gsap.timeline();
+      }
 
-    // Animate each arrow with stagger
-    arrows.forEach((arrow, index) => {
-      // Create individual swoosh animation
-      const swooshTl = gsap.timeline();
+      const tl = gsap.timeline({
+        onStart: () => {},
+        onComplete: () => {},
+      });
 
-      // First fade in the arrow
-      swooshTl.to(arrow, {
+      // Set initial state
+      gsap.set(mainElement, { opacity: 0 });
+
+      // Fade in body
+      tl.to(mainElement, {
         opacity: 1,
-        duration: ANIMATION.hero.swoosh.fadeInDuration,
+        duration: ANIMATION.body.duration,
+        ease: ANIMATION.body.ease,
         onStart: () => {},
       });
 
-      // Then animate from right to left
-      swooshTl.to(arrow, {
-        right: ANIMATION.hero.swoosh.finalPosition,
-        duration: ANIMATION.hero.swoosh.duration,
-        ease: ANIMATION.hero.swoosh.ease,
-        onStart: () => {},
-      });
-
-      // Add to main timeline with stagger
-      tl.add(swooshTl, index * ANIMATION.hero.swoosh.staggerDelay);
-    });
-
-    return tl;
-  }
-
-  function playTextScrambleAnimations() {
-    const headings = document.querySelectorAll(selectors.hero.headings);
-
-    if (!headings.length) {
-      console.error("Preloader: Text elements not found");
-      return gsap.timeline();
+      return tl;
     }
 
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
+    // Create text animation functions
+    function createTextAnimation() {
+      const headingContainer = document.querySelector(
+        selectors.hero.headingContainer,
+      );
+      const headings = document.querySelectorAll(selectors.hero.headings);
+      const spans = document.querySelectorAll(selectors.hero.spans);
 
-    // Animate each heading with stagger
-    headings.forEach((heading, index) => {
-      // Get split characters
-      const chars = heading.querySelectorAll(".char");
-
-      if (!chars.length) {
-        console.error(`Preloader: Scramble failed at heading ${index + 1}`);
-        return;
+      if (!headingContainer || !headings.length || !spans.length) {
+        console.error("Preloader: Hero text elements not found");
+        return gsap.timeline();
       }
 
-      // Randomize characters for animation order
-      const randomChars = [...chars].sort(() => Math.random() - 0.5);
-
-      // Create individual text animation timeline
-      const textTl = gsap.timeline({
+      const tl = gsap.timeline({
         onStart: () => {},
+        onComplete: () => {},
       });
 
-      // Animate each character with fade in
-      randomChars.forEach((char, charIndex) => {
-        textTl.to(
-          char,
-          {
-            opacity: 1,
-            duration: ANIMATION.hero.text.letterDuration,
-            ease: ANIMATION.hero.text.ease,
-          },
-          charIndex * ANIMATION.hero.text.letterDuration,
-        );
+      // Store original widths and split text
+      spans.forEach((span) => {
+        const width = span.offsetWidth;
+        gsap.set(span, { width: width });
       });
 
-      // Add to main timeline with stagger after corresponding swoosh
-      tl.add(textTl, index * ANIMATION.hero.text.staggerDelay);
-    });
+      // Split headings into characters
+      headings.forEach((heading) => {
+        const splitText = new SplitType(heading, { types: "chars" });
+        if (splitText.chars) {
+          gsap.set(splitText.chars, { opacity: 0 });
+        }
+      });
 
-    return tl;
-  }
-
-  function playTextFadeAnimations() {
-    const headings = document.querySelectorAll(selectors.hero.headings);
-
-    if (!headings.length) {
-      console.error("Preloader: Heading elements not found");
-      return gsap.timeline();
+      return tl;
     }
 
-    const tl = gsap.timeline({
-      onStart: () => {},
-      onComplete: () => {},
-    });
+    function playSwooshAnimations() {
+      const arrows = document.querySelectorAll(selectors.hero.arrows);
 
-    // Set initial state for all headings
-    gsap.set(headings, {
-      translateX: ANIMATION.hero.fade.initialPosition,
-      opacity: ANIMATION.hero.fade.initialOpacity,
-    });
+      if (!arrows.length) {
+        console.error("Preloader: Arrow elements not found");
+        return gsap.timeline();
+      }
 
-    // Animate each heading with stagger
-    headings.forEach((heading, index) => {
-      // Create individual fade animation
-      const fadeTl = gsap.timeline();
-
-      fadeTl.to(heading, {
-        translateX: ANIMATION.hero.fade.finalPosition,
-        opacity: ANIMATION.hero.fade.finalOpacity,
-        duration: ANIMATION.hero.fade.duration,
-        ease: ANIMATION.hero.fade.ease,
+      const tl = gsap.timeline({
         onStart: () => {},
+        onComplete: () => {},
       });
 
-      // Add to main timeline with stagger
-      tl.add(fadeTl, index * ANIMATION.hero.fade.staggerDelay);
-    });
+      // Set initial state for all arrows
+      gsap.set(arrows, {
+        right: ANIMATION.hero.swoosh.initialPosition,
+        opacity: 0,
+      });
 
-    return tl;
+      // Animate each arrow with stagger
+      arrows.forEach((arrow, index) => {
+        // Create individual swoosh animation
+        const swooshTl = gsap.timeline();
+
+        // First fade in the arrow
+        swooshTl.to(arrow, {
+          opacity: 1,
+          duration: ANIMATION.hero.swoosh.fadeInDuration,
+          onStart: () => {},
+        });
+
+        // Then animate from right to left
+        swooshTl.to(arrow, {
+          right: ANIMATION.hero.swoosh.finalPosition,
+          duration: ANIMATION.hero.swoosh.duration,
+          ease: ANIMATION.hero.swoosh.ease,
+          onStart: () => {},
+        });
+
+        // Add to main timeline with stagger
+        tl.add(swooshTl, index * ANIMATION.hero.swoosh.staggerDelay);
+      });
+
+      return tl;
+    }
+
+    function playTextScrambleAnimations() {
+      const headings = document.querySelectorAll(selectors.hero.headings);
+
+      if (!headings.length) {
+        console.error("Preloader: Text elements not found");
+        return gsap.timeline();
+      }
+
+      const tl = gsap.timeline({
+        onStart: () => {},
+        onComplete: () => {},
+      });
+
+      // Animate each heading with stagger
+      headings.forEach((heading, index) => {
+        // Get split characters
+        const chars = heading.querySelectorAll(".char");
+
+        if (!chars.length) {
+          console.error(`Preloader: Scramble failed at heading ${index + 1}`);
+          return;
+        }
+
+        // Randomize characters for animation order
+        const randomChars = [...chars].sort(() => Math.random() - 0.5);
+
+        // Create individual text animation timeline
+        const textTl = gsap.timeline({
+          onStart: () => {},
+        });
+
+        // Animate each character with fade in
+        randomChars.forEach((char, charIndex) => {
+          textTl.to(
+            char,
+            {
+              opacity: 1,
+              duration: ANIMATION.hero.text.letterDuration,
+              ease: ANIMATION.hero.text.ease,
+            },
+            charIndex * ANIMATION.hero.text.letterDuration,
+          );
+        });
+
+        // Add to main timeline with stagger after corresponding swoosh
+        tl.add(textTl, index * ANIMATION.hero.text.staggerDelay);
+      });
+
+      return tl;
+    }
+
+    function playTextFadeAnimations() {
+      const headings = document.querySelectorAll(selectors.hero.headings);
+
+      if (!headings.length) {
+        console.error("Preloader: Heading elements not found");
+        return gsap.timeline();
+      }
+
+      const tl = gsap.timeline({
+        onStart: () => {},
+        onComplete: () => {},
+      });
+
+      // Set initial state for all headings
+      gsap.set(headings, {
+        translateX: ANIMATION.hero.fade.initialPosition,
+        opacity: ANIMATION.hero.fade.initialOpacity,
+      });
+
+      // Animate each heading with stagger
+      headings.forEach((heading, index) => {
+        // Create individual fade animation
+        const fadeTl = gsap.timeline();
+
+        fadeTl.to(heading, {
+          translateX: ANIMATION.hero.fade.finalPosition,
+          opacity: ANIMATION.hero.fade.finalOpacity,
+          duration: ANIMATION.hero.fade.duration,
+          ease: ANIMATION.hero.fade.ease,
+          onStart: () => {},
+        });
+
+        // Add to main timeline with stagger
+        tl.add(fadeTl, index * ANIMATION.hero.fade.staggerDelay);
+      });
+
+      return tl;
+    }
+
+    // Calculate body show timing (halfway between shader and swoosh)
+    const bodyShowDelay =
+      (ANIMATION.shader.shaderDelay + ANIMATION.hero.swoosh.initialDelay) / 2;
+
+    // Create master timeline
+    const masterTimeline = gsap.timeline();
+
+    masterTimeline.add(createShaderAnimation(), 0);
+    masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
+    masterTimeline.add(
+      playSwooshAnimations(),
+      ANIMATION.hero.swoosh.initialDelay,
+    );
+    masterTimeline.add(
+      playTextFadeAnimations(),
+      ANIMATION.hero.fade.initialDelay,
+    );
+
+    // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
+
+    masterTimeline.play();
   }
-
-  // Calculate body show timing (halfway between shader and swoosh)
-  const bodyShowDelay =
-    (ANIMATION.shader.shaderDelay + ANIMATION.hero.swoosh.initialDelay) / 2;
-
-  // Create master timeline
-  const masterTimeline = gsap.timeline();
-
-  masterTimeline.add(createShaderAnimation(), 0);
-  masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
-  masterTimeline.add(
-    playSwooshAnimations(),
-    ANIMATION.hero.swoosh.initialDelay,
-  );
-  masterTimeline.add(
-    playTextFadeAnimations(),
-    ANIMATION.hero.fade.initialDelay,
-  );
-
-  // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
-
-  masterTimeline.play();
 });
 
 //GSAP for Graphene Preloader
