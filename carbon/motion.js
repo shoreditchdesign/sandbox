@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
     body: {
-      duration: 0.8,
+      duration: 0.2,
       ease: "power2.out",
     },
   };
