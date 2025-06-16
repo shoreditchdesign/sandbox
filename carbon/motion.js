@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Preloader: Component not found, skipping animations");
     return;
   }
-
   // Animation Constants
   const ANIMATION = {
     shader: {
@@ -143,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
     body: {
-      duration: 0.2,
+      duration: 0.8,
       ease: "power2.out",
     },
   };
@@ -154,7 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
       wrap: '[data-pl-shader="wrap"]',
       canvas: '[data-pl-shader="canvas"]',
       bg: '[data-pl-shader="bg"]',
-      video: '[data-pl-shader="canvas"] video',
     },
     hero: {
       headingContainer: "[data-pl-text]",
@@ -164,8 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     main: "main",
   };
-
-  const video = document.querySelector(selectors.shader.video);
 
   function createShaderAnimation() {
     const shaderWrap = document.querySelector(selectors.shader.wrap);
@@ -426,8 +422,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const bodyShowDelay =
     (ANIMATION.shader.shaderDelay + ANIMATION.hero.swoosh.initialDelay) / 2;
 
-  // Create master timeline (paused initially)
-  const masterTimeline = gsap.timeline({ paused: true });
+  // Create master timeline
+  const masterTimeline = gsap.timeline();
 
   masterTimeline.add(createShaderAnimation(), 0);
   masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
@@ -442,23 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
 
-  // Start animations function
-  function startAnimations() {
-    console.log("Video ready, starting preloader animations");
-    masterTimeline.play();
-  }
-
-  // Check if video is ready
-  if (video) {
-    video.addEventListener("loadeddata", startAnimations);
-    video.addEventListener("canplaythrough", startAnimations);
-
-    // Fallback timeout for Safari
-    setTimeout(startAnimations, 3000);
-  } else {
-    // No video found, start immediately
-    startAnimations();
-  }
+  masterTimeline.play();
 });
 
 //GSAP for Graphene Preloader
