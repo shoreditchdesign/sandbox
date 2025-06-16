@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Preloader: Component not found, skipping animations");
     return;
   }
+
   // Animation Constants
   const ANIMATION = {
     shader: {
@@ -153,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wrap: '[data-pl-shader="wrap"]',
       canvas: '[data-pl-shader="canvas"]',
       bg: '[data-pl-shader="bg"]',
+      video: '[data-pl-shader="canvas"] video',
     },
     hero: {
       headingContainer: "[data-pl-text]",
@@ -162,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     main: "main",
   };
+
+  const video = document.querySelector(selectors.shader.video);
 
   function createShaderAnimation() {
     const shaderWrap = document.querySelector(selectors.shader.wrap);
@@ -422,23 +426,40 @@ document.addEventListener("DOMContentLoaded", () => {
   const bodyShowDelay =
     (ANIMATION.shader.shaderDelay + ANIMATION.hero.swoosh.initialDelay) / 2;
 
-  // Create master timeline
-  const masterTimeline = gsap.timeline();
+  // Start animations function
+  function startAnimations() {
+    console.log("Starting preloader animations");
 
-  masterTimeline.add(createShaderAnimation(), 0);
-  masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
-  masterTimeline.add(
-    playSwooshAnimations(),
-    ANIMATION.hero.swoosh.initialDelay,
-  );
-  masterTimeline.add(
-    playTextFadeAnimations(),
-    ANIMATION.hero.fade.initialDelay,
-  );
+    // Create master timeline
+    const masterTimeline = gsap.timeline();
 
-  // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
+    masterTimeline.add(createShaderAnimation(), 0);
+    masterTimeline.add(createShowBodyAnimation(), bodyShowDelay);
+    masterTimeline.add(
+      playSwooshAnimations(),
+      ANIMATION.hero.swoosh.initialDelay,
+    );
+    masterTimeline.add(
+      playTextFadeAnimations(),
+      ANIMATION.hero.fade.initialDelay,
+    );
 
-  masterTimeline.play();
+    // masterTimeline.add(playTextScrambleAnimations(), ANIMATION.hero.text.initialDelay);
+
+    masterTimeline.play();
+  }
+
+  // Check if video is ready
+  if (video) {
+    video.addEventListener("canplay", startAnimations);
+    video.addEventListener("playing", startAnimations);
+
+    // Fallback timeout for Safari
+    setTimeout(startAnimations, 2000);
+  } else {
+    // No video found, start immediately
+    startAnimations();
+  }
 });
 
 //GSAP for Graphene Preloader
