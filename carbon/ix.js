@@ -400,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let prevWidth = window.innerWidth;
 
   // Check if device is mobile
-  const isMobile = () => window.innerWidth <= 767;
+  const isMobile = () => window.innerWidth <= 991;
 
   // Setup for each card
   cards.forEach((card, index) => {
