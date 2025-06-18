@@ -86,58 +86,118 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, initializing dynamic swiper");
+
   const isMobile = window.innerWidth < 768;
-  var reviewsSwiper = new Swiper("#reviews-swiper", {
-    direction: "vertical",
-    slidesPerView: 1.2,
-    spaceBetween: 20,
-    mousewheel: false,
-    grabCursor: true,
-    loop: true,
-    slidesOffsetBefore: 0,
-    navigation: {
-      nextEl: "#reviews-next",
-      prevEl: "#reviews-prev",
-    },
-    pagination: {
-      el: "#reviews-pagination",
-      clickable: true,
-      type: "bullets",
-    },
-    centeredSlides: false,
-    autoplay: {
-      delay: isMobile ? 8000 : 10000,
-      disableOnInteraction: false,
-    },
-    speed: 800,
-    allowTouchMove: window.innerWidth >= 768,
-    a11y: {
-      enabled: true,
-      containerRole: null,
-      slideRole: null,
-    },
-    on: {
-      init: function () {
-        updateFractions(this);
-      },
-      slideChange: function () {
-        updateFractions(this);
-      },
-    },
-  });
+  let reviewsSwiper;
 
   function updateFractions(swiper) {
     const currentSlide = swiper.realIndex + 1;
     const totalSlides = swiper.slides.filter(
       (slide) => !slide.classList.contains("swiper-slide-duplicate"),
     ).length;
-
     const currentEl = document.getElementById("reviews-current-slide");
     const totalEl = document.getElementById("reviews-total-slides");
-
     if (currentEl) currentEl.textContent = currentSlide;
     if (totalEl) totalEl.textContent = totalSlides;
   }
+
+  function calculateSlidesPerView() {
+    const swiperContainer = document.querySelector("#reviews-swiper");
+    const slides = swiperContainer.querySelectorAll(".swiper-slide");
+
+    if (slides.length === 0) return 1;
+
+    console.log("Calculating slides per view...");
+
+    const containerHeight = swiperContainer.offsetHeight;
+    console.log("Container height:", containerHeight);
+
+    let maxSlideHeight = 0;
+    slides.forEach((slide) => {
+      const slideHeight = slide.offsetHeight;
+      if (slideHeight > maxSlideHeight) {
+        maxSlideHeight = slideHeight;
+      }
+    });
+
+    console.log("Max slide height:", maxSlideHeight);
+
+    if (maxSlideHeight === 0) return 1;
+
+    const spaceBetween = 20;
+    const availableHeight = containerHeight;
+    const slidesCount = Math.floor(
+      availableHeight / (maxSlideHeight + spaceBetween),
+    );
+
+    console.log("Calculated slides per view:", Math.max(1, slidesCount));
+    return Math.max(1, slidesCount);
+  }
+
+  function initSwiper() {
+    const slidesPerView = calculateSlidesPerView();
+
+    reviewsSwiper = new Swiper("#reviews-swiper", {
+      direction: "vertical",
+      slidesPerView: slidesPerView,
+      spaceBetween: 20,
+      mousewheel: false,
+      grabCursor: true,
+      loop: true,
+      slidesOffsetBefore: 0,
+      navigation: {
+        nextEl: "#reviews-next",
+        prevEl: "#reviews-prev",
+      },
+      pagination: {
+        el: "#reviews-pagination",
+        clickable: true,
+        type: "bullets",
+      },
+      centeredSlides: false,
+      autoplay: {
+        delay: isMobile ? 8000 : 10000,
+        disableOnInteraction: false,
+      },
+      speed: 800,
+      allowTouchMove: window.innerWidth >= 768,
+      a11y: {
+        enabled: true,
+        containerRole: null,
+        slideRole: null,
+      },
+      on: {
+        init: function () {
+          console.log(
+            "Swiper initialized with",
+            slidesPerView,
+            "slides per view",
+          );
+          updateFractions(this);
+        },
+        slideChange: function () {
+          updateFractions(this);
+        },
+      },
+    });
+  }
+
+  function reinitSwiper() {
+    console.log("Reinitializing swiper for new dimensions");
+    if (reviewsSwiper) {
+      reviewsSwiper.destroy(true, true);
+    }
+    setTimeout(initSwiper, 100);
+  }
+
+  initSwiper();
+
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(reinitSwiper, 300);
+  });
 });
 
 //Swiper (Benefits)
