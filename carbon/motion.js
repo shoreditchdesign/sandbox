@@ -1701,6 +1701,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scrollTrigger: {
         trigger: gridElement,
         start: ANIMATION.trigger.start,
+        toggleActions: "play none none reverse",
         onEnter: () => console.log("Grid reached 30vh - fading heading"),
         onLeaveBack: () => console.log("Grid left 30vh - heading visible"),
       },
