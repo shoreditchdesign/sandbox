@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
     reviewsSwiper = new Swiper("#reviews-swiper", {
       direction: "vertical",
       slidesPerView: slidesPerView,
-      spaceBetween: 20,
+      spaceBetween: 12,
       mousewheel: false,
       grabCursor: true,
       loop: true,
