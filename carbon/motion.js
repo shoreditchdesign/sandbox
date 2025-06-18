@@ -1647,6 +1647,72 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP for Stacking card
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM loaded, initializing stack fade animation");
+
+  // Animation Constants
+  const ANIMATION = {
+    fade: {
+      duration: 0.2,
+      ease: "power2.out",
+      opacity: {
+        start: 1,
+        end: 0,
+      },
+    },
+    trigger: {
+      start: "top 30vh",
+    },
+  };
+
+  // Selectors
+  const selectors = {
+    heading: '[data-stack-element="heading"]',
+    grid: '[data-stack-element="grid"]',
+  };
+
+  function initStackFadeAnimation() {
+    console.log("Initializing stack fade animation");
+
+    const headingElement = document.querySelector(selectors.heading);
+    const gridElement = document.querySelector(selectors.grid);
+
+    if (!headingElement) {
+      console.error("Heading element not found");
+      return;
+    }
+
+    if (!gridElement) {
+      console.error("Grid element not found");
+      return;
+    }
+
+    console.log("Stack elements found - creating animation");
+
+    // Set initial state
+    gsap.set(headingElement, { opacity: ANIMATION.fade.opacity.start });
+
+    // Create ScrollTrigger animation
+    gsap.to(headingElement, {
+      opacity: ANIMATION.fade.opacity.end,
+      duration: ANIMATION.fade.duration,
+      ease: ANIMATION.fade.ease,
+      scrollTrigger: {
+        trigger: gridElement,
+        start: ANIMATION.trigger.start,
+        onEnter: () => console.log("Grid reached 30vh - fading heading"),
+        onLeaveBack: () => console.log("Grid left 30vh - heading visible"),
+      },
+    });
+
+    console.log("Stack fade animation initialized");
+  }
+
+  // Initialize animation
+  initStackFadeAnimation();
+});
+
 //GSAP to Slide Down
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
