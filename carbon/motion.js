@@ -45,10 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
     navbar.setAttribute("data-tuck-state", "default");
   });
 
-  gsap.set(navbars, { yPercent: 0, translateY: "0%" });
+  gsap.set(navbars, { top: "-100%" });
   const showAnim = gsap
-    .from(navbars, {
-      yPercent: -100,
+    .to(navbars, {
+      top: "0%",
       paused: true,
       duration: 0.2,
     })
