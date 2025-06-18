@@ -1253,7 +1253,7 @@ window.addEventListener("DOMContentLoaded", () => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    document.querySelectorAll("").forEach((element) => {
+    document.querySelectorAll("h1").forEach((element) => {
       if (element.getAttribute("data-motion-state") !== "blocked") {
         element.setAttribute("data-motion-text", "");
       }
