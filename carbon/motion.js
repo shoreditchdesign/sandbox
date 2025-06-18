@@ -45,10 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
     navbar.setAttribute("data-tuck-state", "default");
   });
 
-  gsap.set(navbars, { top: "-100%" });
+  gsap.set(navbars, { yPercent: 0, translateY: "0%" });
   const showAnim = gsap
-    .to(navbars, {
-      top: "0%",
+    .from(navbars, {
+      yPercent: -100,
       paused: true,
       duration: 0.2,
     })
@@ -1678,7 +1678,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       gsap.set(element, {
         opacity: 1,
-        yPercent: -120,
+        top: "-100%",
       });
 
       const tl = gsap.timeline({
@@ -1687,7 +1687,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         opacity: 1,
-        yPercent: 0,
+        top: "0%",
         duration: 0.8,
         ease: "power2.out",
       });
