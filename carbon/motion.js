@@ -1662,7 +1662,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
     trigger: {
-      start: "top 30vh",
+      start: "top 30",
     },
   };
 
