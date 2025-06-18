@@ -1649,7 +1649,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Stacking Card
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded, initializing stack fade animation");
+  // Check if on desktop (screen width > 991px)
+  const isDesktop = window.innerWidth > 991;
+
+  if (!isDesktop) {
+    return;
+  }
 
   // Animation Constants
   const ANIMATION = {
@@ -1684,7 +1689,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!gridElement) {
-      console.error("Grid element not found");
+      console.error("Stacking cards section not found");
       return;
     }
 
@@ -1703,10 +1708,6 @@ document.addEventListener("DOMContentLoaded", () => {
         start: ANIMATION.trigger.start,
         toggleActions: "play none none reverse",
         markers: true,
-        onEnter: () =>
-          console.log("Grid reached 30% viewport height - fading heading"),
-        onLeaveBack: () =>
-          console.log("Grid left 30% viewport height - heading visible"),
       },
     });
 
