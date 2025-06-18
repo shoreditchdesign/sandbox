@@ -1662,7 +1662,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
     trigger: {
-      start: "top 30",
+      start: "top 30%",
     },
   };
 
@@ -1703,8 +1703,10 @@ document.addEventListener("DOMContentLoaded", () => {
         start: ANIMATION.trigger.start,
         toggleActions: "play none none reverse",
         markers: true,
-        onEnter: () => console.log("Grid reached 30vh - fading heading"),
-        onLeaveBack: () => console.log("Grid left 30vh - heading visible"),
+        onEnter: () =>
+          console.log("Grid reached 30% viewport height - fading heading"),
+        onLeaveBack: () =>
+          console.log("Grid left 30% viewport height - heading visible"),
       },
     });
 
