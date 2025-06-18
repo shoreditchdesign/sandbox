@@ -191,7 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(initSwiper, 100);
   }
 
-  initSwiper();
+  // Wait 200ms for all elements to render in DOM before initializing swiper
+  setTimeout(initSwiper, 200);
 
   let resizeTimeout;
   window.addEventListener("resize", () => {
