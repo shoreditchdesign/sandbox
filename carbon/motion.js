@@ -1253,7 +1253,7 @@ window.addEventListener("DOMContentLoaded", () => {
       console.error("GSAP or SplitType is not loaded.");
       return;
     }
-    document.querySelectorAll("h1, p").forEach((element) => {
+    document.querySelectorAll("h1").forEach((element) => {
       if (element.getAttribute("data-motion-state") !== "blocked") {
         element.setAttribute("data-motion-text", "");
       }
@@ -1707,7 +1707,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: gridElement,
         start: ANIMATION.trigger.start,
         toggleActions: "play none none reverse",
-        markers: true,
+        markers: false,
       },
     });
 
