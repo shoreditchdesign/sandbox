@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     centeredSlides: false,
     autoplay: {
-      delay: isMobile ? 3000 : 10000,
+      delay: isMobile ? 8000 : 10000,
       disableOnInteraction: false,
     },
     speed: 800,
