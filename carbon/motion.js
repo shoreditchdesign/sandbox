@@ -1647,7 +1647,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//GSAP for Stacking card
+//GSAP for Stacking Card
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing stack fade animation");
 
