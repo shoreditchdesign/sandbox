@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//GSAP for Navbar Slide
+//GSAP for Navbar Tuck
 document.addEventListener("DOMContentLoaded", () => {
   const navbars = document.querySelectorAll(
     '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
@@ -1678,7 +1678,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       gsap.set(element, {
         opacity: 1,
-        yPercent: -120,
+        y: "-120%",
       });
 
       const tl = gsap.timeline({
@@ -1687,7 +1687,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tl.to(element, {
         opacity: 1,
-        yPercent: 0,
+        y: "0%",
         duration: 0.8,
         ease: "power2.out",
       });
