@@ -1357,76 +1357,80 @@ document.addEventListener("DOMContentLoaded", () => {
 // });
 
 document.addEventListener("DOMContentLoaded", function () {
-  function isAboveFold(element) {
-    const rect = element.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    return rect.top < windowHeight && rect.bottom > 0;
-  }
-
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
-    return;
-  }
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const textElements = document.querySelectorAll("[data-motion-text]");
-
-  if (!textElements || textElements.length === 0) {
-    console.warn("Motion: Text elements not found");
-    return;
-  }
-
-  textElements.forEach((element, index) => {
-    try {
-      const delay = element.getAttribute("data-motion-delay")
-        ? parseFloat(element.getAttribute("data-motion-delay"))
-        : 0;
-
-      // Set initial state
-      gsap.set(element, {
-        opacity: 0,
-        y: 0,
-      });
-
-      // Create timeline
-      const tl = gsap.timeline({
-        paused: true,
-      });
-
-      tl.to(element, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out",
-      });
-
-      const isAbove = isAboveFold(element);
-
-      if (isAbove) {
-        setTimeout(() => {
-          tl.play(0);
-        }, delay * 1000);
-      } else {
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 95%",
-          markers: false,
-          once: true,
-          onEnter: () => {
-            tl.play(0);
-          },
-        });
-      }
-
-      console.log(`Motion: Text element ${index + 1} setup complete`);
-    } catch (error) {
-      console.error(
-        `Motion: Text animation setup failed at ${index + 1}:`,
-        error,
-      );
+  setTimeout(() => {
+    function isAboveFold(element) {
+      const rect = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      return rect.top < windowHeight && rect.bottom > 0;
     }
-  });
+
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.error(
+        "Required libraries (GSAP or ScrollTrigger) are not loaded",
+      );
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const textElements = document.querySelectorAll("[data-motion-text]");
+
+    if (!textElements || textElements.length === 0) {
+      console.warn("Motion: Text elements not found");
+      return;
+    }
+
+    textElements.forEach((element, index) => {
+      try {
+        const delay = element.getAttribute("data-motion-delay")
+          ? parseFloat(element.getAttribute("data-motion-delay"))
+          : 0;
+
+        // Set initial state
+        gsap.set(element, {
+          opacity: 0,
+          y: 0,
+        });
+
+        // Create timeline
+        const tl = gsap.timeline({
+          paused: true,
+        });
+
+        tl.to(element, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+
+        const isAbove = isAboveFold(element);
+
+        if (isAbove) {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        } else {
+          ScrollTrigger.create({
+            trigger: element,
+            start: "top 95%",
+            markers: false,
+            once: true,
+            onEnter: () => {
+              tl.play(0);
+            },
+          });
+        }
+
+        console.log(`Motion: Text element ${index + 1} setup complete`);
+      } catch (error) {
+        console.error(
+          `Motion: Text animation setup failed at ${index + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 100);
 });
 
 //GSAP for Arrays
