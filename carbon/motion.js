@@ -1362,108 +1362,70 @@ document.addEventListener("DOMContentLoaded", function () {
     return rect.top < windowHeight && rect.bottom > 0;
   }
 
-  setTimeout(() => {
-    if (
-      typeof gsap === "undefined" ||
-      typeof SplitType === "undefined" ||
-      typeof ScrollTrigger === "undefined"
-    ) {
-      console.error(
-        "Required libraries (GSAP, SplitType, or ScrollTrigger) are not loaded",
-      );
-      return;
-    }
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    console.error("Required libraries (GSAP or ScrollTrigger) are not loaded");
+    return;
+  }
 
-    gsap.registerPlugin(ScrollTrigger);
-    console.log("Motion: Text animation initialized");
+  gsap.registerPlugin(ScrollTrigger);
 
-    const textElements = document.querySelectorAll("[data-motion-text]");
+  const textElements = document.querySelectorAll("[data-motion-text]");
 
-    if (!textElements || textElements.length === 0) {
-      console.warn("Motion: Text elements not found");
-      return;
-    }
+  if (!textElements || textElements.length === 0) {
+    console.warn("Motion: Text elements not found");
+    return;
+  }
 
-    const splitLines = new SplitType("[data-motion-text]", {
-      types: "lines",
-      tagName: "span",
-    });
+  textElements.forEach((element, index) => {
+    try {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
 
-    document
-      .querySelectorAll("[data-motion-text] .line")
-      .forEach((line, index) => {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("u-line-mask");
-        line.parentNode.insertBefore(wrapper, line);
-        wrapper.appendChild(line);
+      // Set initial state
+      gsap.set(element, {
+        opacity: 0,
+        y: 0,
       });
 
-    textElements.forEach((element, index) => {
-      try {
-        const delay = element.getAttribute("data-motion-delay")
-          ? parseFloat(element.getAttribute("data-motion-delay"))
-          : 0;
+      // Create timeline
+      const tl = gsap.timeline({
+        paused: true,
+      });
 
-        // Set initial state like single element animation
-        gsap.set(element.querySelectorAll(".line"), {
-          opacity: 0,
-          y: 0,
-        });
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      });
 
-        // Create timeline
-        const tl = gsap.timeline({
-          paused: true,
-        });
+      const isAbove = isAboveFold(element);
 
-        tl.to(element.querySelectorAll(".line"), {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          stagger: 0.15,
-        });
-
-        const isAbove = isAboveFold(element);
-
-        if (isAbove) {
-          setTimeout(() => {
+      if (isAbove) {
+        setTimeout(() => {
+          tl.play(0);
+        }, delay * 1000);
+      } else {
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 95%",
+          markers: false,
+          once: true,
+          onEnter: () => {
             tl.play(0);
-          }, delay * 1000);
-        } else {
-          ScrollTrigger.create({
-            trigger: element,
-            start: "top 95%",
-            markers: false,
-            once: true,
-            onEnter: () => {
-              tl.play(0);
-            },
-          });
-        }
-
-        console.log(`Motion: Text element ${index + 1} setup complete`);
-      } catch (error) {
-        console.error(
-          `Motion: Text animation setup failed at ${index + 1}:`,
-          error,
-        );
+          },
+        });
       }
-    });
 
-    function partialCleanup() {
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (
-          trigger.vars.trigger &&
-          trigger.vars.trigger.hasAttribute("data-motion-text")
-        ) {
-          trigger.kill();
-        }
-      });
+      console.log(`Motion: Text element ${index + 1} setup complete`);
+    } catch (error) {
+      console.error(
+        `Motion: Text animation setup failed at ${index + 1}:`,
+        error,
+      );
     }
-
-    window.grapheneTextCleanup = partialCleanup;
-    gsap.set("[data-motion-text]", { opacity: 1 });
-  }, 0);
+  });
 });
 
 //GSAP for Arrays
