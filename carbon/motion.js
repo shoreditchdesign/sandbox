@@ -1260,6 +1260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, 0);
 });
+
 // window.addEventListener("DOMContentLoaded", () => {
 //   function isAboveFold(element) {
 //     const rect = element.getBoundingClientRect();
