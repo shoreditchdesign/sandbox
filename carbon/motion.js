@@ -1247,7 +1247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Headings
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (typeof gsap === "undefined" || typeof SplitType === "undefined") {
       console.error("GSAP or SplitType is not loaded.");
@@ -1260,7 +1260,102 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }, 0);
 });
-window.addEventListener("DOMContentLoaded", () => {
+// window.addEventListener("DOMContentLoaded", () => {
+//   function isAboveFold(element) {
+//     const rect = element.getBoundingClientRect();
+//     const windowHeight = window.innerHeight;
+//     return rect.top < windowHeight && rect.bottom > 0;
+//   }
+
+//   setTimeout(() => {
+//     if (
+//       typeof gsap === "undefined" ||
+//       typeof SplitType === "undefined" ||
+//       typeof ScrollTrigger === "undefined"
+//     ) {
+//       console.error(
+//         "Required libraries (GSAP, SplitType, or ScrollTrigger) are not loaded",
+//       );
+//       return;
+//     }
+
+//     gsap.registerPlugin(ScrollTrigger);
+
+//     const splitLines = new SplitType("[data-motion-text]", {
+//       types: "lines",
+//       tagName: "span",
+//     });
+
+//     document
+//       .querySelectorAll("[data-motion-text] .line")
+//       .forEach((line, index) => {
+//         const wrapper = document.createElement("div");
+//         wrapper.classList.add("u-line-mask");
+//         line.parentNode.insertBefore(wrapper, line);
+//         wrapper.appendChild(line);
+//       });
+
+//     const textElements = document.querySelectorAll("[data-motion-text]");
+
+//     textElements.forEach((element, index) => {
+//       const delay = element.getAttribute("data-motion-delay")
+//         ? parseFloat(element.getAttribute("data-motion-delay"))
+//         : 0;
+
+//       const tl = gsap.timeline({
+//         paused: true,
+//         onStart: () => {},
+//         onComplete: () => {},
+//       });
+
+//       tl.from(element.querySelectorAll(".line"), {
+//         y: "0%",
+//         opacity: 0,
+//         duration: 0.8,
+//         ease: "power1.out",
+//         stagger: 0.15,
+//       });
+
+//       const isAbove = isAboveFold(element);
+
+//       if (isAbove) {
+//         setTimeout(() => {
+//           tl.play();
+//         }, delay * 1000);
+//       } else {
+//         ScrollTrigger.create({
+//           trigger: element,
+//           start: "top 90%",
+//           markers: false,
+//           once: true,
+//           onEnter: () => {
+//             tl.play(0);
+//           },
+//         });
+//       }
+//     });
+
+//     function partialCleanup() {
+//       // Only clean up ScrollTrigger instances, keep DOM structure
+//       ScrollTrigger.getAll().forEach((trigger) => {
+//         if (
+//           trigger.vars.trigger &&
+//           trigger.vars.trigger.hasAttribute("data-motion-text")
+//         ) {
+//           trigger.kill();
+//         }
+//       });
+//       // Don't call splitLines.revert() or DOM manipulation to preserve layout
+//     }
+
+//     // Expose partial cleanup for external use
+//     window.grapheneTextCleanup = partialCleanup;
+
+//     gsap.set("[data-motion-text]", { opacity: 1 });
+//   }, 0);
+// });
+
+document.addEventListener("DOMContentLoaded", function () {
   function isAboveFold(element) {
     const rect = element.getBoundingClientRect();
     const windowHeight = window.innerHeight;
@@ -1280,6 +1375,14 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     gsap.registerPlugin(ScrollTrigger);
+    console.log("Motion: Text animation initialized");
+
+    const textElements = document.querySelectorAll("[data-motion-text]");
+
+    if (!textElements || textElements.length === 0) {
+      console.warn("Motion: Text elements not found");
+      return;
+    }
 
     const splitLines = new SplitType("[data-motion-text]", {
       types: "lines",
@@ -1295,48 +1398,59 @@ window.addEventListener("DOMContentLoaded", () => {
         wrapper.appendChild(line);
       });
 
-    const textElements = document.querySelectorAll("[data-motion-text]");
-
     textElements.forEach((element, index) => {
-      const delay = element.getAttribute("data-motion-delay")
-        ? parseFloat(element.getAttribute("data-motion-delay"))
-        : 0;
+      try {
+        const delay = element.getAttribute("data-motion-delay")
+          ? parseFloat(element.getAttribute("data-motion-delay"))
+          : 0;
 
-      const tl = gsap.timeline({
-        paused: true,
-        onStart: () => {},
-        onComplete: () => {},
-      });
-
-      tl.from(element.querySelectorAll(".line"), {
-        y: "0%",
-        opacity: 0,
-        duration: 0.8,
-        ease: "power1.out",
-        stagger: 0.15,
-      });
-
-      const isAbove = isAboveFold(element);
-
-      if (isAbove) {
-        setTimeout(() => {
-          tl.play();
-        }, delay * 1000);
-      } else {
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 90%",
-          markers: false,
-          once: true,
-          onEnter: () => {
-            tl.play(0);
-          },
+        // Set initial state like single element animation
+        gsap.set(element.querySelectorAll(".line"), {
+          opacity: 0,
+          y: 0,
         });
+
+        // Create timeline
+        const tl = gsap.timeline({
+          paused: true,
+        });
+
+        tl.to(element.querySelectorAll(".line"), {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          stagger: 0.15,
+        });
+
+        const isAbove = isAboveFold(element);
+
+        if (isAbove) {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        } else {
+          ScrollTrigger.create({
+            trigger: element,
+            start: "top 95%",
+            markers: false,
+            once: true,
+            onEnter: () => {
+              tl.play(0);
+            },
+          });
+        }
+
+        console.log(`Motion: Text element ${index + 1} setup complete`);
+      } catch (error) {
+        console.error(
+          `Motion: Text animation setup failed at ${index + 1}:`,
+          error,
+        );
       }
     });
 
     function partialCleanup() {
-      // Only clean up ScrollTrigger instances, keep DOM structure
       ScrollTrigger.getAll().forEach((trigger) => {
         if (
           trigger.vars.trigger &&
@@ -1345,12 +1459,9 @@ window.addEventListener("DOMContentLoaded", () => {
           trigger.kill();
         }
       });
-      // Don't call splitLines.revert() or DOM manipulation to preserve layout
     }
 
-    // Expose partial cleanup for external use
     window.grapheneTextCleanup = partialCleanup;
-
     gsap.set("[data-motion-text]", { opacity: 1 });
   }, 0);
 });
