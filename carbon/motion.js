@@ -1421,8 +1421,6 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           });
         }
-
-        console.log(`Motion: Text element ${index + 1} setup complete`);
       } catch (error) {
         console.error(
           `Motion: Text animation setup failed at ${index + 1}:`,

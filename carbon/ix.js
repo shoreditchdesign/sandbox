@@ -108,8 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (slides.length === 0) return 1;
 
-    console.log("Calculating slides per view...");
-
     const containerHeight = swiperContainer.offsetHeight;
     console.log("Container height:", containerHeight);
 
