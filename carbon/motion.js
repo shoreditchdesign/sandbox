@@ -966,7 +966,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initVideoStates(items) {
     // On mobile, show all videos
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 991) {
       gsap.set(items, { opacity: 1 });
       return;
     }
@@ -983,7 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Animation creators
   function createVideoScrollTriggers(chapterItems, videoItems) {
     // Skip video scroll triggers on mobile
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 991) {
       return;
     }
 

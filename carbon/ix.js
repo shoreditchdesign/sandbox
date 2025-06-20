@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing dynamic swiper");
 
-  const isMobile = window.innerWidth < 768;
+  const isMobile = window.innerWidth < 991;
   let reviewsSwiper;
 
   function updateFractions(swiper) {
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         disableOnInteraction: false,
       },
       speed: 800,
-      allowTouchMove: window.innerWidth >= 768,
+      allowTouchMove: window.innerWidth >= 991,
       a11y: {
         enabled: true,
         containerRole: null,
@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const OPEN_CARD_INTERVAL = 4;
   // Mobile detection
   function isMobile() {
-    return window.innerWidth <= 768;
+    return window.innerWidth <= 991;
   }
 
   function getMarqueeType() {
