@@ -832,10 +832,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 500);
   }
 
+  // Function to hide labels with zero results
+  function hideZeroResultFilters() {
+    console.log("Checking for zero result filters");
+
+    const resultCountSpans = document.querySelectorAll(
+      '[fs-cmsfilter-element="filter-results-count"]',
+    );
+    let hiddenCount = 0;
+    let shownCount = 0;
+
+    resultCountSpans.forEach((span) => {
+      const count = span.textContent.trim();
+      const parentLabel = span.closest("label");
+
+      if (parentLabel) {
+        if (count === "0") {
+          parentLabel.style.display = "none";
+          hiddenCount++;
+          console.log("Hidden filter with 0 results:", parentLabel);
+        } else {
+          parentLabel.style.display = "";
+          shownCount++;
+        }
+      }
+    });
+
+    console.log(
+      "Zero results hide complete - Hidden:",
+      hiddenCount,
+      "Shown:",
+      shownCount,
+    );
+  }
+
   // Initialize pagination on load with delay to avoid race condition with Finsweet
   setTimeout(() => {
     initializePagination();
   }, 500);
+
+  // Hide zero result filters after Finsweet has populated counts
+  setTimeout(() => {
+    hideZeroResultFilters();
+  }, 600);
 
   // FILTER CODE
 
@@ -948,6 +987,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Reinitialize with new filtered items after delay
     setTimeout(() => {
       initializePagination();
+      // Also re-check zero results after filter changes
+      setTimeout(() => {
+        hideZeroResultFilters();
+      }, 200);
     }, 100);
   }
 
