@@ -1762,7 +1762,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gridElement = document.querySelector(selectors.grid);
 
     if (!headingElement) {
-      console.error("Heading element not found");
+      console.warn("Stack heading element not found");
       return;
     }
 
