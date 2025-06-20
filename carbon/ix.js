@@ -832,8 +832,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to hide labels with zero results
   function hideZeroResultFilters() {
-    console.log("Checking for zero result filters");
-
     const resultCountSpans = document.querySelectorAll(
       '[fs-cmsfilter-element="filter-results-count"]',
     );
@@ -848,7 +846,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (count === "0") {
           parentLabel.style.display = "none";
           hiddenCount++;
-          console.log("Hidden filter with 0 results:", parentLabel);
         } else {
           parentLabel.style.display = "";
           shownCount++;
