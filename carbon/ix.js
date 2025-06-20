@@ -987,7 +987,7 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard
           .writeText(window.location.href)
           .then(() => {
-            showToast("Copied to clipboard");
+            showToast("Copied link");
           })
           .catch((err) => {
             console.error("Failed to copy URL:", err);
