@@ -193,10 +193,12 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(initSwiper, 200);
 
   let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(reinitSwiper, 300);
-  });
+  if (!isMobile) {
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(reinitSwiper, 300);
+    });
+  }
 });
 
 //Swiper (Benefits)
