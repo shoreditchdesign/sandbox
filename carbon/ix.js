@@ -283,6 +283,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Lightbox
 document.addEventListener("DOMContentLoaded", function () {
+  // Only initialize on desktop (screen width > 991px)
+  if (window.innerWidth <= 991) {
+    console.log("Lightbox disabled on mobile");
+    return;
+  }
+
   const autoplayVideo = document.querySelector(".c-ex_video");
   const lightboxWrap = document.querySelector("[data-lbox-wrap]");
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
@@ -414,6 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("Lightbox event listeners attached");
 });
+
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
