@@ -333,15 +333,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Opening lightbox");
 
-    // Disable body scroll
     document.body.style.overflow = "hidden";
 
-    // Pause background video (don't reset, don't change mute)
     if (autoplayVideo) {
       autoplayVideo.pause();
     }
 
-    // Show lightbox
     lightboxWrap.setAttribute("data-lbox-state", "show");
     isLightboxOpen = true;
 
@@ -362,10 +359,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Closing lightbox");
 
-    // Enable body scroll
     document.body.style.overflow = "";
 
-    // Hide lightbox
     lightboxWrap.setAttribute("data-lbox-state", "hide");
     isLightboxOpen = false;
 
@@ -382,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch((err) => console.warn("Vimeo reset error:", err));
     }
 
-    // Resume background video (don't reset, preserve muted state)
+    // Resume background video (Safari-friendly approach)
     if (autoplayVideo) {
       autoplayVideo
         .play()
@@ -419,7 +414,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("Lightbox event listeners attached");
 });
-
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
