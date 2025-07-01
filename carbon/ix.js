@@ -333,6 +333,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Opening lightbox");
 
+    // Disable body scroll
+    document.body.style.overflow = "hidden";
+
     // Pause and mute autoplay video
     if (autoplayVideo) {
       autoplayVideo.pause();
@@ -348,15 +351,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (vimeoPlayer) {
       vimeoPlayer.play().catch((err) => console.warn("Vimeo play error:", err));
     }
-
-    // Prevent body scroll
-    document.body.style.overflow = "hidden";
   }
 
   function closeLightbox() {
     if (!isLightboxOpen) return;
 
     console.log("Closing lightbox");
+
+    // Enable body scroll
+    document.body.style.overflow = "";
 
     // Hide lightbox
     lightboxWrap.setAttribute("data-lbox-state", "hide");
@@ -383,9 +386,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .play()
         .catch((err) => console.warn("Autoplay resume error:", err));
     }
-
-    // Restore body scroll
-    document.body.style.overflow = "";
   }
 
   // Event listeners
