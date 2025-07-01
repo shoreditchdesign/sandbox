@@ -336,19 +336,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // Disable body scroll
     document.body.style.overflow = "hidden";
 
-    // Pause and mute autoplay video
+    // Pause background video (don't reset, don't change mute)
     if (autoplayVideo) {
       autoplayVideo.pause();
-      autoplayVideo.muted = true;
-      autoplayVideo.currentTime = 0;
     }
 
     // Show lightbox
     lightboxWrap.setAttribute("data-lbox-state", "show");
     isLightboxOpen = true;
 
-    // Play Vimeo video
+    // Start Vimeo from beginning with sound
     if (vimeoPlayer) {
+      vimeoPlayer
+        .setCurrentTime(0)
+        .catch((err) => console.warn("Vimeo reset error:", err));
+      vimeoPlayer
+        .setVolume(1)
+        .catch((err) => console.warn("Vimeo unmute error:", err));
       vimeoPlayer.play().catch((err) => console.warn("Vimeo play error:", err));
     }
   }
@@ -365,26 +369,24 @@ document.addEventListener("DOMContentLoaded", function () {
     lightboxWrap.setAttribute("data-lbox-state", "hide");
     isLightboxOpen = false;
 
-    // Pause, reset and mute Vimeo
+    // Pause, mute and reset Vimeo
     if (vimeoPlayer) {
       vimeoPlayer
         .pause()
         .catch((err) => console.warn("Vimeo pause error:", err));
       vimeoPlayer
-        .setCurrentTime(0)
-        .catch((err) => console.warn("Vimeo reset error:", err));
-      vimeoPlayer
         .setVolume(0)
         .catch((err) => console.warn("Vimeo mute error:", err));
+      vimeoPlayer
+        .setCurrentTime(0)
+        .catch((err) => console.warn("Vimeo reset error:", err));
     }
 
-    // Resume autoplay video
+    // Resume background video (don't reset, preserve muted state)
     if (autoplayVideo) {
-      autoplayVideo.muted = false;
-      autoplayVideo.currentTime = 0;
       autoplayVideo
         .play()
-        .catch((err) => console.warn("Autoplay resume error:", err));
+        .catch((err) => console.warn("Background video resume error:", err));
     }
   }
 
