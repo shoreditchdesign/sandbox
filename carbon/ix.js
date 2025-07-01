@@ -281,6 +281,143 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Lightbox
+document.addEventListener("DOMContentLoaded", function () {
+  const autoplayVideo = document.querySelector(".c-ex_video");
+  const lightboxWrap = document.querySelector("[data-lbox-wrap]");
+  const openToggle = document.querySelector('[data-lbox-toggle="open"]');
+  const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
+  const vimeoIframe = document.querySelector("[data-lbox-embed] iframe");
+
+  console.log("Lightbox controller initialized");
+
+  if (
+    !autoplayVideo ||
+    !lightboxWrap ||
+    !openToggle ||
+    !closeToggle ||
+    !vimeoIframe
+  ) {
+    console.warn("Missing required lightbox elements");
+    return;
+  }
+
+  let vimeoPlayer = null;
+  let isLightboxOpen = false;
+
+  // Initialize Vimeo player when API is ready
+  function initVimeoPlayer() {
+    if (typeof Vimeo !== "undefined") {
+      vimeoPlayer = new Vimeo.Player(vimeoIframe);
+      console.log("Vimeo player initialized");
+    } else {
+      console.warn("Vimeo API not loaded");
+    }
+  }
+
+  // Check if Vimeo API is already loaded, or wait for it
+  if (typeof Vimeo !== "undefined") {
+    initVimeoPlayer();
+  } else {
+    // Wait for Vimeo script to load
+    const checkVimeo = setInterval(() => {
+      if (typeof Vimeo !== "undefined") {
+        clearInterval(checkVimeo);
+        initVimeoPlayer();
+      }
+    }, 100);
+  }
+
+  function openLightbox() {
+    if (isLightboxOpen) return;
+
+    console.log("Opening lightbox");
+
+    // Pause and mute autoplay video
+    if (autoplayVideo) {
+      autoplayVideo.pause();
+      autoplayVideo.muted = true;
+      autoplayVideo.currentTime = 0;
+    }
+
+    // Show lightbox
+    lightboxWrap.setAttribute("data-lbox-state", "show");
+    isLightboxOpen = true;
+
+    // Play Vimeo video
+    if (vimeoPlayer) {
+      vimeoPlayer.play().catch((err) => console.warn("Vimeo play error:", err));
+    }
+
+    // Prevent body scroll
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    if (!isLightboxOpen) return;
+
+    console.log("Closing lightbox");
+
+    // Hide lightbox
+    lightboxWrap.setAttribute("data-lbox-state", "hide");
+    isLightboxOpen = false;
+
+    // Pause, reset and mute Vimeo
+    if (vimeoPlayer) {
+      vimeoPlayer
+        .pause()
+        .catch((err) => console.warn("Vimeo pause error:", err));
+      vimeoPlayer
+        .setCurrentTime(0)
+        .catch((err) => console.warn("Vimeo reset error:", err));
+      vimeoPlayer
+        .setVolume(0)
+        .catch((err) => console.warn("Vimeo mute error:", err));
+    }
+
+    // Resume autoplay video
+    if (autoplayVideo) {
+      autoplayVideo.muted = false;
+      autoplayVideo.currentTime = 0;
+      autoplayVideo
+        .play()
+        .catch((err) => console.warn("Autoplay resume error:", err));
+    }
+
+    // Restore body scroll
+    document.body.style.overflow = "";
+  }
+
+  // Event listeners
+  openToggle.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    openLightbox();
+  });
+
+  closeToggle.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    closeLightbox();
+  });
+
+  // Close on escape key
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && isLightboxOpen) {
+      closeLightbox();
+    }
+  });
+
+  // Close on backdrop click
+  lightboxWrap.addEventListener("click", function (e) {
+    if (e.target === lightboxWrap) {
+      closeLightbox();
+    }
+  });
+
+  console.log("Lightbox event listeners attached");
+});
+
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
