@@ -91,19 +91,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
+  function sortRows() {
+    const tabTables = document.querySelectorAll("[data-tab-table]");
+
+    tabTables.forEach((table) => {
+      const rows = Array.from(table.querySelectorAll("[data-tab-row]"));
+
+      // Sort rows by data-tab-row attribute value (as numbers)
+      rows.sort((a, b) => {
+        const aValue = parseInt(a.getAttribute("data-tab-row"), 10);
+        const bValue = parseInt(b.getAttribute("data-tab-row"), 10);
+        return aValue - bValue;
+      });
+
+      // Re-append rows in sorted order
+      rows.forEach((row) => {
+        table.appendChild(row);
+      });
+    });
+  }
+
   function initializeTabs() {
     const tabLinks = document.querySelectorAll("[data-tab-link]");
     const tabPanes = document.querySelectorAll("[data-tab-pane]");
 
     tabLinks.forEach((tabLink, index) => {
       tabLink.setAttribute("data-tab-link", index + 1);
+      if (index === 0) {
+        tabLink.setAttribute("data-tab-state", "show");
+      } else {
+        tabLink.setAttribute("data-tab-state", "hide");
+      }
     });
 
     tabPanes.forEach((tabPane, index) => {
       tabPane.setAttribute("data-tab-pane", index + 1);
+      if (index === 0) {
+        tabPane.setAttribute("data-tab-state", "show");
+      } else {
+        tabPane.setAttribute("data-tab-state", "hide");
+      }
     });
   }
 
+  sortRows();
   initializeTabs();
 
   const tabLinks = document.querySelectorAll("[data-tab-link]");
