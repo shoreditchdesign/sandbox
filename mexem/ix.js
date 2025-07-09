@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
           clearTimeout(hideTimeout);
         }
         toggle.setAttribute("data-dd-state", "show");
+        drawer.style.pointerEvents = "auto";
         drawerQuickToShow(1);
         if (overlayQuickToShow) {
           overlayQuickToShow(1);
@@ -53,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`Hiding drawer ${index + 1}`);
         hideTimeout = setTimeout(() => {
           toggle.setAttribute("data-dd-state", "hide");
+          drawer.style.pointerEvents = "none";
           drawerQuickToHide(0);
           if (overlayQuickToHide) {
             overlayQuickToHide(0);
@@ -67,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
           clearTimeout(hideTimeout);
         }
         toggle.setAttribute("data-dd-state", "show");
+        drawer.style.pointerEvents = "auto";
         drawerQuickToShow(1);
         if (overlayQuickToShow) {
           overlayQuickToShow(1);
@@ -77,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`Hiding drawer ${index + 1} from drawer hover`);
         hideTimeout = setTimeout(() => {
           toggle.setAttribute("data-dd-state", "hide");
+          drawer.style.pointerEvents = "none";
           drawerQuickToHide(0);
           if (overlayQuickToHide) {
             overlayQuickToHide(0);
