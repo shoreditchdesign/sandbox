@@ -3,7 +3,16 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing dropdown animations");
 
   const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
+  const overlay = document.querySelector("[data-nav-dd='overlay']");
   console.log("Found toggles:", toggles.length);
+  console.log("Found overlay:", overlay ? "yes" : "no");
+
+  const overlayQuickToShow = overlay
+    ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
+    : null;
+  const overlayQuickToHide = overlay
+    ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
+    : null;
 
   toggles.forEach((toggle, index) => {
     console.log(`Setting up toggle ${index + 1}`);
@@ -13,11 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
       console.log(`Found matching drawer for toggle ${index + 1}`);
 
-      const quickToShow = gsap.quickTo(drawer, "opacity", {
+      const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
         duration: 0.3,
         ease: "power2.out",
       });
-      const quickToHide = gsap.quickTo(drawer, "opacity", {
+      const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
         duration: 0.3,
         ease: "power2.out",
       });
@@ -25,13 +34,19 @@ document.addEventListener("DOMContentLoaded", function () {
       toggle.addEventListener("mouseenter", () => {
         console.log(`Showing drawer ${index + 1}`);
         toggle.setAttribute("data-dd-state", "show");
-        quickToShow(1);
+        drawerQuickToShow(1);
+        if (overlayQuickToShow) {
+          overlayQuickToShow(1);
+        }
       });
 
       toggle.addEventListener("mouseleave", () => {
         console.log(`Hiding drawer ${index + 1}`);
         toggle.setAttribute("data-dd-state", "hide");
-        quickToHide(0);
+        drawerQuickToHide(0);
+        if (overlayQuickToHide) {
+          overlayQuickToHide(0);
+        }
       });
     }
   });
