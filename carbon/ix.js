@@ -801,6 +801,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Paginations + Filters
+//Paginations + Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-filter-element="all"]');
   const radioFilters = document.querySelectorAll(
@@ -1116,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to handle pagination reset and reinitialization when filters change
+  // Function to handle pagination reset and reinitialization when filters change (with checkbox hiding)
   function renderPaginate() {
     console.log("Filter changed, updating pagination");
     // Reset pagination to initial state
@@ -1128,6 +1129,18 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         hideZeroResultFilters();
       }, 200);
+    }, 100);
+  }
+
+  // Function to handle pagination reset and reinitialization when filters change (without checkbox hiding)
+  function refreshPaginate() {
+    console.log("Filter changed, refreshing pagination");
+    // Reset pagination to initial state
+    resetPagination();
+    // Reinitialize with new filtered items after delay
+    setTimeout(() => {
+      initializePagination();
+      // Skip hideZeroResultFilters call here
     }, 100);
   }
 
@@ -1144,12 +1157,12 @@ document.addEventListener("DOMContentLoaded", function () {
       renderPaginate();
     });
   });
-  // checkboxFilters.forEach((checkbox) => {
-  //   checkbox.addEventListener("change", () => {
-  //     console.log("Checkbox filter changed, rendering pagination");
-  //     renderPaginate();
-  //   });
-  // });
+  checkboxFilters.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      console.log("Checkbox filter changed, refreshing pagination");
+      refreshPaginate();
+    });
+  });
 });
 
 //Share Snippet
