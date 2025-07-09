@@ -87,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing dynamic swiper");
-
   const isMobile = window.innerWidth < 991;
   let reviewsSwiper;
 
@@ -105,12 +104,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function calculateSlidesPerView() {
     const swiperContainer = document.querySelector("#reviews-swiper");
     const slides = swiperContainer.querySelectorAll(".swiper-slide");
-
     if (slides.length === 0) return 1;
-
     const containerHeight = swiperContainer.offsetHeight;
     console.log("Container height:", containerHeight);
-
     let maxSlideHeight = 0;
     slides.forEach((slide) => {
       const slideHeight = slide.offsetHeight;
@@ -118,23 +114,19 @@ document.addEventListener("DOMContentLoaded", function () {
         maxSlideHeight = slideHeight;
       }
     });
-
     console.log("Max slide height:", maxSlideHeight);
-
     if (maxSlideHeight === 0) return 1;
-
     const spaceBetween = 20;
     const availableHeight = containerHeight;
     const slidesCount = Math.floor(
       availableHeight / (maxSlideHeight + spaceBetween),
     );
-
     console.log("Calculated slides per view:", Math.max(1, slidesCount));
     return Math.max(1, slidesCount);
   }
 
   function initSwiper() {
-    const slidesPerView = calculateSlidesPerView();
+    const slidesPerView = isMobile ? 1.1 : calculateSlidesPerView();
 
     reviewsSwiper = new Swiper("#reviews-swiper", {
       direction: "vertical",
@@ -800,7 +792,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//Paginations + Filters
 //Paginations + Filters
 document.addEventListener("DOMContentLoaded", function () {
   const allFilter = document.querySelector('[data-filter-element="all"]');
