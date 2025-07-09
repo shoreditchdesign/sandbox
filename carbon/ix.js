@@ -1144,12 +1144,12 @@ document.addEventListener("DOMContentLoaded", function () {
       renderPaginate();
     });
   });
-  checkboxFilters.forEach((checkbox) => {
-    checkbox.addEventListener("change", () => {
-      console.log("Checkbox filter changed, rendering pagination");
-      renderPaginate();
-    });
-  });
+  // checkboxFilters.forEach((checkbox) => {
+  //   checkbox.addEventListener("change", () => {
+  //     console.log("Checkbox filter changed, rendering pagination");
+  //     renderPaginate();
+  //   });
+  // });
 });
 
 //Share Snippet
