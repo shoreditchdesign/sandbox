@@ -1,3 +1,43 @@
+//Navigation Dropdowns
+
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, initializing dropdown animations");
+
+  const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
+  console.log("Found toggles:", toggles.length);
+
+  toggles.forEach((toggle, index) => {
+    console.log(`Setting up toggle ${index + 1}`);
+
+    const drawer = toggle.nextElementSibling;
+
+    if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+      console.log(`Found matching drawer for toggle ${index + 1}`);
+
+      const quickToShow = gsap.quickTo(drawer, "opacity", {
+        duration: 0.3,
+        ease: "power2.out",
+      });
+      const quickToHide = gsap.quickTo(drawer, "opacity", {
+        duration: 0.3,
+        ease: "power2.out",
+      });
+
+      toggle.addEventListener("mouseenter", () => {
+        console.log(`Showing drawer ${index + 1}`);
+        toggle.setAttribute("data-dd-state", "show");
+        quickToShow(1);
+      });
+
+      toggle.addEventListener("mouseleave", () => {
+        console.log(`Hiding drawer ${index + 1}`);
+        toggle.setAttribute("data-dd-state", "hide");
+        quickToHide(0);
+      });
+    }
+  });
+});
+
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
