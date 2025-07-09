@@ -2,6 +2,10 @@
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing dropdown animations");
 
+  if (window.innerWidth <= 991) {
+    return;
+  }
+
   const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
   const overlay = document.querySelector("[data-nav-dd='overlay']");
   console.log("Found toggles:", toggles.length);
@@ -18,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(`Setting up toggle ${index + 1}`);
 
     const drawer = toggle.nextElementSibling;
+    let hideTimeout;
 
     if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
       console.log(`Found matching drawer for toggle ${index + 1}`);
@@ -33,6 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggle.addEventListener("mouseenter", () => {
         console.log(`Showing drawer ${index + 1}`);
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+        }
         toggle.setAttribute("data-dd-state", "show");
         drawerQuickToShow(1);
         if (overlayQuickToShow) {
@@ -42,11 +50,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggle.addEventListener("mouseleave", () => {
         console.log(`Hiding drawer ${index + 1}`);
-        toggle.setAttribute("data-dd-state", "hide");
-        drawerQuickToHide(0);
-        if (overlayQuickToHide) {
-          overlayQuickToHide(0);
-        }
+        hideTimeout = setTimeout(() => {
+          toggle.setAttribute("data-dd-state", "hide");
+          drawerQuickToHide(0);
+          if (overlayQuickToHide) {
+            overlayQuickToHide(0);
+          }
+        }, 400);
       });
     }
   });
