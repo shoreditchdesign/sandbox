@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power2.out",
       });
 
+      // Toggle event listeners
       toggle.addEventListener("mouseenter", () => {
         console.log(`Showing drawer ${index + 1}`);
         if (hideTimeout) {
@@ -50,6 +51,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggle.addEventListener("mouseleave", () => {
         console.log(`Hiding drawer ${index + 1}`);
+        hideTimeout = setTimeout(() => {
+          toggle.setAttribute("data-dd-state", "hide");
+          drawerQuickToHide(0);
+          if (overlayQuickToHide) {
+            overlayQuickToHide(0);
+          }
+        }, 400);
+      });
+
+      // Drawer event listeners
+      drawer.addEventListener("mouseenter", () => {
+        console.log(`Keeping drawer ${index + 1} visible`);
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+        }
+        toggle.setAttribute("data-dd-state", "show");
+        drawerQuickToShow(1);
+        if (overlayQuickToShow) {
+          overlayQuickToShow(1);
+        }
+      });
+
+      drawer.addEventListener("mouseleave", () => {
+        console.log(`Hiding drawer ${index + 1} from drawer hover`);
         hideTimeout = setTimeout(() => {
           toggle.setAttribute("data-dd-state", "hide");
           drawerQuickToHide(0);
