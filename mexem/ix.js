@@ -1,5 +1,4 @@
 //Navigation Dropdowns
-
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing dropdown animations");
 
