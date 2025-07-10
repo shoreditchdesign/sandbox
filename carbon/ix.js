@@ -318,15 +318,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const autoplayVideo = document.querySelector("data-player-desktop");
+  const autoplayVideo = document.querySelector("[data-player-desktop]");
   const lightboxWrap = document.querySelector("[data-lbox-wrap]");
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
   const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
-  const modalVideoElement = document.querySelector("[data-lbox-video]");
 
   console.log("Video.js lightbox controller initialized");
 
-  if (!lightboxWrap || !openToggle || !closeToggle || !modalVideoElement) {
+  if (!autoplayVideo || !lightboxWrap || !openToggle || !closeToggle) {
     console.warn("Missing required lightbox elements");
     return;
   }
@@ -334,14 +333,17 @@ document.addEventListener("DOMContentLoaded", function () {
   let modalPlayer = null;
   let isLightboxOpen = false;
 
-  // Get Video.js player instance
-  function initModalPlayer() {
-    modalPlayer = videojs(modalVideoElement);
-    console.log("Video.js lightbox player initialized");
+  // Get existing Video.js player instance
+  function getModalPlayer() {
+    const modalVideoElement = document.querySelector("[data-lbox-video]");
+    if (modalVideoElement && modalVideoElement.player) {
+      modalPlayer = modalVideoElement.player;
+      console.log("Modal Video.js player found");
+    }
   }
 
-  // Initialize Video.js player immediately
-  initModalPlayer();
+  // Wait for Video.js to initialize, then get player
+  setTimeout(getModalPlayer, 1000);
 
   function openLightbox() {
     if (isLightboxOpen) return;
@@ -383,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
       modalPlayer.currentTime(0);
     }
 
-    // Resume background video (Safari-friendly approach)
+    // Resume background video
     if (autoplayVideo) {
       autoplayVideo
         .play()
