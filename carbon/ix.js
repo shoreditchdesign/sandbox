@@ -277,7 +277,24 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Plyr...");
 
-  const player = new Plyr('[data-plyr-id="explainer"]', {
+  // Initialize the modal/lightbox video
+  const modalPlayer = new Plyr('[data-plyr-id="modal"]', {
+    controls: [
+      "play-large",
+      "play",
+      "progress",
+      "current-time",
+      "mute",
+      "volume",
+      "fullscreen",
+    ],
+    loop: { active: false },
+    muted: false,
+    autoplay: false,
+  });
+
+  // Initialize the mobile background video
+  const mobilePlayer = new Plyr('[data-plyr-id="mobile"]', {
     controls: [
       "play-large",
       "play",
@@ -292,7 +309,8 @@ document.addEventListener("DOMContentLoaded", function () {
     autoplay: false,
   });
 
-  console.log("Plyr initialized:", player);
+  console.log("Plyr initialized - Modal:", modalPlayer);
+  console.log("Plyr initialized - Mobile:", mobilePlayer);
 });
 
 //Lightbox
