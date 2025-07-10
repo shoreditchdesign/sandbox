@@ -274,70 +274,103 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Video.js Initliaser
+//Video.js Player Initialization
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Video.js initialization started");
+  console.log("Initializing Video.js players");
 
-  // Wait for CSS to load before initializing
-  function initializeVideoJS() {
-    console.log("Initializing Video.js players...");
+  // Video.js Configuration
+  const VIDEO_CONFIG = {
+    mobile: {
+      controls: true,
+      fluid: true,
+      responsive: true,
+      autoplay: false,
+      muted: true,
+      preload: "metadata",
+      playbackRates: [0.5, 1, 1.25, 1.5, 2],
+      width: "100%",
+      height: "auto",
+    },
+    modal: {
+      controls: true,
+      fluid: true,
+      responsive: true,
+      autoplay: false,
+      muted: true,
+      preload: "metadata",
+      playbackRates: [0.5, 1, 1.25, 1.5, 2],
+      width: "100%",
+      height: "auto",
+    },
+  };
 
-    // Initialize mobile video with controls (always)
-    const mobileVideoElement = document.querySelector("[data-player-mobile]");
-    let mobilePlayer = null;
+  // Selectors
+  const selectors = {
+    mobilePlayer: "[data-player-mobile]",
+    modalPlayer: "[data-player-modal]",
+  };
 
-    if (mobileVideoElement) {
-      mobilePlayer = videojs(mobileVideoElement, {
-        controls: true,
-        fluid: false,
-        responsive: false,
-        fill: true,
-        playsinline: true,
-        preload: "metadata",
-        userActions: {
-          hotkeys: true,
-        },
-      });
-      console.log("Mobile Video.js player initialized");
+  function initMobilePlayer() {
+    const mobileVideoElement = document.querySelector(selectors.mobilePlayer);
+
+    if (!mobileVideoElement) {
+      console.warn("Mobile video element not found");
+      return null;
     }
 
-    // Initialize modal video with controls (desktop only)
-    const modalVideoElement = document.querySelector("[data-lbox-video]");
-    let modalPlayer = null;
+    console.log("Initializing mobile Video.js player");
 
-    if (modalVideoElement) {
-      modalPlayer = videojs(modalVideoElement, {
-        controls: true,
-        fluid: false,
-        responsive: false,
-        fill: true,
-        playsinline: true,
-        preload: "metadata",
-        userActions: {
-          hotkeys: true,
-        },
-      });
-      console.log("Modal Video.js player initialized");
-    }
+    const mobilePlayer = videojs(
+      mobileVideoElement,
+      VIDEO_CONFIG.mobile,
+      function () {
+        console.log("Mobile Video.js player ready");
 
-    console.log("Video.js players ready");
+        // Ensure muted and paused on load
+        this.muted(true);
+        this.pause();
+      },
+    );
+
+    return mobilePlayer;
   }
 
-  // Check if Video.js CSS is loaded
-  function checkCSSLoaded() {
-    const cssLink = document.querySelector('link[href*="video-js.css"]');
-    if (cssLink && cssLink.sheet) {
-      console.log("Video.js CSS loaded, initializing players");
-      initializeVideoJS();
-    } else {
-      console.log("Waiting for Video.js CSS to load...");
-      setTimeout(checkCSSLoaded, 100);
+  function initModalPlayer() {
+    const modalVideoElement = document.querySelector(selectors.modalPlayer);
+
+    if (!modalVideoElement) {
+      console.warn("Modal video element not found");
+      return null;
     }
+
+    console.log("Initializing modal Video.js player");
+
+    const modalPlayer = videojs(
+      modalVideoElement,
+      VIDEO_CONFIG.modal,
+      function () {
+        console.log("Modal Video.js player ready");
+
+        // Ensure muted and paused on load
+        this.muted(true);
+        this.pause();
+
+        // Store reference for lightbox controller
+        modalVideoElement.player = this;
+      },
+    );
+
+    return modalPlayer;
   }
 
-  // Start checking for CSS or fallback with delay
-  setTimeout(() => {
-    checkCSSLoaded();
-  }, 200);
+  // Initialize both players
+  const mobilePlayerInstance = initMobilePlayer();
+  const modalPlayerInstance = initModalPlayer();
+
+  console.log("Video.js initialization complete", {
+    mobile: !!mobilePlayerInstance,
+    modal: !!modalPlayerInstance,
+  });
 });
 
 //Lightbox
