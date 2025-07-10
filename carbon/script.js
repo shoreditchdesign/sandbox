@@ -2,7 +2,9 @@ console.log("script deployed");
 
 //Video Player using plyr.io
 document.addEventListener("DOMContentLoaded", function () {
-  const player = new Plyr('[data-pyr-id="explainer"]', {
+  console.log("Initializing Plyr for Webflow...");
+
+  const player = new Plyr('[data-plyr-id="explainer"]', {
     controls: [
       "play-large",
       "play",
@@ -15,8 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
     loop: { active: true },
     muted: true,
     autoplay: false,
+    hideControls: false,
+    clickToPlay: true,
   });
+
   console.log("Plyr initialized:", player);
+
+  // Ensure video starts muted for autoplay policies
+  player.ready(() => {
+    console.log("Player ready");
+    player.muted = true;
+  });
 });
 
 //Disable Bounce
