@@ -273,8 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Video.js Initliaser
-//Video.js Player Initialization
+//Video.js Initialization
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Video.js players");
 
@@ -282,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const VIDEO_CONFIG = {
     mobile: {
       controls: true,
-      fluid: true,
+      fluid: false,
       responsive: true,
       autoplay: false,
       muted: true,
@@ -290,10 +289,16 @@ document.addEventListener("DOMContentLoaded", function () {
       playbackRates: [0.5, 1, 1.25, 1.5, 2],
       width: "100%",
       height: "auto",
+      techOrder: ["html5"],
+      html5: {
+        nativeControlsForTouch: false,
+        nativeAudioTracks: false,
+        nativeVideoTracks: false,
+      },
     },
     modal: {
       controls: true,
-      fluid: true,
+      fluid: false,
       responsive: true,
       autoplay: false,
       muted: true,
@@ -301,6 +306,12 @@ document.addEventListener("DOMContentLoaded", function () {
       playbackRates: [0.5, 1, 1.25, 1.5, 2],
       width: "100%",
       height: "auto",
+      techOrder: ["html5"],
+      html5: {
+        nativeControlsForTouch: false,
+        nativeAudioTracks: false,
+        nativeVideoTracks: false,
+      },
     },
   };
 
