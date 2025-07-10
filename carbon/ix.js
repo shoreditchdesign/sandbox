@@ -273,96 +273,41 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Video Player using plyr.io
+//Video.js Initliaser
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("=== SAFARI DEBUG INIT ===");
-  console.log("User Agent:", navigator.userAgent);
+  console.log("Video.js initialization started");
 
-  function replaceVideoWithClone(video) {
-    if (!video) return null;
-    const clone = video.cloneNode(true);
-    video.parentNode.replaceChild(clone, video);
-    console.log("Cloned video node for Safari fix:", clone);
-    return clone;
+  // Initialize mobile video with controls (always)
+  const mobileVideoElement = document.querySelector("[data-player-mobile]");
+  let mobilePlayer = null;
+
+  if (mobileVideoElement) {
+    mobilePlayer = videojs(mobileVideoElement, {
+      controls: true,
+      fluid: true,
+      responsive: true,
+      playsinline: true,
+      preload: "metadata",
+    });
+    console.log("Mobile Video.js player initialized");
   }
 
-  function forceVideoLoad(video) {
-    if (video && video.readyState === 0) {
-      console.log("Force loading video:", video);
-      video.load();
-    }
+  // Initialize modal video with controls (desktop only)
+  const modalVideoElement = document.querySelector("[data-lbox-video]");
+  let modalPlayer = null;
+
+  if (modalVideoElement) {
+    modalPlayer = videojs(modalVideoElement, {
+      controls: true,
+      fluid: true,
+      responsive: true,
+      playsinline: true,
+      preload: "metadata",
+    });
+    console.log("Modal Video.js player initialized");
   }
 
-  // Get video elements
-  let modalVideo = document.querySelector('[data-plyr-id="modal"]');
-  let mobileVideo = document.querySelector('[data-plyr-id="mobile"]');
-
-  console.log("Modal video found:", modalVideo);
-  console.log("Mobile video found:", mobileVideo);
-
-  // Clone the videos before doing anything (Safari fix)
-  if (modalVideo) modalVideo = replaceVideoWithClone(modalVideo);
-  if (mobileVideo) mobileVideo = replaceVideoWithClone(mobileVideo);
-
-  // Log source and readyState
-  if (modalVideo) {
-    console.log("Modal video src:", modalVideo.querySelector("source")?.src);
-    console.log("Modal video ready state:", modalVideo.readyState);
-    forceVideoLoad(modalVideo);
-  }
-
-  if (mobileVideo) {
-    console.log("Mobile video src:", mobileVideo.querySelector("source")?.src);
-    console.log("Mobile video ready state:", mobileVideo.readyState);
-    forceVideoLoad(mobileVideo);
-  }
-
-  // Wait a moment before initializing Plyr
-  setTimeout(() => {
-    console.log("Initializing Plyr players...");
-
-    try {
-      if (modalVideo) {
-        const modalPlayer = new Plyr(modalVideo, {
-          controls: [
-            "play-large",
-            "play",
-            "progress",
-            "current-time",
-            "mute",
-            "volume",
-            "fullscreen",
-          ],
-          loop: { active: false },
-          muted: false,
-          autoplay: false,
-          loadSprite: false,
-        });
-        console.log("✅ Modal player initialized:", modalPlayer);
-      }
-
-      if (mobileVideo) {
-        const mobilePlayer = new Plyr(mobileVideo, {
-          controls: [
-            "play-large",
-            "play",
-            "progress",
-            "current-time",
-            "mute",
-            "volume",
-            "fullscreen",
-          ],
-          loop: { active: true },
-          muted: true,
-          autoplay: false,
-          loadSprite: false,
-        });
-        console.log("✅ Mobile player initialized:", mobilePlayer);
-      }
-    } catch (e) {
-      console.error("❌ Plyr init failed:", e);
-    }
-  }, 100);
+  console.log("Video.js players ready");
 });
 
 //Lightbox
@@ -373,57 +318,35 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const autoplayVideo = document.querySelector(".c-ex_video");
+  const autoplayVideo = document.querySelector("data-player-desktop");
   const lightboxWrap = document.querySelector("[data-lbox-wrap]");
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
   const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
-  const plyrVideo = document.querySelector("[data-lbox-video]");
+  const modalVideoElement = document.querySelector("[data-lbox-video]");
 
-  console.log("Plyr lightbox controller initialized");
+  console.log("Video.js lightbox controller initialized");
 
-  if (
-    !autoplayVideo ||
-    !lightboxWrap ||
-    !openToggle ||
-    !closeToggle ||
-    !plyrVideo
-  ) {
+  if (!lightboxWrap || !openToggle || !closeToggle || !modalVideoElement) {
     console.warn("Missing required lightbox elements");
     return;
   }
 
-  let plyrPlayer = null;
+  let modalPlayer = null;
   let isLightboxOpen = false;
 
-  // Initialize Plyr player
-  function initPlyrPlayer() {
-    plyrPlayer = new Plyr("[data-lbox-video]", {
-      controls: [
-        "play-large",
-        "play",
-        "progress",
-        "current-time",
-        "mute",
-        "volume",
-        "fullscreen",
-      ],
-      loop: { active: false },
-      muted: false,
-      autoplay: false,
-      hideControls: false,
-      clickToPlay: true,
-    });
-
-    console.log("Plyr lightbox player initialized");
+  // Get Video.js player instance
+  function initModalPlayer() {
+    modalPlayer = videojs(modalVideoElement);
+    console.log("Video.js lightbox player initialized");
   }
 
-  // Initialize Plyr immediately
-  initPlyrPlayer();
+  // Initialize Video.js player immediately
+  initModalPlayer();
 
   function openLightbox() {
     if (isLightboxOpen) return;
-
     console.log("Opening lightbox");
+
     document.body.style.overflow = "hidden";
 
     // Pause background video
@@ -434,28 +357,30 @@ document.addEventListener("DOMContentLoaded", function () {
     lightboxWrap.setAttribute("data-lbox-state", "show");
     isLightboxOpen = true;
 
-    // Start Plyr from beginning with sound
-    if (plyrPlayer) {
-      plyrPlayer.currentTime = 0;
-      plyrPlayer.muted = false;
-      plyrPlayer.volume = 1;
-      plyrPlayer.play().catch((err) => console.warn("Plyr play error:", err));
+    // Start modal video from beginning with sound
+    if (modalPlayer) {
+      modalPlayer.currentTime(0);
+      modalPlayer.muted(false);
+      modalPlayer.volume(1);
+      modalPlayer
+        .play()
+        .catch((err) => console.warn("Modal video play error:", err));
     }
   }
 
   function closeLightbox() {
     if (!isLightboxOpen) return;
-
     console.log("Closing lightbox");
+
     document.body.style.overflow = "";
     lightboxWrap.setAttribute("data-lbox-state", "hide");
     isLightboxOpen = false;
 
-    // Pause, mute and reset Plyr
-    if (plyrPlayer) {
-      plyrPlayer.pause();
-      plyrPlayer.muted = true;
-      plyrPlayer.currentTime = 0;
+    // Pause, mute and reset modal video
+    if (modalPlayer) {
+      modalPlayer.pause();
+      modalPlayer.muted(true);
+      modalPlayer.currentTime(0);
     }
 
     // Resume background video (Safari-friendly approach)
@@ -493,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  console.log("Plyr lightbox event listeners attached");
+  console.log("Video.js lightbox event listeners attached");
 });
 
 // Marquee
