@@ -1,5 +1,24 @@
 console.log("script deployed");
 
+//Video Player using plyr.io
+document.addEventListener("DOMContentLoaded", function () {
+  const player = new Plyr('[data-pyr-id="explainer"]', {
+    controls: [
+      "play-large",
+      "play",
+      "progress",
+      "current-time",
+      "mute",
+      "volume",
+      "fullscreen",
+    ],
+    loop: { active: true },
+    muted: true,
+    autoplay: false,
+  });
+  console.log("Plyr initialized:", player);
+});
+
 //Disable Bounce
 window.addEventListener(
   "touchmove",
