@@ -285,54 +285,56 @@ document.addEventListener("DOMContentLoaded", function () {
   const lightboxWrap = document.querySelector("[data-lbox-wrap]");
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
   const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
-  const vimeoIframe = document.querySelector("[data-lbox-embed] iframe");
+  const plyrVideo = document.querySelector("[data-lbox-video]");
 
-  console.log("Lightbox controller initialized");
+  console.log("Plyr lightbox controller initialized");
 
   if (
     !autoplayVideo ||
     !lightboxWrap ||
     !openToggle ||
     !closeToggle ||
-    !vimeoIframe
+    !plyrVideo
   ) {
     console.warn("Missing required lightbox elements");
     return;
   }
 
-  let vimeoPlayer = null;
+  let plyrPlayer = null;
   let isLightboxOpen = false;
 
-  // Initialize Vimeo player when API is ready
-  function initVimeoPlayer() {
-    if (typeof Vimeo !== "undefined") {
-      vimeoPlayer = new Vimeo.Player(vimeoIframe);
-      console.log("Vimeo player initialized");
-    } else {
-      console.warn("Vimeo API not loaded");
-    }
+  // Initialize Plyr player
+  function initPlyrPlayer() {
+    plyrPlayer = new Plyr("[data-lbox-video]", {
+      controls: [
+        "play-large",
+        "play",
+        "progress",
+        "current-time",
+        "mute",
+        "volume",
+        "fullscreen",
+      ],
+      loop: { active: false },
+      muted: false,
+      autoplay: false,
+      hideControls: false,
+      clickToPlay: true,
+    });
+
+    console.log("Plyr lightbox player initialized");
   }
 
-  // Check if Vimeo API is already loaded, or wait for it
-  if (typeof Vimeo !== "undefined") {
-    initVimeoPlayer();
-  } else {
-    // Wait for Vimeo script to load
-    const checkVimeo = setInterval(() => {
-      if (typeof Vimeo !== "undefined") {
-        clearInterval(checkVimeo);
-        initVimeoPlayer();
-      }
-    }, 100);
-  }
+  // Initialize Plyr immediately
+  initPlyrPlayer();
 
   function openLightbox() {
     if (isLightboxOpen) return;
 
     console.log("Opening lightbox");
-
     document.body.style.overflow = "hidden";
 
+    // Pause background video
     if (autoplayVideo) {
       autoplayVideo.pause();
     }
@@ -340,15 +342,12 @@ document.addEventListener("DOMContentLoaded", function () {
     lightboxWrap.setAttribute("data-lbox-state", "show");
     isLightboxOpen = true;
 
-    // Start Vimeo from beginning with sound
-    if (vimeoPlayer) {
-      vimeoPlayer
-        .setCurrentTime(0)
-        .catch((err) => console.warn("Vimeo reset error:", err));
-      vimeoPlayer
-        .setVolume(1)
-        .catch((err) => console.warn("Vimeo unmute error:", err));
-      vimeoPlayer.play().catch((err) => console.warn("Vimeo play error:", err));
+    // Start Plyr from beginning with sound
+    if (plyrPlayer) {
+      plyrPlayer.currentTime = 0;
+      plyrPlayer.muted = false;
+      plyrPlayer.volume = 1;
+      plyrPlayer.play().catch((err) => console.warn("Plyr play error:", err));
     }
   }
 
@@ -356,23 +355,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!isLightboxOpen) return;
 
     console.log("Closing lightbox");
-
     document.body.style.overflow = "";
-
     lightboxWrap.setAttribute("data-lbox-state", "hide");
     isLightboxOpen = false;
 
-    // Pause, mute and reset Vimeo
-    if (vimeoPlayer) {
-      vimeoPlayer
-        .pause()
-        .catch((err) => console.warn("Vimeo pause error:", err));
-      vimeoPlayer
-        .setVolume(0)
-        .catch((err) => console.warn("Vimeo mute error:", err));
-      vimeoPlayer
-        .setCurrentTime(0)
-        .catch((err) => console.warn("Vimeo reset error:", err));
+    // Pause, mute and reset Plyr
+    if (plyrPlayer) {
+      plyrPlayer.pause();
+      plyrPlayer.muted = true;
+      plyrPlayer.currentTime = 0;
     }
 
     // Resume background video (Safari-friendly approach)
@@ -410,7 +401,40 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  console.log("Lightbox event listeners attached");
+  console.log("Plyr lightbox event listeners attached");
+});
+
+//Video Player using plyr.io
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Initializing Plyr for Webflow...");
+
+  // This will automatically initialize ALL elements with data-plyr-id="explainer"
+  const players = Plyr.setup('[data-plyr-id="explainer"]', {
+    controls: [
+      "play-large",
+      "play",
+      "progress",
+      "current-time",
+      "mute",
+      "volume",
+      "fullscreen",
+    ],
+    loop: { active: true },
+    muted: true,
+    autoplay: false,
+    hideControls: false,
+    clickToPlay: true,
+  });
+
+  console.log("Plyr initialized:", players.length, "players");
+
+  // Apply ready callback to all players
+  players.forEach((player, index) => {
+    player.ready(() => {
+      console.log(`Player ${index + 1} ready`);
+      player.muted = true;
+    });
+  });
 });
 
 // Marquee

@@ -1,38 +1,5 @@
 console.log("script deployed");
 
-//Video Player using plyr.io
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing Plyr for Webflow...");
-
-  // This will automatically initialize ALL elements with data-plyr-id="explainer"
-  const players = Plyr.setup('[data-plyr-id="explainer"]', {
-    controls: [
-      "play-large",
-      "play",
-      "progress",
-      "current-time",
-      "mute",
-      "volume",
-      "fullscreen",
-    ],
-    loop: { active: true },
-    muted: true,
-    autoplay: false,
-    hideControls: false,
-    clickToPlay: true,
-  });
-
-  console.log("Plyr initialized:", players.length, "players");
-
-  // Apply ready callback to all players
-  players.forEach((player, index) => {
-    player.ready(() => {
-      console.log(`Player ${index + 1} ready`);
-      player.muted = true;
-    });
-  });
-});
-
 //Disable Bounce
 window.addEventListener(
   "touchmove",
@@ -45,7 +12,7 @@ window.addEventListener(
   { passive: false },
 );
 
-// Optional: Prevent extreme overscroll
+// Prevent Overscroll
 window.addEventListener("scroll", function () {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const scrollHeight = document.documentElement.scrollHeight;
