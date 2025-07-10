@@ -4,7 +4,8 @@ console.log("script deployed");
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Plyr for Webflow...");
 
-  const player = new Plyr('[data-plyr-id="explainer"]', {
+  // This will automatically initialize ALL elements with data-plyr-id="explainer"
+  const players = Plyr.setup('[data-plyr-id="explainer"]', {
     controls: [
       "play-large",
       "play",
@@ -21,12 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
     clickToPlay: true,
   });
 
-  console.log("Plyr initialized:", player);
+  console.log("Plyr initialized:", players.length, "players");
 
-  // Ensure video starts muted for autoplay policies
-  player.ready(() => {
-    console.log("Player ready");
-    player.muted = true;
+  // Apply ready callback to all players
+  players.forEach((player, index) => {
+    player.ready(() => {
+      console.log(`Player ${index + 1} ready`);
+      player.muted = true;
+    });
   });
 });
 
