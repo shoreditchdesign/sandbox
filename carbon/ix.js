@@ -275,27 +275,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Video Player using plyr.io
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("=== SAFARI DESKTOP DEBUG ===");
+  console.log("=== SAFARI DEBUG INIT ===");
   console.log("User Agent:", navigator.userAgent);
 
-  // Check if videos exist before Plyr init
-  const modalVideo = document.querySelector('[data-plyr-id="modal"]');
-  const mobileVideo = document.querySelector('[data-plyr-id="mobile"]');
-
-  console.log("Modal video found:", modalVideo);
-  console.log("Mobile video found:", mobileVideo);
-
-  if (modalVideo) {
-    console.log("Modal video src:", modalVideo.querySelector("source")?.src);
-    console.log("Modal video ready state:", modalVideo.readyState);
+  function replaceVideoWithClone(video) {
+    if (!video) return null;
+    const clone = video.cloneNode(true);
+    video.parentNode.replaceChild(clone, video);
+    console.log("Cloned video node for Safari fix:", clone);
+    return clone;
   }
 
-  if (mobileVideo) {
-    console.log("Mobile video src:", mobileVideo.querySelector("source")?.src);
-    console.log("Mobile video ready state:", mobileVideo.readyState);
-  }
-
-  // Force video load before Plyr init
   function forceVideoLoad(video) {
     if (video && video.readyState === 0) {
       console.log("Force loading video:", video);
@@ -303,15 +293,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  if (modalVideo) forceVideoLoad(modalVideo);
-  if (mobileVideo) forceVideoLoad(mobileVideo);
+  // Get video elements
+  let modalVideo = document.querySelector('[data-plyr-id="modal"]');
+  let mobileVideo = document.querySelector('[data-plyr-id="mobile"]');
 
-  // Wait a bit then initialize Plyr
+  console.log("Modal video found:", modalVideo);
+  console.log("Mobile video found:", mobileVideo);
+
+  // Clone the videos before doing anything (Safari fix)
+  if (modalVideo) modalVideo = replaceVideoWithClone(modalVideo);
+  if (mobileVideo) mobileVideo = replaceVideoWithClone(mobileVideo);
+
+  // Log source and readyState
+  if (modalVideo) {
+    console.log("Modal video src:", modalVideo.querySelector("source")?.src);
+    console.log("Modal video ready state:", modalVideo.readyState);
+    forceVideoLoad(modalVideo);
+  }
+
+  if (mobileVideo) {
+    console.log("Mobile video src:", mobileVideo.querySelector("source")?.src);
+    console.log("Mobile video ready state:", mobileVideo.readyState);
+    forceVideoLoad(mobileVideo);
+  }
+
+  // Wait a moment before initializing Plyr
   setTimeout(() => {
-    console.log("Initializing Plyr...");
+    console.log("Initializing Plyr players...");
 
-    if (modalVideo) {
-      try {
+    try {
+      if (modalVideo) {
         const modalPlayer = new Plyr(modalVideo, {
           controls: [
             "play-large",
@@ -325,16 +336,12 @@ document.addEventListener("DOMContentLoaded", function () {
           loop: { active: false },
           muted: false,
           autoplay: false,
-          loadSprite: false, // Disable sprite loading for Safari
+          loadSprite: false,
         });
-        console.log("Modal player initialized:", modalPlayer);
-      } catch (e) {
-        console.error("Modal player init failed:", e);
+        console.log("✅ Modal player initialized:", modalPlayer);
       }
-    }
 
-    if (mobileVideo) {
-      try {
+      if (mobileVideo) {
         const mobilePlayer = new Plyr(mobileVideo, {
           controls: [
             "play-large",
@@ -348,12 +355,12 @@ document.addEventListener("DOMContentLoaded", function () {
           loop: { active: true },
           muted: true,
           autoplay: false,
-          loadSprite: false, // Disable sprite loading for Safari
+          loadSprite: false,
         });
-        console.log("Mobile player initialized:", mobilePlayer);
-      } catch (e) {
-        console.error("Mobile player init failed:", e);
+        console.log("✅ Mobile player initialized:", mobilePlayer);
       }
+    } catch (e) {
+      console.error("❌ Plyr init failed:", e);
     }
   }, 100);
 });
