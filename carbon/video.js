@@ -144,3 +144,286 @@ document.addEventListener("DOMContentLoaded", function () {
     modal: !!modalPlayerInstance,
   });
 });
+
+// <style>
+//   /* Video.js Complete Control Styling - Override Site CSS */
+
+//   /* Base Video.js Player Styles */
+//   .video-js {
+//     position: relative !important;
+//     background-color: #000 !important;
+//     color: #fff !important;
+//     font-family: Arial, Helvetica, sans-serif !important;
+//     font-size: 10px !important;
+//     line-height: 1 !important;
+//     font-weight: normal !important;
+//     font-style: normal !important;
+//     word-break: initial !important;
+//   }
+
+//   /* Control Bar */
+//   .video-js .vjs-control-bar {
+//     display: flex !important;
+//     visibility: visible !important;
+//     opacity: 1 !important;
+//     z-index: 15 !important;
+//     pointer-events: auto !important;
+//     position: absolute !important;
+//     bottom: 0 !important;
+//     left: 0 !important;
+//     right: 0 !important;
+//     height: 30px !important;
+//     background: linear-gradient(to top, rgba(7, 20, 30, 0.7), transparent) !important;
+//     background-color: rgba(43, 51, 63, 0.7) !important;
+//     direction: ltr !important;
+//   }
+
+//   /* All Controls */
+//   .video-js .vjs-control {
+//     position: relative !important;
+//     text-align: center !important;
+//     margin: 0 !important;
+//     padding: 0 !important;
+//     height: 30px !important;
+//     width: 4em !important;
+//     flex: none !important;
+//     display: flex !important;
+//     align-items: center !important;
+//     justify-content: center !important;
+//     visibility: visible !important;
+//     opacity: 1 !important;
+//     z-index: 16 !important;
+//     pointer-events: auto !important;
+//   }
+
+//   /* Button Styles */
+//   .video-js .vjs-button {
+//     background: none !important;
+//     border: none !important;
+//     color: #fff !important;
+//     cursor: pointer !important;
+//     margin: 0 !important;
+//     padding: 0 !important;
+//     height: 30px !important;
+//     width: 100% !important;
+//     font-family: VideoJS !important;
+//     font-size: 1.5em !important;
+//     line-height: 2 !important;
+//     text-align: center !important;
+//     outline: none !important;
+//     box-shadow: none !important;
+//     text-decoration: none !important;
+//     font-weight: normal !important;
+//     font-style: normal !important;
+//   }
+
+//   .video-js .vjs-button:hover,
+//   .video-js .vjs-button:focus {
+//     color: #73859f !important;
+//     outline: none !important;
+//     box-shadow: none !important;
+//   }
+
+//   /* Icon Placeholders */
+//   .video-js .vjs-icon-placeholder:before {
+//     font-family: VideoJS !important;
+//     font-weight: normal !important;
+//     font-style: normal !important;
+//     font-size: 1.8em !important;
+//     line-height: 1 !important;
+//     text-align: center !important;
+//     display: block !important;
+//   }
+
+//   /* Play Button */
+//   .video-js .vjs-play-control.vjs-paused .vjs-icon-placeholder:before {
+//     content: "\f101" !important;
+//   }
+
+//   .video-js .vjs-play-control.vjs-playing .vjs-icon-placeholder:before {
+//     content: "\f103" !important;
+//   }
+
+//   /* Volume Control */
+//   .video-js .vjs-volume-panel {
+//     display: flex !important;
+//     align-items: center !important;
+//     width: 6em !important;
+//     position: relative !important;
+//   }
+
+//   .video-js .vjs-mute-control {
+//     width: 2em !important;
+//   }
+
+//   .video-js .vjs-mute-control.vjs-vol-0 .vjs-icon-placeholder:before {
+//     content: "\f104" !important;
+//   }
+
+//   .video-js .vjs-mute-control.vjs-vol-1 .vjs-icon-placeholder:before {
+//     content: "\f105" !important;
+//   }
+
+//   .video-js .vjs-mute-control.vjs-vol-2 .vjs-icon-placeholder:before {
+//     content: "\f106" !important;
+//   }
+
+//   .video-js .vjs-mute-control.vjs-vol-3 .vjs-icon-placeholder:before {
+//     content: "\f107" !important;
+//   }
+
+//   /* Volume Bar */
+//   .video-js .vjs-volume-control {
+//     width: 4em !important;
+//     position: relative !important;
+//     display: flex !important;
+//     align-items: center !important;
+//   }
+
+//   .video-js .vjs-volume-bar {
+//     position: relative !important;
+//     width: 100% !important;
+//     height: 0.3em !important;
+//     background: rgba(115, 133, 159, 0.5) !important;
+//     border-radius: 0.15em !important;
+//     cursor: pointer !important;
+//   }
+
+//   .video-js .vjs-volume-level {
+//     position: absolute !important;
+//     top: 0 !important;
+//     left: 0 !important;
+//     height: 100% !important;
+//     background: #fff !important;
+//     border-radius: 0.15em !important;
+//   }
+
+//   /* Time Display */
+//   .video-js .vjs-time-control {
+//     display: flex !important;
+//     align-items: center !important;
+//     padding: 0 0.5em !important;
+//     color: #fff !important;
+//     font-size: 1em !important;
+//     line-height: 2 !important;
+//     font-family: Arial, Helvetica, sans-serif !important;
+//     font-weight: normal !important;
+//     font-style: normal !important;
+//     width: auto !important;
+//     flex: none !important;
+//   }
+
+//   .video-js .vjs-time-divider {
+//     width: 14px !important;
+//     text-align: center !important;
+//     padding: 0 !important;
+//   }
+
+//   /* Progress Control */
+//   .video-js .vjs-progress-control {
+//     position: relative !important;
+//     display: flex !important;
+//     align-items: center !important;
+//     flex: auto !important;
+//     height: 30px !important;
+//     width: auto !important;
+//   }
+
+//   .video-js .vjs-progress-holder {
+//     position: relative !important;
+//     height: 0.3em !important;
+//     width: 100% !important;
+//     background: rgba(115, 133, 159, 0.5) !important;
+//     border-radius: 0.15em !important;
+//     cursor: pointer !important;
+//   }
+
+//   .video-js .vjs-play-progress {
+//     position: absolute !important;
+//     top: 0 !important;
+//     left: 0 !important;
+//     height: 100% !important;
+//     background: #fff !important;
+//     border-radius: 0.15em !important;
+//   }
+
+//   .video-js .vjs-load-progress {
+//     position: absolute !important;
+//     top: 0 !important;
+//     left: 0 !important;
+//     height: 100% !important;
+//     background: rgba(115, 133, 159, 0.5) !important;
+//     border-radius: 0.15em !important;
+//   }
+
+//   /* Fullscreen Button */
+//   .video-js .vjs-fullscreen-control .vjs-icon-placeholder:before {
+//     content: "\f108" !important;
+//   }
+
+//   .video-js.vjs-fullscreen .vjs-fullscreen-control .vjs-icon-placeholder:before {
+//     content: "\f109" !important;
+//   }
+
+//   /* Big Play Button */
+//   .video-js .vjs-big-play-button {
+//     position: absolute !important;
+//     top: 50% !important;
+//     left: 50% !important;
+//     transform: translate(-50%, -50%) !important;
+//     width: 3em !important;
+//     height: 3em !important;
+//     background: rgba(43, 51, 63, 0.7) !important;
+//     border: 0.1em solid #fff !important;
+//     border-radius: 50% !important;
+//     color: #fff !important;
+//     cursor: pointer !important;
+//     font-size: 1.8em !important;
+//     z-index: 12 !important;
+//     display: block !important;
+//     visibility: visible !important;
+//     opacity: 1 !important;
+//     pointer-events: auto !important;
+//   }
+
+//   .video-js .vjs-big-play-button:hover {
+//     background: rgba(73, 91, 103, 0.7) !important;
+//   }
+
+//   .video-js .vjs-big-play-button .vjs-icon-placeholder:before {
+//     content: "\f101" !important;
+//     font-family: VideoJS !important;
+//     font-size: 1em !important;
+//     line-height: 1.8 !important;
+//   }
+
+//   /* Hide big play button when playing */
+//   .video-js.vjs-playing .vjs-big-play-button {
+//     display: none !important;
+//   }
+
+//   /* Remaining Time */
+//   .video-js .vjs-remaining-time {
+//     color: #fff !important;
+//     font-size: 1em !important;
+//     line-height: 2 !important;
+//   }
+
+//   /* Spacer */
+//   .video-js .vjs-custom-control-spacer {
+//     flex: auto !important;
+//   }
+
+//   /* Hidden elements */
+//   .video-js .vjs-hidden {
+//     display: none !important;
+//   }
+
+//   /* Force controls to stay visible */
+//   .video-js:hover .vjs-control-bar,
+//   .video-js.vjs-user-active .vjs-control-bar,
+//   .video-js.vjs-user-inactive .vjs-control-bar {
+//     opacity: 1 !important;
+//     visibility: visible !important;
+//   }
+// </style>
