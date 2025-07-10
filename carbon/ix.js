@@ -274,8 +274,23 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Video.js Initialization
+//Video.js Player Initialization
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Video.js players");
+
+  // Force Video.js CSS injection
+  function injectVideojsCSS() {
+    const existingLink = document.querySelector('link[href*="video-js.css"]');
+    if (existingLink) {
+      // Clone and re-append to force CSS application
+      const newLink = existingLink.cloneNode();
+      newLink.onload = function () {
+        console.log("Video.js CSS re-injected");
+      };
+      document.head.removeChild(existingLink);
+      document.head.appendChild(newLink);
+    }
+  }
 
   // Video.js Configuration
   const VIDEO_CONFIG = {
@@ -375,6 +390,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Initialize both players
+  injectVideojsCSS();
+
   const mobilePlayerInstance = initMobilePlayer();
   const modalPlayerInstance = initModalPlayer();
 
