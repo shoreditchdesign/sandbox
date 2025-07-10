@@ -284,10 +284,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (mobileVideoElement) {
     mobilePlayer = videojs(mobileVideoElement, {
       controls: true,
-      fluid: true,
-      responsive: true,
+      fluid: false,
+      responsive: false,
+      fill: true,
       playsinline: true,
       preload: "metadata",
+      userActions: {
+        hotkeys: true,
+      },
     });
     console.log("Mobile Video.js player initialized");
   }
@@ -299,17 +303,20 @@ document.addEventListener("DOMContentLoaded", function () {
   if (modalVideoElement) {
     modalPlayer = videojs(modalVideoElement, {
       controls: true,
-      fluid: true,
-      responsive: true,
+      fluid: false,
+      responsive: false,
+      fill: true,
       playsinline: true,
       preload: "metadata",
+      userActions: {
+        hotkeys: true,
+      },
     });
     console.log("Modal Video.js player initialized");
   }
 
   console.log("Video.js players ready");
 });
-
 //Lightbox
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
