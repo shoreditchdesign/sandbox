@@ -273,6 +273,71 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Video Player using plyr.io
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Browser:", navigator.userAgent);
+  console.log(
+    "Is Safari:",
+    /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
+  );
+
+  // Check if video can load
+  const testVideo = document.querySelector('[data-plyr-id="explainer"]');
+  if (testVideo) {
+    console.log("Video element found");
+    console.log("Video src:", testVideo.querySelector("source")?.src);
+
+    testVideo.addEventListener("loadeddata", () => {
+      console.log("Video loaded successfully");
+    });
+
+    testVideo.addEventListener("error", (e) => {
+      console.error("Video error:", e);
+    });
+  }
+
+  // Safari-specific Plyr config
+  const safariConfig = {
+    controls: [
+      "play-large",
+      "play",
+      "progress",
+      "current-time",
+      "mute",
+      "volume",
+      "fullscreen",
+    ],
+    loop: { active: true },
+    muted: true,
+    autoplay: false,
+    hideControls: false,
+    clickToPlay: true,
+    // Safari-specific settings
+    loadSprite: true,
+    iconPrefix: "plyr",
+    iconUrl: "https://cdn.plyr.io/3.7.8/plyr.svg",
+    blankVideo: "https://cdn.plyr.io/static/blank.mp4",
+  };
+
+  try {
+    const players = Plyr.setup('[data-plyr-id="explainer"]', safariConfig);
+    console.log("Plyr setup result:", players);
+
+    players.forEach((player, index) => {
+      player.ready(() => {
+        console.log(`Player ${index + 1} ready on Safari`);
+        player.muted = true;
+      });
+
+      player.on("error", (e) => {
+        console.error(`Player ${index + 1} error:`, e);
+      });
+    });
+  } catch (error) {
+    console.error("Plyr initialization error:", error);
+  }
+});
+
 //Lightbox
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
@@ -402,39 +467,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   console.log("Plyr lightbox event listeners attached");
-});
-
-//Video Player using plyr.io
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing Plyr for Webflow...");
-
-  // This will automatically initialize ALL elements with data-plyr-id="explainer"
-  const players = Plyr.setup('[data-plyr-id="explainer"]', {
-    controls: [
-      "play-large",
-      "play",
-      "progress",
-      "current-time",
-      "mute",
-      "volume",
-      "fullscreen",
-    ],
-    loop: { active: true },
-    muted: true,
-    autoplay: false,
-    hideControls: false,
-    clickToPlay: true,
-  });
-
-  console.log("Plyr initialized:", players.length, "players");
-
-  // Apply ready callback to all players
-  players.forEach((player, index) => {
-    player.ready(() => {
-      console.log(`Player ${index + 1} ready`);
-      player.muted = true;
-    });
-  });
 });
 
 // Marquee
