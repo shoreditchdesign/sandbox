@@ -86,7 +86,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper (Reviews)
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, initializing dynamic swiper");
   const isMobile = window.innerWidth < 991;
   let reviewsSwiper;
 

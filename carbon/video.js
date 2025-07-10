@@ -1,4 +1,5 @@
-//Video.js Player Initialization
+console.log("video deployed");
+
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Video.js players");
 
