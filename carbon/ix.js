@@ -273,7 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Video.js Initialization
 //Video.js Player Initialization
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing Video.js players");
