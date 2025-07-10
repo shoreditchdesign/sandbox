@@ -277,46 +277,69 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Video.js initialization started");
 
-  // Initialize mobile video with controls (always)
-  const mobileVideoElement = document.querySelector("[data-player-mobile]");
-  let mobilePlayer = null;
+  // Wait for CSS to load before initializing
+  function initializeVideoJS() {
+    console.log("Initializing Video.js players...");
 
-  if (mobileVideoElement) {
-    mobilePlayer = videojs(mobileVideoElement, {
-      controls: true,
-      fluid: false,
-      responsive: false,
-      fill: true,
-      playsinline: true,
-      preload: "metadata",
-      userActions: {
-        hotkeys: true,
-      },
-    });
-    console.log("Mobile Video.js player initialized");
+    // Initialize mobile video with controls (always)
+    const mobileVideoElement = document.querySelector("[data-player-mobile]");
+    let mobilePlayer = null;
+
+    if (mobileVideoElement) {
+      mobilePlayer = videojs(mobileVideoElement, {
+        controls: true,
+        fluid: false,
+        responsive: false,
+        fill: true,
+        playsinline: true,
+        preload: "metadata",
+        userActions: {
+          hotkeys: true,
+        },
+      });
+      console.log("Mobile Video.js player initialized");
+    }
+
+    // Initialize modal video with controls (desktop only)
+    const modalVideoElement = document.querySelector("[data-lbox-video]");
+    let modalPlayer = null;
+
+    if (modalVideoElement) {
+      modalPlayer = videojs(modalVideoElement, {
+        controls: true,
+        fluid: false,
+        responsive: false,
+        fill: true,
+        playsinline: true,
+        preload: "metadata",
+        userActions: {
+          hotkeys: true,
+        },
+      });
+      console.log("Modal Video.js player initialized");
+    }
+
+    console.log("Video.js players ready");
   }
 
-  // Initialize modal video with controls (desktop only)
-  const modalVideoElement = document.querySelector("[data-lbox-video]");
-  let modalPlayer = null;
-
-  if (modalVideoElement) {
-    modalPlayer = videojs(modalVideoElement, {
-      controls: true,
-      fluid: false,
-      responsive: false,
-      fill: true,
-      playsinline: true,
-      preload: "metadata",
-      userActions: {
-        hotkeys: true,
-      },
-    });
-    console.log("Modal Video.js player initialized");
+  // Check if Video.js CSS is loaded
+  function checkCSSLoaded() {
+    const cssLink = document.querySelector('link[href*="video-js.css"]');
+    if (cssLink && cssLink.sheet) {
+      console.log("Video.js CSS loaded, initializing players");
+      initializeVideoJS();
+    } else {
+      console.log("Waiting for Video.js CSS to load...");
+      setTimeout(checkCSSLoaded, 100);
+    }
   }
 
-  console.log("Video.js players ready");
+  // Start checking for CSS or fallback with delay
+  setTimeout(() => {
+    checkCSSLoaded();
+  }, 200);
 });
+
 //Lightbox
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
