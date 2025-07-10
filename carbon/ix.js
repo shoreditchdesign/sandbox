@@ -275,42 +275,87 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Video Player using plyr.io
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing Plyr...");
+  console.log("=== SAFARI DESKTOP DEBUG ===");
+  console.log("User Agent:", navigator.userAgent);
 
-  // Initialize the modal/lightbox video
-  const modalPlayer = new Plyr('[data-plyr-id="modal"]', {
-    controls: [
-      "play-large",
-      "play",
-      "progress",
-      "current-time",
-      "mute",
-      "volume",
-      "fullscreen",
-    ],
-    loop: { active: false },
-    muted: false,
-    autoplay: false,
-  });
+  // Check if videos exist before Plyr init
+  const modalVideo = document.querySelector('[data-plyr-id="modal"]');
+  const mobileVideo = document.querySelector('[data-plyr-id="mobile"]');
 
-  // Initialize the mobile background video
-  const mobilePlayer = new Plyr('[data-plyr-id="mobile"]', {
-    controls: [
-      "play-large",
-      "play",
-      "progress",
-      "current-time",
-      "mute",
-      "volume",
-      "fullscreen",
-    ],
-    loop: { active: true },
-    muted: true,
-    autoplay: false,
-  });
+  console.log("Modal video found:", modalVideo);
+  console.log("Mobile video found:", mobileVideo);
 
-  console.log("Plyr initialized - Modal:", modalPlayer);
-  console.log("Plyr initialized - Mobile:", mobilePlayer);
+  if (modalVideo) {
+    console.log("Modal video src:", modalVideo.querySelector("source")?.src);
+    console.log("Modal video ready state:", modalVideo.readyState);
+  }
+
+  if (mobileVideo) {
+    console.log("Mobile video src:", mobileVideo.querySelector("source")?.src);
+    console.log("Mobile video ready state:", mobileVideo.readyState);
+  }
+
+  // Force video load before Plyr init
+  function forceVideoLoad(video) {
+    if (video && video.readyState === 0) {
+      console.log("Force loading video:", video);
+      video.load();
+    }
+  }
+
+  if (modalVideo) forceVideoLoad(modalVideo);
+  if (mobileVideo) forceVideoLoad(mobileVideo);
+
+  // Wait a bit then initialize Plyr
+  setTimeout(() => {
+    console.log("Initializing Plyr...");
+
+    if (modalVideo) {
+      try {
+        const modalPlayer = new Plyr(modalVideo, {
+          controls: [
+            "play-large",
+            "play",
+            "progress",
+            "current-time",
+            "mute",
+            "volume",
+            "fullscreen",
+          ],
+          loop: { active: false },
+          muted: false,
+          autoplay: false,
+          loadSprite: false, // Disable sprite loading for Safari
+        });
+        console.log("Modal player initialized:", modalPlayer);
+      } catch (e) {
+        console.error("Modal player init failed:", e);
+      }
+    }
+
+    if (mobileVideo) {
+      try {
+        const mobilePlayer = new Plyr(mobileVideo, {
+          controls: [
+            "play-large",
+            "play",
+            "progress",
+            "current-time",
+            "mute",
+            "volume",
+            "fullscreen",
+          ],
+          loop: { active: true },
+          muted: true,
+          autoplay: false,
+          loadSprite: false, // Disable sprite loading for Safari
+        });
+        console.log("Mobile player initialized:", mobilePlayer);
+      } catch (e) {
+        console.error("Mobile player init failed:", e);
+      }
+    }
+  }, 100);
 });
 
 //Lightbox
