@@ -273,6 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Lightbox
+//Native HTML5 Video Lightbox Controller
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
   if (window.innerWidth <= 991) {
@@ -285,32 +286,34 @@ document.addEventListener("DOMContentLoaded", function () {
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
   const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
 
-  console.log("Video.js lightbox controller initialized");
+  console.log("Native video lightbox controller initialized");
 
   if (!autoplayVideo || !lightboxWrap || !openToggle || !closeToggle) {
     console.warn("Missing required lightbox elements");
     return;
   }
 
-  let modalPlayer = null;
+  let modalVideo = null;
   let isLightboxOpen = false;
 
-  // Get existing Video.js player instance
-  function getModalPlayer() {
-    const modalVideoElement = document.querySelector("[data-lbox-video]");
-    if (modalVideoElement && modalVideoElement.player) {
-      modalPlayer = modalVideoElement.player;
-      console.log("Modal Video.js player found");
+  // Get native HTML5 video element
+  function getModalVideo() {
+    const modalVideoElement = document.querySelector("[data-player-modal]");
+    if (modalVideoElement) {
+      modalVideo = modalVideoElement;
+      console.log("Modal native video element found");
+    } else {
+      console.warn("Modal video element not found");
     }
   }
 
-  // Wait for Video.js to initialize, then get player
-  setTimeout(getModalPlayer, 1000);
+  // Initialize modal video reference
+  getModalVideo();
 
   function openLightbox() {
     if (isLightboxOpen) return;
-    console.log("Opening lightbox");
 
+    console.log("Opening lightbox");
     document.body.style.overflow = "hidden";
 
     // Pause background video
@@ -322,11 +325,11 @@ document.addEventListener("DOMContentLoaded", function () {
     isLightboxOpen = true;
 
     // Start modal video from beginning with sound
-    if (modalPlayer) {
-      modalPlayer.currentTime(0);
-      modalPlayer.muted(false);
-      modalPlayer.volume(1);
-      modalPlayer
+    if (modalVideo) {
+      modalVideo.currentTime = 0;
+      modalVideo.muted = false;
+      modalVideo.volume = 1;
+      modalVideo
         .play()
         .catch((err) => console.warn("Modal video play error:", err));
     }
@@ -334,17 +337,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function closeLightbox() {
     if (!isLightboxOpen) return;
-    console.log("Closing lightbox");
 
+    console.log("Closing lightbox");
     document.body.style.overflow = "";
     lightboxWrap.setAttribute("data-lbox-state", "hide");
     isLightboxOpen = false;
 
     // Pause, mute and reset modal video
-    if (modalPlayer) {
-      modalPlayer.pause();
-      modalPlayer.muted(true);
-      modalPlayer.currentTime(0);
+    if (modalVideo) {
+      modalVideo.pause();
+      modalVideo.muted = true;
+      modalVideo.currentTime = 0;
     }
 
     // Resume background video
@@ -382,9 +385,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  console.log("Video.js lightbox event listeners attached");
+  console.log("Native video lightbox event listeners attached");
 });
-
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
