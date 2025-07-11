@@ -273,7 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Lightbox
-//Vimeo Lightbox Controller
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
   if (window.innerWidth <= 991) {
