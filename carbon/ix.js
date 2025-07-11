@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Lightbox
-//Native HTML5 Video Lightbox Controller
+//Vimeo Lightbox Controller
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize on desktop (screen width > 991px)
   if (window.innerWidth <= 991) {
@@ -286,29 +286,44 @@ document.addEventListener("DOMContentLoaded", function () {
   const openToggle = document.querySelector('[data-lbox-toggle="open"]');
   const closeToggle = document.querySelector('[data-lbox-toggle="close"]');
 
-  console.log("Native video lightbox controller initialized");
+  console.log("Vimeo lightbox controller initialized");
 
   if (!autoplayVideo || !lightboxWrap || !openToggle || !closeToggle) {
     console.warn("Missing required lightbox elements");
     return;
   }
 
-  let modalVideo = null;
+  let modalIframe = null;
+  let vimeoPlayer = null;
   let isLightboxOpen = false;
 
-  // Get native HTML5 video element
-  function getModalVideo() {
-    const modalVideoElement = document.querySelector("[data-player-modal]");
-    if (modalVideoElement) {
-      modalVideo = modalVideoElement;
-      console.log("Modal native video element found");
+  // Get Vimeo iframe element
+  function getModalPlayer() {
+    const modalContainer = document.querySelector("[data-player-modal]");
+    if (modalContainer) {
+      modalIframe = modalContainer.querySelector("iframe");
+      if (modalIframe) {
+        // Initialize Vimeo Player API
+        vimeoPlayer = new Vimeo.Player(modalIframe);
+        console.log("Modal Vimeo player found and initialized");
+      } else {
+        console.warn("Vimeo iframe not found in modal container");
+      }
     } else {
-      console.warn("Modal video element not found");
+      console.warn("Modal container not found");
     }
   }
 
-  // Initialize modal video reference
-  getModalVideo();
+  // Wait for Vimeo Player API to load, then initialize
+  if (typeof Vimeo !== "undefined") {
+    getModalPlayer();
+  } else {
+    // Load Vimeo Player API if not already loaded
+    const script = document.createElement("script");
+    script.src = "https://player.vimeo.com/api/player.js";
+    script.onload = getModalPlayer;
+    document.head.appendChild(script);
+  }
 
   function openLightbox() {
     if (isLightboxOpen) return;
@@ -325,11 +340,10 @@ document.addEventListener("DOMContentLoaded", function () {
     isLightboxOpen = true;
 
     // Start modal video from beginning with sound
-    if (modalVideo) {
-      modalVideo.currentTime = 0;
-      modalVideo.muted = false;
-      modalVideo.volume = 1;
-      modalVideo
+    if (vimeoPlayer) {
+      vimeoPlayer.setCurrentTime(0);
+      vimeoPlayer.setVolume(1);
+      vimeoPlayer
         .play()
         .catch((err) => console.warn("Modal video play error:", err));
     }
@@ -344,10 +358,9 @@ document.addEventListener("DOMContentLoaded", function () {
     isLightboxOpen = false;
 
     // Pause, mute and reset modal video
-    if (modalVideo) {
-      modalVideo.pause();
-      modalVideo.muted = true;
-      modalVideo.currentTime = 0;
+    if (vimeoPlayer) {
+      vimeoPlayer.pause();
+      vimeoPlayer.setCurrentTime(0);
     }
 
     // Resume background video
@@ -385,8 +398,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  console.log("Native video lightbox event listeners attached");
+  console.log("Vimeo lightbox event listeners attached");
 });
+
 // Marquee
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
