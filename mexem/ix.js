@@ -239,96 +239,160 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
+    console.log("Sorting rows in tables");
 
     tabTables.forEach((table) => {
       const rows = Array.from(table.querySelectorAll("[data-tab-row]"));
-
-      // Sort rows by data-tab-row attribute value (as numbers)
       rows.sort((a, b) => {
         const aValue = parseInt(a.getAttribute("data-tab-row"), 10);
         const bValue = parseInt(b.getAttribute("data-tab-row"), 10);
         return aValue - bValue;
       });
-
-      // Re-append rows in sorted order
       rows.forEach((row) => {
         table.appendChild(row);
       });
     });
   }
 
-  function initializeTabGroups() {
-    // Get all unique tab group names
-    const tabGroups = new Set();
-    document.querySelectorAll("[data-tab-name]").forEach((element) => {
-      tabGroups.add(element.getAttribute("data-tab-name"));
+  function initializeOuterTabs() {
+    const outerTabLinks = document.querySelectorAll(
+      '[data-tab-type="outer"][data-tab-link]',
+    );
+    const outerTabPanes = document.querySelectorAll(
+      '[data-tab-type="outer"][data-tab-pane]',
+    );
+
+    console.log(
+      `Initializing outer tabs: ${outerTabLinks.length} links, ${outerTabPanes.length} panes`,
+    );
+
+    outerTabLinks.forEach((tabLink, index) => {
+      tabLink.setAttribute("data-tab-link", index + 1);
+      if (index === 0) {
+        tabLink.setAttribute("data-tab-state", "show");
+        tabLink.classList.add("active");
+        console.log("Showing first outer tab link");
+      } else {
+        tabLink.setAttribute("data-tab-state", "hide");
+        tabLink.classList.remove("active");
+        console.log(`Hiding outer tab link ${index + 1}`);
+      }
     });
 
-    console.log("Found tab groups:", Array.from(tabGroups));
+    outerTabPanes.forEach((tabPane, index) => {
+      tabPane.setAttribute("data-tab-pane", index + 1);
+      if (index === 0) {
+        tabPane.setAttribute("data-tab-state", "show");
+        console.log("Showing first outer tab pane");
+      } else {
+        tabPane.setAttribute("data-tab-state", "hide");
+        console.log(`Hiding outer tab pane ${index + 1}`);
+      }
+    });
+  }
 
-    // Initialize each tab group independently
-    tabGroups.forEach((groupName) => {
+  function initializeInnerTabs() {
+    const innerTabGroups = ["pro", "isa"];
+
+    innerTabGroups.forEach((groupName) => {
       const tabLinks = document.querySelectorAll(
-        `[data-tab-name="${groupName}"][data-tab-link]`,
+        `[data-tab-type="inner"][data-tab-name="${groupName}"][data-tab-link]`,
       );
       const tabPanes = document.querySelectorAll(
-        `[data-tab-name="${groupName}"][data-tab-pane]`,
+        `[data-tab-type="inner"][data-tab-name="${groupName}"][data-tab-pane]`,
       );
 
       console.log(
-        `Initializing group "${groupName}": ${tabLinks.length} links, ${tabPanes.length} panes`,
+        `Initializing inner group "${groupName}": ${tabLinks.length} links, ${tabPanes.length} panes`,
       );
 
-      // Initialize links - always show first, hide rest
       tabLinks.forEach((tabLink, index) => {
         tabLink.setAttribute("data-tab-link", index + 1);
         if (index === 0) {
           tabLink.setAttribute("data-tab-state", "show");
           tabLink.classList.add("active");
-          console.log(`  Showing first link in group "${groupName}"`);
+          console.log(`Showing first link in inner group "${groupName}"`);
         } else {
           tabLink.setAttribute("data-tab-state", "hide");
           tabLink.classList.remove("active");
-          console.log(`  Hiding link ${index + 1} in group "${groupName}"`);
+          console.log(`Hiding link ${index + 1} in inner group "${groupName}"`);
         }
       });
 
-      // Initialize panes - always show first, hide rest
       tabPanes.forEach((tabPane, index) => {
         tabPane.setAttribute("data-tab-pane", index + 1);
         if (index === 0) {
           tabPane.setAttribute("data-tab-state", "show");
-          console.log(`  Showing first pane in group "${groupName}"`);
+          console.log(`Showing first pane in inner group "${groupName}"`);
         } else {
           tabPane.setAttribute("data-tab-state", "hide");
-          console.log(`  Hiding pane ${index + 1} in group "${groupName}"`);
+          console.log(`Hiding pane ${index + 1} in inner group "${groupName}"`);
         }
       });
     });
   }
 
-  function setupTabClickListeners() {
-    // Get all tab links across all groups
-    const tabLinks = document.querySelectorAll(
-      "[data-tab-link][data-tab-name]",
+  function setupOuterTabClickListeners() {
+    const outerTabLinks = document.querySelectorAll(
+      '[data-tab-type="outer"][data-tab-link]',
     );
 
-    tabLinks.forEach((tabLink) => {
+    outerTabLinks.forEach((tabLink) => {
+      tabLink.addEventListener("click", () => {
+        const tabIndex = tabLink.getAttribute("data-tab-link");
+        console.log(`Outer tab clicked: ${tabIndex}`);
+
+        const allOuterLinks = document.querySelectorAll(
+          '[data-tab-type="outer"][data-tab-link]',
+        );
+        const allOuterPanes = document.querySelectorAll(
+          '[data-tab-type="outer"][data-tab-pane]',
+        );
+
+        allOuterLinks.forEach((link) => {
+          link.setAttribute("data-tab-state", "hide");
+          link.classList.remove("active");
+        });
+
+        allOuterPanes.forEach((pane) => {
+          pane.setAttribute("data-tab-state", "hide");
+        });
+
+        tabLink.setAttribute("data-tab-state", "show");
+        tabLink.classList.add("active");
+
+        const correspondingPane = document.querySelector(
+          `[data-tab-type="outer"][data-tab-pane="${tabIndex}"]`,
+        );
+
+        if (correspondingPane) {
+          correspondingPane.setAttribute("data-tab-state", "show");
+          console.log(`Showing outer tab pane: ${tabIndex}`);
+        } else {
+          console.log(`No matching outer pane found for index: ${tabIndex}`);
+        }
+      });
+    });
+  }
+
+  function setupInnerTabClickListeners() {
+    const innerTabLinks = document.querySelectorAll(
+      '[data-tab-type="inner"][data-tab-link]',
+    );
+
+    innerTabLinks.forEach((tabLink) => {
       tabLink.addEventListener("click", () => {
         const tabIndex = tabLink.getAttribute("data-tab-link");
         const tabGroupName = tabLink.getAttribute("data-tab-name");
+        console.log(`Inner tab clicked: ${tabIndex} in group: ${tabGroupName}`);
 
-        console.log(`Tab clicked: ${tabIndex} in group: ${tabGroupName}`);
-
-        // Only affect tabs within the same group
         const groupTabLinks = document.querySelectorAll(
-          `[data-tab-name="${tabGroupName}"][data-tab-link]`,
+          `[data-tab-type="inner"][data-tab-name="${tabGroupName}"][data-tab-link]`,
         );
         const groupTabPanes = document.querySelectorAll(
-          `[data-tab-name="${tabGroupName}"][data-tab-pane]`,
+          `[data-tab-type="inner"][data-tab-name="${tabGroupName}"][data-tab-pane]`,
         );
 
-        // Hide all tabs in this group
         groupTabLinks.forEach((link) => {
           link.setAttribute("data-tab-state", "hide");
           link.classList.remove("active");
@@ -338,29 +402,33 @@ document.addEventListener("DOMContentLoaded", function () {
           pane.setAttribute("data-tab-state", "hide");
         });
 
-        // Show the clicked tab and its corresponding pane
         tabLink.setAttribute("data-tab-state", "show");
         tabLink.classList.add("active");
 
         const correspondingPane = document.querySelector(
-          `[data-tab-name="${tabGroupName}"][data-tab-pane="${tabIndex}"]`,
+          `[data-tab-type="inner"][data-tab-name="${tabGroupName}"][data-tab-pane="${tabIndex}"]`,
         );
 
         if (correspondingPane) {
           correspondingPane.setAttribute("data-tab-state", "show");
           console.log(
-            `Showing tab pane: ${tabIndex} in group: ${tabGroupName}`,
+            `Showing inner tab pane: ${tabIndex} in group: ${tabGroupName}`,
           );
         } else {
           console.log(
-            `No matching tab pane found for index: ${tabIndex} in group: ${tabGroupName}`,
+            `No matching inner pane found for index: ${tabIndex} in group: ${tabGroupName}`,
           );
         }
       });
     });
   }
 
+  // Initialize everything
+  console.log("Starting tab system initialization");
   sortRows();
-  initializeTabGroups();
-  setupTabClickListeners();
+  initializeOuterTabs();
+  initializeInnerTabs();
+  setupOuterTabClickListeners();
+  setupInnerTabClickListeners();
+  console.log("Tab system initialization complete");
 });
