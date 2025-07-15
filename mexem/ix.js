@@ -266,13 +266,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
       console.log(`Processing isolated tab: ${type}/${name}`);
 
-      // Create arrays from THIS isolated tab only
-      const linksArray = Array.from(
-        isolatedTab.querySelectorAll("[data-tab-menu] [data-tab-link]"),
-      );
-      const panesArray = Array.from(
-        isolatedTab.querySelectorAll("[data-tab-content] [data-tab-pane]"),
-      );
+      // Get ONLY direct children of data-tab-menu and data-tab-content
+      const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
+      const tabContent = isolatedTab.querySelector("[data-tab-content]");
+
+      const linksArray = tabMenu
+        ? Array.from(tabMenu.children).filter((child) =>
+            child.hasAttribute("data-tab-link"),
+          )
+        : [];
+      const panesArray = tabContent
+        ? Array.from(tabContent.children).filter((child) =>
+            child.hasAttribute("data-tab-pane"),
+          )
+        : [];
 
       console.log(
         `Found ${linksArray.length} links and ${panesArray.length} panes in ${type}/${name}`,
@@ -319,12 +326,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // First tab of this type - show first pane
           console.log(`Showing first tab of type ${type}: ${name}`);
 
-          const firstPane = tab.querySelector(
-            '[data-tab-content] [data-tab-pane="1"]',
-          );
-          const firstLink = tab.querySelector(
-            '[data-tab-menu] [data-tab-link="1"]',
-          );
+          const firstPane = tab.querySelector("[data-tab-content]").children[0];
+          const firstLink = tab.querySelector("[data-tab-menu]").children[0];
 
           if (firstPane) {
             firstPane.setAttribute("data-tab-state", "show");
@@ -337,22 +340,26 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(`Showing first link in ${type}/${name}`);
           }
 
-          // Hide other panes in this tab
-          const otherPanes = tab.querySelectorAll(
-            '[data-tab-content] [data-tab-pane]:not([data-tab-pane="1"])',
-          );
-          otherPanes.forEach((pane) => {
-            pane.setAttribute("data-tab-state", "hide");
-          });
+          // Hide other panes in this tab (direct children only)
+          const tabContentContainer = tab.querySelector("[data-tab-content]");
+          if (tabContentContainer) {
+            Array.from(tabContentContainer.children).forEach((pane, index) => {
+              if (index > 0) {
+                pane.setAttribute("data-tab-state", "hide");
+              }
+            });
+          }
 
-          // Hide other links in this tab
-          const otherLinks = tab.querySelectorAll(
-            '[data-tab-menu] [data-tab-link]:not([data-tab-link="1"])',
-          );
-          otherLinks.forEach((link) => {
-            link.setAttribute("data-tab-state", "hide");
-            link.classList.remove("active");
-          });
+          // Hide other links in this tab (direct children only)
+          const tabMenuContainer = tab.querySelector("[data-tab-menu]");
+          if (tabMenuContainer) {
+            Array.from(tabMenuContainer.children).forEach((link, index) => {
+              if (index > 0) {
+                link.setAttribute("data-tab-state", "hide");
+                link.classList.remove("active");
+              }
+            });
+          }
         }
       });
     });
@@ -367,10 +374,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const type = isolatedTab.getAttribute("data-tab-type");
       const name = isolatedTab.getAttribute("data-tab-name");
 
-      // Get links from THIS isolated tab only
-      const tabLinks = isolatedTab.querySelectorAll(
-        "[data-tab-menu] [data-tab-link]",
-      );
+      // Get links from THIS isolated tab only (direct children)
+      const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
+      const tabLinks = tabMenu
+        ? Array.from(tabMenu.children).filter((child) =>
+            child.hasAttribute("data-tab-link"),
+          )
+        : [];
       console.log(
         `Setting up ${tabLinks.length} click handlers for ${type}/${name}`,
       );
@@ -380,13 +390,21 @@ document.addEventListener("DOMContentLoaded", function () {
           const clickedIndex = clickedLink.getAttribute("data-tab-link");
           console.log(`Clicked link ${clickedIndex} in ${type}/${name}`);
 
-          // Get ALL links and panes from THIS SAME isolated tab ONLY
-          const sameTabLinks = isolatedTab.querySelectorAll(
-            "[data-tab-menu] [data-tab-link]",
-          );
-          const sameTabPanes = isolatedTab.querySelectorAll(
-            "[data-tab-content] [data-tab-pane]",
-          );
+          // Get ALL links and panes from THIS SAME isolated tab ONLY (direct children)
+          const tabMenuContainer = isolatedTab.querySelector("[data-tab-menu]");
+          const tabContentContainer =
+            isolatedTab.querySelector("[data-tab-content]");
+
+          const sameTabLinks = tabMenuContainer
+            ? Array.from(tabMenuContainer.children).filter((child) =>
+                child.hasAttribute("data-tab-link"),
+              )
+            : [];
+          const sameTabPanes = tabContentContainer
+            ? Array.from(tabContentContainer.children).filter((child) =>
+                child.hasAttribute("data-tab-pane"),
+              )
+            : [];
 
           console.log(
             `Updating ${sameTabLinks.length} links and ${sameTabPanes.length} panes in ${type}/${name}`,
@@ -411,10 +429,10 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(`Hiding pane in ${type}/${name}`);
           });
 
-          // Show corresponding pane in SAME tab
-          const targetPane = isolatedTab.querySelector(
-            `[data-tab-content] [data-tab-pane="${clickedIndex}"]`,
-          );
+          // Show corresponding pane in SAME tab (direct children)
+          const targetPane =
+            tabContentContainer &&
+            tabContentContainer.children[clickedIndex - 1];
           if (targetPane) {
             targetPane.setAttribute("data-tab-state", "show");
             console.log(`Showing pane ${clickedIndex} in ${type}/${name}`);
