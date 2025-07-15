@@ -236,6 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
+//Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
@@ -277,8 +278,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const { type, name } = groupData;
     const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
 
-    const tabLinks = document.querySelectorAll(`${selector}[data-tab-link]`);
-    const tabPanes = document.querySelectorAll(`${selector}[data-tab-pane]`);
+    const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
+    const tabPanes = document.querySelectorAll(`${selector} [data-tab-pane]`);
 
     console.log(
       `Initializing ${groupKey}: ${tabLinks.length} links, ${tabPanes.length} panes`,
@@ -317,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const { type, name } = groupData;
     const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
 
-    const tabLinks = document.querySelectorAll(`${selector}[data-tab-link]`);
+    const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
 
     tabLinks.forEach((tabLink) => {
       tabLink.addEventListener("click", () => {
@@ -344,7 +345,7 @@ document.addEventListener("DOMContentLoaded", function () {
         tabLink.classList.add("active");
 
         const correspondingPane = document.querySelector(
-          `${selector}[data-tab-pane="${tabIndex}"]`,
+          `${selector} [data-tab-pane="${tabIndex}"]`,
         );
 
         if (correspondingPane) {
