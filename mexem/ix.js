@@ -319,49 +319,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
     console.log(
-      `Setting up clicks for ${groupKey}: found ${tabLinks.length} links with selector: ${selector} [data-tab-link]`,
+      `Setting up clicks for ${groupKey}: found ${tabLinks.length} links`,
     );
 
     tabLinks.forEach((tabLink) => {
       tabLink.addEventListener("click", () => {
         const tabIndex = tabLink.getAttribute("data-tab-link");
-        console.log(
-          `Click handler executing for ${groupKey}, selector: ${selector}`,
-        );
         console.log(`Tab clicked: ${tabIndex} in ${groupKey}`);
 
-        const groupTabLinks = document.querySelectorAll(
-          `${selector}[data-tab-link]`,
+        // Get all links and panes for this group
+        const allLinks = document.querySelectorAll(
+          `${selector} [data-tab-link]`,
         );
-        const groupTabPanes = document.querySelectorAll(
-          `${selector}[data-tab-pane]`,
+        const allPanes = document.querySelectorAll(
+          `${selector} [data-tab-pane]`,
         );
 
-        groupTabLinks.forEach((link) => {
+        console.log(
+          `Processing ${allLinks.length} links and ${allPanes.length} panes`,
+        );
+
+        // Update all links - hide others, show clicked
+        allLinks.forEach((link) => {
           if (link === tabLink) {
             link.setAttribute("data-tab-state", "show");
             link.classList.add("active");
+            console.log(`Activated clicked link ${tabIndex}`);
           } else {
             link.setAttribute("data-tab-state", "hide");
             link.classList.remove("active");
+            console.log(`Deactivated other link`);
           }
         });
 
-        groupTabPanes.forEach((pane) => {
+        // Hide all panes first
+        allPanes.forEach((pane) => {
           pane.setAttribute("data-tab-state", "hide");
+          console.log(`Hiding pane`);
         });
 
-        const correspondingPane = document.querySelector(
+        // Show corresponding pane
+        const targetPane = document.querySelector(
           `${selector} [data-tab-pane="${tabIndex}"]`,
         );
-
-        if (correspondingPane) {
-          correspondingPane.setAttribute("data-tab-state", "show");
-          console.log(`Showing tab pane: ${tabIndex} in ${groupKey}`);
+        if (targetPane) {
+          targetPane.setAttribute("data-tab-state", "show");
+          console.log(`Showing pane ${tabIndex} in ${groupKey}`);
         } else {
-          console.log(
-            `No matching pane found for index: ${tabIndex} in ${groupKey}`,
-          );
+          console.log(`ERROR: Could not find pane ${tabIndex} in ${groupKey}`);
         }
       });
     });
