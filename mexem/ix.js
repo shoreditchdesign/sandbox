@@ -236,6 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
+//Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
