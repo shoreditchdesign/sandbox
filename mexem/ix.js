@@ -236,7 +236,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
-//Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
@@ -255,169 +254,145 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function discoverUniqueTabNames() {
-    const uniqueTabs = new Map();
+  function addIndicesPerTab() {
+    console.log("Adding indices per individual tab");
 
-    document
-      .querySelectorAll("[data-tab-type][data-tab-name]")
-      .forEach((element) => {
-        const tabType = element.getAttribute("data-tab-type");
-        const tabName = element.getAttribute("data-tab-name");
-        const key = `${tabType}/${tabName}`;
+    // Find each unique tab container
+    const tabContainers = document.querySelectorAll(
+      "[data-tab-type][data-tab-name]",
+    );
 
-        if (!uniqueTabs.has(key)) {
-          uniqueTabs.set(key, { type: tabType, name: tabName });
-        }
-      });
+    tabContainers.forEach((container) => {
+      const type = container.getAttribute("data-tab-type");
+      const name = container.getAttribute("data-tab-name");
 
-    console.log("Discovered unique tabs:", Array.from(uniqueTabs.keys()));
-    return uniqueTabs;
-  }
-
-  function addIndices() {
-    console.log("Adding indices to tabs");
-
-    const uniqueTabs = discoverUniqueTabNames();
-
-    uniqueTabs.forEach((tabData, tabKey) => {
-      const { type, name } = tabData;
-      const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
-
-      // Get links and panes for THIS specific tab only
-      const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
-      const tabPanes = document.querySelectorAll(`${selector} [data-tab-pane]`);
+      // Get links and panes ONLY within THIS specific container
+      const links = container.querySelectorAll("[data-tab-link]");
+      const panes = container.querySelectorAll("[data-tab-pane]");
 
       console.log(
-        `Processing ${tabKey}: ${tabLinks.length} links, ${tabPanes.length} panes`,
+        `Processing ${type}/${name}: ${links.length} links, ${panes.length} panes`,
       );
 
-      // Store in arrays and assign indices based on array order
-      const linksArray = Array.from(tabLinks);
-      const panesArray = Array.from(tabPanes);
-
-      linksArray.forEach((link, index) => {
-        const linkIndex = index + 1;
-        link.setAttribute("data-tab-link", linkIndex);
-        console.log(`Set link ${linkIndex} in ${tabKey}`);
+      // Assign indices based on order within THIS container only
+      links.forEach((link, index) => {
+        link.setAttribute("data-tab-link", index + 1);
+        console.log(`Set link ${index + 1} in ${type}/${name}`);
       });
 
-      panesArray.forEach((pane, index) => {
-        const paneIndex = index + 1;
-        pane.setAttribute("data-tab-pane", paneIndex);
-        console.log(`Set pane ${paneIndex} in ${tabKey}`);
+      panes.forEach((pane, index) => {
+        pane.setAttribute("data-tab-pane", index + 1);
+        console.log(`Set pane ${index + 1} in ${type}/${name}`);
       });
     });
   }
 
-  function initializeByType() {
-    console.log("Initializing by tab type");
+  function initializeFirstPanes() {
+    console.log("Initializing first panes per tab");
 
-    const tabTypes = new Set();
-    document.querySelectorAll("[data-tab-type]").forEach((el) => {
-      tabTypes.add(el.getAttribute("data-tab-type"));
-    });
+    const tabContainers = document.querySelectorAll(
+      "[data-tab-type][data-tab-name]",
+    );
 
-    tabTypes.forEach((type) => {
-      console.log(`Initializing type: ${type}`);
+    tabContainers.forEach((container) => {
+      const type = container.getAttribute("data-tab-type");
+      const name = container.getAttribute("data-tab-name");
 
-      // Get all tabs of this type
-      const tabsOfType = document.querySelectorAll(`[data-tab-type="${type}"]`);
-      const tabsArray = Array.from(tabsOfType);
+      // Find first link and first pane in THIS container
+      const firstLink = container.querySelector('[data-tab-link="1"]');
+      const firstPane = container.querySelector('[data-tab-pane="1"]');
 
-      tabsArray.forEach((tab, index) => {
-        const tabName = tab.getAttribute("data-tab-name");
-        const selector = `[data-tab-type="${type}"][data-tab-name="${tabName}"]`;
+      // Show first link and pane
+      if (firstLink) {
+        firstLink.setAttribute("data-tab-state", "show");
+        firstLink.classList.add("active");
+        console.log(`Showing first link in ${type}/${name}`);
+      }
 
-        if (index === 0) {
-          // First tab of this type - show first pane
-          const firstPane = tab.querySelector('[data-tab-pane="1"]');
-          const firstLink = tab.querySelector('[data-tab-link="1"]');
+      if (firstPane) {
+        firstPane.setAttribute("data-tab-state", "show");
+        console.log(`Showing first pane in ${type}/${name}`);
+      }
 
-          if (firstPane) {
-            firstPane.setAttribute("data-tab-state", "show");
-            console.log(`Showing first pane in ${type}/${tabName}`);
-          }
+      // Hide all other links and panes in THIS container
+      const otherLinks = container.querySelectorAll(
+        '[data-tab-link]:not([data-tab-link="1"])',
+      );
+      const otherPanes = container.querySelectorAll(
+        '[data-tab-pane]:not([data-tab-pane="1"])',
+      );
 
-          if (firstLink) {
-            firstLink.setAttribute("data-tab-state", "show");
-            firstLink.classList.add("active");
-            console.log(`Showing first link in ${type}/${tabName}`);
-          }
+      otherLinks.forEach((link) => {
+        link.setAttribute("data-tab-state", "hide");
+        link.classList.remove("active");
+      });
 
-          // Hide other panes in this tab
-          const otherPanes = tab.querySelectorAll(
-            '[data-tab-pane]:not([data-tab-pane="1"])',
-          );
-          otherPanes.forEach((pane) => {
-            pane.setAttribute("data-tab-state", "hide");
-          });
-
-          // Hide other links in this tab
-          const otherLinks = tab.querySelectorAll(
-            '[data-tab-link]:not([data-tab-link="1"])',
-          );
-          otherLinks.forEach((link) => {
-            link.setAttribute("data-tab-state", "hide");
-            link.classList.remove("active");
-          });
-        }
+      otherPanes.forEach((pane) => {
+        pane.setAttribute("data-tab-state", "hide");
       });
     });
   }
 
-  function setupClickHandlers() {
-    console.log("Setting up click handlers");
+  function setupLocalizedClickHandlers() {
+    console.log("Setting up localized click handlers");
 
-    const uniqueTabs = discoverUniqueTabNames();
+    const tabContainers = document.querySelectorAll(
+      "[data-tab-type][data-tab-name]",
+    );
 
-    uniqueTabs.forEach((tabData, tabKey) => {
-      const { type, name } = tabData;
-      const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
+    tabContainers.forEach((container) => {
+      const type = container.getAttribute("data-tab-type");
+      const name = container.getAttribute("data-tab-name");
 
-      const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
-      console.log(`Setting up ${tabLinks.length} click handlers for ${tabKey}`);
+      // Get links ONLY from THIS specific container
+      const links = container.querySelectorAll("[data-tab-link]");
+      console.log(
+        `Setting up ${links.length} click handlers for ${type}/${name}`,
+      );
 
-      tabLinks.forEach((clickedLink) => {
+      links.forEach((clickedLink) => {
         clickedLink.addEventListener("click", () => {
           const clickedIndex = clickedLink.getAttribute("data-tab-link");
-          console.log(`Clicked link ${clickedIndex} in ${tabKey}`);
+          console.log(`Clicked link ${clickedIndex} in ${type}/${name}`);
 
-          // Get ALL links and panes in SAME tab
-          const sameTabLinks = document.querySelectorAll(
-            `${selector} [data-tab-link]`,
-          );
-          const sameTabPanes = document.querySelectorAll(
-            `${selector} [data-tab-pane]`,
+          // Get ALL links and panes from THIS SAME container ONLY
+          const containerLinks = container.querySelectorAll("[data-tab-link]");
+          const containerPanes = container.querySelectorAll("[data-tab-pane]");
+
+          console.log(
+            `Updating ${containerLinks.length} links and ${containerPanes.length} panes in ${type}/${name}`,
           );
 
-          // Hide all other links in SAME tab
-          sameTabLinks.forEach((link) => {
+          // Update links - show clicked, hide others
+          containerLinks.forEach((link) => {
             if (link === clickedLink) {
               link.setAttribute("data-tab-state", "show");
               link.classList.add("active");
-              console.log(`Showing clicked link ${clickedIndex}`);
+              console.log(`Activated link ${clickedIndex} in ${type}/${name}`);
             } else {
               link.setAttribute("data-tab-state", "hide");
               link.classList.remove("active");
-              console.log(`Hiding other link in ${tabKey}`);
+              console.log(`Deactivated other link in ${type}/${name}`);
             }
           });
 
-          // Hide all panes in SAME tab
-          sameTabPanes.forEach((pane) => {
+          // Hide all panes in THIS container
+          containerPanes.forEach((pane) => {
             pane.setAttribute("data-tab-state", "hide");
-            console.log(`Hiding pane in ${tabKey}`);
+            console.log(`Hiding pane in ${type}/${name}`);
           });
 
-          // Show corresponding pane
-          const targetPane = document.querySelector(
-            `${selector} [data-tab-pane="${clickedIndex}"]`,
+          // Show corresponding pane in THIS container
+          const targetPane = container.querySelector(
+            `[data-tab-pane="${clickedIndex}"]`,
           );
           if (targetPane) {
             targetPane.setAttribute("data-tab-state", "show");
-            console.log(`Showing pane ${clickedIndex} in ${tabKey}`);
+            console.log(`Showing pane ${clickedIndex} in ${type}/${name}`);
           } else {
-            console.log(`ERROR: No pane ${clickedIndex} found in ${tabKey}`);
+            console.log(
+              `ERROR: No pane ${clickedIndex} found in ${type}/${name}`,
+            );
           }
         });
       });
@@ -427,8 +402,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Execute in proper order
   console.log("Starting tab system");
   sortRows();
-  addIndices();
-  initializeByType();
-  setupClickHandlers();
+  addIndicesPerTab();
+  initializeFirstPanes();
+  setupLocalizedClickHandlers();
   console.log("Tab system ready");
 });
