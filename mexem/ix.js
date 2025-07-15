@@ -302,66 +302,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function initializeByTabType() {
-    console.log("Initializing by tab type");
+  function initializeAllTabs() {
+    console.log("Initializing all tabs - showing first pane/link of each");
 
-    // Get all unique tab types
-    const tabTypes = new Set();
-    document.querySelectorAll("[data-tab-type]").forEach((el) => {
-      tabTypes.add(el.getAttribute("data-tab-type"));
-    });
+    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
-    tabTypes.forEach((type) => {
-      console.log(`Initializing type: ${type}`);
+    allTabs.forEach((tab) => {
+      const type = tab.getAttribute("data-tab-type");
+      const name = tab.getAttribute("data-tab-name");
 
-      // Make array of tabs of this type
-      const tabsOfTypeArray = Array.from(
-        document.querySelectorAll(`[data-tab-type="${type}"]`),
-      );
+      console.log(`Initializing ${type}/${name}`);
 
-      tabsOfTypeArray.forEach((tab, index) => {
-        const name = tab.getAttribute("data-tab-name");
+      // Get menu and content containers
+      const tabMenu = tab.querySelector("[data-tab-menu]");
+      const tabContent = tab.querySelector("[data-tab-content]");
 
-        if (index === 0) {
-          // First tab of this type - show first pane
-          console.log(`Showing first tab of type ${type}: ${name}`);
-
-          const firstPane = tab.querySelector("[data-tab-content]").children[0];
-          const firstLink = tab.querySelector("[data-tab-menu]").children[0];
-
-          if (firstPane) {
-            firstPane.setAttribute("data-tab-state", "show");
-            console.log(`Showing first pane in ${type}/${name}`);
-          }
-
-          if (firstLink) {
-            firstLink.setAttribute("data-tab-state", "show");
-            firstLink.classList.add("active");
+      // Show first link, hide others
+      if (tabMenu && tabMenu.children.length > 0) {
+        Array.from(tabMenu.children).forEach((link, index) => {
+          if (index === 0) {
+            link.setAttribute("data-tab-state", "show");
+            link.classList.add("active");
             console.log(`Showing first link in ${type}/${name}`);
+          } else {
+            link.setAttribute("data-tab-state", "hide");
+            link.classList.remove("active");
           }
+        });
+      }
 
-          // Hide other panes in this tab (direct children only)
-          const tabContentContainer = tab.querySelector("[data-tab-content]");
-          if (tabContentContainer) {
-            Array.from(tabContentContainer.children).forEach((pane, index) => {
-              if (index > 0) {
-                pane.setAttribute("data-tab-state", "hide");
-              }
-            });
+      // Show first pane, hide others
+      if (tabContent && tabContent.children.length > 0) {
+        Array.from(tabContent.children).forEach((pane, index) => {
+          if (index === 0) {
+            pane.setAttribute("data-tab-state", "show");
+            console.log(`Showing first pane in ${type}/${name}`);
+          } else {
+            pane.setAttribute("data-tab-state", "hide");
           }
-
-          // Hide other links in this tab (direct children only)
-          const tabMenuContainer = tab.querySelector("[data-tab-menu]");
-          if (tabMenuContainer) {
-            Array.from(tabMenuContainer.children).forEach((link, index) => {
-              if (index > 0) {
-                link.setAttribute("data-tab-state", "hide");
-                link.classList.remove("active");
-              }
-            });
-          }
-        }
-      });
+        });
+      }
     });
   }
 
@@ -450,7 +430,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Starting isolated tab system");
   sortRows();
   addIndicesPerIsolatedTab();
-  initializeByTabType();
+  initializeAllTabs();
   setupIsolatedClickHandlers();
   console.log("Isolated tab system ready");
 });
