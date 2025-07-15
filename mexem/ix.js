@@ -236,6 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
+//Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
@@ -318,6 +319,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
 
     const tabLinks = document.querySelectorAll(`${selector} [data-tab-link]`);
+    console.log(
+      `Setting up clicks for ${groupKey}: found ${tabLinks.length} links with selector: ${selector} [data-tab-link]`,
+    );
 
     tabLinks.forEach((tabLink) => {
       tabLink.addEventListener("click", () => {
