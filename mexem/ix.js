@@ -333,16 +333,18 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         groupTabLinks.forEach((link) => {
-          link.setAttribute("data-tab-state", "hide");
-          link.classList.remove("active");
+          if (link === tabLink) {
+            link.setAttribute("data-tab-state", "show");
+            link.classList.add("active");
+          } else {
+            link.setAttribute("data-tab-state", "hide");
+            link.classList.remove("active");
+          }
         });
 
         groupTabPanes.forEach((pane) => {
           pane.setAttribute("data-tab-state", "hide");
         });
-
-        tabLink.setAttribute("data-tab-state", "show");
-        tabLink.classList.add("active");
 
         const correspondingPane = document.querySelector(
           `${selector} [data-tab-pane="${tabIndex}"]`,
