@@ -322,6 +322,9 @@ document.addEventListener("DOMContentLoaded", function () {
     tabLinks.forEach((tabLink) => {
       tabLink.addEventListener("click", () => {
         const tabIndex = tabLink.getAttribute("data-tab-link");
+        console.log(
+          `Click handler executing for ${groupKey}, selector: ${selector}`,
+        );
         console.log(`Tab clicked: ${tabIndex} in ${groupKey}`);
 
         const groupTabLinks = document.querySelectorAll(
