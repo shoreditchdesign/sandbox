@@ -236,3 +236,155 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Tab Switchers
+document.addEventListener("DOMContentLoaded", function () {
+  function sortRows() {
+    const tabTables = document.querySelectorAll("[data-tab-table]");
+    console.log("Sorting rows in tables");
+
+    tabTables.forEach((table) => {
+      const rows = Array.from(table.querySelectorAll("[data-tab-row]"));
+      rows.sort((a, b) => {
+        const aValue = parseInt(a.getAttribute("data-tab-row"), 10);
+        const bValue = parseInt(b.getAttribute("data-tab-row"), 10);
+        return aValue - bValue;
+      });
+      rows.forEach((row) => {
+        table.appendChild(row);
+      });
+    });
+  }
+
+  function discoverTabGroups() {
+    const tabGroups = new Map();
+
+    document
+      .querySelectorAll("[data-tab-type][data-tab-name]")
+      .forEach((element) => {
+        const tabType = element.getAttribute("data-tab-type");
+        const tabName = element.getAttribute("data-tab-name");
+        const groupKey = `${tabType}/${tabName}`;
+
+        if (!tabGroups.has(groupKey)) {
+          tabGroups.set(groupKey, { type: tabType, name: tabName });
+        }
+      });
+
+    console.log("Discovered tab groups:", Array.from(tabGroups.keys()));
+    return tabGroups;
+  }
+
+  function initTabGroup(groupKey, groupData) {
+    const { type, name } = groupData;
+    const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
+
+    const tabLinks = document.querySelectorAll(`${selector}[data-tab-link]`);
+    const tabPanes = document.querySelectorAll(`${selector}[data-tab-pane]`);
+
+    console.log(
+      `Initializing ${groupKey}: ${tabLinks.length} links, ${tabPanes.length} panes`,
+    );
+
+    tabLinks.forEach((tabLink, index) => {
+      const linkIndex = index + 1;
+      tabLink.setAttribute("data-tab-link", linkIndex);
+
+      if (index === 0) {
+        tabLink.setAttribute("data-tab-state", "show");
+        tabLink.classList.add("active");
+        console.log(`Showing first link in ${groupKey}`);
+      } else {
+        tabLink.setAttribute("data-tab-state", "hide");
+        tabLink.classList.remove("active");
+        console.log(`Hiding link ${linkIndex} in ${groupKey}`);
+      }
+    });
+
+    tabPanes.forEach((tabPane, index) => {
+      const paneIndex = index + 1;
+      tabPane.setAttribute("data-tab-pane", paneIndex);
+
+      if (index === 0) {
+        tabPane.setAttribute("data-tab-state", "show");
+        console.log(`Showing first pane in ${groupKey}`);
+      } else {
+        tabPane.setAttribute("data-tab-state", "hide");
+        console.log(`Hiding pane ${paneIndex} in ${groupKey}`);
+      }
+    });
+  }
+
+  function setupTabClickListener(groupKey, groupData) {
+    const { type, name } = groupData;
+    const selector = `[data-tab-type="${type}"][data-tab-name="${name}"]`;
+
+    const tabLinks = document.querySelectorAll(`${selector}[data-tab-link]`);
+
+    tabLinks.forEach((tabLink) => {
+      tabLink.addEventListener("click", () => {
+        const tabIndex = tabLink.getAttribute("data-tab-link");
+        console.log(`Tab clicked: ${tabIndex} in ${groupKey}`);
+
+        const groupTabLinks = document.querySelectorAll(
+          `${selector}[data-tab-link]`,
+        );
+        const groupTabPanes = document.querySelectorAll(
+          `${selector}[data-tab-pane]`,
+        );
+
+        groupTabLinks.forEach((link) => {
+          link.setAttribute("data-tab-state", "hide");
+          link.classList.remove("active");
+        });
+
+        groupTabPanes.forEach((pane) => {
+          pane.setAttribute("data-tab-state", "hide");
+        });
+
+        tabLink.setAttribute("data-tab-state", "show");
+        tabLink.classList.add("active");
+
+        const correspondingPane = document.querySelector(
+          `${selector}[data-tab-pane="${tabIndex}"]`,
+        );
+
+        if (correspondingPane) {
+          correspondingPane.setAttribute("data-tab-state", "show");
+          console.log(`Showing tab pane: ${tabIndex} in ${groupKey}`);
+        } else {
+          console.log(
+            `No matching pane found for index: ${tabIndex} in ${groupKey}`,
+          );
+        }
+      });
+    });
+  }
+
+  function initTabs() {
+    console.log("Starting tab initialization");
+    const tabGroups = discoverTabGroups();
+
+    tabGroups.forEach((groupData, groupKey) => {
+      initTabGroup(groupKey, groupData);
+    });
+
+    console.log("Tab initialization complete");
+    return tabGroups;
+  }
+
+  function setupTabs(tabGroups) {
+    console.log("Starting tab click listener setup");
+
+    tabGroups.forEach((groupData, groupKey) => {
+      setupTabClickListener(groupKey, groupData);
+    });
+
+    console.log("Tab click listener setup complete");
+  }
+
+  // Initialize everything
+  console.log("Starting tab system");
+  sortRows();
+  const tabGroups = initTabs();
+  setupTabs(tabGroups);
+  console.log("Tab system ready");
+});
