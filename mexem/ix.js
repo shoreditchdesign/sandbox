@@ -254,117 +254,146 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function addIndicesPerTab() {
-    console.log("Adding indices per individual tab");
+  function addIndicesPerIsolatedTab() {
+    console.log("Adding indices per isolated tab");
 
-    // Find each unique tab container
-    const tabContainers = document.querySelectorAll(
-      "[data-tab-type][data-tab-name]",
-    );
+    // Get each unique tab element
+    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
-    tabContainers.forEach((container) => {
-      const type = container.getAttribute("data-tab-type");
-      const name = container.getAttribute("data-tab-name");
+    allTabs.forEach((isolatedTab) => {
+      const type = isolatedTab.getAttribute("data-tab-type");
+      const name = isolatedTab.getAttribute("data-tab-name");
 
-      // Get links and panes ONLY within THIS specific container
-      const links = container.querySelectorAll("[data-tab-link]");
-      const panes = container.querySelectorAll("[data-tab-pane]");
+      console.log(`Processing isolated tab: ${type}/${name}`);
 
-      console.log(
-        `Processing ${type}/${name}: ${links.length} links, ${panes.length} panes`,
+      // Create arrays from THIS isolated tab only
+      const linksArray = Array.from(
+        isolatedTab.querySelectorAll("[data-tab-menu] [data-tab-link]"),
+      );
+      const panesArray = Array.from(
+        isolatedTab.querySelectorAll("[data-tab-content] [data-tab-pane]"),
       );
 
-      // Assign indices based on order within THIS container only
-      links.forEach((link, index) => {
-        link.setAttribute("data-tab-link", index + 1);
-        console.log(`Set link ${index + 1} in ${type}/${name}`);
+      console.log(
+        `Found ${linksArray.length} links and ${panesArray.length} panes in ${type}/${name}`,
+      );
+
+      // Set indices based on array position
+      linksArray.forEach((link, index) => {
+        const linkIndex = index + 1;
+        link.setAttribute("data-tab-link", linkIndex);
+        console.log(`Set link ${linkIndex} in ${type}/${name}`);
       });
 
-      panes.forEach((pane, index) => {
-        pane.setAttribute("data-tab-pane", index + 1);
-        console.log(`Set pane ${index + 1} in ${type}/${name}`);
+      panesArray.forEach((pane, index) => {
+        const paneIndex = index + 1;
+        pane.setAttribute("data-tab-pane", paneIndex);
+        console.log(`Set pane ${paneIndex} in ${type}/${name}`);
+      });
+
+      console.log(`Completed indexing for ${type}/${name}`);
+    });
+  }
+
+  function initializeByTabType() {
+    console.log("Initializing by tab type");
+
+    // Get all unique tab types
+    const tabTypes = new Set();
+    document.querySelectorAll("[data-tab-type]").forEach((el) => {
+      tabTypes.add(el.getAttribute("data-tab-type"));
+    });
+
+    tabTypes.forEach((type) => {
+      console.log(`Initializing type: ${type}`);
+
+      // Make array of tabs of this type
+      const tabsOfTypeArray = Array.from(
+        document.querySelectorAll(`[data-tab-type="${type}"]`),
+      );
+
+      tabsOfTypeArray.forEach((tab, index) => {
+        const name = tab.getAttribute("data-tab-name");
+
+        if (index === 0) {
+          // First tab of this type - show first pane
+          console.log(`Showing first tab of type ${type}: ${name}`);
+
+          const firstPane = tab.querySelector(
+            '[data-tab-content] [data-tab-pane="1"]',
+          );
+          const firstLink = tab.querySelector(
+            '[data-tab-menu] [data-tab-link="1"]',
+          );
+
+          if (firstPane) {
+            firstPane.setAttribute("data-tab-state", "show");
+            console.log(`Showing first pane in ${type}/${name}`);
+          }
+
+          if (firstLink) {
+            firstLink.setAttribute("data-tab-state", "show");
+            firstLink.classList.add("active");
+            console.log(`Showing first link in ${type}/${name}`);
+          }
+
+          // Hide other panes in this tab
+          const otherPanes = tab.querySelectorAll(
+            '[data-tab-content] [data-tab-pane]:not([data-tab-pane="1"])',
+          );
+          otherPanes.forEach((pane) => {
+            pane.setAttribute("data-tab-state", "hide");
+          });
+
+          // Hide other links in this tab
+          const otherLinks = tab.querySelectorAll(
+            '[data-tab-menu] [data-tab-link]:not([data-tab-link="1"])',
+          );
+          otherLinks.forEach((link) => {
+            link.setAttribute("data-tab-state", "hide");
+            link.classList.remove("active");
+          });
+        }
       });
     });
   }
 
-  function initializeFirstPanes() {
-    console.log("Initializing first panes per tab");
+  function setupIsolatedClickHandlers() {
+    console.log("Setting up isolated click handlers");
 
-    const tabContainers = document.querySelectorAll(
-      "[data-tab-type][data-tab-name]",
-    );
+    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
-    tabContainers.forEach((container) => {
-      const type = container.getAttribute("data-tab-type");
-      const name = container.getAttribute("data-tab-name");
+    allTabs.forEach((isolatedTab) => {
+      const type = isolatedTab.getAttribute("data-tab-type");
+      const name = isolatedTab.getAttribute("data-tab-name");
 
-      // Find first link and first pane in THIS container
-      const firstLink = container.querySelector('[data-tab-link="1"]');
-      const firstPane = container.querySelector('[data-tab-pane="1"]');
-
-      // Show first link and pane
-      if (firstLink) {
-        firstLink.setAttribute("data-tab-state", "show");
-        firstLink.classList.add("active");
-        console.log(`Showing first link in ${type}/${name}`);
-      }
-
-      if (firstPane) {
-        firstPane.setAttribute("data-tab-state", "show");
-        console.log(`Showing first pane in ${type}/${name}`);
-      }
-
-      // Hide all other links and panes in THIS container
-      const otherLinks = container.querySelectorAll(
-        '[data-tab-link]:not([data-tab-link="1"])',
+      // Get links from THIS isolated tab only
+      const tabLinks = isolatedTab.querySelectorAll(
+        "[data-tab-menu] [data-tab-link]",
       );
-      const otherPanes = container.querySelectorAll(
-        '[data-tab-pane]:not([data-tab-pane="1"])',
-      );
-
-      otherLinks.forEach((link) => {
-        link.setAttribute("data-tab-state", "hide");
-        link.classList.remove("active");
-      });
-
-      otherPanes.forEach((pane) => {
-        pane.setAttribute("data-tab-state", "hide");
-      });
-    });
-  }
-
-  function setupLocalizedClickHandlers() {
-    console.log("Setting up localized click handlers");
-
-    const tabContainers = document.querySelectorAll(
-      "[data-tab-type][data-tab-name]",
-    );
-
-    tabContainers.forEach((container) => {
-      const type = container.getAttribute("data-tab-type");
-      const name = container.getAttribute("data-tab-name");
-
-      // Get links ONLY from THIS specific container
-      const links = container.querySelectorAll("[data-tab-link]");
       console.log(
-        `Setting up ${links.length} click handlers for ${type}/${name}`,
+        `Setting up ${tabLinks.length} click handlers for ${type}/${name}`,
       );
 
-      links.forEach((clickedLink) => {
+      tabLinks.forEach((clickedLink) => {
         clickedLink.addEventListener("click", () => {
           const clickedIndex = clickedLink.getAttribute("data-tab-link");
           console.log(`Clicked link ${clickedIndex} in ${type}/${name}`);
 
-          // Get ALL links and panes from THIS SAME container ONLY
-          const containerLinks = container.querySelectorAll("[data-tab-link]");
-          const containerPanes = container.querySelectorAll("[data-tab-pane]");
-
-          console.log(
-            `Updating ${containerLinks.length} links and ${containerPanes.length} panes in ${type}/${name}`,
+          // Get ALL links and panes from THIS SAME isolated tab ONLY
+          const sameTabLinks = isolatedTab.querySelectorAll(
+            "[data-tab-menu] [data-tab-link]",
+          );
+          const sameTabPanes = isolatedTab.querySelectorAll(
+            "[data-tab-content] [data-tab-pane]",
           );
 
-          // Update links - show clicked, hide others
-          containerLinks.forEach((link) => {
+          console.log(
+            `Updating ${sameTabLinks.length} links and ${sameTabPanes.length} panes in ${type}/${name}`,
+          );
+
+          // Hide all other links in SAME tab, show clicked link
+          sameTabLinks.forEach((link) => {
             if (link === clickedLink) {
               link.setAttribute("data-tab-state", "show");
               link.classList.add("active");
@@ -376,15 +405,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           });
 
-          // Hide all panes in THIS container
-          containerPanes.forEach((pane) => {
+          // Hide all panes in SAME tab
+          sameTabPanes.forEach((pane) => {
             pane.setAttribute("data-tab-state", "hide");
             console.log(`Hiding pane in ${type}/${name}`);
           });
 
-          // Show corresponding pane in THIS container
-          const targetPane = container.querySelector(
-            `[data-tab-pane="${clickedIndex}"]`,
+          // Show corresponding pane in SAME tab
+          const targetPane = isolatedTab.querySelector(
+            `[data-tab-content] [data-tab-pane="${clickedIndex}"]`,
           );
           if (targetPane) {
             targetPane.setAttribute("data-tab-state", "show");
@@ -399,11 +428,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Execute in proper order
-  console.log("Starting tab system");
+  // Execute in proper order: isolate, make arrays, set indices
+  console.log("Starting isolated tab system");
   sortRows();
-  addIndicesPerTab();
-  initializeFirstPanes();
-  setupLocalizedClickHandlers();
-  console.log("Tab system ready");
+  addIndicesPerIsolatedTab();
+  initializeByTabType();
+  setupIsolatedClickHandlers();
+  console.log("Isolated tab system ready");
 });
