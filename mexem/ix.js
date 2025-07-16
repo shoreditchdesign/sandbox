@@ -437,47 +437,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Initializing platform swiper...");
-
-  const platformSwiper = new Swiper("#platform-swiper", {
-    slidesPerView: "auto",
-    spaceBetween: 24,
-    loop: true,
+  var mySwiper = new Swiper("#benefits-swiper", {
+    slidesPerView: 4,
+    slidesPerGroup: 1,
+    spaceBetween: 16,
+    grabCursor: true,
+    allowTouchMove: true,
+    autoHeight: false,
+    watchOverflow: true,
+    slidesOffsetBefore: 0,
+    slidesOffsetAfter: 0,
     centeredSlides: false,
-
-    breakpoints: {
-      576: {
-        // Small devices
-        slidesPerView: 1,
-        spaceBetween: 16,
-      },
-      768: {
-        // Medium devices
-        slidesPerView: 2,
-        spaceBetween: 24,
-      },
-      992: {
-        // Large devices
-        slidesPerView: 3,
-        spaceBetween: 30,
-      },
-      1200: {
-        // Extra large devices
-        slidesPerView: 4,
-        spaceBetween: 40,
-      },
-    },
-
+    loopedSlides: null,
+    resistanceRatio: 0,
     pagination: {
-      el: "#platforms-pagination",
+      el: "#benefits-pagination",
       clickable: true,
     },
-
     navigation: {
-      nextEl: "#platform-next",
-      prevEl: "#platform-prev",
+      nextEl: "#benefits-next",
+      prevEl: "#benefits-prev",
+    },
+
+    // Accessibility module
+    a11y: {
+      enabled: true,
+      prevSlideMessage: "Previous benefit",
+      nextSlideMessage: "Next benefit",
+      firstSlideMessage: "This is the first benefit",
+      lastSlideMessage: "This is the last benefit",
+      paginationBulletMessage: "Go to benefit {{index}}",
+      notificationClass: "swiper-notification",
+      containerMessage: "Benefits carousel",
+      containerRoleDescriptionMessage: "carousel",
+      itemRoleDescriptionMessage: "benefit slide",
+      containerRole: null,
+      slideRole: null,
+    },
+
+    // Keyboard control
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true,
+    },
+
+    // Focus handling
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+
+    breakpoints: {
+      0: {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      480: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      767: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      1200: {
+        slidesPerView: 4,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
     },
   });
-
-  console.log("Platform swiper initialized successfully");
 });
