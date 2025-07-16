@@ -440,17 +440,30 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing platform swiper...");
 
   const platformSwiper = new Swiper("#platform-swiper", {
-    slidesPerView: 1,
-    spaceBetween: 20,
+    slidesPerView: "auto",
+    spaceBetween: 24,
     loop: true,
+    centeredSlides: false,
 
     breakpoints: {
+      576: {
+        // Small devices
+        slidesPerView: 1,
+        spaceBetween: 16,
+      },
       768: {
+        // Medium devices
         slidesPerView: 2,
+        spaceBetween: 24,
+      },
+      992: {
+        // Large devices
+        slidesPerView: 3,
         spaceBetween: 30,
       },
-      1024: {
-        slidesPerView: 3,
+      1200: {
+        // Extra large devices
+        slidesPerView: 4,
         spaceBetween: 40,
       },
     },
