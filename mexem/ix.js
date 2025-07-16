@@ -434,3 +434,37 @@ document.addEventListener("DOMContentLoaded", function () {
   setupIsolatedClickHandlers();
   console.log("Isolated tab system ready");
 });
+
+//Swiper
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Initializing platform swiper...");
+
+  const platformSwiper = new Swiper("#platform-swiper", {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    loop: true,
+
+    breakpoints: {
+      768: {
+        slidesPerView: 2,
+        spaceBetween: 30,
+      },
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 40,
+      },
+    },
+
+    pagination: {
+      el: "#platforms-pagination",
+      clickable: true,
+    },
+
+    navigation: {
+      nextEl: "#platform-next",
+      prevEl: "#platform-prev",
+    },
+  });
+
+  console.log("Platform swiper initialized successfully");
+});
