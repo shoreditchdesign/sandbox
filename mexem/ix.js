@@ -437,6 +437,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
+  const swiperEl = document.querySelector("#benefits-swiper");
+  const paginationEl = document.querySelector("#benefits-pagination");
+  const nextEl = document.querySelector("#benefits-next");
+  const prevEl = document.querySelector("#benefits-prev");
+
+  console.log("swiperEl:", swiperEl ? "found" : "not found");
+  console.log("paginationEl:", paginationEl ? "found" : "not found");
+  console.log("nextEl:", nextEl ? "found" : "not found");
+  console.log("prevEl:", prevEl ? "found" : "not found");
+
   var mySwiper = new Swiper("#benefits-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
@@ -513,4 +523,6 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
+
+  console.log("Swiper initialization complete.");
 });
