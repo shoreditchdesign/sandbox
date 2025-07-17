@@ -437,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  var mySwiper = new Swiper("platform-swiper", {
+  var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
     spaceBetween: 16,
