@@ -436,49 +436,82 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Swiper
+//Swiper (Benefits)
 document.addEventListener("DOMContentLoaded", function () {
-  const swiperEl = document.querySelector("#platform-swiper");
-  const paginationEl = document.querySelector("#platform-pagination");
-  const nextEl = document.querySelector("#platform-next");
-  const prevEl = document.querySelector("#platform-prev");
-
-  console.log("swiperEl:", swiperEl ? "found" : "not found");
-  console.log("paginationEl:", paginationEl ? "found" : "not found");
-  console.log("nextEl:", nextEl ? "found" : "not found");
-  console.log("prevEl:", prevEl ? "found" : "not found");
-
-  var mySwiper = new Swiper("#platform-swiper", {
+  var mySwiper = new Swiper("#benefits-swiper", {
     slidesPerView: 4,
+    slidesPerGroup: 1,
     spaceBetween: 16,
-
+    grabCursor: true,
+    allowTouchMove: true,
+    autoHeight: false,
+    watchOverflow: true,
+    slidesOffsetBefore: 0,
+    slidesOffsetAfter: 0,
+    centeredSlides: false,
+    loopedSlides: null,
+    resistanceRatio: 0,
     pagination: {
-      el: "#platform-pagination",
+      el: "#benefits-pagination",
       clickable: true,
     },
-
     navigation: {
-      nextEl: "#platform-next",
-      prevEl: "#platform-prev",
+      nextEl: "#benefits-next",
+      prevEl: "#benefits-prev",
     },
 
+    // Accessibility module
     a11y: {
       enabled: true,
-      prevSlideMessage: "Previous platform",
-      nextSlideMessage: "Next platform",
-      paginationBulletMessage: "Go to platform {{index}}",
+      prevSlideMessage: "Previous benefit",
+      nextSlideMessage: "Next benefit",
+      firstSlideMessage: "This is the first benefit",
+      lastSlideMessage: "This is the last benefit",
+      paginationBulletMessage: "Go to benefit {{index}}",
+      notificationClass: "swiper-notification",
+      containerMessage: "Benefits carousel",
       containerRoleDescriptionMessage: "carousel",
-      itemRoleDescriptionMessage: "platform slide",
+      itemRoleDescriptionMessage: "benefit slide",
+      containerRole: null,
+      slideRole: null,
     },
 
+    // Keyboard control
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true,
+    },
+
+    // Focus handling
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+
     breakpoints: {
-      768: {
+      0: {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      480: {
         slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      767: {
+        slidesPerView: 2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 3,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
       },
       1200: {
         slidesPerView: 4,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
       },
     },
   });
-
-  console.log("Swiper initialization complete:", mySwiper);
 });
