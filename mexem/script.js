@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Map Locator
 document.addEventListener("DOMContentLoaded", function () {
-  // Map bounds from extreme coordinates research
+  // Map bounds for landmass-only world map (extreme land points only)
   const mapBounds = {
-    north: 83.65, // Kaffeklubben Island, Greenland
-    south: -56.54, // Águila Islet, Chile
-    west: -179, // Attu Island, Alaska
-    east: -169, // Cape Dezhnev, Russia
+    north: 83.65, // Kaffeklubben Island, Greenland (northernmost land)
+    south: -56.54, // Águila Islet, Chile (southernmost land)
+    west: -141, // Eastern Alaska mainland (~Yukon border)
+    east: 180, // Eastern Russia (Chukotka Peninsula)
   };
 
   // Parse coordinate string (e.g., "51.5N" -> {value: 51.5, direction: "N"})
