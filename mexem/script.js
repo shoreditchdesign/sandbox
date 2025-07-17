@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Map Locator
 document.addEventListener("DOMContentLoaded", function () {
-  // Map bounds for landmass-only world map (extreme land points only)
+  // Map bounds for continuous landmass projection (Americas → Europe/Africa → Asia)
   const mapBounds = {
-    north: 83.65, // Kaffeklubben Island, Greenland (northernmost land)
-    south: -56.54, // Águila Islet, Chile (southernmost land)
-    west: -141, // Eastern Alaska mainland (~Yukon border)
-    east: 180, // Eastern Russia (Chukotka Peninsula)
+    north: 80, // Northern landmasses (80N)
+    south: -60, // Southern extremes (60S)
+    west: -170, // Alaska tip (170W)
+    east: 170, // Russia tip (170E)
   };
 
   // Parse coordinate string (e.g., "51.5N" -> {value: 51.5, direction: "N"})
