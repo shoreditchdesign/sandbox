@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const slides = swiperContainer.querySelectorAll(".swiper-slide");
     if (slides.length === 0) return 1;
     const containerHeight = swiperContainer.offsetHeight;
-    console.log("Container height:", containerHeight);
+    // console.log("Container height:", containerHeight);
     let maxSlideHeight = 0;
     slides.forEach((slide) => {
       const slideHeight = slide.offsetHeight;
@@ -113,14 +113,14 @@ document.addEventListener("DOMContentLoaded", function () {
         maxSlideHeight = slideHeight;
       }
     });
-    console.log("Max slide height:", maxSlideHeight);
+    // console.log("Max slide height:", maxSlideHeight);
     if (maxSlideHeight === 0) return 1;
     const spaceBetween = 20;
     const availableHeight = containerHeight;
     const slidesCount = Math.floor(
       availableHeight / (maxSlideHeight + spaceBetween),
     );
-    console.log("Calculated slides per view:", Math.max(1, slidesCount));
+    // console.log("Calculated slides per view:", Math.max(1, slidesCount));
     return Math.max(1, slidesCount);
   }
 
