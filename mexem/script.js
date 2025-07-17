@@ -11,147 +11,154 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //Map Locator
-// document.addEventListener('DOMContentLoaded', function() {
-    // Map bounds from extreme coordinates research
-    const mapBounds = {
-        north: 83.65,   // Kaffeklubben Island, Greenland
-        south: -56.54,  // Águila Islet, Chile
-        west: -179,     // Attu Island, Alaska
-        east: -169      // Cape Dezhnev, Russia
+document.addEventListener("DOMContentLoaded", function () {
+  // Map bounds from extreme coordinates research
+  const mapBounds = {
+    north: 83.65, // Kaffeklubben Island, Greenland
+    south: -56.54, // Águila Islet, Chile
+    west: -179, // Attu Island, Alaska
+    east: -169, // Cape Dezhnev, Russia
+  };
+
+  // Parse coordinate string (e.g., "51.5N" -> {value: 51.5, direction: "N"})
+  function parseCoordinate(coordStr) {
+    console.log("Parsing coordinate:", coordStr);
+
+    if (!coordStr) return null;
+
+    // Clean string - remove spaces, degrees symbol
+    const cleaned = coordStr.toString().trim().replace(/°/g, "");
+    console.log("Cleaned coordinate:", cleaned);
+
+    // Extract direction letter (N, S, E, W)
+    const direction = cleaned.match(/[NSEW]/i);
+    if (!direction) {
+      console.error("No direction found in:", coordStr);
+      return null;
+    }
+
+    // Extract numerical value
+    const numStr = cleaned.replace(/[NSEW]/i, "").trim();
+    const value = parseFloat(numStr);
+
+    if (isNaN(value)) {
+      console.error("Invalid number in:", coordStr);
+      return null;
+    }
+
+    const result = {
+      value: value,
+      direction: direction[0].toUpperCase(),
     };
 
-    // Parse coordinate string (e.g., "51.5N" -> {value: 51.5, direction: "N"})
-    function parseCoordinate(coordStr) {
-        console.log('Parsing coordinate:', coordStr);
+    console.log("Parsed result:", result);
+    return result;
+  }
 
-        if (!coordStr) return null;
+  // Convert parsed coordinates to decimal degrees
+  function toDecimalDegrees(coord) {
+    if (!coord) return null;
 
-        // Clean string - remove spaces, degrees symbol
-        const cleaned = coordStr.toString().trim().replace(/°/g, '');
-        console.log('Cleaned coordinate:', cleaned);
+    let decimal = coord.value;
 
-        // Extract direction letter (N, S, E, W)
-        const direction = cleaned.match(/[NSEW]/i);
-        if (!direction) {
-            console.error('No direction found in:', coordStr);
-            return null;
-        }
-
-        // Extract numerical value
-        const numStr = cleaned.replace(/[NSEW]/i, '').trim();
-        const value = parseFloat(numStr);
-
-        if (isNaN(value)) {
-            console.error('Invalid number in:', coordStr);
-            return null;
-        }
-
-        const result = {
-            value: value,
-            direction: direction[0].toUpperCase()
-        };
-
-        console.log('Parsed result:', result);
-        return result;
+    // Convert to negative for South/West
+    if (coord.direction === "S" || coord.direction === "W") {
+      decimal = -decimal;
     }
 
-    // Convert parsed coordinates to decimal degrees
-    function toDecimalDegrees(coord) {
-        if (!coord) return null;
+    console.log(`Converted ${coord.value}${coord.direction} to ${decimal}°`);
+    return decimal;
+  }
 
-        let decimal = coord.value;
+  // Convert lat/lng to percentage positions (0-100)
+  function coordsToPercentage(lat, lng) {
+    console.log("Converting coordinates:", lat, lng);
 
-        // Convert to negative for South/West
-        if (coord.direction === 'S' || coord.direction === 'W') {
-            decimal = -decimal;
-        }
+    // X percentage (longitude)
+    const xPercent =
+      ((lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * 100;
 
-        console.log(`Converted ${coord.value}${coord.direction} to ${decimal}°`);
-        return decimal;
+    // Y percentage (latitude) - inverted for top-left origin
+    const yPercent =
+      ((mapBounds.north - lat) / (mapBounds.north - mapBounds.south)) * 100;
+
+    const result = {
+      x: Math.max(0, Math.min(100, xPercent)),
+      y: Math.max(0, Math.min(100, yPercent)),
+    };
+
+    console.log("Percentage position:", result);
+    return result;
+  }
+
+  // Main function to position all markers
+  function positionMarkers() {
+    console.log("=== Starting marker positioning ===");
+
+    const markers = document.querySelectorAll("[data-map-marker]");
+    console.log(`Found ${markers.length} markers`);
+
+    if (markers.length === 0) {
+      console.warn("No markers found with [data-map-marker] attribute");
+      return;
     }
 
-    // Convert lat/lng to percentage positions (0-100)
-    function coordsToPercentage(lat, lng) {
-        console.log('Converting coordinates:', lat, lng);
+    markers.forEach((marker, index) => {
+      console.log(`\n--- Processing marker ${index + 1} ---`);
 
-        // X percentage (longitude)
-        const xPercent = ((lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * 100;
+      const latStr = marker.getAttribute("data-map-lat");
+      const lngStr = marker.getAttribute("data-map-lng");
 
-        // Y percentage (latitude) - inverted for top-left origin
-        const yPercent = ((mapBounds.north - lat) / (mapBounds.north - mapBounds.south)) * 100;
+      console.log("Raw attributes:", { lat: latStr, lng: lngStr });
 
-        const result = {
-            x: Math.max(0, Math.min(100, xPercent)),
-            y: Math.max(0, Math.min(100, yPercent))
-        };
+      if (!latStr || !lngStr) {
+        console.error("Missing coordinates for marker:", marker);
+        return;
+      }
 
-        console.log('Percentage position:', result);
-        return result;
-    }
+      // Parse coordinates
+      const latParsed = parseCoordinate(latStr);
+      const lngParsed = parseCoordinate(lngStr);
 
-    // Main function to position all markers
-    function positionMarkers() {
-        console.log('=== Starting marker positioning ===');
+      if (!latParsed || !lngParsed) {
+        console.error("Failed to parse coordinates for marker:", marker);
+        return;
+      }
 
-        const markers = document.querySelectorAll('[data-map-marker]');
-        console.log(`Found ${markers.length} markers`);
+      // Convert to decimal degrees
+      const lat = toDecimalDegrees(latParsed);
+      const lng = toDecimalDegrees(lngParsed);
 
-        if (markers.length === 0) {
-            console.warn('No markers found with [data-map-marker] attribute');
-            return;
-        }
+      // Convert to percentage position
+      const position = coordsToPercentage(lat, lng);
 
-        markers.forEach((marker, index) => {
-            console.log(`\n--- Processing marker ${index + 1} ---`);
+      // Apply CSS positioning (force absolute positioning)
+      marker.style.position = "absolute";
+      marker.style.left = `${position.x}%`;
+      marker.style.top = `${position.y}%`;
+      marker.style.transform = "translate(-50%, -50%)"; // Center marker on coordinates
 
-            const latStr = marker.getAttribute('data-map-lat');
-            const lngStr = marker.getAttribute('data-map-long');
+      console.log(
+        `Marker positioned at: left: ${position.x}%, top: ${position.y}%`,
+      );
 
-            console.log('Raw attributes:', { lat: latStr, lng: lngStr });
+      // Optional: Add data attributes for debugging
+      marker.setAttribute("data-debug-lat", lat);
+      marker.setAttribute("data-debug-lng", lng);
+      marker.setAttribute("data-debug-x", position.x.toFixed(2));
+      marker.setAttribute("data-debug-y", position.y.toFixed(2));
+    });
 
-            if (!latStr || !lngStr) {
-                console.error('Missing coordinates for marker:', marker);
-                return;
-            }
+    console.log("=== Marker positioning complete ===");
+  }
 
-            // Parse coordinates
-            const latParsed = parseCoordinate(latStr);
-            const lngParsed = parseCoordinate(lngStr);
+  // Initialize positioning
+  positionMarkers();
 
-            if (!latParsed || !lngParsed) {
-                console.error('Failed to parse coordinates for marker:', marker);
-                return;
-            }
+  // Expose function globally for manual triggering
+  window.positionMapMarkers = positionMarkers;
 
-            // Convert to decimal degrees
-            const lat = toDecimalDegrees(latParsed);
-            const lng = toDecimalDegrees(lngParsed);
-
-            // Convert to percentage position
-            const position = coordsToPercentage(lat, lng);
-
-            // Apply CSS positioning
-            marker.style.position = 'absolute';
-            marker.style.left = `${position.x}%`;
-            marker.style.top = `${position.y}%`;
-
-            console.log(`Marker positioned at: left: ${position.x}%, top: ${position.y}%`);
-
-            // Optional: Add data attributes for debugging
-            marker.setAttribute('data-debug-lat', lat);
-            marker.setAttribute('data-debug-lng', lng);
-            marker.setAttribute('data-debug-x', position.x.toFixed(2));
-            marker.setAttribute('data-debug-y', position.y.toFixed(2));
-        });
-
-        console.log('=== Marker positioning complete ===');
-    }
-
-    // Initialize positioning
-    positionMarkers();
-
-    // Expose function globally for manual triggering
-    window.positionMapMarkers = positionMarkers;
-
-    console.log('Map positioning system initialized. Call positionMapMarkers() to re-run.');
+  console.log(
+    "Map positioning system initialized. Call positionMapMarkers() to re-run.",
+  );
 });
