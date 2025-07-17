@@ -12,88 +12,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Map Locator
 document.addEventListener("DOMContentLoaded", function () {
-  // Map bounds for continuous landmass projection (Americas → Europe/Africa → Asia)
-  const mapBounds = {
-    north: 80, // Northern landmasses (80N)
-    south: -60, // Southern extremes (60S)
-    west: -170, // Alaska tip (170W)
-    east: 170, // Russia tip (170E)
-  };
+  // Parse percentage value from attribute string
+  function parsePercentage(value) {
+    console.log("Parsing percentage:", value);
 
-  // Parse coordinate string (e.g., "51.5N" -> {value: 51.5, direction: "N"})
-  function parseCoordinate(coordStr) {
-    console.log("Parsing coordinate:", coordStr);
+    if (!value) return null;
 
-    if (!coordStr) return null;
+    // Clean string - remove %, spaces, and convert to number
+    const cleaned = value.toString().trim().replace(/%/g, "");
+    const number = parseFloat(cleaned);
 
-    // Clean string - remove spaces, degrees symbol
-    const cleaned = coordStr.toString().trim().replace(/°/g, "");
-    console.log("Cleaned coordinate:", cleaned);
-
-    // Extract direction letter (N, S, E, W)
-    const direction = cleaned.match(/[NSEW]/i);
-    if (!direction) {
-      console.error("No direction found in:", coordStr);
+    if (isNaN(number)) {
+      console.error("Invalid percentage value:", value);
       return null;
     }
 
-    // Extract numerical value
-    const numStr = cleaned.replace(/[NSEW]/i, "").trim();
-    const value = parseFloat(numStr);
-
-    if (isNaN(value)) {
-      console.error("Invalid number in:", coordStr);
-      return null;
-    }
-
-    const result = {
-      value: value,
-      direction: direction[0].toUpperCase(),
-    };
-
-    console.log("Parsed result:", result);
-    return result;
+    // Clamp between 0-100
+    const clamped = Math.max(0, Math.min(100, number));
+    console.log(`Parsed ${value} to ${clamped}%`);
+    return clamped;
   }
 
-  // Convert parsed coordinates to decimal degrees
-  function toDecimalDegrees(coord) {
-    if (!coord) return null;
-
-    let decimal = coord.value;
-
-    // Convert to negative for South/West
-    if (coord.direction === "S" || coord.direction === "W") {
-      decimal = -decimal;
-    }
-
-    console.log(`Converted ${coord.value}${coord.direction} to ${decimal}°`);
-    return decimal;
-  }
-
-  // Convert lat/lng to percentage positions (0-100)
-  function coordsToPercentage(lat, lng) {
-    console.log("Converting coordinates:", lat, lng);
-
-    // X percentage (longitude)
-    const xPercent =
-      ((lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * 100;
-
-    // Y percentage (latitude) - inverted for top-left origin
-    const yPercent =
-      ((mapBounds.north - lat) / (mapBounds.north - mapBounds.south)) * 100;
-
-    const result = {
-      x: Math.max(0, Math.min(100, xPercent)),
-      y: Math.max(0, Math.min(100, yPercent)),
-    };
-
-    console.log("Percentage position:", result);
-    return result;
-  }
-
-  // Main function to position all markers
+  // Main function to position all markers using x,y coordinates
   function positionMarkers() {
-    console.log("=== Starting marker positioning ===");
+    console.log("=== Starting simple x,y marker positioning ===");
 
     const markers = document.querySelectorAll("[data-map-marker]");
     console.log(`Found ${markers.length} markers`);
@@ -106,50 +48,39 @@ document.addEventListener("DOMContentLoaded", function () {
     markers.forEach((marker, index) => {
       console.log(`\n--- Processing marker ${index + 1} ---`);
 
-      const latStr = marker.getAttribute("data-map-lat");
-      const lngStr = marker.getAttribute("data-map-lng");
+      const xStr = marker.getAttribute("data-map-x");
+      const yStr = marker.getAttribute("data-map-y");
 
-      console.log("Raw attributes:", { lat: latStr, lng: lngStr });
+      console.log("Raw attributes:", { x: xStr, y: yStr });
 
-      if (!latStr || !lngStr) {
-        console.error("Missing coordinates for marker:", marker);
+      if (!xStr || !yStr) {
+        console.error("Missing x,y coordinates for marker:", marker);
         return;
       }
 
-      // Parse coordinates
-      const latParsed = parseCoordinate(latStr);
-      const lngParsed = parseCoordinate(lngStr);
+      // Parse x,y percentages
+      const x = parsePercentage(xStr);
+      const y = parsePercentage(yStr);
 
-      if (!latParsed || !lngParsed) {
-        console.error("Failed to parse coordinates for marker:", marker);
+      if (x === null || y === null) {
+        console.error("Failed to parse x,y coordinates for marker:", marker);
         return;
       }
 
-      // Convert to decimal degrees
-      const lat = toDecimalDegrees(latParsed);
-      const lng = toDecimalDegrees(lngParsed);
-
-      // Convert to percentage position
-      const position = coordsToPercentage(lat, lng);
-
-      // Apply CSS positioning (force absolute positioning)
+      // Apply CSS positioning directly
       marker.style.position = "absolute";
-      marker.style.left = `${position.x}%`;
-      marker.style.top = `${position.y}%`;
+      marker.style.left = `${x}%`;
+      marker.style.top = `${y}%`;
       marker.style.transform = "translate(-50%, -50%)"; // Center marker on coordinates
 
-      console.log(
-        `Marker positioned at: left: ${position.x}%, top: ${position.y}%`,
-      );
+      console.log(`Marker positioned at: left: ${x}%, top: ${y}%`);
 
-      // Optional: Add data attributes for debugging
-      marker.setAttribute("data-debug-lat", lat);
-      marker.setAttribute("data-debug-lng", lng);
-      marker.setAttribute("data-debug-x", position.x.toFixed(2));
-      marker.setAttribute("data-debug-y", position.y.toFixed(2));
+      // Add debug attributes
+      marker.setAttribute("data-debug-x", x);
+      marker.setAttribute("data-debug-y", y);
     });
 
-    console.log("=== Marker positioning complete ===");
+    console.log("=== Simple x,y positioning complete ===");
   }
 
   // Initialize positioning
@@ -159,6 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
   window.positionMapMarkers = positionMarkers;
 
   console.log(
-    "Map positioning system initialized. Call positionMapMarkers() to re-run.",
+    "Simple x,y positioning system initialized. Call positionMapMarkers() to re-run.",
   );
 });
