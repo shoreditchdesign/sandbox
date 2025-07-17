@@ -451,12 +451,12 @@ document.addEventListener("DOMContentLoaded", function () {
     loopedSlides: null,
     resistanceRatio: 0,
     pagination: {
-      el: "platform-pagination",
+      el: "#platform-pagination",
       clickable: true,
     },
     navigation: {
-      nextEl: "platform-next",
-      prevEl: "platform-prev",
+      nextEl: "#platform-next",
+      prevEl: "#platform-prev",
     },
 
     // Accessibility module
