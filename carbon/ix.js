@@ -964,12 +964,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    console.log(
-      "Zero results hide complete - Hidden:",
-      hiddenCount,
-      "Shown:",
-      shownCount,
-    );
+    // console.log(
+    //   "Zero results hide complete - Hidden:",
+    //   hiddenCount,
+    //   "Shown:",
+    //   shownCount,
+    // );
   }
 
   // Initialize pagination on load with delay to avoid race condition with Finsweet
