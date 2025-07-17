@@ -438,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#platform-swiper", {
-    slidesPerView: 2,
+    slidesPerView: 1,
     slidesPerGroup: 1,
     spaceBetween: 16,
     grabCursor: true,
@@ -458,7 +458,6 @@ document.addEventListener("DOMContentLoaded", function () {
       nextEl: "#platform-next",
       prevEl: "#platform-prev",
     },
-
     // Accessibility module
     a11y: {
       enabled: true,
@@ -474,17 +473,14 @@ document.addEventListener("DOMContentLoaded", function () {
       containerRole: null,
       slideRole: null,
     },
-
     // Keyboard control
     keyboard: {
       enabled: true,
       onlyInViewport: true,
     },
-
     // Focus handling
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
-
     breakpoints: {
       0: {
         slidesPerView: 1,
@@ -492,22 +488,22 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 16,
       },
       480: {
-        slidesPerView: 2,
+        slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       767: {
-        slidesPerView: 2,
+        slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       992: {
-        slidesPerView: 3,
+        slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
       1200: {
-        slidesPerView: 3,
+        slidesPerView: 2.2,
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
