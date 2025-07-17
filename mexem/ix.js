@@ -449,80 +449,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 4,
-    slidesPerGroup: 1,
     spaceBetween: 16,
-    grabCursor: true,
-    allowTouchMove: true,
-    autoHeight: false,
-    watchOverflow: true,
-    slidesOffsetBefore: 0,
-    slidesOffsetAfter: 0,
-    centeredSlides: false,
-    loopedSlides: null,
-    resistanceRatio: 0,
+
     pagination: {
       el: "#platform-pagination",
       clickable: true,
     },
+
     navigation: {
       nextEl: "#platform-next",
       prevEl: "#platform-prev",
     },
 
-    // Accessibility module
     a11y: {
       enabled: true,
       prevSlideMessage: "Previous platform",
       nextSlideMessage: "Next platform",
-      firstSlideMessage: "This is the first platform",
-      lastSlideMessage: "This is the last platform",
       paginationBulletMessage: "Go to platform {{index}}",
-      notificationClass: "swiper-notification",
-      containerMessage: "Platforms carousel",
       containerRoleDescriptionMessage: "carousel",
       itemRoleDescriptionMessage: "platform slide",
-      containerRole: null,
-      slideRole: null,
     },
-
-    // Keyboard control
-    keyboard: {
-      enabled: true,
-      onlyInViewport: true,
-    },
-
-    // Focus handling
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
 
     breakpoints: {
-      0: {
-        slidesPerView: 1,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      480: {
+      768: {
         slidesPerView: 2,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      767: {
-        slidesPerView: 2,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
-      },
-      992: {
-        slidesPerView: 3,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
       },
       1200: {
         slidesPerView: 4,
-        slidesPerGroup: 1,
-        spaceBetween: 16,
       },
     },
   });
 
-  console.log("Swiper initialization complete.");
+  console.log("Swiper initialization complete:", mySwiper);
 });
