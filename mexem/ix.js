@@ -437,17 +437,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  const swiperEl = document.querySelector("#benefits-swiper");
-  const paginationEl = document.querySelector("#benefits-pagination");
-  const nextEl = document.querySelector("#benefits-next");
-  const prevEl = document.querySelector("#benefits-prev");
+  const swiperEl = document.querySelector("#platform-swiper");
+  const paginationEl = document.querySelector("#platform-pagination");
+  const nextEl = document.querySelector("#platform-next");
+  const prevEl = document.querySelector("#platform-prev");
 
   console.log("swiperEl:", swiperEl ? "found" : "not found");
   console.log("paginationEl:", paginationEl ? "found" : "not found");
   console.log("nextEl:", nextEl ? "found" : "not found");
   console.log("prevEl:", prevEl ? "found" : "not found");
 
-  var mySwiper = new Swiper("#benefits-swiper", {
+  var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 4,
     slidesPerGroup: 1,
     spaceBetween: 16,
@@ -461,26 +461,26 @@ document.addEventListener("DOMContentLoaded", function () {
     loopedSlides: null,
     resistanceRatio: 0,
     pagination: {
-      el: "#benefits-pagination",
+      el: "#platform-pagination",
       clickable: true,
     },
     navigation: {
-      nextEl: "#benefits-next",
-      prevEl: "#benefits-prev",
+      nextEl: "#platform-next",
+      prevEl: "#platform-prev",
     },
 
     // Accessibility module
     a11y: {
       enabled: true,
-      prevSlideMessage: "Previous benefit",
-      nextSlideMessage: "Next benefit",
-      firstSlideMessage: "This is the first benefit",
-      lastSlideMessage: "This is the last benefit",
-      paginationBulletMessage: "Go to benefit {{index}}",
+      prevSlideMessage: "Previous platform",
+      nextSlideMessage: "Next platform",
+      firstSlideMessage: "This is the first platform",
+      lastSlideMessage: "This is the last platform",
+      paginationBulletMessage: "Go to platform {{index}}",
       notificationClass: "swiper-notification",
-      containerMessage: "Benefits carousel",
+      containerMessage: "Platforms carousel",
       containerRoleDescriptionMessage: "carousel",
-      itemRoleDescriptionMessage: "benefit slide",
+      itemRoleDescriptionMessage: "platform slide",
       containerRole: null,
       slideRole: null,
     },
