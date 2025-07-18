@@ -158,6 +158,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function openFirstAccordion() {
+    console.log("Opening first accordion in each component");
+    const components = document.querySelectorAll("[data-acc-component]");
+    components.forEach((component) => {
+      const firstToggle = component.querySelector("[data-acc-toggle]");
+      if (firstToggle) {
+        console.log("Opening first toggle in component:", component);
+        openAccordion(firstToggle);
+      }
+    });
+  }
+
   function openAccordion(toggle) {
     const drawerId = toggle.getAttribute("data-drawer-id");
     const drawer = toggle.querySelector("[data-acc-drawer]");
@@ -177,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function handleAccordionClick(event) {
     const toggle = event.currentTarget;
-
     const toggleState = toggle.getAttribute("data-toggle-state");
     if (toggleState === "closed") {
       // Close all other accordions in all components
@@ -204,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize accordions on page load
   initializeAccordions();
+  openFirstAccordion();
 
   // Add click event listener for pagination button
   document.addEventListener("click", function (event) {
@@ -215,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // after a small delay to allow for DOM updates
       setTimeout(function () {
         initializeAccordions();
+        openFirstAccordion();
       }, 300);
     }
   });
