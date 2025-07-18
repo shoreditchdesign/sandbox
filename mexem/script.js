@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
 //Map Locator
 document.addEventListener("DOMContentLoaded", function () {
   // Parse percentage value from attribute string
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.warn("No markers found with [data-map-marker] attribute");
       return;
     }
-    markers.forEach((marker, index) => {
+    markers.forEach((marker) => {
       const xStr = marker.getAttribute("data-map-x");
       const yStr = marker.getAttribute("data-map-y");
       if (!xStr || !yStr) {
@@ -61,60 +60,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Separate function to add hover event listeners to all markers
   function addHoverListeners() {
-    console.log("=== Adding hover listeners to all markers ===");
-
     const markers = document.querySelectorAll("[data-map-marker]");
-    console.log(`Found ${markers.length} markers for hover listeners`);
-
-    markers.forEach((marker, index) => {
-      console.log(`Adding hover listeners to marker ${index + 1}`);
-
+    markers.forEach((marker) => {
       // Check if listeners already added
       if (marker.hasAttribute("data-listeners-added")) {
-        console.log(`Marker ${index + 1} already has listeners, skipping`);
         return;
       }
 
       // Add hover event listeners for modal state
       marker.addEventListener("mouseenter", function () {
-        console.log("Marker hovered:", marker);
         marker.setAttribute("data-marker-state", "active");
       });
 
       marker.addEventListener("mouseleave", function () {
-        console.log("Marker unhovered:", marker);
         marker.setAttribute("data-marker-state", "default");
       });
 
       // Mark as having listeners added
       marker.setAttribute("data-listeners-added", "true");
     });
-
-    console.log("=== Hover listeners added to all markers ===");
   }
 
   // Separate function to calculate and update timezone-based times for all markers
   function updateMarkerTimes() {
-    console.log("=== Updating marker times ===");
-
     const markers = document.querySelectorAll("[data-map-marker]");
-    console.log(`Found ${markers.length} markers for time updates`);
 
-    markers.forEach((marker, index) => {
-      console.log(`Processing time for marker ${index + 1}`);
-
+    markers.forEach((marker) => {
       const zoneStr = marker.getAttribute("data-map-zone");
       const timeElement = marker.querySelector("[data-map-time]");
 
       if (!timeElement) {
-        console.warn(`No [data-map-time] element found in marker ${index + 1}`);
+        console.warn(`No [data-map-time] element found in marker`);
         return;
       }
 
       if (!zoneStr) {
-        console.log(
-          `No timezone data for marker ${index + 1}, hiding time element`,
-        );
         timeElement.style.display = "none";
         return;
       }
@@ -131,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!summerMatch || !winterMatch) {
           console.error(
-            `Invalid summer/winter timezone format for marker ${index + 1}:`,
+            `Invalid summer/winter timezone format for marker:`,
             zoneStr,
           );
           timeElement.style.display = "none";
@@ -147,25 +127,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const isDST = month >= 2 && month <= 9; // March to October (rough DST period)
 
         offsetHours = isDST ? summerOffset : winterOffset;
-        console.log(
-          `Marker ${index + 1} using ${isDST ? "summer" : "winter"} time: ${offsetHours} hours`,
-        );
       } else {
         // Single timezone format (e.g., "UTC+5", "UTC-8.5")
         const offsetMatch = zoneStr.match(/UTC([+-]?\d+(?:\.\d+)?)/);
         if (!offsetMatch) {
-          console.error(
-            `Invalid timezone format for marker ${index + 1}:`,
-            zoneStr,
-          );
+          console.error(`Invalid timezone format for marker:`, zoneStr);
           timeElement.style.display = "none";
           return;
         }
 
         offsetHours = parseFloat(offsetMatch[1]);
-        console.log(
-          `Marker ${index + 1} timezone offset: ${offsetHours} hours`,
-        );
       }
 
       // Calculate current time for this timezone
@@ -178,35 +149,25 @@ document.addEventListener("DOMContentLoaded", function () {
       const minutes = localTime.getMinutes().toString().padStart(2, "0");
       const formattedTime = `Local Time: ${hours}:${minutes}`;
 
-      console.log(`Marker ${index + 1} time: ${formattedTime}`);
-
       // Inject formatted time into element
       timeElement.textContent = formattedTime;
       timeElement.style.display = ""; // Ensure it's visible
     });
-
-    console.log("=== Marker times updated ===");
   }
 
   // Function to start automatic time updates every minute
   function startTimeUpdates() {
-    console.log("=== Starting automatic time updates ===");
-
     // Update immediately
     updateMarkerTimes();
 
     // Set up interval to update every minute
     setInterval(updateMarkerTimes, 60000);
-
-    console.log("Time updates will refresh every minute");
   }
 
   // Initialize all functions
   positionMarkers();
   addHoverListeners();
   startTimeUpdates();
-
-  console.log("=== All initialization complete ===");
 
   // Expose functions globally for manual triggering
   window.positionMapMarkers = positionMarkers;
@@ -218,8 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //Stock Market times
 document.addEventListener("DOMContentLoaded", function () {
   function checkMarketHours() {
-    console.log("Checking market hours...");
-
     const marketTabs = document.querySelectorAll("[data-market-tab]");
 
     marketTabs.forEach((tab) => {
@@ -228,13 +187,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const closeTime = tab.getAttribute("data-market-close");
       const labelElement = tab.querySelector("[data-market-label]");
 
-      console.log(
-        `Processing market: ${zone}, Open: ${openTime}, Close: ${closeTime}`,
-      );
-
       // Parse timezone (handle UTC-1/UTC-2 or UTC-1/UTC-1 formats)
       const zoneOffset = parseTimezone(zone);
-      console.log(`Parsed timezone offset: ${zoneOffset}`);
 
       // Get current time in market timezone
       const now = new Date();
@@ -245,20 +199,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ":" +
         marketTime.getUTCMinutes().toString().padStart(2, "0");
 
-      console.log(
-        `Market time: ${marketTime.toISOString()}, Day: ${currentDay}, Time: ${currentTimeStr}`,
-      );
-
       let isOpen = false;
 
       // Check if weekend (Saturday=6, Sunday=0)
       if (currentDay === 0 || currentDay === 6) {
-        console.log("Weekend detected - market closed");
         isOpen = false;
       } else {
         // Compare times for weekdays
         isOpen = isTimeBetween(currentTimeStr, openTime, closeTime);
-        console.log(`Time comparison result: ${isOpen}`);
       }
 
       // Update elements
@@ -267,8 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
         labelElement.textContent = status;
       }
       tab.setAttribute("data-market-state", status);
-
-      console.log(`Updated market status to: ${status}`);
     });
   }
 
@@ -303,6 +249,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Run every minute
   setInterval(checkMarketHours, 60000);
-
-  console.log("Market hours checker initialized");
 });
