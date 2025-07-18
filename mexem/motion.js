@@ -229,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Text Reveal with SplitText
+//GSAP for Text Reveal with SplitText
 document.addEventListener("DOMContentLoaded", function () {
   // Debug: Check what's actually available
   console.log("GSAP available:", typeof gsap !== "undefined");
@@ -262,8 +263,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Register ScrollTrigger plugin with GSAP
-  gsap.registerPlugin(ScrollTrigger);
+  // Register ScrollTrigger and SplitText plugins with GSAP
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 
   console.log("GSAP SplitText animation initializing...");
 
