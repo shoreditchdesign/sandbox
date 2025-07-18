@@ -1,7 +1,7 @@
 //GSAP for Navbar Tuck
 document.addEventListener("DOMContentLoaded", () => {
   const navbars = document.querySelectorAll(
-    '[data-nav-element="navbar-wrap"]:not([data-tuck-block="blocked"])',
+    '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
   );
   if (navbars.length === 0) {
     console.warn("No navbar elements found - animation aborted");
