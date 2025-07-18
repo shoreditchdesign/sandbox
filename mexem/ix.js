@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toggles.forEach((toggle) => {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-        toggle.setAttribute("data-toggle-state", "hide");
+        toggle.setAttribute("data-dd-state", "hide");
         console.log("Drawer hidden");
       }
     });
@@ -181,13 +181,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     activeToggle = toggle;
-    toggle.setAttribute("data-toggle-state", "show");
+    toggle.setAttribute("data-dd-state", "show");
     console.log("Drawer shown");
   }
 
   function hideDropdown(toggle, drawer) {
     console.log("Hiding dropdown");
-    toggle.setAttribute("data-toggle-state", "hide");
+    toggle.setAttribute("data-dd-state", "hide");
     if (activeToggle === toggle) {
       activeToggle = null;
     }
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
         openButton.addEventListener("click", () => {
           console.log("Open button clicked");
-          const currentState = toggle.getAttribute("data-toggle-state");
+          const currentState = toggle.getAttribute("data-dd-state");
           if (currentState === "show") {
             hideDropdown(toggle, drawer);
           } else {
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     menu.addEventListener("click", () => {
       console.log("Menu clicked");
       if (activeToggle) {
-        const currentState = activeToggle.getAttribute("data-toggle-state");
+        const currentState = activeToggle.getAttribute("data-dd-state");
         if (currentState === "show") {
           const drawer = activeToggle.nextElementSibling;
           hideDropdown(activeToggle, drawer);
