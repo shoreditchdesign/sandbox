@@ -227,3 +227,106 @@ document.addEventListener("DOMContentLoaded", () => {
   // Expose cleanup for external use if needed
   window.imageSequenceCleanup = cleanup;
 });
+
+//GSAP for Text Reveal
+document.addEventListener("DOMContentLoaded", function () {
+  // Make sure GSAP and plugins are loaded
+  if (
+    typeof gsap === "undefined" ||
+    typeof ScrollTrigger === "undefined" ||
+    typeof SplitText === "undefined"
+  ) {
+    console.error(
+      "Required libraries (GSAP, ScrollTrigger, or SplitText) are not loaded",
+    );
+    return;
+  }
+
+  console.log("GSAP SplitText animation initializing...");
+
+  // Wait a moment to ensure the DOM is fully processed
+  setTimeout(() => {
+    // Target elements with data-motion-text="reveal" attribute
+    const textElements = document.querySelectorAll(
+      '[data-motion-text="reveal"]',
+    );
+
+    // Debug: Check if elements exist
+    if (!textElements || textElements.length === 0) {
+      console.error('Could not find elements with data-motion-text="reveal"');
+      return;
+    }
+
+    console.log(`Found ${textElements.length} text elements to animate`);
+
+    // Process each element
+    textElements.forEach((textElement, elementIndex) => {
+      try {
+        console.log(`Processing element ${elementIndex + 1}:`, textElement);
+
+        // Initialize GSAP SplitText to split the text into words
+        const splitText = new SplitText(textElement, {
+          type: "words",
+          wordsClass: "split-word",
+        });
+
+        // Debug: Check if words were created
+        if (!splitText.words || splitText.words.length === 0) {
+          console.error(
+            "SplitText did not create any word elements for",
+            textElement,
+          );
+          return;
+        }
+
+        console.log(`Split into ${splitText.words.length} words`);
+
+        // Set initial state of all words - maintaining the 0.5 opacity
+        gsap.set(splitText.words, {
+          opacity: 0.5, // Match the CSS opacity
+          y: "0px",
+          ease: "power2.out",
+        });
+
+        // Set parent back to full opacity since children now have the opacity
+        gsap.set(textElement, {
+          opacity: 1,
+        });
+
+        // Get offset value from data attribute or use default 80%
+        const offsetValue =
+          textElement.getAttribute("data-motion-offset") || "80";
+        const startTrigger = `top ${offsetValue}%`;
+
+        console.log(`Setting scroll trigger with start: ${startTrigger}`);
+
+        // Create the scroll-triggered animation
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: textElement,
+            start: startTrigger,
+            end: "bottom 5%",
+            scrub: 0.5,
+            markers: false,
+          },
+        });
+
+        // Add the animation to the timeline - animate from 0.5 to 1
+        tl.to(splitText.words, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.05,
+          ease: "power2.out",
+          className: "+=active",
+        });
+
+        console.log(`Animation setup complete for element ${elementIndex + 1}`);
+      } catch (error) {
+        console.error(
+          `Error in text animation setup for element ${elementIndex + 1}:`,
+          error,
+        );
+      }
+    });
+  }, 500); // Wait 500ms for everything to be properly loaded
+});
