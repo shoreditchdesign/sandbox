@@ -308,6 +308,13 @@ document.addEventListener("DOMContentLoaded", function () {
             end: "bottom 5%",
             scrub: 0.5,
             markers: false,
+            onUpdate: (self) => {
+              console.log(
+                `Animation progress for element ${
+                  elementIndex + 1
+                }: ${self.progress.toFixed(2)}`,
+              );
+            },
           },
         });
 
@@ -318,9 +325,19 @@ document.addEventListener("DOMContentLoaded", function () {
           stagger: 0.05,
           ease: "power2.out",
           className: "+=active",
+          onComplete: () => {
+            console.log(
+              `Word animation completed for element ${elementIndex + 1}`,
+            );
+          },
         });
 
         console.log(`Animation setup complete for element ${elementIndex + 1}`);
+        console.log(
+          `Scrub is enabled, progress will log on scroll for element ${
+            elementIndex + 1
+          }`,
+        );
       } catch (error) {
         console.error(
           `Error in text animation setup for element ${elementIndex + 1}:`,
