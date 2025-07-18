@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
 //Map Locator
 document.addEventListener("DOMContentLoaded", function () {
   // Parse percentage value from attribute string
