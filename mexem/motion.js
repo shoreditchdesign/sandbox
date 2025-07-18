@@ -363,9 +363,9 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         });
 
-        // Add the animation to the timeline - animate from 0.5 to 1
+        // Add the animation to the timeline - animate color to #011324
         tl.to(splitText.words, {
-          opacity: 1,
+          color: "#011324",
           y: 0,
           stagger: 0.05,
           ease: "power2.out",
@@ -380,5 +380,5 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-  }, 100);
+  }, 100); // Wait 1.5 seconds for libraries to load
 });
