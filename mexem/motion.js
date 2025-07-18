@@ -167,12 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
-
-    console.log(`Created ${chapterItems.length * 2 - 1} scroll triggers`);
   }
 
   function handleItemEnter(currentIndex, lastIndex, items) {
-    console.log(`Chapter ${currentIndex} entered`);
     // Create and play transition animation
     const timeline = createTransitionTimeline(
       items[currentIndex - 2], // Previous item (currentIndex-1)-1 due to 0-based array
@@ -188,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log(`Chapter ${currentIndex} left back`);
     // Create and play transition animation (reverse direction)
     const timeline = createTransitionTimeline(
       items[currentIndex - 1], // Current item
@@ -199,10 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createTransitionTimeline(fadeOutItem, fadeInItem) {
-    const tl = gsap.timeline({
-      onStart: () => console.log("Video transition started"),
-      onComplete: () => console.log("Video transition completed"),
-    });
+    const tl = gsap.timeline();
 
     tl.to(fadeOutItem, {
       opacity: 0,
