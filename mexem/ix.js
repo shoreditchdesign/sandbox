@@ -1,15 +1,20 @@
 //Navigation Bar
 document.addEventListener("DOMContentLoaded", function () {
-  document
-    .querySelector('[data-nav-element="menu"]')
-    .addEventListener("click", () => {
-      const navbar = document.querySelector('[data-nav-element="navbar"]');
-      const currentState = navbar.getAttribute("data-nav-state");
-      navbar.setAttribute(
-        "data-nav-state",
-        currentState === "open" ? "closed" : "open",
-      );
-    });
+  const menuButton = document.querySelector('[data-nav-element="menu"]');
+
+  menuButton.addEventListener("click", () => {
+    const navbar = document.querySelector('[data-nav-element="navbar"]');
+    const currentState = navbar.getAttribute("data-nav-state");
+    navbar.setAttribute(
+      "data-nav-state",
+      currentState === "open" ? "closed" : "open",
+    );
+
+    const staticNav = document.querySelector("[data-nav-static]");
+    if (staticNav) {
+      staticNav.classList.toggle("active");
+    }
+  });
 });
 
 //Navigation Dropdowns
@@ -141,6 +146,121 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
+});
+
+//Navigation Overlays (Mobile)
+//Mobile Navigation Dropdowns
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.innerWidth > 991) {
+    return;
+  }
+  console.log("Mobile navigation initialized");
+
+  const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
+  const menu = document.querySelector('[data-nav-element="menu"]');
+  const backButtons = document.querySelectorAll("[data-dd-back]");
+  let activeToggle = null;
+
+  function hideAllDropdowns() {
+    console.log("Hiding all dropdowns");
+    toggles.forEach((toggle) => {
+      const drawer = toggle.nextElementSibling;
+      if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+        toggle.setAttribute("data-dd-state", "hide");
+        const drawerQuickToHide = gsap.quickTo(drawer, "x", {
+          duration: 0.3,
+          ease: "power2.out",
+        });
+        drawerQuickToHide("100%");
+        console.log("Drawer hidden");
+      }
+    });
+    activeToggle = null;
+  }
+
+  function showDropdown(toggle, drawer) {
+    console.log("Showing dropdown");
+    if (activeToggle && activeToggle !== toggle) {
+      hideAllDropdowns();
+    }
+
+    activeToggle = toggle;
+    toggle.setAttribute("data-dd-state", "show");
+    const drawerQuickToShow = gsap.quickTo(drawer, "x", {
+      duration: 0.3,
+      ease: "power2.out",
+    });
+    drawerQuickToShow("0%");
+    console.log("Drawer shown");
+  }
+
+  function hideDropdown(toggle, drawer) {
+    console.log("Hiding dropdown");
+    toggle.setAttribute("data-dd-state", "hide");
+    const drawerQuickToHide = gsap.quickTo(drawer, "x", {
+      duration: 0.3,
+      ease: "power2.out",
+    });
+    drawerQuickToHide("100%");
+    if (activeToggle === toggle) {
+      activeToggle = null;
+    }
+    console.log("Drawer hidden");
+  }
+
+  // Toggle click handlers
+  toggles.forEach((toggle) => {
+    const drawer = toggle.nextElementSibling;
+    if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+      // Set initial position
+      gsap.set(drawer, { x: "100%" });
+
+      toggle.addEventListener("click", () => {
+        console.log("Toggle clicked");
+        const currentState = toggle.getAttribute("data-dd-state");
+        if (currentState === "show") {
+          hideDropdown(toggle, drawer);
+        } else {
+          showDropdown(toggle, drawer);
+        }
+      });
+    }
+  });
+
+  // Back button handlers
+  backButtons.forEach((backButton) => {
+    backButton.addEventListener("click", () => {
+      console.log("Back button clicked");
+      // Traverse up to find parent toggle
+      let parentToggle = backButton.closest('[data-nav-dd="drawer"]');
+      if (parentToggle) {
+        parentToggle = parentToggle.previousElementSibling;
+        if (
+          parentToggle &&
+          parentToggle.getAttribute("data-nav-dd") === "toggle"
+        ) {
+          const drawer = parentToggle.nextElementSibling;
+          hideDropdown(parentToggle, drawer);
+          console.log("Parent toggle found and drawer closed");
+        }
+      }
+    });
+  });
+
+  // Menu click handler
+  if (menu) {
+    menu.addEventListener("click", () => {
+      console.log("Menu clicked");
+      if (activeToggle) {
+        const currentState = activeToggle.getAttribute("data-dd-state");
+        if (currentState === "show") {
+          const drawer = activeToggle.nextElementSibling;
+          hideDropdown(activeToggle, drawer);
+          console.log("Active drawer closed via menu click");
+        }
+      }
+    });
+  }
 });
 
 //Accordions
