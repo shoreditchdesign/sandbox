@@ -202,15 +202,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function closeAllOtherAccordions(currentToggle) {
-    // Find all open accordions across all components
-    const allOpenToggles = document.querySelectorAll(
-      '[data-acc-toggle][data-toggle-state="open"]',
-    );
-    allOpenToggles.forEach((toggle) => {
-      if (toggle !== currentToggle) {
-        closeAccordion(toggle);
-      }
-    });
+    console.log("Closing other accordions in same component");
+    // Find the parent component of the current toggle
+    const parentComponent = currentToggle.closest("[data-acc-component]");
+    if (parentComponent) {
+      // Find all open accordions only within this component
+      const openTogglesInComponent = parentComponent.querySelectorAll(
+        '[data-acc-toggle][data-toggle-state="open"]',
+      );
+      openTogglesInComponent.forEach((toggle) => {
+        if (toggle !== currentToggle) {
+          closeAccordion(toggle);
+        }
+      });
+    }
   }
 
   // Initialize accordions on page load
