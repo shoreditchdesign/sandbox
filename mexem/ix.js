@@ -1,14 +1,11 @@
 //Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, initializing dropdown animations");
   if (window.innerWidth <= 991) {
     return;
   }
 
   const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
   const overlay = document.querySelector("[data-nav-dd='overlay']");
-  console.log("Found toggles:", toggles.length);
-  console.log("Found overlay:", overlay ? "yes" : "no");
 
   let activeToggle = null;
   let hideTimeout = null;
@@ -21,23 +18,19 @@ document.addEventListener("DOMContentLoaded", function () {
     : null;
 
   function checkOverlayVisibility() {
-    console.log("Checking overlay visibility");
     const hasActiveDropdown = Array.from(toggles).some(
       (toggle) => toggle.getAttribute("data-dd-state") === "show",
     );
 
     if (!hasActiveDropdown && overlayQuickToHide) {
-      console.log("No active dropdowns, hiding overlay");
       overlayQuickToHide(0);
     }
   }
 
   function hideAllDropdowns() {
-    console.log("Hiding all dropdowns");
     toggles.forEach((toggle, index) => {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-        console.log(`Hiding dropdown ${index + 1}`);
         toggle.setAttribute("data-dd-state", "hide");
         drawer.style.pointerEvents = "none";
         const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
@@ -54,10 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function showDropdown(toggle, drawer, index) {
-    console.log(`Showing dropdown ${index + 1}`);
-
     if (activeToggle && activeToggle !== toggle) {
-      console.log("Switching to new dropdown, hiding previous instantly");
       hideAllDropdowns();
     }
 
@@ -82,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function hideDropdown(toggle, drawer, index) {
-    console.log(`Hiding dropdown ${index + 1}`);
     hideTimeout = setTimeout(() => {
       toggle.setAttribute("data-dd-state", "hide");
       drawer.style.pointerEvents = "none";
@@ -102,12 +91,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   toggles.forEach((toggle, index) => {
-    console.log(`Setting up toggle ${index + 1}`);
     const drawer = toggle.nextElementSibling;
 
     if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-      console.log(`Found matching drawer for toggle ${index + 1}`);
-
       toggle.addEventListener("mouseenter", () => {
         showDropdown(toggle, drawer, index);
       });
@@ -117,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       drawer.addEventListener("mouseenter", () => {
-        console.log(`Keeping drawer ${index + 1} visible`);
         if (hideTimeout) {
           clearTimeout(hideTimeout);
           hideTimeout = null;
@@ -239,7 +224,6 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   function sortRows() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
-    console.log("Sorting rows in tables");
 
     tabTables.forEach((table) => {
       const rows = Array.from(table.querySelectorAll("[data-tab-row]"));
@@ -255,16 +239,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addIndicesPerIsolatedTab() {
-    console.log("Adding indices per isolated tab");
-
     // Get each unique tab element
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
       const type = isolatedTab.getAttribute("data-tab-type");
       const name = isolatedTab.getAttribute("data-tab-name");
-
-      console.log(`Processing isolated tab: ${type}/${name}`);
 
       // Get ONLY direct children of data-tab-menu and data-tab-content
       const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
@@ -281,37 +261,25 @@ document.addEventListener("DOMContentLoaded", function () {
           )
         : [];
 
-      console.log(
-        `Found ${linksArray.length} links and ${panesArray.length} panes in ${type}/${name}`,
-      );
-
       // Set indices based on array position
       linksArray.forEach((link, index) => {
         const linkIndex = index + 1;
         link.setAttribute("data-tab-link", linkIndex);
-        console.log(`Set link ${linkIndex} in ${type}/${name}`);
       });
 
       panesArray.forEach((pane, index) => {
         const paneIndex = index + 1;
         pane.setAttribute("data-tab-pane", paneIndex);
-        console.log(`Set pane ${paneIndex} in ${type}/${name}`);
       });
-
-      console.log(`Completed indexing for ${type}/${name}`);
     });
   }
 
   function initializeAllTabs() {
-    console.log("Initializing all tabs - showing first pane/link of each");
-
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((tab) => {
       const type = tab.getAttribute("data-tab-type");
       const name = tab.getAttribute("data-tab-name");
-
-      console.log(`Initializing ${type}/${name}`);
 
       // Get menu and content containers
       const tabMenu = tab.querySelector("[data-tab-menu]");
@@ -323,7 +291,6 @@ document.addEventListener("DOMContentLoaded", function () {
           if (index === 0) {
             link.setAttribute("data-tab-state", "show");
             link.classList.add("active");
-            console.log(`Showing first link in ${type}/${name}`);
           } else {
             link.setAttribute("data-tab-state", "hide");
             link.classList.remove("active");
@@ -336,7 +303,6 @@ document.addEventListener("DOMContentLoaded", function () {
         Array.from(tabContent.children).forEach((pane, index) => {
           if (index === 0) {
             pane.setAttribute("data-tab-state", "show");
-            console.log(`Showing first pane in ${type}/${name}`);
           } else {
             pane.setAttribute("data-tab-state", "hide");
           }
@@ -346,8 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function setupIsolatedClickHandlers() {
-    console.log("Setting up isolated click handlers");
-
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
@@ -361,14 +325,10 @@ document.addEventListener("DOMContentLoaded", function () {
             child.hasAttribute("data-tab-link"),
           )
         : [];
-      console.log(
-        `Setting up ${tabLinks.length} click handlers for ${type}/${name}`,
-      );
 
       tabLinks.forEach((clickedLink) => {
         clickedLink.addEventListener("click", () => {
           const clickedIndex = clickedLink.getAttribute("data-tab-link");
-          console.log(`Clicked link ${clickedIndex} in ${type}/${name}`);
 
           // Get ALL links and panes from THIS SAME isolated tab ONLY (direct children)
           const tabMenuContainer = isolatedTab.querySelector("[data-tab-menu]");
@@ -386,27 +346,20 @@ document.addEventListener("DOMContentLoaded", function () {
               )
             : [];
 
-          console.log(
-            `Updating ${sameTabLinks.length} links and ${sameTabPanes.length} panes in ${type}/${name}`,
-          );
-
           // Hide all other links in SAME tab, show clicked link
           sameTabLinks.forEach((link) => {
             if (link === clickedLink) {
               link.setAttribute("data-tab-state", "show");
               link.classList.add("active");
-              console.log(`Activated link ${clickedIndex} in ${type}/${name}`);
             } else {
               link.setAttribute("data-tab-state", "hide");
               link.classList.remove("active");
-              console.log(`Deactivated other link in ${type}/${name}`);
             }
           });
 
           // Hide all panes in SAME tab
           sameTabPanes.forEach((pane) => {
             pane.setAttribute("data-tab-state", "hide");
-            console.log(`Hiding pane in ${type}/${name}`);
           });
 
           // Show corresponding pane in SAME tab (direct children)
@@ -415,7 +368,6 @@ document.addEventListener("DOMContentLoaded", function () {
             tabContentContainer.children[clickedIndex - 1];
           if (targetPane) {
             targetPane.setAttribute("data-tab-state", "show");
-            console.log(`Showing pane ${clickedIndex} in ${type}/${name}`);
           } else {
             console.log(
               `ERROR: No pane ${clickedIndex} found in ${type}/${name}`,
@@ -427,12 +379,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Execute in proper order: isolate, make arrays, set indices
-  console.log("Starting isolated tab system");
   sortRows();
   addIndicesPerIsolatedTab();
   initializeAllTabs();
   setupIsolatedClickHandlers();
-  console.log("Isolated tab system ready");
 });
 
 //Swiper
