@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       checkOverlayVisibility();
-    }, 400);
+    }, 150);
   }
 
   toggles.forEach((toggle, index) => {
@@ -149,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Navigation Overlays
-//Mobile Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth > 991) {
     return;
