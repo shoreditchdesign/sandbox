@@ -228,8 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.imageSequenceCleanup = cleanup;
 });
 
-//GSAP for Text Reveal with SplitText
-//GSAP for Text Reveal with SplitText
+//GSAP for Text Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Debug: Check what's actually available
   console.log("GSAP available:", typeof gsap !== "undefined");
@@ -317,19 +316,23 @@ document.addEventListener("DOMContentLoaded", function () {
           opacity: 1,
         });
 
-        // Get offset value from data attribute or use default 80%
-        const offsetValue =
-          textElement.getAttribute("data-motion-offset") || "80";
-        const startTrigger = `top ${offsetValue}%`;
+        // Get start and end values from data attributes or use defaults
+        const startValue =
+          textElement.getAttribute("data-motion-start") || "80";
+        const endValue = textElement.getAttribute("data-motion-end") || "5";
+        const startTrigger = `top ${startValue}%`;
+        const endTrigger = `bottom ${endValue}%`;
 
-        console.log(`Setting scroll trigger with start: ${startTrigger}`);
+        console.log(
+          `Setting scroll trigger with start: ${startTrigger}, end: ${endTrigger}`,
+        );
 
         // Create the scroll-triggered animation
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: textElement,
             start: startTrigger,
-            end: "bottom 5%",
+            end: endTrigger,
             scrub: 0.5,
             markers: false,
             onUpdate: (self) => {
