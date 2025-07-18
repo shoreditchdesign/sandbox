@@ -228,8 +228,28 @@ document.addEventListener("DOMContentLoaded", () => {
   window.imageSequenceCleanup = cleanup;
 });
 
-//GSAP for Text Reveal
+//GSAP for Text Reveal with SplitText
 document.addEventListener("DOMContentLoaded", function () {
+  // Debug: Check what's actually available
+  console.log("GSAP available:", typeof gsap !== "undefined");
+  console.log("ScrollTrigger available:", typeof ScrollTrigger !== "undefined");
+  console.log("SplitText available:", typeof SplitText !== "undefined");
+
+  // More detailed check
+  if (typeof gsap !== "undefined") {
+    console.log("GSAP version:", gsap.version);
+  }
+  if (typeof ScrollTrigger !== "undefined") {
+    console.log("ScrollTrigger loaded");
+  }
+  if (typeof SplitText !== "undefined") {
+    console.log("SplitText loaded");
+  } else {
+    console.error(
+      "SplitText is NOT available - this might still be a premium plugin",
+    );
+  }
+
   // Make sure GSAP and plugins are loaded
   if (
     typeof gsap === "undefined" ||
@@ -356,5 +376,5 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-  }, 500); // Wait 500ms for everything to be properly loaded
+  }, 1500); // Wait 1.5 seconds for libraries to load
 });
