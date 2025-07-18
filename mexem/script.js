@@ -214,3 +214,95 @@ document.addEventListener("DOMContentLoaded", function () {
   window.updateMarkerTimes = updateMarkerTimes;
   window.startTimeUpdates = startTimeUpdates;
 });
+
+//Stock Market times
+document.addEventListener("DOMContentLoaded", function () {
+  function checkMarketHours() {
+    console.log("Checking market hours...");
+
+    const marketTabs = document.querySelectorAll("[data-market-tab]");
+
+    marketTabs.forEach((tab) => {
+      const zone = tab.getAttribute("data-market-zone");
+      const openTime = tab.getAttribute("data-market-open");
+      const closeTime = tab.getAttribute("data-market-close");
+      const labelElement = tab.querySelector("[data-market-label]");
+
+      console.log(
+        `Processing market: ${zone}, Open: ${openTime}, Close: ${closeTime}`,
+      );
+
+      // Parse timezone (handle UTC-1/UTC-2 or UTC-1/UTC-1 formats)
+      const zoneOffset = parseTimezone(zone);
+      console.log(`Parsed timezone offset: ${zoneOffset}`);
+
+      // Get current time in market timezone
+      const now = new Date();
+      const marketTime = new Date(now.getTime() + zoneOffset * 60 * 60 * 1000);
+      const currentDay = marketTime.getUTCDay(); // 0=Sunday, 6=Saturday
+      const currentTimeStr =
+        marketTime.getUTCHours().toString().padStart(2, "0") +
+        ":" +
+        marketTime.getUTCMinutes().toString().padStart(2, "0");
+
+      console.log(
+        `Market time: ${marketTime.toISOString()}, Day: ${currentDay}, Time: ${currentTimeStr}`,
+      );
+
+      let isOpen = false;
+
+      // Check if weekend (Saturday=6, Sunday=0)
+      if (currentDay === 0 || currentDay === 6) {
+        console.log("Weekend detected - market closed");
+        isOpen = false;
+      } else {
+        // Compare times for weekdays
+        isOpen = isTimeBetween(currentTimeStr, openTime, closeTime);
+        console.log(`Time comparison result: ${isOpen}`);
+      }
+
+      // Update elements
+      const status = isOpen ? "open" : "closed";
+      if (labelElement) {
+        labelElement.textContent = status;
+      }
+      tab.setAttribute("data-market-state", status);
+
+      console.log(`Updated market status to: ${status}`);
+    });
+  }
+
+  function parseTimezone(zone) {
+    // Handle formats like UTC-1/UTC-2 or UTC+1/UTC+2
+    const parts = zone.split("/");
+    const primaryZone = parts[0]; // Use first timezone (summer time)
+
+    const match = primaryZone.match(/UTC([+-]?\d+)/);
+    if (match) {
+      return parseInt(match[1]);
+    }
+    return 0; // Default to UTC if parsing fails
+  }
+
+  function isTimeBetween(current, open, close) {
+    // Convert time strings to minutes for easier comparison
+    const currentMinutes = timeToMinutes(current);
+    const openMinutes = timeToMinutes(open);
+    const closeMinutes = timeToMinutes(close);
+
+    return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+  }
+
+  function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours * 60 + minutes;
+  }
+
+  // Run immediately
+  checkMarketHours();
+
+  // Run every minute
+  setInterval(checkMarketHours, 60000);
+
+  console.log("Market hours checker initialized");
+});
