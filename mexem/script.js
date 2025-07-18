@@ -78,6 +78,17 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add debug attributes
       marker.setAttribute("data-debug-x", x);
       marker.setAttribute("data-debug-y", y);
+
+      // Add hover event listeners for modal state
+      marker.addEventListener("mouseenter", function () {
+        console.log("Marker hovered:", marker);
+        marker.setAttribute("data-marker-state", "active");
+      });
+
+      marker.addEventListener("mouseleave", function () {
+        console.log("Marker unhovered:", marker);
+        marker.setAttribute("data-marker-state", "default");
+      });
     });
 
     console.log("=== Simple x,y positioning complete ===");
