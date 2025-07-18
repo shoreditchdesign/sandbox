@@ -380,5 +380,5 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
-  }, 1500); // Wait 1.5 seconds for libraries to load
+  }, 100);
 });
