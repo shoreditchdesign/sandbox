@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     drawerQuickToShow(1);
 
     if (overlayQuickToShow) {
-      overlayQuickToShow(0.7);
+      overlayQuickToShow(1);
     }
   }
 
