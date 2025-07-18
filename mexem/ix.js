@@ -168,11 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
         toggle.setAttribute("data-dd-state", "hide");
-        const drawerQuickToHide = gsap.quickTo(drawer, "x", {
-          duration: 0.3,
-          ease: "power2.out",
-        });
-        drawerQuickToHide("100%");
         console.log("Drawer hidden");
       }
     });
@@ -187,22 +182,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     activeToggle = toggle;
     toggle.setAttribute("data-dd-state", "show");
-    const drawerQuickToShow = gsap.quickTo(drawer, "x", {
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    drawerQuickToShow("0%");
     console.log("Drawer shown");
   }
 
   function hideDropdown(toggle, drawer) {
     console.log("Hiding dropdown");
     toggle.setAttribute("data-dd-state", "hide");
-    const drawerQuickToHide = gsap.quickTo(drawer, "x", {
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    drawerQuickToHide("100%");
     if (activeToggle === toggle) {
       activeToggle = null;
     }
@@ -218,9 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (toggle) {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-        // Set initial position
-        gsap.set(drawer, { x: "100%" });
-
         openButton.addEventListener("click", () => {
           console.log("Open button clicked");
           const currentState = toggle.getAttribute("data-dd-state");
