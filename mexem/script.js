@@ -84,17 +84,9 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("=== Hover listeners added to all markers ===");
   }
 
-  // Initialize positioning
   positionMarkers();
-
-  // Add hover listeners to all markers (separate function)
   addHoverListeners();
 
-  // Expose functions globally for manual triggering
   window.positionMapMarkers = positionMarkers;
   window.addHoverListeners = addHoverListeners;
-
-  console.log(
-    "Simple x,y positioning system initialized. Call positionMapMarkers() to re-run.",
-  );
 });
