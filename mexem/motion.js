@@ -229,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Text Reveal
-//GSAP for Text Reveal with SplitText
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and plugins are loaded
   if (
@@ -312,6 +311,31 @@ document.addEventListener("DOMContentLoaded", function () {
             end: "bottom 5%",
             scrub: 0.5,
             markers: false,
+            onUpdate: (self) => {
+              console.log(
+                `Element ${elementIndex + 1} scroll progress: ${(self.progress * 100).toFixed(1)}%`,
+              );
+            },
+            onEnter: () => {
+              console.log(
+                `Element ${elementIndex + 1}: Animation started (entered trigger zone)`,
+              );
+            },
+            onLeave: () => {
+              console.log(
+                `Element ${elementIndex + 1}: Animation complete (left trigger zone)`,
+              );
+            },
+            onEnterBack: () => {
+              console.log(
+                `Element ${elementIndex + 1}: Re-entered trigger zone (scrolling up)`,
+              );
+            },
+            onLeaveBack: () => {
+              console.log(
+                `Element ${elementIndex + 1}: Left trigger zone backwards`,
+              );
+            },
           },
         });
 
