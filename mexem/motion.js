@@ -229,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Text Reveal
+//GSAP for Text Reveal with SplitText
 document.addEventListener("DOMContentLoaded", function () {
   // Make sure GSAP and plugins are loaded
   if (
@@ -241,6 +242,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     return;
   }
+
+  // Register ScrollTrigger plugin with GSAP
+  gsap.registerPlugin(ScrollTrigger);
 
   console.log("GSAP SplitText animation initializing...");
 
@@ -308,13 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
             end: "bottom 5%",
             scrub: 0.5,
             markers: false,
-            onUpdate: (self) => {
-              console.log(
-                `Animation progress for element ${
-                  elementIndex + 1
-                }: ${self.progress.toFixed(2)}`,
-              );
-            },
           },
         });
 
@@ -325,19 +322,9 @@ document.addEventListener("DOMContentLoaded", function () {
           stagger: 0.05,
           ease: "power2.out",
           className: "+=active",
-          onComplete: () => {
-            console.log(
-              `Word animation completed for element ${elementIndex + 1}`,
-            );
-          },
         });
 
         console.log(`Animation setup complete for element ${elementIndex + 1}`);
-        console.log(
-          `Scrub is enabled, progress will log on scroll for element ${
-            elementIndex + 1
-          }`,
-        );
       } catch (error) {
         console.error(
           `Error in text animation setup for element ${elementIndex + 1}:`,
