@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
       currentState === "open" ? "closed" : "open",
     );
 
-    const staticNav = document.querySelector("[data-nav-static]");
+    const staticNav = document.querySelector('[data-nav-element="static"]');
     if (staticNav) {
       staticNav.classList.toggle("active");
     }
