@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Navigation Overlays (Mobile)
+//Navigation Overlays
 //Mobile Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth > 991) {
@@ -157,6 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Mobile navigation initialized");
 
   const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
+  const openButtons = document.querySelectorAll("[data-dd-open]");
   const menu = document.querySelector('[data-nav-element="menu"]');
   const backButtons = document.querySelectorAll("[data-dd-back]");
   let activeToggle = null;
@@ -208,22 +209,28 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Drawer hidden");
   }
 
-  // Toggle click handlers
-  toggles.forEach((toggle) => {
-    const drawer = toggle.nextElementSibling;
-    if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-      // Set initial position
-      gsap.set(drawer, { x: "100%" });
+  // Open button click handlers
+  openButtons.forEach((openButton) => {
+    // Find the associated toggle element
+    const toggle =
+      openButton.closest('[data-nav-dd="toggle"]') ||
+      openButton.parentElement.querySelector('[data-nav-dd="toggle"]');
+    if (toggle) {
+      const drawer = toggle.nextElementSibling;
+      if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+        // Set initial position
+        gsap.set(drawer, { x: "100%" });
 
-      toggle.addEventListener("click", () => {
-        console.log("Toggle clicked");
-        const currentState = toggle.getAttribute("data-dd-state");
-        if (currentState === "show") {
-          hideDropdown(toggle, drawer);
-        } else {
-          showDropdown(toggle, drawer);
-        }
-      });
+        openButton.addEventListener("click", () => {
+          console.log("Open button clicked");
+          const currentState = toggle.getAttribute("data-dd-state");
+          if (currentState === "show") {
+            hideDropdown(toggle, drawer);
+          } else {
+            showDropdown(toggle, drawer);
+          }
+        });
+      }
     }
   });
 
