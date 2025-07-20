@@ -406,6 +406,7 @@ function initVerticalScroll(section, items) {
   items.forEach((item, index) => {
     if (index !== 0) {
       gsap.set(item, { yPercent: 100 });
+      gsap.set(items[1], { yPercent: 50, backgroundColor: "red" });
       console.log("Set item", index, "to yPercent: 100");
     }
   });
