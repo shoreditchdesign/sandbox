@@ -382,75 +382,98 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Stacking Cards
-// Make ScrollTrigger available for use in GSAP animations
-gsap.registerPlugin(ScrollTrigger);
+document.addEventListener("DOMContentLoaded", function () {
+  gsap.registerPlugin(ScrollTrigger);
 
-// Select the HTML elements needed for the animation
-const scrollSection = document.querySelectorAll("[data-stack-section]");
+  function sequenceInitialiser() {
+    console.log("Initializing all sections...");
 
-scrollSection.forEach((section) => {
-  const wrapper = section.querySelector("[data-stack-wrap]");
-  const list = wrapper.querySelector("[data-stack-list]");
-  const items = list.querySelectorAll("[data-stack-card]");
+    // Select the HTML elements needed for the animation
+    const scrollSection = document.querySelectorAll("[data-stack-section]");
 
-  console.log("Initializing section:", section);
-  console.log("Found items:", items.length);
+    scrollSection.forEach((section) => {
+      const wrapper = section.querySelector("[data-stack-wrap]");
+      const list = wrapper.querySelector("[data-stack-list]");
+      const items = list.querySelectorAll("[data-stack-card]");
 
-  initVerticalScroll(section, items);
+      console.log("Initializing section:", section);
+      console.log("Found items:", items.length);
+
+      sectionInitialiser(section, items);
+    });
+  }
+
+  // Initialize on page load
+  sequenceInitialiser();
+
+  // Reinitialize on window resize with debounce
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      console.log("Screen resized - reinitializing all ScrollTriggers");
+
+      // Kill all existing ScrollTrigger instances
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+
+      // Reinitialize everything
+      sequenceInitialiser();
+    }, 250); // 250ms debounce
+  });
+
+  function sectionInitialiser(section, items) {
+    console.log("Setting up vertical scroll for", items.length, "items");
+
+    // Set dynamic height on wrapper based on number of cards
+    const wrapper = section.querySelector("[data-stack-wrap]");
+    const dynamicHeight = `${items.length * 100}vh`;
+    wrapper.style.height = dynamicHeight;
+    console.log("Set wrapper height to:", dynamicHeight);
+
+    // Initial states - all items except first are positioned below viewport
+    items.forEach((item, index) => {
+      if (index !== 0) {
+        gsap.set(item, { yPercent: 100 });
+        console.log("Set item", index, "to yPercent: 100");
+      }
+    });
+
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        pin: true,
+        start: "top top",
+        end: () => `+=${items.length * 100}%`,
+        scrub: 1,
+        invalidateOnRefresh: true,
+        // markers: true,
+      },
+      defaults: { ease: "none" },
+    });
+
+    items.forEach((item, index) => {
+      console.log("Adding animation for item", index);
+
+      // Skip the last item (no next item to slide in)
+      if (index < items.length - 1) {
+        // Scale down and round corners of current item
+        timeline.to(item, {
+          scale: 0.9,
+          borderRadius: "10px",
+        });
+
+        // Slide in next item from bottom at the same time
+        timeline.to(
+          items[index + 1],
+          {
+            yPercent: 0,
+          },
+          "<",
+        );
+      }
+    });
+  }
 });
-
-function initVerticalScroll(section, items) {
-  console.log("Setting up vertical scroll for", items.length, "items");
-
-  // Set dynamic height on wrapper based on number of cards
-  const wrapper = section.querySelector("[data-stack-wrap]");
-  const dynamicHeight = `${items.length * 100}vh`;
-  wrapper.style.height = dynamicHeight;
-  console.log("Set wrapper height to:", dynamicHeight);
-
-  // Initial states - all items except first are positioned below viewport
-  items.forEach((item, index) => {
-    if (index !== 0) {
-      gsap.set(item, { yPercent: 100 });
-      console.log("Set item", index, "to yPercent: 100");
-    }
-  });
-
-  const timeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: section,
-      pin: true,
-      start: "top top",
-      end: () => `+=${items.length * 100}%`,
-      scrub: 1,
-      invalidateOnRefresh: true,
-      // markers: true,
-    },
-    defaults: { ease: "none" },
-  });
-
-  items.forEach((item, index) => {
-    console.log("Adding animation for item", index);
-
-    // Skip the last item (no next item to slide in)
-    if (index < items.length - 1) {
-      // Scale down and round corners of current item
-      timeline.to(item, {
-        scale: 0.9,
-        borderRadius: "10px",
-      });
-
-      // Slide in next item from bottom at the same time
-      timeline.to(
-        items[index + 1],
-        {
-          yPercent: 0,
-        },
-        "<",
-      );
-    }
-  });
-}
 
 //GSAP for Headings
 document.addEventListener("DOMContentLoaded", () => {
