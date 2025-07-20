@@ -362,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
-  function sortRows() {
+  function rowInitialiser() {
     const tabTables = document.querySelectorAll("[data-tab-table]");
 
     tabTables.forEach((table) => {
@@ -378,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function addIndicesPerIsolatedTab() {
+  function indexInitialiser() {
     // Get each unique tab element
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
@@ -414,7 +414,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function initializeAllTabs() {
+  function tabInitialiser() {
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((tab) => {
@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function setupIsolatedClickHandlers() {
+  function clickInitialiser() {
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
@@ -538,10 +538,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Execute in proper order: isolate, make arrays, set indices
-  sortRows();
-  addIndicesPerIsolatedTab();
-  initializeAllTabs();
-  setupIsolatedClickHandlers();
+  rowInitialiser();
+  indexInitialiser();
+  tabInitialiser();
+  clickInitialiser();
 });
 
 //Swiper
