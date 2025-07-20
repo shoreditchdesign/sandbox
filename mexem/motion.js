@@ -485,3 +485,79 @@ document.addEventListener("DOMContentLoaded", () => {
   selectors();
   animator();
 });
+
+//GSAP for Arrays
+document.addEventListener("DOMContentLoaded", () => {
+  let viewportChecker;
+
+  function initialiser() {
+    viewportChecker = function (element) {
+      const rect = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      return rect.top < windowHeight && rect.bottom > 0;
+    };
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    setTimeout(() => {
+      const containers = document.querySelectorAll(
+        "[data-motion-array]:not([data-motion-block])",
+      );
+
+      if (containers.length === 0) {
+        console.warn("Motion for Arrays: Array not found");
+        return;
+      }
+
+      containers.forEach((container) => {
+        const delay = container.getAttribute("data-motion-delay")
+          ? parseFloat(container.getAttribute("data-motion-delay"))
+          : 0;
+        const childElements = Array.from(container.children);
+        if (childElements.length === 0) {
+          console.warn("Motion for Arrays: Children not found");
+          return;
+        }
+
+        gsap.set(childElements, {
+          opacity: 0,
+          y: 5,
+        });
+
+        let tl = gsap.timeline({
+          paused: true,
+        });
+
+        tl.to(childElements, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power2.out",
+        });
+        const isAbove = viewportChecker(container);
+        if (isAbove) {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        } else {
+          ScrollTrigger.create({
+            trigger: container,
+            start: "top 95%",
+            once: true,
+            onEnter: () => {
+              tl.play(0);
+            },
+          });
+        }
+      });
+    }, 200);
+  }
+  initialiser();
+  animator();
+});
