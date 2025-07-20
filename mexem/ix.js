@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Navigation Dropdowns
+//Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth <= 991) {
     return;
@@ -133,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function initialiser() {
     // Create overlay quickTo
     const overlayQuickTo = overlay
-      ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
+      ? gsap.quickTo(overlay, "opacity", { duration: 0.15, ease: "power2.out" })
       : null;
 
     // Store timeline references for drawers
@@ -143,35 +144,17 @@ document.addEventListener("DOMContentLoaded", function () {
     window.playDropdown = function (drawer, show = true) {
       let timeline = drawerTimelines.get(drawer);
       if (!timeline) {
-        if (window.elementAnimator) {
-          window.elementAnimator(drawer, "top 100%").then((tl) => {
-            drawerTimelines.set(drawer, tl);
-            if (show) {
-              tl.play();
-            } else {
-              // For hide, set to end and reverse
-              tl.progress(1).reverse();
-            }
-          });
-          return;
-        }
-        // Fallback - create timeline that can properly reverse
-        gsap.set(drawer, { opacity: 0 });
-        timeline = gsap
-          .timeline({ paused: true })
-          .to(drawer, { opacity: 1, duration: 0.3, ease: "power2.out" });
+        // Create fresh timeline for drawer animation
+        gsap.set(drawer, { opacity: 0, y: 5 });
+        timeline = gsap.timeline({ paused: true }).to(drawer, {
+          opacity: 1,
+          y: 0,
+          duration: 0.15,
+          ease: "power2.out",
+        });
         drawerTimelines.set(drawer, timeline);
       }
-
-      if (show) {
-        timeline.play();
-      } else {
-        // Ensure timeline is at end position before reversing
-        if (timeline.progress() === 0) {
-          timeline.progress(1);
-        }
-        timeline.reverse();
-      }
+      show ? timeline.play() : timeline.reverse();
     };
 
     // Expose overlay function
