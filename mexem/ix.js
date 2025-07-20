@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function hideAllDropdowns() {
-    toggles.forEach((toggle) => {
+    toggles.forEach((toggle, index) => {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
         toggle.setAttribute("data-dd-state", "hide");
@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
           duration: 0.3,
           ease: "power2.out",
         });
-        gsap.set(drawer, { y: -5 });
         drawerQuickToHide(0);
       }
     });
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function showDropdown(toggle, drawer) {
+  function showDropdown(toggle, drawer, index) {
     if (activeToggle && activeToggle !== toggle) {
       hideAllDropdowns();
     }
@@ -80,30 +79,27 @@ document.addEventListener("DOMContentLoaded", function () {
     toggle.setAttribute("data-dd-state", "show");
     drawer.style.pointerEvents = "auto";
 
-    gsap.set(drawer, { y: -5 });
-    const drawerQuickToShow = gsap.to(drawer, {
-      opacity: 1,
-      y: 0,
+    const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
       duration: 0.3,
       ease: "power2.out",
     });
+    drawerQuickToShow(1);
 
     if (overlayQuickToShow) {
       overlayQuickToShow(1);
     }
   }
 
-  function hideDropdown(toggle, drawer) {
+  function hideDropdown(toggle, drawer, index) {
     hideTimeout = setTimeout(() => {
       toggle.setAttribute("data-dd-state", "hide");
       drawer.style.pointerEvents = "none";
 
-      const drawerQuickToHide = gsap.to(drawer, {
-        opacity: 0,
-        y: -5,
+      const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
         duration: 0.3,
         ease: "power2.out",
       });
+      drawerQuickToHide(0);
 
       if (activeToggle === toggle) {
         activeToggle = null;
@@ -113,16 +109,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 150);
   }
 
-  toggles.forEach((toggle) => {
+  toggles.forEach((toggle, index) => {
     const drawer = toggle.nextElementSibling;
 
     if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
       toggle.addEventListener("mouseenter", () => {
-        showDropdown(toggle, drawer);
+        showDropdown(toggle, drawer, index);
       });
 
       toggle.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer);
+        hideDropdown(toggle, drawer, index);
       });
 
       drawer.addEventListener("mouseenter", () => {
@@ -134,13 +130,11 @@ document.addEventListener("DOMContentLoaded", function () {
         toggle.setAttribute("data-dd-state", "show");
         drawer.style.pointerEvents = "auto";
 
-        gsap.set(drawer, { y: -5 });
-        const drawerQuickToShow = gsap.to(drawer, {
-          opacity: 1,
-          y: 0,
+        const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
           duration: 0.3,
           ease: "power2.out",
         });
+        drawerQuickToShow(1);
 
         if (overlayQuickToShow) {
           overlayQuickToShow(1);
@@ -148,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       drawer.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer);
+        hideDropdown(toggle, drawer, index);
       });
     }
   });
@@ -449,6 +443,10 @@ document.addEventListener("DOMContentLoaded", function () {
         Array.from(tabContent.children).forEach((pane, index) => {
           if (index === 0) {
             pane.setAttribute("data-tab-state", "show");
+            // ANIMATE FIRST PANE ON LOAD
+            if (window.elementAnimator) {
+              window.elementAnimator(pane, "top 100%");
+            }
           } else {
             pane.setAttribute("data-tab-state", "hide");
           }
@@ -514,6 +512,21 @@ document.addEventListener("DOMContentLoaded", function () {
             tabContentContainer.children[clickedIndex - 1];
           if (targetPane) {
             targetPane.setAttribute("data-tab-state", "show");
+
+            // ANIMATE THE TAB PANE WHEN IT BECOMES ACTIVE
+            if (window.elementAnimator) {
+              // Reset any existing GSAP properties first
+              if (window.gsap) {
+                window.gsap.set(targetPane, { clearProps: "all" });
+              }
+
+              // Animate the newly active pane
+              window.elementAnimator(targetPane, "top 100%");
+            } else {
+              console.warn(
+                "elementAnimator not available - ensure animation script loads first",
+              );
+            }
           } else {
             console.log(
               `ERROR: No pane ${clickedIndex} found in ${type}/${name}`,
