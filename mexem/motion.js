@@ -426,32 +426,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.fonts.ready.then(() => {
-    // Select elements with data-motion-heading, filter out data-motion-block
-    const headings = document.querySelectorAll("[data-motion-heading]");
-    const filteredHeadings = Array.from(headings).filter(
-      (heading) => !heading.hasAttribute("data-motion-block"),
+    // Select elements with data-motion-heading but not data-motion-block
+    const headings = document.querySelectorAll(
+      "[data-motion-heading]:not([data-motion-block])",
     );
 
-    console.log(`Found ${filteredHeadings.length} headings to animate`);
+    console.log(`Found ${headings.length} headings to animate`);
 
-    if (filteredHeadings.length === 0) {
+    if (headings.length === 0) {
       console.log("No headings to animate");
       return;
     }
 
-    // Set initial opacity
-    gsap.set(filteredHeadings, { opacity: 1 });
-
     // Create animations for each heading
-    filteredHeadings.forEach((heading) => {
+    headings.forEach((heading) => {
       let split = new SplitText(heading, {
-        type: "words, lines",
+        type: "lines",
         linesClass: "line",
-        wordsClass: "word",
-        charsClass: "char",
       });
 
       console.log("SplitText created for heading");
+
+      // Set initial values
+      gsap.set(split.lines, {
+        opacity: 0,
+        y: 20,
+        filter: "blur(5px)",
+      });
 
       // Create timeline
       let tl = gsap.timeline({
@@ -464,11 +465,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Add animation to timeline
-      tl.from(split.lines, {
-        yPercent: 20,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 3,
+      tl.to(split.lines, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        stagger: 0.1,
+        duration: 0.6,
       });
     });
 
