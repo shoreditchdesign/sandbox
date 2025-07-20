@@ -413,6 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
             type: "lines",
             autoSplit: true,
             onSplit(self) {
+              self.element.removeAttribute("data-motion-hide");
               gsap.set(self.element, {
                 opacity: 1,
                 important: true,
