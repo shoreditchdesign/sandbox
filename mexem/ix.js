@@ -17,137 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Navigation Dropdowns
-document.addEventListener("DOMContentLoaded", function () {
-  if (window.innerWidth <= 991) {
-    return;
-  }
-
-  const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
-  const overlay = document.querySelector("[data-nav-dd='overlay']");
-
-  let activeToggle = null;
-  let hideTimeout = null;
-
-  const overlayQuickToShow = overlay
-    ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
-    : null;
-  const overlayQuickToHide = overlay
-    ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
-    : null;
-
-  function checkOverlayVisibility() {
-    const hasActiveDropdown = Array.from(toggles).some(
-      (toggle) => toggle.getAttribute("data-dd-state") === "show",
-    );
-
-    if (!hasActiveDropdown && overlayQuickToHide) {
-      overlayQuickToHide(0);
-    }
-  }
-
-  function hideAllDropdowns() {
-    toggles.forEach((toggle, index) => {
-      const drawer = toggle.nextElementSibling;
-      if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-        toggle.setAttribute("data-dd-state", "hide");
-        drawer.style.pointerEvents = "none";
-        const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
-          duration: 0.3,
-          ease: "power2.out",
-        });
-        drawerQuickToHide(0);
-      }
-    });
-    activeToggle = null;
-    if (overlayQuickToHide) {
-      overlayQuickToHide(0);
-    }
-  }
-
-  function showDropdown(toggle, drawer, index) {
-    if (activeToggle && activeToggle !== toggle) {
-      hideAllDropdowns();
-    }
-
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      hideTimeout = null;
-    }
-
-    activeToggle = toggle;
-    toggle.setAttribute("data-dd-state", "show");
-    drawer.style.pointerEvents = "auto";
-
-    const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    drawerQuickToShow(1);
-
-    if (overlayQuickToShow) {
-      overlayQuickToShow(1);
-    }
-  }
-
-  function hideDropdown(toggle, drawer, index) {
-    hideTimeout = setTimeout(() => {
-      toggle.setAttribute("data-dd-state", "hide");
-      drawer.style.pointerEvents = "none";
-
-      const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
-        duration: 0.3,
-        ease: "power2.out",
-      });
-      drawerQuickToHide(0);
-
-      if (activeToggle === toggle) {
-        activeToggle = null;
-      }
-
-      checkOverlayVisibility();
-    }, 150);
-  }
-
-  toggles.forEach((toggle, index) => {
-    const drawer = toggle.nextElementSibling;
-
-    if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
-      toggle.addEventListener("mouseenter", () => {
-        showDropdown(toggle, drawer, index);
-      });
-
-      toggle.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer, index);
-      });
-
-      drawer.addEventListener("mouseenter", () => {
-        if (hideTimeout) {
-          clearTimeout(hideTimeout);
-          hideTimeout = null;
-        }
-        activeToggle = toggle;
-        toggle.setAttribute("data-dd-state", "show");
-        drawer.style.pointerEvents = "auto";
-
-        const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
-          duration: 0.3,
-          ease: "power2.out",
-        });
-        drawerQuickToShow(1);
-
-        if (overlayQuickToShow) {
-          overlayQuickToShow(1);
-        }
-      });
-
-      drawer.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer, index);
-      });
-    }
-  });
-});
-
 //Navigation Overlays
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth > 991) {
@@ -251,6 +120,139 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//Navigation Dropdowns
+//Navigation Dropdowns
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.innerWidth <= 991) {
+    return;
+  }
+  const toggles = document.querySelectorAll('[data-nav-dd="toggle"]');
+  const overlay = document.querySelector("[data-nav-dd='overlay']");
+  let activeToggle = null;
+  let hideTimeout = null;
+
+  function initialiser() {
+    // Create overlay quickTo
+    const overlayQuickTo = overlay
+      ? gsap.quickTo(overlay, "opacity", { duration: 0.3, ease: "power2.out" })
+      : null;
+
+    // Store timeline references for drawers
+    const drawerTimelines = new Map();
+
+    // Define playDropdown function with timeline logic
+    window.playDropdown = function (drawer, show = true) {
+      let timeline = drawerTimelines.get(drawer);
+      if (!timeline) {
+        if (window.elementAnimator) {
+          window.elementAnimator(drawer, "top 100%").then((tl) => {
+            drawerTimelines.set(drawer, tl);
+            show ? tl.play() : tl.reverse();
+          });
+          return;
+        }
+        // Fallback
+        timeline = gsap
+          .timeline({ paused: true })
+          .to(drawer, { opacity: 1, duration: 0.3, ease: "power2.out" });
+        drawerTimelines.set(drawer, timeline);
+      }
+      show ? timeline.play() : timeline.reverse();
+    };
+
+    // Expose overlay function
+    window.overlayQuickTo = overlayQuickTo;
+  }
+
+  function showOverlay() {
+    const hasActiveDropdown = Array.from(toggles).some(
+      (toggle) => toggle.getAttribute("data-dd-state") === "show",
+    );
+    if (!hasActiveDropdown && window.overlayQuickTo) {
+      window.overlayQuickTo(0);
+    }
+  }
+
+  function hideAllDropdowns() {
+    toggles.forEach((toggle) => {
+      const drawer = toggle.nextElementSibling;
+      if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+        toggle.setAttribute("data-dd-state", "hide");
+        drawer.style.pointerEvents = "none";
+        window.playDropdown(drawer, false);
+      }
+    });
+    activeToggle = null;
+    if (window.overlayQuickTo) {
+      window.overlayQuickTo(0);
+    }
+  }
+
+  function showDropdown(toggle, drawer) {
+    if (activeToggle && activeToggle !== toggle) {
+      hideAllDropdowns();
+    }
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
+
+    activeToggle = toggle;
+    toggle.setAttribute("data-dd-state", "show");
+    drawer.style.pointerEvents = "auto";
+    window.playDropdown(drawer, true);
+
+    if (window.overlayQuickTo) {
+      window.overlayQuickTo(1);
+    }
+  }
+
+  function hideDropdown(toggle, drawer) {
+    hideTimeout = setTimeout(() => {
+      toggle.setAttribute("data-dd-state", "hide");
+      drawer.style.pointerEvents = "none";
+      window.playDropdown(drawer, false);
+
+      if (activeToggle === toggle) {
+        activeToggle = null;
+      }
+      showOverlay();
+    }, 150);
+  }
+
+  // Initialize animations first
+  initialiser();
+
+  toggles.forEach((toggle, index) => {
+    const drawer = toggle.nextElementSibling;
+    if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
+      toggle.addEventListener("mouseenter", () => {
+        showDropdown(toggle, drawer);
+      });
+      toggle.addEventListener("mouseleave", () => {
+        hideDropdown(toggle, drawer);
+      });
+      drawer.addEventListener("mouseenter", () => {
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+          hideTimeout = null;
+        }
+
+        activeToggle = toggle;
+        toggle.setAttribute("data-dd-state", "show");
+        drawer.style.pointerEvents = "auto";
+        window.playDropdown(drawer, true);
+
+        if (window.overlayQuickTo) {
+          window.overlayQuickTo(1);
+        }
+      });
+      drawer.addEventListener("mouseleave", () => {
+        hideDropdown(toggle, drawer);
+      });
+    }
+  });
+});
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
