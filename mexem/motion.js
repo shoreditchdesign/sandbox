@@ -402,11 +402,16 @@ scrollSection.forEach((section) => {
 function initVerticalScroll(section, items) {
   console.log("Setting up vertical scroll for", items.length, "items");
 
+  // Set dynamic height on wrapper based on number of cards
+  const wrapper = section.querySelector("[data-stack-wrap]");
+  const dynamicHeight = `${items.length * 100}vh`;
+  wrapper.style.height = dynamicHeight;
+  console.log("Set wrapper height to:", dynamicHeight);
+
   // Initial states - all items except first are positioned below viewport
   items.forEach((item, index) => {
     if (index !== 0) {
       gsap.set(item, { yPercent: 100 });
-      gsap.set(items[1], { yPercent: 50, backgroundColor: "red" });
       console.log("Set item", index, "to yPercent: 100");
     }
   });
@@ -416,11 +421,7 @@ function initVerticalScroll(section, items) {
       trigger: section,
       pin: true,
       start: "top top",
-      end: () => {
-        const endValue = `+=${items.length * 100}%`;
-        console.log("ScrollTrigger end value:", endValue);
-        return endValue;
-      },
+      end: () => `+=${items.length * 100}%`,
       scrub: 1,
       invalidateOnRefresh: true,
       // markers: true,
