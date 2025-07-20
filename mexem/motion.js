@@ -388,7 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function sequenceInitialiser() {
     console.log("Initializing all sections...");
 
-    // Select the HTML elements needed for the animation
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
     scrollSection.forEach((section) => {
@@ -406,31 +405,25 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize on page load
   sequenceInitialiser();
 
-  // Reinitialize on window resize with debounce
   let resizeTimeout;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       console.log("Screen resized - reinitializing all ScrollTriggers");
 
-      // Kill all existing ScrollTrigger instances
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-
-      // Reinitialize everything
       sequenceInitialiser();
-    }, 250); // 250ms debounce
+    }, 250);
   });
 
   function sectionInitialiser(section, items) {
     console.log("Setting up vertical scroll for", items.length, "items");
 
-    // Set dynamic height on wrapper based on number of cards
     const wrapper = section.querySelector("[data-stack-wrap]");
     const dynamicHeight = `${items.length * 100}vh`;
     wrapper.style.height = dynamicHeight;
     console.log("Set wrapper height to:", dynamicHeight);
 
-    // Initial states - all items except first are positioned below viewport
     items.forEach((item, index) => {
       if (index !== 0) {
         gsap.set(item, { yPercent: 100 });
@@ -454,15 +447,12 @@ document.addEventListener("DOMContentLoaded", function () {
     items.forEach((item, index) => {
       console.log("Adding animation for item", index);
 
-      // Skip the last item (no next item to slide in)
       if (index < items.length - 1) {
-        // Scale down and round corners of current item
         timeline.to(item, {
           scale: 0.9,
           borderRadius: "10px",
         });
 
-        // Slide in next item from bottom at the same time
         timeline.to(
           items[index + 1],
           {
