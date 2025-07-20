@@ -450,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
           gsap.set(self.lines, {
             opacity: 0,
             y: 20,
-            filter: "blur(5px)",
+            filter: "blur(0px)",
           });
 
           // Create timeline with ScrollTrigger
