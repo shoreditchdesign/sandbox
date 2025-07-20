@@ -270,13 +270,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Wait a moment to ensure the DOM is fully processed
   setTimeout(() => {
     // Target elements with data-motion-text="reveal" attribute
-    const textElements = document.querySelectorAll(
-      '[data-motion-text="reveal"]',
-    );
+    const textElements = document.querySelectorAll("[data-motion-reveal]");
 
     // Debug: Check if elements exist
     if (!textElements || textElements.length === 0) {
-      console.error('Could not find elements with data-motion-text="reveal"');
+      console.error("Could not find elements with data-motion-reveal");
       return;
     }
 
