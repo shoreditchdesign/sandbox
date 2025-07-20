@@ -381,6 +381,70 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
 
+//GSAP for Stacking Cards
+
+document.addEventListener("DOMContentLoaded", () => {
+  gsap.registerPlugin(ScrollTrigger);
+  const scrollSection = document.querySelectorAll("[data-stack-section]");
+
+  scrollSection.forEach((section) => {
+    const wrapper = section.querySelector("[data-stack-wrap]");
+    const list = wrapper.querySelector("[data-stack-list]");
+    const items = list.querySelectorAll("[data-stack-card]");
+
+    console.log("Initializing section:", section);
+    console.log("Found items:", items.length);
+
+    initVerticalScroll(section, items);
+  });
+
+  function initVerticalScroll(section, items) {
+    console.log("Setting up vertical scroll for", items.length, "items");
+
+    // Initial states - all items except first are positioned below viewport
+    items.forEach((item, index) => {
+      if (index !== 0) {
+        gsap.set(item, { yPercent: 100 });
+        console.log("Set item", index, "to yPercent: 100");
+      }
+    });
+
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        pin: true,
+        start: "top top",
+        end: () => `+=${items.length * 100}%`,
+        scrub: 1,
+        invalidateOnRefresh: true,
+        // markers: true,
+      },
+      defaults: { ease: "none" },
+    });
+
+    items.forEach((item, index) => {
+      console.log("Adding animation for item", index);
+
+      // Scale down and round corners of current item
+      timeline.to(item, {
+        scale: 0.9,
+        borderRadius: "10px",
+      });
+
+      // Slide in next item from bottom (if it exists)
+      if (items[index + 1]) {
+        timeline.to(
+          items[index + 1],
+          {
+            yPercent: 0,
+          },
+          "<",
+        );
+      }
+    });
+  }
+});
+
 //GSAP for Headings
 document.addEventListener("DOMContentLoaded", () => {
   let viewportChecker;
