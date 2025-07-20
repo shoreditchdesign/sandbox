@@ -416,7 +416,11 @@ function initVerticalScroll(section, items) {
       trigger: section,
       pin: true,
       start: "top top",
-      end: () => `+=${items.length * 100}%`,
+      end: () => {
+        const endValue = `+=${items.length * 100}%`;
+        console.log("ScrollTrigger end value:", endValue);
+        return endValue;
+      },
       scrub: 1,
       invalidateOnRefresh: true,
       // markers: true,
