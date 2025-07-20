@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function hideAllDropdowns() {
-    toggles.forEach((toggle, index) => {
+    toggles.forEach((toggle) => {
       const drawer = toggle.nextElementSibling;
       if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
         toggle.setAttribute("data-dd-state", "hide");
@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
           duration: 0.3,
           ease: "power2.out",
         });
+        gsap.set(drawer, { y: -5 });
         drawerQuickToHide(0);
       }
     });
@@ -65,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function showDropdown(toggle, drawer, index) {
+  function showDropdown(toggle, drawer) {
     if (activeToggle && activeToggle !== toggle) {
       hideAllDropdowns();
     }
@@ -79,27 +80,30 @@ document.addEventListener("DOMContentLoaded", function () {
     toggle.setAttribute("data-dd-state", "show");
     drawer.style.pointerEvents = "auto";
 
-    const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
+    gsap.set(drawer, { y: -5 });
+    const drawerQuickToShow = gsap.to(drawer, {
+      opacity: 1,
+      y: 0,
       duration: 0.3,
       ease: "power2.out",
     });
-    drawerQuickToShow(1);
 
     if (overlayQuickToShow) {
       overlayQuickToShow(1);
     }
   }
 
-  function hideDropdown(toggle, drawer, index) {
+  function hideDropdown(toggle, drawer) {
     hideTimeout = setTimeout(() => {
       toggle.setAttribute("data-dd-state", "hide");
       drawer.style.pointerEvents = "none";
 
-      const drawerQuickToHide = gsap.quickTo(drawer, "opacity", {
+      const drawerQuickToHide = gsap.to(drawer, {
+        opacity: 0,
+        y: -5,
         duration: 0.3,
         ease: "power2.out",
       });
-      drawerQuickToHide(0);
 
       if (activeToggle === toggle) {
         activeToggle = null;
@@ -109,16 +113,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 150);
   }
 
-  toggles.forEach((toggle, index) => {
+  toggles.forEach((toggle) => {
     const drawer = toggle.nextElementSibling;
 
     if (drawer && drawer.getAttribute("data-nav-dd") === "drawer") {
       toggle.addEventListener("mouseenter", () => {
-        showDropdown(toggle, drawer, index);
+        showDropdown(toggle, drawer);
       });
 
       toggle.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer, index);
+        hideDropdown(toggle, drawer);
       });
 
       drawer.addEventListener("mouseenter", () => {
@@ -130,11 +134,13 @@ document.addEventListener("DOMContentLoaded", function () {
         toggle.setAttribute("data-dd-state", "show");
         drawer.style.pointerEvents = "auto";
 
-        const drawerQuickToShow = gsap.quickTo(drawer, "opacity", {
+        gsap.set(drawer, { y: -5 });
+        const drawerQuickToShow = gsap.to(drawer, {
+          opacity: 1,
+          y: 0,
           duration: 0.3,
           ease: "power2.out",
         });
-        drawerQuickToShow(1);
 
         if (overlayQuickToShow) {
           overlayQuickToShow(1);
@@ -142,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       drawer.addEventListener("mouseleave", () => {
-        hideDropdown(toggle, drawer, index);
+        hideDropdown(toggle, drawer);
       });
     }
   });

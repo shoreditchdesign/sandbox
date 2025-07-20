@@ -393,7 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const windowHeight = window.innerHeight;
       return rect.top < windowHeight && rect.bottom > 0;
     };
-
     if (
       typeof gsap === "undefined" ||
       typeof ScrollTrigger === "undefined" ||
@@ -402,16 +401,68 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Script terminated due to missing libraries");
       return;
     }
-
     gsap.registerPlugin(ScrollTrigger, SplitText);
-    console.log("GSAP plugins registered");
+
+    // Expose global textAnimator
+    window.textAnimator = function (element, scrollTriggerOffset = "top 85%") {
+      return new Promise((resolve) => {
+        document.fonts.ready.then(() => {
+          const delay = element.getAttribute("data-motion-delay")
+            ? parseFloat(element.getAttribute("data-motion-delay"))
+            : 0;
+
+          let split = new SplitText(element, {
+            type: "lines",
+            autoSplit: true,
+            onSplit(self) {
+              gsap.set(self.lines, {
+                opacity: 0,
+                y: 20,
+                filter: "blur(5px)",
+              });
+
+              let tl = gsap.timeline({
+                paused: true,
+              });
+
+              tl.to(self.lines, {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                stagger: 0.1,
+                duration: 0.6,
+              });
+
+              const isAbove = viewportChecker(element);
+
+              if (isAbove) {
+                setTimeout(() => {
+                  tl.play(0);
+                }, delay * 1000);
+              } else {
+                ScrollTrigger.create({
+                  trigger: element,
+                  start: scrollTriggerOffset,
+                  once: true,
+                  onEnter: () => {
+                    tl.play(0);
+                  },
+                });
+              }
+
+              resolve(tl);
+              return tl;
+            },
+          });
+        });
+      });
+    };
   }
 
   function selectors() {
     const allH1s = document.querySelectorAll("h1");
     allH1s.forEach((h1) => {
       h1.setAttribute("data-motion-text", "");
-      console.log("Added data-motion-text to h1");
     });
   }
 
@@ -420,63 +471,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const headings = document.querySelectorAll(
         "[data-motion-text]:not([data-motion-block])",
       );
-
-      console.log(`Found ${headings.length} headings to animate`);
-
       if (headings.length === 0) {
-        console.log("No headings to animate");
         return;
       }
-
       headings.forEach((heading) => {
-        const delay = heading.getAttribute("data-motion-delay")
-          ? parseFloat(heading.getAttribute("data-motion-delay"))
-          : 0;
-
-        let split = new SplitText(heading, {
-          type: "lines",
-          autoSplit: true,
-          onSplit(self) {
-            console.log("SplitText onSplit triggered");
-
-            gsap.set(self.lines, {
-              opacity: 0,
-              y: 20,
-              filter: "blur(5px)",
-            });
-
-            let tl = gsap.timeline({
-              paused: true,
-            });
-
-            tl.to(self.lines, {
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-              stagger: 0.1,
-              duration: 0.6,
-            });
-
-            const isAbove = viewportChecker(heading);
-
-            if (isAbove) {
-              setTimeout(() => {
-                tl.play(0);
-              }, delay * 1000);
-            } else {
-              ScrollTrigger.create({
-                trigger: heading,
-                start: "top 85%",
-                once: true,
-                onEnter: () => {
-                  tl.play(0);
-                },
-              });
-            }
-
-            return tl;
-          },
-        });
+        window.textAnimator(heading);
       });
     });
   }
@@ -501,6 +500,58 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
+
+    // Expose global arrayAnimator
+    window.arrayAnimator = function (
+      container,
+      scrollTriggerOffset = "top 95%",
+    ) {
+      const delay = container.getAttribute("data-motion-delay")
+        ? parseFloat(container.getAttribute("data-motion-delay"))
+        : 0;
+
+      const childElements = Array.from(container.children);
+      if (childElements.length === 0) {
+        console.warn("Motion for Arrays: Children not found");
+        return null;
+      }
+
+      gsap.set(childElements, {
+        opacity: 0,
+        y: 5,
+      });
+
+      let tl = gsap.timeline({
+        paused: true,
+      });
+
+      tl.to(childElements, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+      });
+
+      const isAbove = viewportChecker(container);
+
+      if (isAbove) {
+        setTimeout(() => {
+          tl.play(0);
+        }, delay * 1000);
+      } else {
+        ScrollTrigger.create({
+          trigger: container,
+          start: scrollTriggerOffset,
+          once: true,
+          onEnter: () => {
+            tl.play(0);
+          },
+        });
+      }
+
+      return tl;
+    };
   }
 
   function animator() {
@@ -508,56 +559,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const containers = document.querySelectorAll(
         "[data-motion-array]:not([data-motion-block])",
       );
-
       if (containers.length === 0) {
         console.warn("Motion for Arrays: Array not found");
         return;
       }
-
       containers.forEach((container) => {
-        const delay = container.getAttribute("data-motion-delay")
-          ? parseFloat(container.getAttribute("data-motion-delay"))
-          : 0;
-        const childElements = Array.from(container.children);
-        if (childElements.length === 0) {
-          console.warn("Motion for Arrays: Children not found");
-          return;
-        }
-
-        gsap.set(childElements, {
-          opacity: 0,
-          y: 5,
-        });
-
-        let tl = gsap.timeline({
-          paused: true,
-        });
-
-        tl.to(childElements, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power2.out",
-        });
-        const isAbove = viewportChecker(container);
-        if (isAbove) {
-          setTimeout(() => {
-            tl.play(0);
-          }, delay * 1000);
-        } else {
-          ScrollTrigger.create({
-            trigger: container,
-            start: "top 95%",
-            once: true,
-            onEnter: () => {
-              tl.play(0);
-            },
-          });
-        }
+        window.arrayAnimator(container);
       });
     }, 200);
   }
+
   initialiser();
   animator();
 });
@@ -565,6 +576,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", () => {
   let viewportChecker;
+
   function initialiser() {
     viewportChecker = function (element) {
       const rect = element.getBoundingClientRect();
@@ -576,7 +588,53 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
+
+    // Expose global elementAnimator
+    window.elementAnimator = function (
+      element,
+      scrollTriggerOffset = "top 95%",
+    ) {
+      const delay = element.getAttribute("data-motion-delay")
+        ? parseFloat(element.getAttribute("data-motion-delay"))
+        : 0;
+
+      gsap.set(element, {
+        opacity: 0,
+        y: 5,
+      });
+
+      let tl = gsap.timeline({
+        paused: true,
+      });
+
+      tl.to(element, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      });
+
+      const isAbove = viewportChecker(element);
+
+      if (isAbove) {
+        setTimeout(() => {
+          tl.play(0);
+        }, delay * 1000);
+      } else {
+        ScrollTrigger.create({
+          trigger: element,
+          start: scrollTriggerOffset,
+          once: true,
+          onEnter: () => {
+            tl.play(0);
+          },
+        });
+      }
+
+      return tl;
+    };
   }
+
   function animator() {
     setTimeout(() => {
       const elements = document.querySelectorAll(
@@ -587,40 +645,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       elements.forEach((element) => {
-        const delay = element.getAttribute("data-motion-delay")
-          ? parseFloat(element.getAttribute("data-motion-delay"))
-          : 0;
-        gsap.set(element, {
-          opacity: 0,
-          y: 5,
-        });
-        let tl = gsap.timeline({
-          paused: true,
-        });
-        tl.to(element, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-        });
-        const isAbove = viewportChecker(element);
-        if (isAbove) {
-          setTimeout(() => {
-            tl.play(0);
-          }, delay * 1000);
-        } else {
-          ScrollTrigger.create({
-            trigger: element,
-            start: "top 95%",
-            once: true,
-            onEnter: () => {
-              tl.play(0);
-            },
-          });
-        }
+        window.elementAnimator(element);
       });
     }, 200);
   }
+
   initialiser();
   animator();
 });
