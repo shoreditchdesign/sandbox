@@ -384,97 +384,95 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //GSAP for Headings
-document.addEventListener("DOMContentLoaded", function () {
-  function isAboveFold(element) {
-    const rect = element.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    return rect.top < windowHeight && rect.bottom > 0;
+document.addEventListener("DOMContentLoaded", () => {
+  // Library checker function
+  function checkLibraries() {
+    console.log("Checking required libraries...");
+
+    if (typeof gsap === "undefined") {
+      console.warn("GSAP library is missing");
+      return false;
+    }
+
+    if (typeof ScrollTrigger === "undefined") {
+      console.warn("ScrollTrigger plugin is missing");
+      return false;
+    }
+
+    if (typeof SplitText === "undefined") {
+      console.warn("SplitText plugin is missing");
+      return false;
+    }
+
+    console.log("All libraries loaded successfully");
+    return true;
   }
 
-  setTimeout(() => {
-    if (
-      typeof gsap === "undefined" ||
-      typeof SplitType === "undefined" ||
-      typeof ScrollTrigger === "undefined"
-    ) {
-      console.error(
-        "Required libraries (GSAP, SplitType, or ScrollTrigger) are not loaded",
-      );
+  // Exit if libraries missing
+  if (!checkLibraries()) {
+    console.warn("Script terminated due to missing libraries");
+    return;
+  }
+
+  // Register plugins
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+  console.log("GSAP plugins registered");
+
+  // Query selector script - add data-motion-heading to all h1s
+  const allH1s = document.querySelectorAll("h1");
+  allH1s.forEach((h1) => {
+    h1.setAttribute("data-motion-heading", "");
+    console.log("Added data-motion-heading to h1");
+  });
+
+  document.fonts.ready.then(() => {
+    // Select elements with data-motion-heading, filter out data-motion-block
+    const headings = document.querySelectorAll("[data-motion-heading]");
+    const filteredHeadings = Array.from(headings).filter(
+      (heading) => !heading.hasAttribute("data-motion-block"),
+    );
+
+    console.log(`Found ${filteredHeadings.length} headings to animate`);
+
+    if (filteredHeadings.length === 0) {
+      console.log("No headings to animate");
       return;
     }
 
-    gsap.registerPlugin(ScrollTrigger);
+    // Set initial opacity
+    gsap.set(filteredHeadings, { opacity: 1 });
 
-    const splitLines = new SplitType("[data-motion-text]", {
-      types: "lines",
-      tagName: "span",
-    });
-
-    document
-      .querySelectorAll("[data-motion-text] .line")
-      .forEach((line, index) => {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("u-line-mask");
-        line.parentNode.insertBefore(wrapper, line);
-        wrapper.appendChild(line);
+    // Create animations for each heading
+    filteredHeadings.forEach((heading) => {
+      let split = new SplitText(heading, {
+        type: "words, lines",
+        linesClass: "line",
+        wordsClass: "word",
+        charsClass: "char",
       });
 
-    const textElements = document.querySelectorAll("[data-motion-text]");
+      console.log("SplitText created for heading");
 
-    textElements.forEach((element, index) => {
-      const delay = element.getAttribute("data-motion-delay")
-        ? parseFloat(element.getAttribute("data-motion-delay"))
-        : 0;
-
-      const tl = gsap.timeline({
-        paused: true,
-        onStart: () => {},
-        onComplete: () => {},
-      });
-
-      tl.from(element.querySelectorAll(".line"), {
-        y: "0%",
-        opacity: 0,
-        duration: 0.8,
-        ease: "power1.out",
-        stagger: 0.15,
-      });
-
-      const isAbove = isAboveFold(element);
-
-      if (isAbove) {
-        setTimeout(() => {
-          tl.play();
-        }, delay * 1000);
-      } else {
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 90%",
-          markers: false,
+      // Create timeline
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: heading,
+          start: "top 85%",
           once: true,
-          onEnter: () => {
-            tl.play(0);
-          },
-        });
-      }
+          onEnter: () => console.log("Animation triggered for heading"),
+        },
+      });
+
+      // Add animation to timeline
+      tl.from(split.lines, {
+        yPercent: 20,
+        opacity: 0,
+        stagger: 0.05,
+        duration: 3,
+      });
     });
 
-    function partialCleanup() {
-      // Only clean up ScrollTrigger instances, keep DOM structure
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (
-          trigger.vars.trigger &&
-          trigger.vars.trigger.hasAttribute("data-motion-text")
-        ) {
-          trigger.kill();
-        }
-      });
-      // Don't call splitLines.revert() or DOM manipulation to preserve layout
-    }
-
-    // Expose partial cleanup for external use
-    window.grapheneTextCleanup = partialCleanup;
-
-    gsap.set("[data-motion-text]", { opacity: 1 });
-  }, 0);
+    document.body.classList.add("lines");
+    console.log("Animation setup complete");
+  });
 });
