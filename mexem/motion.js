@@ -413,6 +413,9 @@ document.addEventListener("DOMContentLoaded", () => {
             type: "lines",
             autoSplit: true,
             onSplit(self) {
+              gsap.set(self.element, {
+                opacity: 1,
+              });
               gsap.set(self.lines, {
                 opacity: 0,
                 y: 20,
