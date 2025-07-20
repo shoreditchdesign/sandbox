@@ -561,3 +561,66 @@ document.addEventListener("DOMContentLoaded", () => {
   initialiser();
   animator();
 });
+
+//GSAP for Single Elements
+document.addEventListener("DOMContentLoaded", () => {
+  let viewportChecker;
+  function initialiser() {
+    viewportChecker = function (element) {
+      const rect = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      return rect.top < windowHeight && rect.bottom > 0;
+    };
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+  function animator() {
+    setTimeout(() => {
+      const elements = document.querySelectorAll(
+        "[data-motion-element]:not([data-motion-block])",
+      );
+      if (elements.length === 0) {
+        console.warn("Motion for Elements: Elements not found");
+        return;
+      }
+      elements.forEach((element) => {
+        const delay = element.getAttribute("data-motion-delay")
+          ? parseFloat(element.getAttribute("data-motion-delay"))
+          : 0;
+        gsap.set(element, {
+          opacity: 0,
+          y: 5,
+        });
+        let tl = gsap.timeline({
+          paused: true,
+        });
+        tl.to(element, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+        const isAbove = viewportChecker(element);
+        if (isAbove) {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        } else {
+          ScrollTrigger.create({
+            trigger: element,
+            start: "top 95%",
+            once: true,
+            onEnter: () => {
+              tl.play(0);
+            },
+          });
+        }
+      });
+    }, 200);
+  }
+  initialiser();
+  animator();
+});
