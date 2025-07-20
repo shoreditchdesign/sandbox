@@ -121,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Navigation Dropdowns
-//Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth <= 991) {
     return;
@@ -147,17 +146,32 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.elementAnimator) {
           window.elementAnimator(drawer, "top 100%").then((tl) => {
             drawerTimelines.set(drawer, tl);
-            show ? tl.play() : tl.reverse();
+            if (show) {
+              tl.play();
+            } else {
+              // For hide, set to end and reverse
+              tl.progress(1).reverse();
+            }
           });
           return;
         }
-        // Fallback
+        // Fallback - create timeline that can properly reverse
+        gsap.set(drawer, { opacity: 0 });
         timeline = gsap
           .timeline({ paused: true })
           .to(drawer, { opacity: 1, duration: 0.3, ease: "power2.out" });
         drawerTimelines.set(drawer, timeline);
       }
-      show ? timeline.play() : timeline.reverse();
+
+      if (show) {
+        timeline.play();
+      } else {
+        // Ensure timeline is at end position before reversing
+        if (timeline.progress() === 0) {
+          timeline.progress(1);
+        }
+        timeline.reverse();
+      }
     };
 
     // Expose overlay function
@@ -253,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
