@@ -415,6 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
             onSplit(self) {
               gsap.set(self.element, {
                 opacity: 1,
+                important: true,
               });
               gsap.set(self.lines, {
                 opacity: 0,
