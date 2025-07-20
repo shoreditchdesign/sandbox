@@ -121,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Navigation Dropdowns
-//Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth <= 991) {
     return;
