@@ -385,99 +385,103 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Headings
 document.addEventListener("DOMContentLoaded", () => {
-  // Library checker function
-  function checkLibraries() {
-    console.log("Checking required libraries...");
+  let viewportChecker;
 
-    if (typeof gsap === "undefined") {
-      console.warn("GSAP library is missing");
-      return false;
-    }
+  function initialiser() {
+    viewportChecker = function (element) {
+      const rect = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      return rect.top < windowHeight && rect.bottom > 0;
+    };
 
-    if (typeof ScrollTrigger === "undefined") {
-      console.warn("ScrollTrigger plugin is missing");
-      return false;
-    }
-
-    if (typeof SplitText === "undefined") {
-      console.warn("SplitText plugin is missing");
-      return false;
-    }
-
-    console.log("All libraries loaded successfully");
-    return true;
-  }
-
-  // Exit if libraries missing
-  if (!checkLibraries()) {
-    console.warn("Script terminated due to missing libraries");
-    return;
-  }
-
-  // Register plugins
-  gsap.registerPlugin(ScrollTrigger, SplitText);
-  console.log("GSAP plugins registered");
-
-  // Query selector script - add data-motion-text to all h1s
-  const allH1s = document.querySelectorAll("h1");
-  allH1s.forEach((h1) => {
-    h1.setAttribute("data-motion-text", "");
-    console.log("Added data-motion-text to h1");
-  });
-
-  document.fonts.ready.then(() => {
-    // Select elements with data-motion-text but not data-motion-block
-    const headings = document.querySelectorAll(
-      "[data-motion-text]:not([data-motion-block])",
-    );
-
-    console.log(`Found ${headings.length} headings to animate`);
-
-    if (headings.length === 0) {
-      console.log("No headings to animate");
+    if (
+      typeof gsap === "undefined" ||
+      typeof ScrollTrigger === "undefined" ||
+      typeof SplitText === "undefined"
+    ) {
+      console.warn("Script terminated due to missing libraries");
       return;
     }
 
-    // Create animations for each heading with autoSplit
-    headings.forEach((heading) => {
-      let split = new SplitText(heading, {
-        type: "lines",
-        autoSplit: true,
-        onSplit(self) {
-          console.log("SplitText onSplit triggered");
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+    console.log("GSAP plugins registered");
+  }
 
-          // Set initial values on fresh split
-          gsap.set(self.lines, {
-            opacity: 0,
-            y: 20,
-            filter: "blur(0px)",
-          });
-
-          // Create timeline with ScrollTrigger
-          let tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: heading,
-              start: "top 85%",
-              once: true,
-              onEnter: () => console.log("Animation triggered for heading"),
-            },
-          });
-
-          // Return animation for proper cleanup
-          return tl.to(self.lines, {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            stagger: 0.1,
-            duration: 0.6,
-          });
-        },
-      });
-
-      console.log("SplitText created with autoSplit for heading");
+  function selectors() {
+    const allH1s = document.querySelectorAll("h1");
+    allH1s.forEach((h1) => {
+      h1.setAttribute("data-motion-text", "");
+      console.log("Added data-motion-text to h1");
     });
+  }
 
-    document.body.classList.add("lines");
-    console.log("Animation setup complete");
-  });
+  function animator() {
+    document.fonts.ready.then(() => {
+      const headings = document.querySelectorAll(
+        "[data-motion-text]:not([data-motion-block])",
+      );
+
+      console.log(`Found ${headings.length} headings to animate`);
+
+      if (headings.length === 0) {
+        console.log("No headings to animate");
+        return;
+      }
+
+      headings.forEach((heading) => {
+        const delay = heading.getAttribute("data-motion-delay")
+          ? parseFloat(heading.getAttribute("data-motion-delay"))
+          : 0;
+
+        let split = new SplitText(heading, {
+          type: "lines",
+          autoSplit: true,
+          onSplit(self) {
+            console.log("SplitText onSplit triggered");
+
+            gsap.set(self.lines, {
+              opacity: 0,
+              y: 20,
+              filter: "blur(5px)",
+            });
+
+            let tl = gsap.timeline({
+              paused: true,
+            });
+
+            tl.to(self.lines, {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+              stagger: 0.1,
+              duration: 0.6,
+            });
+
+            const isAbove = viewportChecker(heading);
+
+            if (isAbove) {
+              setTimeout(() => {
+                tl.play(0);
+              }, delay * 1000);
+            } else {
+              ScrollTrigger.create({
+                trigger: heading,
+                start: "top 85%",
+                once: true,
+                onEnter: () => {
+                  tl.play(0);
+                },
+              });
+            }
+
+            return tl;
+          },
+        });
+      });
+    });
+  }
+
+  initialiser();
+  selectors();
+  animator();
 });
