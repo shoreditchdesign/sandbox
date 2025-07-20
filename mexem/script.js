@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Moving source pane to target pane");
   targetPane.appendChild(sourcePane);
 
-  // Set flag on wrapper
-  wrapper.setAttribute("data-clone-flag", "1");
-  console.log("Clone operation complete, flag set on wrapper");
+  // Delete wrapper
+  wrapper.remove();
+  console.log("Clone operation complete, wrapper deleted");
 });
