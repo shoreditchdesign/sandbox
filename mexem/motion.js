@@ -418,17 +418,17 @@ document.addEventListener("DOMContentLoaded", () => {
   gsap.registerPlugin(ScrollTrigger, SplitText);
   console.log("GSAP plugins registered");
 
-  // Query selector script - add data-motion-heading to all h1s
+  // Query selector script - add data-motion-text to all h1s
   const allH1s = document.querySelectorAll("h1");
   allH1s.forEach((h1) => {
-    h1.setAttribute("data-motion-heading", "");
-    console.log("Added data-motion-heading to h1");
+    h1.setAttribute("data-motion-text", "");
+    console.log("Added data-motion-text to h1");
   });
 
   document.fonts.ready.then(() => {
-    // Select elements with data-motion-heading but not data-motion-block
+    // Select elements with data-motion-text but not data-motion-block
     const headings = document.querySelectorAll(
-      "[data-motion-heading]:not([data-motion-block])",
+      "[data-motion-text]:not([data-motion-block])",
     );
 
     console.log(`Found ${headings.length} headings to animate`);
@@ -438,40 +438,43 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Create animations for each heading
+    // Create animations for each heading with autoSplit
     headings.forEach((heading) => {
       let split = new SplitText(heading, {
         type: "lines",
-        linesClass: "line",
-      });
+        autoSplit: true,
+        onSplit(self) {
+          console.log("SplitText onSplit triggered");
 
-      console.log("SplitText created for heading");
+          // Set initial values on fresh split
+          gsap.set(self.lines, {
+            opacity: 0,
+            y: 20,
+            filter: "blur(5px)",
+          });
 
-      // Set initial values
-      gsap.set(split.lines, {
-        opacity: 0,
-        y: 20,
-        filter: "blur(5px)",
-      });
+          // Create timeline with ScrollTrigger
+          let tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: heading,
+              start: "top 85%",
+              once: true,
+              onEnter: () => console.log("Animation triggered for heading"),
+            },
+          });
 
-      // Create timeline
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heading,
-          start: "top 85%",
-          once: true,
-          onEnter: () => console.log("Animation triggered for heading"),
+          // Return animation for proper cleanup
+          return tl.to(self.lines, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            stagger: 0.1,
+            duration: 0.6,
+          });
         },
       });
 
-      // Add animation to timeline
-      tl.to(split.lines, {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-        stagger: 0.1,
-        duration: 0.6,
-      });
+      console.log("SplitText created with autoSplit for heading");
     });
 
     document.body.classList.add("lines");
