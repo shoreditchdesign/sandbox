@@ -251,3 +251,55 @@ document.addEventListener("DOMContentLoaded", function () {
   // Run every minute
   setInterval(checkMarketHours, 60000);
 });
+
+//Tab Injection
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, starting clone operation");
+
+  // Find wrapper element
+  const wrapper = document.querySelector('[data-clone-source="wrap"]');
+  if (!wrapper) {
+    console.log("Wrapper element not found, returning");
+    return;
+  }
+  console.log("Wrapper found:", wrapper);
+
+  // Find source elements inside wrapper
+  const sourceLink = wrapper.querySelector('[data-clone-source="link"]');
+  const sourcePane = wrapper.querySelector('[data-clone-source="pane"]');
+
+  if (!sourceLink) {
+    console.log("Source link element not found, returning");
+    return;
+  }
+  if (!sourcePane) {
+    console.log("Source pane element not found, returning");
+    return;
+  }
+  console.log("Source elements found - link:", sourceLink, "pane:", sourcePane);
+
+  // Find target elements
+  const targetLink = document.querySelector('[data-clone-target="link"]');
+  const targetPane = document.querySelector('[data-clone-target="pane"]');
+
+  if (!targetLink) {
+    console.log("Target link element not found, returning");
+    return;
+  }
+  if (!targetPane) {
+    console.log("Target pane element not found, returning");
+    return;
+  }
+  console.log("Target elements found - link:", targetLink, "pane:", targetPane);
+
+  // Cut and paste operations
+  console.log("Moving source link to target link");
+  targetLink.appendChild(sourceLink);
+
+  console.log("Moving source pane to target pane");
+  targetPane.appendChild(sourcePane);
+
+  // Set flag on wrapper
+  wrapper.setAttribute("data-clone-flag", "1");
+  console.log("Clone operation complete, flag set on wrapper");
+});
