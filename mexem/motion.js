@@ -1,4 +1,4 @@
-//GSAP for Navbar Tuck
+//GSAP for Tuck
 document.addEventListener("DOMContentLoaded", () => {
   const navbars = document.querySelectorAll(
     '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
