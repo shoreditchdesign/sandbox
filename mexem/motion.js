@@ -449,6 +449,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (index < items.length - 1) {
         timeline.to(item, {
+          opacity: 0.5,
           scale: 0.9,
           borderRadius: "10px",
         });
