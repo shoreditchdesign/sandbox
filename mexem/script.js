@@ -278,26 +278,35 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   console.log("Source elements found - link:", sourceLink, "pane:", sourcePane);
 
-  // Find target elements
-  const targetLink = document.querySelector('[data-clone-target="link"]');
-  const targetPane = document.querySelector('[data-clone-target="pane"]');
+  // Find ALL target elements
+  const targetLinks = document.querySelectorAll('[data-clone-target="link"]');
+  const targetPanes = document.querySelectorAll('[data-clone-target="pane"]');
 
-  if (!targetLink) {
-    console.log("Target link element not found, returning");
+  if (targetLinks.length === 0) {
+    console.log("No target link elements found, returning");
     return;
   }
-  if (!targetPane) {
-    console.log("Target pane element not found, returning");
+  if (targetPanes.length === 0) {
+    console.log("No target pane elements found, returning");
     return;
   }
-  console.log("Target elements found - link:", targetLink, "pane:", targetPane);
+  console.log(
+    `Found ${targetLinks.length} target links and ${targetPanes.length} target panes`,
+  );
 
-  // Cut and paste operations
-  console.log("Moving source link to target link");
-  targetLink.appendChild(sourceLink);
+  // Clone source link to all target links
+  targetLinks.forEach((targetLink, index) => {
+    const clonedLink = sourceLink.cloneNode(true);
+    targetLink.appendChild(clonedLink);
+    console.log(`Cloned source link to target link ${index + 1}`);
+  });
 
-  console.log("Moving source pane to target pane");
-  targetPane.appendChild(sourcePane);
+  // Clone source pane to all target panes
+  targetPanes.forEach((targetPane, index) => {
+    const clonedPane = sourcePane.cloneNode(true);
+    targetPane.appendChild(clonedPane);
+    console.log(`Cloned source pane to target pane ${index + 1}`);
+  });
 
   // Delete wrapper
   wrapper.remove();
