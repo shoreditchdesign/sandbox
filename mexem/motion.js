@@ -574,17 +574,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Arrays
 document.addEventListener("DOMContentLoaded", () => {
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
-    // Expose global arrayAnimator
+
     window.arrayAnimator = function (
       container,
       scrollTriggerOffset = "top 95%",
@@ -598,8 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      if (isMobile()) {
-        // Mobile: Just set final state directly
+      if (window.innerWidth <= 768) {
         gsap.set(childElements, {
           opacity: 1,
           y: 0,
@@ -607,7 +602,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      // Desktop: Normal ScrollTrigger animation
       gsap.set(childElements, {
         opacity: 0,
         y: 5,
@@ -636,6 +630,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return tl;
     };
   }
+
   function animator() {
     setTimeout(() => {
       const containers = document.querySelectorAll(
