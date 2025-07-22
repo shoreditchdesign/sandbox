@@ -558,7 +558,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Execute in proper order: isolate, make arrays, set indices
   setTimeout(() => {
     rowInitialiser();
     indexInitialiser();
