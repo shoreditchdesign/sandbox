@@ -573,14 +573,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Arrays
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
-    console.log("GSAP and ScrollTrigger initialized");
 
     // Expose global arrayAnimator
     window.arrayAnimator = function (
@@ -590,18 +589,22 @@ window.addEventListener("load", () => {
       const delay = container.getAttribute("data-motion-delay")
         ? parseFloat(container.getAttribute("data-motion-delay"))
         : 0;
+
       const childElements = Array.from(container.children);
       if (childElements.length === 0) {
         console.warn("Motion for Arrays: Children not found");
         return null;
       }
+
       gsap.set(childElements, {
         opacity: 0,
         y: 5,
       });
+
       let tl = gsap.timeline({
         paused: true,
       });
+
       tl.to(childElements, {
         opacity: 1,
         y: 0,
@@ -610,19 +613,19 @@ window.addEventListener("load", () => {
         ease: "power2.out",
       });
 
+      // Always create a ScrollTrigger for the animation
       ScrollTrigger.create({
         trigger: container,
         start: scrollTriggerOffset,
         once: true,
-        refreshPriority: -90,
-        invalidateOnRefresh: true,
-        markers: true,
         onEnter: () => {
           setTimeout(() => {
+            // Apply delay before playing if specified
             tl.play(0);
           }, delay * 1000);
         },
       });
+
       return tl;
     };
   }
@@ -632,34 +635,18 @@ window.addEventListener("load", () => {
       const containers = document.querySelectorAll(
         "[data-motion-array]:not([data-motion-block])",
       );
-
       if (containers.length === 0) {
         console.warn("Motion for Arrays: Array not found");
         return;
       }
-
-      console.log("Found", containers.length, "animation containers");
-
-      // Process each container individually
-      containers.forEach((container, index) => {
-        try {
-          console.log(`Setting up container ${index}`);
-          window.arrayAnimator(container);
-        } catch (error) {
-          console.error(`Container ${index} animation setup failed:`, error);
-        }
+      containers.forEach((container) => {
+        window.arrayAnimator(container);
       });
-    }, 500);
+    }, 200);
   }
 
   initialiser();
   animator();
-
-  // Fix mobile first-load issue
-  setTimeout(() => {
-    console.log("Manual ScrollTrigger refresh for mobile");
-    ScrollTrigger.refresh();
-  }, 100);
 });
 
 //GSAP for Single Elements
