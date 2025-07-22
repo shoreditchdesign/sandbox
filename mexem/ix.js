@@ -252,111 +252,106 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
-  // Heights storage object
-  const drawerHeights = {};
-
-  function initializeAccordions() {
-    const toggles = document.querySelectorAll("[data-acc-toggle]");
-    toggles.forEach((toggle, index) => {
-      // Get drawer element
-      const drawer = toggle.querySelector("[data-acc-drawer]");
-      if (drawer) {
-        // Store the drawer's content height
-        const drawerContent = drawer.firstElementChild;
-        const height = drawerContent.offsetHeight;
-        // Store height in our object using a unique key
-        const drawerId = "drawer-" + index;
-        drawerHeights[drawerId] = height;
-        // Set initial height to 0
-        drawer.style.height = "0px";
-        drawer.style.overflow = "hidden";
-        drawer.style.transition = "height 0.3s ease-in-out";
-        // Add data attribute to link toggle with drawer
-        toggle.setAttribute("data-drawer-id", drawerId);
-      }
-      // Add click event listener
-      toggle.addEventListener("click", handleAccordionClick);
-    });
-  }
-
-  function openFirstAccordion() {
-    console.log("Opening first accordion in each component");
-    const components = document.querySelectorAll("[data-acc-component]");
-    components.forEach((component) => {
-      const firstToggle = component.querySelector("[data-acc-toggle]");
-      if (firstToggle) {
-        console.log("Opening first toggle in component:", component);
-        openAccordion(firstToggle);
-      }
-    });
-  }
-
-  function openAccordion(toggle) {
-    const drawerId = toggle.getAttribute("data-drawer-id");
-    const drawer = toggle.querySelector("[data-acc-drawer]");
-    // Update toggle state
-    toggle.setAttribute("data-toggle-state", "open");
-    // Animate height
-    drawer.style.height = drawerHeights[drawerId] + "px";
-  }
-
-  function closeAccordion(toggle) {
-    const drawer = toggle.querySelector("[data-acc-drawer]");
-    // Update toggle state
-    toggle.setAttribute("data-toggle-state", "closed");
-    // Animate height back to 0
-    drawer.style.height = "0px";
-  }
-
-  function handleAccordionClick(event) {
-    const toggle = event.currentTarget;
-    const toggleState = toggle.getAttribute("data-toggle-state");
-    if (toggleState === "closed") {
-      // Close all other accordions in all components
-      closeAllOtherAccordions(toggle);
-      // Open this accordion
-      openAccordion(toggle);
-    } else {
-      // Close this accordion
-      closeAccordion(toggle);
+  // Add 200ms delay to ensure DOM is fully rendered
+  setTimeout(function () {
+    // Heights storage object
+    const drawerHeights = {};
+    function initializeAccordions() {
+      const toggles = document.querySelectorAll("[data-acc-toggle]");
+      toggles.forEach((toggle, index) => {
+        // Get drawer element
+        const drawer = toggle.querySelector("[data-acc-drawer]");
+        if (drawer) {
+          // Store the drawer's content height
+          const drawerContent = drawer.firstElementChild;
+          const height = drawerContent.offsetHeight;
+          // Store height in our object using a unique key
+          const drawerId = "drawer-" + index;
+          drawerHeights[drawerId] = height;
+          // Set initial height to 0
+          drawer.style.height = "0px";
+          drawer.style.overflow = "hidden";
+          drawer.style.transition = "height 0.3s ease-in-out";
+          // Add data attribute to link toggle with drawer
+          toggle.setAttribute("data-drawer-id", drawerId);
+        }
+        // Add click event listener
+        toggle.addEventListener("click", handleAccordionClick);
+      });
     }
-  }
-
-  function closeAllOtherAccordions(currentToggle) {
-    console.log("Closing other accordions in same component");
-    // Find the parent component of the current toggle
-    const parentComponent = currentToggle.closest("[data-acc-component]");
-    if (parentComponent) {
-      // Find all open accordions only within this component
-      const openTogglesInComponent = parentComponent.querySelectorAll(
-        '[data-acc-toggle][data-toggle-state="open"]',
-      );
-      openTogglesInComponent.forEach((toggle) => {
-        if (toggle !== currentToggle) {
-          closeAccordion(toggle);
+    function openFirstAccordion() {
+      console.log("Opening first accordion in each component");
+      const components = document.querySelectorAll("[data-acc-component]");
+      components.forEach((component) => {
+        const firstToggle = component.querySelector("[data-acc-toggle]");
+        if (firstToggle) {
+          console.log("Opening first toggle in component:", component);
+          openAccordion(firstToggle);
         }
       });
     }
-  }
-
-  // Initialize accordions on page load
-  initializeAccordions();
-  openFirstAccordion();
-
-  // Add click event listener for pagination button
-  document.addEventListener("click", function (event) {
-    if (
-      event.target.hasAttribute("data-acc-load") ||
-      event.target.closest("[data-acc-load]")
-    ) {
-      // When pagination button is clicked, reinitialize accordions
-      // after a small delay to allow for DOM updates
-      setTimeout(function () {
-        initializeAccordions();
-        openFirstAccordion();
-      }, 300);
+    function openAccordion(toggle) {
+      const drawerId = toggle.getAttribute("data-drawer-id");
+      const drawer = toggle.querySelector("[data-acc-drawer]");
+      // Update toggle state
+      toggle.setAttribute("data-toggle-state", "open");
+      // Animate height
+      drawer.style.height = drawerHeights[drawerId] + "px";
     }
-  });
+    function closeAccordion(toggle) {
+      const drawer = toggle.querySelector("[data-acc-drawer]");
+      // Update toggle state
+      toggle.setAttribute("data-toggle-state", "closed");
+      // Animate height back to 0
+      drawer.style.height = "0px";
+    }
+    function handleAccordionClick(event) {
+      const toggle = event.currentTarget;
+      const toggleState = toggle.getAttribute("data-toggle-state");
+      if (toggleState === "closed") {
+        // Close all other accordions in all components
+        closeAllOtherAccordions(toggle);
+        // Open this accordion
+        openAccordion(toggle);
+      } else {
+        // Close this accordion
+        closeAccordion(toggle);
+      }
+    }
+    function closeAllOtherAccordions(currentToggle) {
+      console.log("Closing other accordions in same component");
+      // Find the parent component of the current toggle
+      const parentComponent = currentToggle.closest("[data-acc-component]");
+      if (parentComponent) {
+        // Find all open accordions only within this component
+        const openTogglesInComponent = parentComponent.querySelectorAll(
+          '[data-acc-toggle][data-toggle-state="open"]',
+        );
+        openTogglesInComponent.forEach((toggle) => {
+          if (toggle !== currentToggle) {
+            closeAccordion(toggle);
+          }
+        });
+      }
+    }
+    // Initialize accordions on page load
+    initializeAccordions();
+    openFirstAccordion();
+    // Add click event listener for pagination button
+    document.addEventListener("click", function (event) {
+      if (
+        event.target.hasAttribute("data-acc-load") ||
+        event.target.closest("[data-acc-load]")
+      ) {
+        // When pagination button is clicked, reinitialize accordions
+        // after a small delay to allow for DOM updates
+        setTimeout(function () {
+          initializeAccordions();
+          openFirstAccordion();
+        }, 300);
+      }
+    });
+  }, 200);
 });
 
 //Tab Switchers
