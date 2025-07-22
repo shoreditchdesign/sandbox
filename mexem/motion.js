@@ -573,7 +573,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Arrays
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -655,12 +655,19 @@ document.addEventListener("DOMContentLoaded", () => {
       containers.forEach((container) => {
         window.arrayAnimator(container);
       });
-    }, 200);
+    }, 500);
   }
 
   initialiser();
   animator();
+
+  // Fix mobile first-load issue
+  setTimeout(() => {
+    console.log("Manual ScrollTrigger refresh for mobile");
+    ScrollTrigger.refresh();
+  }, 100);
 });
+
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", () => {
   let viewportChecker;
