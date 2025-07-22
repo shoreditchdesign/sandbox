@@ -574,14 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Arrays
 document.addEventListener("DOMContentLoaded", () => {
-  let viewportChecker;
-
   function initialiser() {
-    viewportChecker = function (element) {
-      const rect = element.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      return rect.top < windowHeight && rect.bottom > 0;
-    };
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
       return;
@@ -620,22 +613,18 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power2.out",
       });
 
-      const isAbove = viewportChecker(container);
-
-      if (isAbove) {
-        setTimeout(() => {
-          tl.play(0);
-        }, delay * 1000);
-      } else {
-        ScrollTrigger.create({
-          trigger: container,
-          start: scrollTriggerOffset,
-          once: true,
-          onEnter: () => {
+      // Always create a ScrollTrigger for the animation
+      ScrollTrigger.create({
+        trigger: container,
+        start: scrollTriggerOffset,
+        once: true,
+        onEnter: () => {
+          setTimeout(() => {
+            // Apply delay before playing if specified
             tl.play(0);
-          },
-        });
-      }
+          }, delay * 1000);
+        },
+      });
 
       return tl;
     };
