@@ -638,6 +638,11 @@ document.addEventListener("DOMContentLoaded", function () {
         slidesPerGroup: 1,
         spaceBetween: 16,
       },
+      1920: {
+        slidesPerView: 3.2,
+        slidesPerGroup: 1,
+        spaceBetween: 16,
+      },
     },
   });
 });
