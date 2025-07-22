@@ -384,33 +384,30 @@ document.addEventListener("DOMContentLoaded", function () {
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
-
   function sequenceInitialiser() {
+    if (window.innerWidth <= 991) {
+      console.log("Tablet/mobile detected - skipping sequence initialization");
+      return;
+    }
+
     console.log("Initializing all sections...");
-
     const scrollSection = document.querySelectorAll("[data-stack-section]");
-
     scrollSection.forEach((section) => {
       const wrapper = section.querySelector("[data-stack-wrap]");
       const list = wrapper.querySelector("[data-stack-list]");
       const items = list.querySelectorAll("[data-stack-card]");
-
       console.log("Initializing section:", section);
       console.log("Found items:", items.length);
-
       sectionInitialiser(section, items);
     });
   }
 
-  // Initialize on page load
   sequenceInitialiser();
-
   let resizeTimeout;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       console.log("Screen resized - reinitializing all ScrollTriggers");
-
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       sequenceInitialiser();
     }, 250);
@@ -418,19 +415,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function sectionInitialiser(section, items) {
     console.log("Setting up vertical scroll for", items.length, "items");
-
     const wrapper = section.querySelector("[data-stack-wrap]");
     const dynamicHeight = `${(items.length + 1) * 100}svh`;
     wrapper.style.height = dynamicHeight;
     console.log("Set wrapper height to:", dynamicHeight);
-
     items.forEach((item, index) => {
       if (index !== 0) {
         gsap.set(item, { yPercent: 100 });
         console.log("Set item", index, "to yPercent: 100");
       }
     });
-
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -446,13 +440,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     items.forEach((item, index) => {
       console.log("Adding animation for item", index);
-
       if (index < items.length - 1) {
         timeline.to(item, {
+          opacity: 0,
           scale: 0.9,
           borderRadius: "10px",
         });
-
         timeline.to(
           items[index + 1],
           {
@@ -594,7 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 991) {
         gsap.set(childElements, {
           opacity: 1,
           y: 0,
@@ -666,7 +659,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 991) {
         gsap.set(element, {
           opacity: 1,
           y: 0,
