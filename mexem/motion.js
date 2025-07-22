@@ -580,6 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
+    console.log("GSAP and ScrollTrigger initialized");
 
     // Expose global arrayAnimator
     window.arrayAnimator = function (
@@ -589,12 +590,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const delay = container.getAttribute("data-motion-delay")
         ? parseFloat(container.getAttribute("data-motion-delay"))
         : 0;
-
       const childElements = Array.from(container.children);
+
       if (childElements.length === 0) {
         console.warn("Motion for Arrays: Children not found");
         return null;
       }
+
+      console.log(
+        "Setting up animation for container with",
+        childElements.length,
+        "children",
+      );
 
       gsap.set(childElements, {
         opacity: 0,
@@ -613,14 +620,16 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power2.out",
       });
 
-      // Always create a ScrollTrigger for the animation
+      // Mobile-optimized ScrollTrigger
       ScrollTrigger.create({
         trigger: container,
         start: scrollTriggerOffset,
         once: true,
+        refreshPriority: -90,
+        invalidateOnRefresh: true,
         onEnter: () => {
+          console.log("ScrollTrigger fired for container");
           setTimeout(() => {
-            // Apply delay before playing if specified
             tl.play(0);
           }, delay * 1000);
         },
@@ -635,10 +644,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const containers = document.querySelectorAll(
         "[data-motion-array]:not([data-motion-block])",
       );
+
       if (containers.length === 0) {
         console.warn("Motion for Arrays: Array not found");
         return;
       }
+
+      console.log("Found", containers.length, "animation containers");
+
       containers.forEach((container) => {
         window.arrayAnimator(container);
       });
@@ -648,7 +661,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initialiser();
   animator();
 });
-
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", () => {
   let viewportChecker;
