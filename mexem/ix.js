@@ -252,106 +252,115 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
-  // Add 200ms delay to ensure DOM is fully rendered
-  setTimeout(function () {
-    // Heights storage object
-    const drawerHeights = {};
-    function initializeAccordions() {
-      const toggles = document.querySelectorAll("[data-acc-toggle]");
-      toggles.forEach((toggle, index) => {
-        // Get drawer element
-        const drawer = toggle.querySelector("[data-acc-drawer]");
-        if (drawer) {
-          // Store the drawer's content height
-          const drawerContent = drawer.firstElementChild;
-          const height = drawerContent.offsetHeight;
-          // Store height in our object using a unique key
-          const drawerId = "drawer-" + index;
-          drawerHeights[drawerId] = height;
-          // Set initial height to 0
-          drawer.style.height = "0px";
-          drawer.style.overflow = "hidden";
-          drawer.style.transition = "height 0.3s ease-in-out";
-          // Add data attribute to link toggle with drawer
-          toggle.setAttribute("data-drawer-id", drawerId);
-        }
-        // Add click event listener
-        toggle.addEventListener("click", handleAccordionClick);
-      });
-    }
-    function openFirstAccordion() {
-      console.log("Opening first accordion in each component");
-      const components = document.querySelectorAll("[data-acc-component]");
-      components.forEach((component) => {
-        const firstToggle = component.querySelector("[data-acc-toggle]");
-        if (firstToggle) {
-          console.log("Opening first toggle in component:", component);
-          openAccordion(firstToggle);
-        }
-      });
-    }
-    function openAccordion(toggle) {
-      const drawerId = toggle.getAttribute("data-drawer-id");
+  // Heights storage object
+  const drawerHeights = {};
+
+  // Make functions globally accessible
+  window.initializeAccordions = function () {
+    const toggles = document.querySelectorAll("[data-acc-toggle]");
+    toggles.forEach((toggle, index) => {
+      // Get drawer element
       const drawer = toggle.querySelector("[data-acc-drawer]");
-      // Update toggle state
-      toggle.setAttribute("data-toggle-state", "open");
-      // Animate height
-      drawer.style.height = drawerHeights[drawerId] + "px";
-    }
-    function closeAccordion(toggle) {
-      const drawer = toggle.querySelector("[data-acc-drawer]");
-      // Update toggle state
-      toggle.setAttribute("data-toggle-state", "closed");
-      // Animate height back to 0
-      drawer.style.height = "0px";
-    }
-    function handleAccordionClick(event) {
-      const toggle = event.currentTarget;
-      const toggleState = toggle.getAttribute("data-toggle-state");
-      if (toggleState === "closed") {
-        // Close all other accordions in all components
-        closeAllOtherAccordions(toggle);
-        // Open this accordion
-        openAccordion(toggle);
-      } else {
-        // Close this accordion
-        closeAccordion(toggle);
+      if (drawer) {
+        // Store the drawer's content height
+        const drawerContent = drawer.firstElementChild;
+        const height = drawerContent.offsetHeight;
+        // Store height in our object using a unique key
+        const drawerId = "drawer-" + index;
+        drawerHeights[drawerId] = height;
+        // Set initial height to 0
+        drawer.style.height = "0px";
+        drawer.style.overflow = "hidden";
+        drawer.style.transition = "height 0.3s ease-in-out";
+        // Add data attribute to link toggle with drawer
+        toggle.setAttribute("data-drawer-id", drawerId);
       }
-    }
-    function closeAllOtherAccordions(currentToggle) {
-      console.log("Closing other accordions in same component");
-      // Find the parent component of the current toggle
-      const parentComponent = currentToggle.closest("[data-acc-component]");
-      if (parentComponent) {
-        // Find all open accordions only within this component
-        const openTogglesInComponent = parentComponent.querySelectorAll(
-          '[data-acc-toggle][data-toggle-state="open"]',
-        );
-        openTogglesInComponent.forEach((toggle) => {
-          if (toggle !== currentToggle) {
-            closeAccordion(toggle);
-          }
-        });
-      }
-    }
-    // Initialize accordions on page load
-    initializeAccordions();
-    openFirstAccordion();
-    // Add click event listener for pagination button
-    document.addEventListener("click", function (event) {
-      if (
-        event.target.hasAttribute("data-acc-load") ||
-        event.target.closest("[data-acc-load]")
-      ) {
-        // When pagination button is clicked, reinitialize accordions
-        // after a small delay to allow for DOM updates
-        setTimeout(function () {
-          initializeAccordions();
-          openFirstAccordion();
-        }, 300);
+      // Add click event listener
+      toggle.addEventListener("click", handleAccordionClick);
+    });
+  };
+
+  window.openFirstAccordion = function () {
+    console.log("Opening first accordion in each component");
+    const components = document.querySelectorAll("[data-acc-component]");
+    components.forEach((component) => {
+      const firstToggle = component.querySelector("[data-acc-toggle]");
+      if (firstToggle) {
+        console.log("Opening first toggle in component:", component);
+        openAccordion(firstToggle);
       }
     });
+  };
+
+  function openAccordion(toggle) {
+    const drawerId = toggle.getAttribute("data-drawer-id");
+    const drawer = toggle.querySelector("[data-acc-drawer]");
+    // Update toggle state
+    toggle.setAttribute("data-toggle-state", "open");
+    // Animate height
+    drawer.style.height = drawerHeights[drawerId] + "px";
+  }
+
+  function closeAccordion(toggle) {
+    const drawer = toggle.querySelector("[data-acc-drawer]");
+    // Update toggle state
+    toggle.setAttribute("data-toggle-state", "closed");
+    // Animate height back to 0
+    drawer.style.height = "0px";
+  }
+
+  function handleAccordionClick(event) {
+    const toggle = event.currentTarget;
+    const toggleState = toggle.getAttribute("data-toggle-state");
+    if (toggleState === "closed") {
+      // Close all other accordions in all components
+      closeAllOtherAccordions(toggle);
+      // Open this accordion
+      openAccordion(toggle);
+    } else {
+      // Close this accordion
+      closeAccordion(toggle);
+    }
+  }
+
+  function closeAllOtherAccordions(currentToggle) {
+    console.log("Closing other accordions in same component");
+    // Find the parent component of the current toggle
+    const parentComponent = currentToggle.closest("[data-acc-component]");
+    if (parentComponent) {
+      // Find all open accordions only within this component
+      const openTogglesInComponent = parentComponent.querySelectorAll(
+        '[data-acc-toggle][data-toggle-state="open"]',
+      );
+      openTogglesInComponent.forEach((toggle) => {
+        if (toggle !== currentToggle) {
+          closeAccordion(toggle);
+        }
+      });
+    }
+  }
+
+  // Add 200ms delay to ensure DOM is fully rendered
+  setTimeout(function () {
+    // Initialize accordions on page load
+    window.initializeAccordions();
+    window.openFirstAccordion();
   }, 200);
+
+  // Add click event listener for pagination button
+  document.addEventListener("click", function (event) {
+    if (
+      event.target.hasAttribute("data-acc-load") ||
+      event.target.closest("[data-acc-load]")
+    ) {
+      // When pagination button is clicked, reinitialize accordions
+      // after a small delay to allow for DOM updates
+      setTimeout(function () {
+        window.initializeAccordions();
+        window.openFirstAccordion();
+      }, 300);
+    }
+  });
 });
 
 //Tab Switchers
@@ -447,6 +456,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     });
+
+    // Initialize accordions after tab setup
+    if (window.initializeAccordions) {
+      window.initializeAccordions();
+    }
+    if (window.openFirstAccordion) {
+      window.openFirstAccordion();
+    }
   }
 
   function clickInitialiser() {
@@ -521,6 +538,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 "elementAnimator not available - ensure animation script loads first",
               );
             }
+
+            // Reinitialize accordions for the newly visible tab pane
+            setTimeout(() => {
+              if (window.initializeAccordions) {
+                window.initializeAccordions();
+              }
+              if (window.openFirstAccordion) {
+                window.openFirstAccordion();
+              }
+            }, 50);
           } else {
             console.log(
               `ERROR: No pane ${clickedIndex} found in ${type}/${name}`,
