@@ -416,7 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function sectionInitialiser(section, items) {
     console.log("Setting up vertical scroll for", items.length, "items");
     const wrapper = section.querySelector("[data-stack-wrap]");
-    const dynamicHeight = `${(items.length + 1) * 100}svh`;
+    const dynamicHeight = `${(items.length + 1) * 100}lvh`;
     wrapper.style.height = dynamicHeight;
     console.log("Set wrapper height to:", dynamicHeight);
     items.forEach((item, index) => {
