@@ -433,7 +433,7 @@ document.addEventListener("DOMContentLoaded", function () {
         end: () => `+=${items.length * 100}%`,
         scrub: 1,
         invalidateOnRefresh: true,
-        // markers: true,
+        markers: false,
       },
       defaults: { ease: "none" },
     });
@@ -613,7 +613,6 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: container,
         start: scrollTriggerOffset,
         once: true,
-        markers: true,
         onEnter: () => {
           setTimeout(() => {
             tl.play(0);
