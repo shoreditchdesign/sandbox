@@ -651,21 +651,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", () => {
-  let viewportChecker;
-
   function initialiser() {
-    viewportChecker = function (element) {
-      const rect = element.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      return rect.top < windowHeight && rect.bottom > 0;
-    };
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
 
-    // Expose global elementAnimator
     window.elementAnimator = function (
       element,
       scrollTriggerOffset = "top 95%",
@@ -674,15 +666,21 @@ document.addEventListener("DOMContentLoaded", () => {
         ? parseFloat(element.getAttribute("data-motion-delay"))
         : 0;
 
+      if (window.innerWidth <= 768) {
+        gsap.set(element, {
+          opacity: 1,
+          y: 0,
+        });
+        return null;
+      }
+
       gsap.set(element, {
         opacity: 0,
         y: 5,
       });
-
       let tl = gsap.timeline({
         paused: true,
       });
-
       tl.to(element, {
         opacity: 1,
         y: 0,
@@ -690,7 +688,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power2.out",
       });
 
-      const isAbove = viewportChecker(element);
+      const rect = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const isAbove = rect.top < windowHeight && rect.bottom > 0;
 
       if (isAbove) {
         setTimeout(() => {
@@ -706,7 +706,6 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         });
       }
-
       return tl;
     };
   }
@@ -725,7 +724,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 200);
   }
-
   initialiser();
   animator();
 });
