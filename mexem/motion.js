@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
   function sequenceInitialiser() {
-    if (window.innerWidth <= 991) {
+    if (window.innerWidth <= 768) {
       console.log("Tablet/mobile detected - skipping sequence initialization");
       return;
     }
