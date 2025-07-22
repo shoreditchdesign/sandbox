@@ -616,6 +616,7 @@ window.addEventListener("load", () => {
         once: true,
         refreshPriority: -90,
         invalidateOnRefresh: true,
+        markers: true,
         onEnter: () => {
           setTimeout(() => {
             tl.play(0);
