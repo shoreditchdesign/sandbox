@@ -618,6 +618,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trigger: container,
         start: scrollTriggerOffset,
         once: true,
+        markers: true,
         onEnter: () => {
           setTimeout(() => {
             // Apply delay before playing if specified
