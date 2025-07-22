@@ -574,13 +574,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Arrays
 document.addEventListener("DOMContentLoaded", () => {
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
-
     // Expose global arrayAnimator
     window.arrayAnimator = function (
       container,
@@ -589,22 +592,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const delay = container.getAttribute("data-motion-delay")
         ? parseFloat(container.getAttribute("data-motion-delay"))
         : 0;
-
       const childElements = Array.from(container.children);
       if (childElements.length === 0) {
         console.warn("Motion for Arrays: Children not found");
         return null;
       }
 
+      if (isMobile()) {
+        // Mobile: Just set final state directly
+        gsap.set(childElements, {
+          opacity: 1,
+          y: 0,
+        });
+        return null;
+      }
+
+      // Desktop: Normal ScrollTrigger animation
       gsap.set(childElements, {
         opacity: 0,
         y: 5,
       });
-
       let tl = gsap.timeline({
         paused: true,
       });
-
       tl.to(childElements, {
         opacity: 1,
         y: 0,
@@ -612,8 +622,6 @@ document.addEventListener("DOMContentLoaded", () => {
         stagger: 0.15,
         ease: "power2.out",
       });
-
-      // Always create a ScrollTrigger for the animation
       ScrollTrigger.create({
         trigger: container,
         start: scrollTriggerOffset,
@@ -621,16 +629,13 @@ document.addEventListener("DOMContentLoaded", () => {
         markers: true,
         onEnter: () => {
           setTimeout(() => {
-            // Apply delay before playing if specified
             tl.play(0);
           }, delay * 1000);
         },
       });
-
       return tl;
     };
   }
-
   function animator() {
     setTimeout(() => {
       const containers = document.querySelectorAll(
@@ -645,7 +650,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 200);
   }
-
   initialiser();
   animator();
 });
