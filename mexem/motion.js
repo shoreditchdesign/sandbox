@@ -627,6 +627,7 @@ window.addEventListener("load", () => {
         once: true,
         refreshPriority: -90,
         invalidateOnRefresh: true,
+        markers: true,
         onEnter: () => {
           console.log("ScrollTrigger fired for container");
           setTimeout(() => {
