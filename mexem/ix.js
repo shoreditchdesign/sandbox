@@ -581,6 +581,7 @@ document.addEventListener("DOMContentLoaded", function () {
     centeredSlides: false,
     loopedSlides: null,
     resistanceRatio: 0,
+    mousewheel: true,
     pagination: {
       el: "#platform-pagination",
       clickable: true,
