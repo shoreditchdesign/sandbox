@@ -582,7 +582,6 @@ document.addEventListener("DOMContentLoaded", function () {
     centeredSlides: false,
     loopedSlides: null,
     resistanceRatio: 0,
-    mousewheel: true,
     pagination: {
       el: "#platform-pagination",
       clickable: true,
@@ -591,7 +590,7 @@ document.addEventListener("DOMContentLoaded", function () {
       nextEl: "#platform-next",
       prevEl: "#platform-prev",
     },
-    // Accessibility module
+
     a11y: {
       enabled: true,
       prevSlideMessage: "Previous platform",
@@ -606,12 +605,12 @@ document.addEventListener("DOMContentLoaded", function () {
       containerRole: null,
       slideRole: null,
     },
-    // Keyboard control
+
     keyboard: {
       enabled: true,
       onlyInViewport: true,
     },
-    // Focus handling
+
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
     breakpoints: {
