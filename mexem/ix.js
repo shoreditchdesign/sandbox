@@ -567,6 +567,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Swiper
+//Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 1,
@@ -615,34 +616,34 @@ document.addEventListener("DOMContentLoaded", function () {
     watchSlidesVisibility: true,
     breakpoints: {
       0: {
-        slidesPerView: 1,
+        slidesPerView: 1.2,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 8,
       },
       480: {
-        slidesPerView: 1,
+        slidesPerView: 1.2,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 8,
       },
       767: {
-        slidesPerView: 1,
+        slidesPerView: 1.2,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 8,
       },
       992: {
         slidesPerView: 1,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 24,
       },
       1200: {
         slidesPerView: 2.2,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 24,
       },
       1920: {
         slidesPerView: 3.2,
         slidesPerGroup: 1,
-        spaceBetween: 16,
+        spaceBetween: 24,
       },
     },
   });
