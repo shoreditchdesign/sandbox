@@ -719,3 +719,24 @@ document.addEventListener("DOMContentLoaded", () => {
   initialiser();
   animator();
 });
+
+//GSAP for Preloader
+document.addEventListener("DOMContentLoaded", () => {
+  function preloaderAnimation() {
+    const preloader = document.querySelector("[data-loader-wrap]");
+
+    if (!preloader) {
+      console.warn("Preloader element not found.");
+      return;
+    }
+
+    gsap.to(preloader, {
+      yPercent: -100,
+      duration: 1,
+      delay: 3,
+      ease: "power2.inOut",
+    });
+  }
+
+  preloaderAnimation();
+});
