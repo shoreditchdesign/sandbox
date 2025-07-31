@@ -567,7 +567,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Swiper
-//Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 1,
