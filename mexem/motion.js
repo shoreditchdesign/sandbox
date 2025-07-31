@@ -741,7 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.to(preloader, {
       yPercent: -100,
       duration: 1,
-      delay: 3,
+      delay: 2,
       ease: "power2.inOut",
     });
   }
