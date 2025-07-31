@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//GSAP for Image Sequence
+//GSAP for Image Sequence - Optimized with Batch
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
@@ -78,11 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
     animation: {
       duration: 0.75,
       ease: "power2.inOut",
+      force3D: true,
     },
   };
 
   // Initializers
   function initChapterAnimations() {
+    console.log("Initializing chapter animations");
+
     // Check if GSAP and ScrollTrigger are available
     if (!window.gsap) {
       console.error("GSAP not found. Please ensure it is loaded.");
@@ -108,6 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
       `${config.selectors.image.container} ${config.selectors.image.items}`,
     );
 
+    console.log("Chapter items found:", chapterItems.length);
+    console.log("Image items found:", imageItems.length);
+
     // Validate DOM elements
     if (!chapterItems.length || !imageItems.length) {
       console.warn("Image sequence not found");
@@ -118,72 +124,74 @@ document.addEventListener("DOMContentLoaded", () => {
     initImageStates(imageItems);
 
     // Set up scroll triggers for chapters
-    createImageScrollTriggers(chapterItems, imageItems);
+    createImageScrollBatch(chapterItems, imageItems);
   }
 
   function initImageStates(items) {
+    console.log("Initializing image states");
+
     // On mobile, show all images
     if (window.innerWidth <= 991) {
-      gsap.set(items, { opacity: 1 });
+      gsap.set(items, { opacity: 1, force3D: config.animation.force3D });
       return;
     }
 
-    gsap.set(items, { opacity: 0 });
-    gsap.set(items[0], { opacity: 1 }); // First image visible
+    gsap.set(items, { opacity: 0, force3D: config.animation.force3D });
+    gsap.set(items[0], { opacity: 1, force3D: config.animation.force3D }); // First image visible
   }
 
-  function createImageScrollTriggers(chapterItems, imageItems) {
+  function createImageScrollBatch(chapterItems, imageItems) {
     if (window.innerWidth <= 991) {
+      console.log("Mobile detected - skipping batch triggers");
       return;
     }
 
+    console.log("Creating batch scroll triggers");
     const lastIndex = chapterItems.length;
 
-    chapterItems.forEach((chapter, idx) => {
-      // Convert to 1-based index to match data-sq-index
-      const currentIndex = idx + 1;
-
-      // For scrolling down - use onEnter
-      ScrollTrigger.create({
-        trigger: chapter,
-        start: "top center",
-        onEnter: () => {
+    // Batch for entering (scrolling down)
+    ScrollTrigger.batch(chapterItems, {
+      start: "top center",
+      onEnter: (elements) => {
+        elements.forEach((element, idx) => {
+          const currentIndex = Array.from(chapterItems).indexOf(element) + 1;
+          console.log("Batch enter triggered for index:", currentIndex);
           handleItemEnter(currentIndex, lastIndex, imageItems);
-        },
-        markers: false,
-        id: `chapter-${currentIndex}-image-enter`,
-      });
-
-      // For scrolling up - use onLeave on the next chapter if it exists
-      if (currentIndex < lastIndex) {
-        ScrollTrigger.create({
-          trigger: chapterItems[idx + 1], // Next chapter
-          start: "top bottom",
-          onLeaveBack: () => {
-            handleItemLeaveBack(currentIndex + 1, lastIndex, imageItems);
-          },
-          markers: false,
-          id: `chapter-${currentIndex + 1}-image-leave`,
         });
-      }
+      },
+      onLeaveBack: (elements) => {
+        elements.forEach((element, idx) => {
+          const currentIndex = Array.from(chapterItems).indexOf(element) + 1;
+          console.log("Batch leave back triggered for index:", currentIndex);
+          handleItemLeaveBack(currentIndex, lastIndex, imageItems);
+        });
+      },
+      markers: false,
+      id: "chapter-batch",
     });
   }
 
   function handleItemEnter(currentIndex, lastIndex, items) {
+    if (currentIndex <= 1) return;
+
+    console.log("Handling enter for index:", currentIndex);
+
     // Create and play transition animation
     const timeline = createTransitionTimeline(
-      items[currentIndex - 2], // Previous item (currentIndex-1)-1 due to 0-based array
-      items[currentIndex - 1], // Current item (currentIndex-1) due to 0-based array
+      items[currentIndex - 2], // Previous item
+      items[currentIndex - 1], // Current item
     );
 
     timeline.play();
   }
 
   function handleItemLeaveBack(currentIndex, lastIndex, items) {
-    // Skip animation for first chapter
     if (currentIndex <= 1) {
+      console.log("Skipping leave back for first chapter");
       return;
     }
+
+    console.log("Handling leave back for index:", currentIndex);
 
     // Create and play transition animation (reverse direction)
     const timeline = createTransitionTimeline(
@@ -195,12 +203,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createTransitionTimeline(fadeOutItem, fadeInItem) {
+    console.log("Creating transition timeline");
+
     const tl = gsap.timeline();
 
     tl.to(fadeOutItem, {
       opacity: 0,
       duration: config.animation.duration / 2,
       ease: config.animation.ease,
+      force3D: config.animation.force3D,
     });
 
     tl.to(
@@ -209,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: 1,
         duration: config.animation.duration / 2,
         ease: config.animation.ease,
+        force3D: config.animation.force3D,
       },
       `-=${config.animation.duration / 4}`,
     ); // Slight overlap for smoother transition
@@ -221,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Cleanup function for SPA environments
   function cleanup() {
+    console.log("Cleaning up ScrollTriggers");
     ScrollTrigger.killAll();
   }
 
