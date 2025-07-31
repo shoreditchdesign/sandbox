@@ -581,9 +581,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const delay = container.getAttribute("data-motion-delay")
         ? parseFloat(container.getAttribute("data-motion-delay"))
         : 0;
-      const childElements = Array.from(container.children);
+
+      const childElements = Array.from(container.children).filter(
+        (child) => !child.hasAttribute("data-motion-block"),
+      );
+
       if (childElements.length === 0) {
-        console.warn("Motion for Arrays: Children not found");
+        console.warn(
+          "Motion for Arrays: No animatable children found or all are blocked.",
+        );
         return null;
       }
 
