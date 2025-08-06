@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
   animator();
 });
 
-//GSAP for Image Sequence - Optimized with Batch
+//GSAP for Image Sequence
 document.addEventListener("DOMContentLoaded", () => {
   // Configuration
   const config = {
