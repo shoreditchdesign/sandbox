@@ -579,7 +579,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slidesOffsetBefore: 0,
     slidesOffsetAfter: 0,
     centeredSlides: false,
-    loop: false,
+    loop: true,
     loopedSlides: null,
     resistanceRatio: 0,
     pagination: {
