@@ -568,10 +568,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  let loopEnabled = false;
-  let mySwiper;
-
-  const swiperConfig = {
+  var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 1,
     slidesPerGroup: 1,
     spaceBetween: 16,
@@ -645,53 +642,5 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 24,
       },
     },
-    on: {
-      slideChangeTransitionStart: function () {
-        enableLoop();
-      },
-      touchStart: function () {
-        enableLoop();
-      },
-      click: function () {
-        enableLoop();
-      },
-    },
-  };
-
-  // Initialize swiper
-  mySwiper = new Swiper("#platform-swiper", swiperConfig);
-
-  function enableLoop() {
-    if (!loopEnabled) {
-      console.log("Reinitializing swiper with loop enabled");
-      loopEnabled = true;
-
-      const currentSlide = mySwiper.activeIndex;
-
-      // Destroy current swiper
-      mySwiper.destroy(true, true);
-
-      // Update config for loop
-      const loopConfig = { ...swiperConfig, loop: true };
-
-      // Reinitialize with loop
-      mySwiper = new Swiper("#platform-swiper", loopConfig);
-
-      // Navigate to previous position
-      mySwiper.slideTo(currentSlide, 0);
-    }
-  }
-
-  // Handle navigation clicks
-  document
-    .querySelector("#platform-next")
-    ?.addEventListener("click", enableLoop);
-  document
-    .querySelector("#platform-prev")
-    ?.addEventListener("click", enableLoop);
-
-  // Handle pagination clicks
-  document
-    .querySelector("#platform-pagination")
-    ?.addEventListener("click", enableLoop);
+  });
 });
