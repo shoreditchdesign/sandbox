@@ -568,6 +568,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Swiper
 document.addEventListener("DOMContentLoaded", function () {
+  let loopEnabled = false;
+
   var mySwiper = new Swiper("#platform-swiper", {
     slidesPerView: 1,
     slidesPerGroup: 1,
@@ -579,7 +581,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slidesOffsetBefore: 0,
     slidesOffsetAfter: 0,
     centeredSlides: false,
-    loop: true,
+    loop: false,
     loopedSlides: null,
     resistanceRatio: 0,
     pagination: {
@@ -590,7 +592,6 @@ document.addEventListener("DOMContentLoaded", function () {
       nextEl: "#platform-next",
       prevEl: "#platform-prev",
     },
-
     a11y: {
       enabled: true,
       prevSlideMessage: "Previous platform",
@@ -605,12 +606,10 @@ document.addEventListener("DOMContentLoaded", function () {
       containerRole: null,
       slideRole: null,
     },
-
     keyboard: {
       enabled: true,
       onlyInViewport: true,
     },
-
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
     breakpoints: {
@@ -645,5 +644,36 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 24,
       },
     },
+    on: {
+      slideChangeTransitionStart: function () {
+        enableLoop();
+      },
+      touchStart: function () {
+        enableLoop();
+      },
+      click: function () {
+        enableLoop();
+      },
+    },
   });
+
+  function enableLoop() {
+    if (!loopEnabled) {
+      console.log("Enabling loop mode");
+      loopEnabled = true;
+      mySwiper.loopCreate();
+      mySwiper.loopFix();
+    }
+  }
+
+  // Handle navigation clicks
+  document
+    .querySelector("#platform-next")
+    ?.addEventListener("click", enableLoop);
+  document
+    .querySelector("#platform-prev")
+    ?.addEventListener("click", enableLoop);
+  document
+    .querySelector("#platform-pagination")
+    ?.addEventListener("click", enableLoop);
 });
