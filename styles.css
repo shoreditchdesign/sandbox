@@ -1,0 +1,9 @@
+[data-scroll-overflow="mobile"] {
+  overflow: hidden;
+}
+
+@media screen and (max-width: 768px) {
+  [data-scroll-overflow="mobile"] {
+    overflow: auto;
+  }
+}
