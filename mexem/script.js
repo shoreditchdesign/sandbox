@@ -312,3 +312,44 @@ document.addEventListener("DOMContentLoaded", function () {
   wrapper.remove();
   console.log("Clone operation complete, wrapper deleted");
 });
+
+//OS Detection
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("OS detection started");
+
+  // Inject CSS styles
+  const styles = `
+        .c-navbar_download { display: none; }
+        body.ios .c-navbar_download.ios { display: block; }
+        body.android .c-navbar_download.android { display: block; }
+        body.macos .c-navbar_download.macos { display: block; }
+        body.windows .c-navbar_download.windows { display: block; }
+    `;
+
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+  console.log("CSS styles injected");
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  let osClass = "macos"; // fallback
+
+  // OS detection
+  if (/iphone|ipad|ipod/.test(userAgent)) {
+    osClass = "ios";
+    console.log("iOS detected");
+  } else if (/android/.test(userAgent)) {
+    osClass = "android";
+    console.log("Android detected");
+  } else if (/windows/.test(userAgent)) {
+    osClass = "windows";
+    console.log("Windows detected");
+  } else if (/mac/.test(userAgent)) {
+    osClass = "macos";
+    console.log("macOS detected");
+  }
+
+  // Add class to body
+  document.body.classList.add(osClass);
+  console.log("Added class to body:", osClass);
+});
