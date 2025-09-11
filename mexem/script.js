@@ -316,7 +316,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //OS Detection
 document.addEventListener("DOMContentLoaded", function () {
   console.log("OS detection started");
-
   // Inject CSS styles
   const styles = `
         .c-navbar_download { display: none; }
@@ -325,15 +324,12 @@ document.addEventListener("DOMContentLoaded", function () {
         body.macos .c-navbar_download.macos { display: block; }
         body.windows .c-navbar_download.windows { display: block; }
     `;
-
   const styleSheet = document.createElement("style");
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
   console.log("CSS styles injected");
-
   const userAgent = navigator.userAgent.toLowerCase();
   let osClass = "macos"; // fallback
-
   // OS detection
   if (/iphone|ipad|ipod/.test(userAgent)) {
     osClass = "ios";
@@ -348,8 +344,34 @@ document.addEventListener("DOMContentLoaded", function () {
     osClass = "macos";
     console.log("macOS detected");
   }
-
   // Add class to body
   document.body.classList.add(osClass);
   console.log("Added class to body:", osClass);
+
+  // OS name mapping for stylized cases
+  const osNames = {
+    ios: "iOS",
+    macos: "macOS",
+    windows: "Windows",
+    android: "Android",
+  };
+
+  // Find all elements with data-download-link attribute
+  const downloadLinks = document.querySelectorAll("[data-download-link]");
+  console.log("Found download links:", downloadLinks.length);
+
+  downloadLinks.forEach((link) => {
+    const os = link.getAttribute("data-download-os");
+    const name = link.getAttribute("data-download-name");
+
+    if (os && name && osNames[os]) {
+      const newText = `Download ${name} for ${osNames[os]}`;
+      link.textContent = newText;
+      console.log("Updated link text:", newText);
+    } else {
+      console.warn("Missing or invalid attributes on link:", link);
+    }
+  });
+
+  console.log("Download link text replacement completed");
 });
