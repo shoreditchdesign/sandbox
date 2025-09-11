@@ -346,7 +346,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   // Add class to body
   document.body.classList.add(osClass);
-  console.log("Added class to body:", osClass);
 
   // OS name mapping for stylized cases
   const osNames = {
@@ -372,6 +371,4 @@ document.addEventListener("DOMContentLoaded", function () {
       console.warn("Missing or invalid attributes on link:", link);
     }
   });
-
-  console.log("Download link text replacement completed");
 });
