@@ -339,11 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupTicker() {
-    if (!isMobile) {
-      console.log("Not mobile, ticker setup aborted");
-      return;
-    }
-
     console.log("Setting up ticker");
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
@@ -375,15 +370,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the ticker
   setupTicker();
-
-  // Optional: Reinitialize on window resize to adjust for new viewport size
-  window.addEventListener("resize", () => {
-    const newIsMobile = window.innerWidth <= 991;
-    if (newIsMobile) {
-      console.log("Window resized, reinitializing ticker");
-      setupTicker();
-    }
-  });
 });
 
 //GSAP for Text Reveal
