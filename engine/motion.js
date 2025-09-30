@@ -308,6 +308,84 @@ document.addEventListener("DOMContentLoaded", () => {
   window.imageSequenceCleanup = cleanup;
 });
 
+//GSAP for Ticker
+document.addEventListener("DOMContentLoaded", () => {
+  const tickerWrap = document.querySelector("[data-ticker-wrap]");
+  const tickerItem = document.querySelector("[data-ticker-item]");
+
+  if (!tickerWrap || !tickerItem) {
+    console.warn("Ticker elements not found");
+    return;
+  }
+
+  console.log("Found ticker elements");
+  const originalContent = tickerItem.outerHTML;
+
+  function calculateRequiredCopies() {
+    const viewportWidth = window.innerWidth;
+    const itemWidth = tickerItem.offsetWidth;
+    // Create a sequence 5 times the viewport width
+    const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+
+    console.log(
+      `Viewport width: ${viewportWidth}, Item width: ${itemWidth}, Copies needed: ${copiesNeeded}`,
+    );
+
+    return {
+      viewportWidth,
+      itemWidth,
+      copiesNeeded,
+    };
+  }
+
+  function setupTicker() {
+    if (!isMobile) {
+      console.log("Not mobile, ticker setup aborted");
+      return;
+    }
+
+    console.log("Setting up ticker");
+    const { copiesNeeded, itemWidth } = calculateRequiredCopies();
+
+    tickerWrap.innerHTML = "";
+
+    for (let i = 0; i < copiesNeeded; i++) {
+      const clone = document.createElement("div");
+      clone.innerHTML = originalContent;
+      const clonedItem = clone.firstElementChild;
+      tickerWrap.appendChild(clonedItem);
+    }
+
+    // Total width of the sequence
+    const totalWidth = itemWidth * copiesNeeded;
+    console.log(`Total ticker width: ${totalWidth}px`);
+
+    gsap.to(tickerWrap, {
+      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
+      duration: totalWidth / 100, // Increased speed by reducing duration divisor from 25 to 100
+      ease: "none",
+      repeat: -1,
+      onRepeat: () => {
+        gsap.set(tickerWrap, { x: 0 });
+      },
+    });
+
+    console.log("Ticker animation started");
+  }
+
+  // Initialize the ticker
+  setupTicker();
+
+  // Optional: Reinitialize on window resize to adjust for new viewport size
+  window.addEventListener("resize", () => {
+    const newIsMobile = window.innerWidth <= 991;
+    if (newIsMobile) {
+      console.log("Window resized, reinitializing ticker");
+      setupTicker();
+    }
+  });
+});
+
 //GSAP for Text Reveal
 document.addEventListener("DOMContentLoaded", function () {
   // Debug: Check what's actually available
@@ -793,25 +871,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   initialiser();
   animator();
-});
-
-//GSAP for Preloader
-document.addEventListener("DOMContentLoaded", () => {
-  function preloaderAnimation() {
-    const preloader = document.querySelector("[data-loader-wrap]");
-
-    if (!preloader) {
-      console.warn("Preloader element not found.");
-      return;
-    }
-
-    gsap.to(preloader, {
-      yPercent: -100,
-      duration: 1,
-      delay: 1.8,
-      ease: "power2.inOut",
-    });
-  }
-
-  preloaderAnimation();
 });
