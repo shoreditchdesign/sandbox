@@ -578,10 +578,22 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Prev button found:", prevButton);
   console.log("Next button found:", nextButton);
 
+  function calculateSpaceBetween() {
+    const firstCard = document.querySelector(".swiper-slide");
+    if (firstCard) {
+      const cardHeight = firstCard.offsetHeight;
+      const spaceBetween = -(cardHeight - 24);
+      console.log("Card height:", cardHeight);
+      console.log("Calculated spaceBetween:", spaceBetween);
+      return spaceBetween;
+    }
+    return -100;
+  }
+
   const swiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 3,
-    spaceBetween: -100,
+    spaceBetween: calculateSpaceBetween(),
     loop: true,
     speed: 600,
     navigation: {
@@ -599,4 +611,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   console.log("Swiper instance created:", swiper);
+
+  window.addEventListener("resize", () => {
+    console.log("Window resized, recalculating spaceBetween");
+    const newSpaceBetween = calculateSpaceBetween();
+    swiper.params.spaceBetween = newSpaceBetween;
+    swiper.update();
+    console.log("Swiper updated with new spaceBetween:", newSpaceBetween);
+  });
 });
