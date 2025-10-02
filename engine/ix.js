@@ -597,6 +597,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loop: true,
     speed: 0,
     freeMode: false,
+    allowTouchMove: false,
+    touchRatio: 0,
+    simulateTouch: false,
     navigation: {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
