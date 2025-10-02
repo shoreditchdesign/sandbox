@@ -597,8 +597,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loop: true,
     speed: 600,
     navigation: {
-      nextEl: "[data-rv-next]",
-      prevEl: "[data-rv-prev]",
+      nextEl: "#reviews-next",
+      prevEl: "#reviews-prev",
     },
     on: {
       init: function () {
