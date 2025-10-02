@@ -729,8 +729,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     ScrollTrigger.create({
       trigger: featuresWrap,
-      start: "bottom 100%",
-      end: "bottom top",
+      start: "bottom bottom",
+      end: "bottom bottom-=1",
       onEnter: () => {
         gsap.to(featuresHeader, {
           opacity: 0,
