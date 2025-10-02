@@ -601,46 +601,62 @@ document.addEventListener("DOMContentLoaded", () => {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
     },
-    watchSlidesProgress: true,
     on: {
       init: function () {
         console.log("Swiper initialized");
+        setTimeout(() => {
+          this.updateSlidesStyles();
+        }, 100);
+      },
+      slideChange: function () {
+        console.log("Slide changed, active index:", this.activeIndex);
         this.updateSlidesStyles();
       },
-      progress: function () {
+      transitionEnd: function () {
         this.updateSlidesStyles();
-      },
-      setTransition: function (speed) {
-        this.slides.forEach((slide) => {
-          slide.style.transition = `${speed}ms`;
-        });
       },
     },
   });
 
   // Custom method to update slide styles based on position
   swiper.updateSlidesStyles = function () {
-    this.slides.forEach((slide, index) => {
-      if (slide.classList.contains("swiper-slide-active")) {
+    const activeIndex = this.realIndex;
+
+    this.slides.forEach((slide) => {
+      const slideIndex = parseInt(
+        slide.getAttribute("data-swiper-slide-index"),
+      );
+
+      // Add transitions
+      slide.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+
+      if (slideIndex === activeIndex) {
+        // Active slide
         slide.style.opacity = "1";
         slide.style.transform = "scale(1)";
         slide.style.zIndex = "3";
         slide.style.pointerEvents = "auto";
-      } else if (slide.classList.contains("swiper-slide-next")) {
+      } else if (
+        slideIndex === (activeIndex + 1) % this.slides.length ||
+        (activeIndex === this.slides.length - 1 && slideIndex === 0)
+      ) {
+        // Next slide
         slide.style.opacity = "0.6";
         slide.style.transform = "scale(0.95)";
         slide.style.zIndex = "2";
         slide.style.pointerEvents = "auto";
       } else if (
-        slide.classList.contains("swiper-slide-next") ||
-        (slide.previousElementSibling &&
-          slide.previousElementSibling.classList.contains("swiper-slide-next"))
+        slideIndex === (activeIndex + 2) % this.slides.length ||
+        (activeIndex === this.slides.length - 2 && slideIndex === 0) ||
+        (activeIndex === this.slides.length - 1 && slideIndex === 1)
       ) {
+        // Slide after next
         slide.style.opacity = "0.4";
         slide.style.transform = "scale(0.9)";
         slide.style.zIndex = "1";
         slide.style.pointerEvents = "auto";
       } else {
+        // All other slides
         slide.style.opacity = "0.2";
         slide.style.transform = "scale(0.85)";
         slide.style.zIndex = "0";
