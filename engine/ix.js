@@ -582,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstCard = document.querySelector(".swiper-slide");
     if (firstCard) {
       const cardHeight = firstCard.offsetHeight;
-      const spaceBetween = -(cardHeight - 24);
+      const spaceBetween = -cardHeight + 24;
       console.log("Card height:", cardHeight);
       console.log("Calculated spaceBetween:", spaceBetween);
       return spaceBetween;
