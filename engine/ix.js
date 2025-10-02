@@ -593,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const swiper = new Swiper("#reviews-swiper", {
     direction: "vertical",
     slidesPerView: 3,
-    spaceBetween: calculateSpaceBetween(),
+    spaceBetween: 24,
     loop: true,
     speed: 600,
     navigation: {
