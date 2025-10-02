@@ -571,8 +571,8 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Initializing vertical stacked swiper");
 
   const swiperContainer = document.querySelector("#reviews-swiper");
-  const prevButton = document.querySelector("[data-rv-prev]");
-  const nextButton = document.querySelector("[data-rv-next]");
+  const prevButton = document.querySelector("#reviews-prev");
+  const nextButton = document.querySelector("#reviews-next");
 
   console.log("Swiper container found:", swiperContainer);
   console.log("Prev button found:", prevButton);
