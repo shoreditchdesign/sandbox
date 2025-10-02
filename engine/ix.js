@@ -595,7 +595,11 @@ document.addEventListener("DOMContentLoaded", () => {
     slidesPerView: 3,
     spaceBetween: calculateSpaceBetween(),
     loop: true,
-    speed: 600,
+    speed: 0,
+    cssMode: false,
+    freeMode: false,
+    touchRatio: 0,
+    simulateTouch: false,
     navigation: {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
@@ -603,9 +607,23 @@ document.addEventListener("DOMContentLoaded", () => {
     on: {
       init: function () {
         console.log("Swiper initialized");
+        console.log("Navigation enabled:", this.params.navigation);
+        // Prevent wrapper from translating
+        const wrapper = this.wrapperEl;
+        wrapper.style.transform = "translate3d(0, 0, 0)";
+      },
+      setTranslate: function (translate) {
+        // Override translate to prevent wrapper movement
+        this.wrapperEl.style.transform = "translate3d(0, 0, 0)";
       },
       slideChange: function () {
         console.log("Active slide index:", this.activeIndex);
+      },
+      navigationNext: function () {
+        console.log("Next button clicked");
+      },
+      navigationPrev: function () {
+        console.log("Prev button clicked");
       },
     },
   });
