@@ -623,130 +623,203 @@ document.addEventListener("DOMContentLoaded", function () {
 //   });
 // });
 
+// //GSAP Swiper
+// document.addEventListener("DOMContentLoaded", () => {
+//   console.log("Initializing GSAP card stacking");
+
+//   // Query elements using data attributes
+//   const wrapper = document.querySelector("[data-cards-wrapper]");
+//   if (!wrapper) {
+//     console.error("Card wrapper not found");
+//     return;
+//   }
+
+//   const cards = wrapper.querySelectorAll("[data-card-item]");
+//   const nextButton = document.querySelector("[data-card-next]");
+//   const prevButton = document.querySelector("[data-card-prev]");
+
+//   console.log("Cards found:", cards.length);
+//   console.log("Next button:", nextButton);
+//   console.log("Prev button:", prevButton);
+
+//   if (cards.length === 0) {
+//     console.error("No cards found");
+//     return;
+//   }
+
+//   // Configuration
+//   const duration = 0.5;
+//   const cardsPerView = 3;
+
+//   // Create timeline
+//   const tl = gsap.timeline({
+//     paused: true,
+//     defaults: { duration: duration, ease: "power2.out" },
+//   });
+
+//   let activeIndex = -1;
+//   let zIndex = 99999;
+
+//   // Build timeline with all card states
+//   for (let i = 0; i < cards.length + cardsPerView; i++) {
+//     activeIndex++;
+//     if (activeIndex === cards.length) activeIndex = 0;
+//     const card = cards[activeIndex];
+//     zIndex--;
+
+//     const timePos = i * duration;
+
+//     // State 1: Active
+//     tl.set(
+//       card,
+//       {
+//         scale: 1,
+//         opacity: 1,
+//         visibility: "visible",
+//         zIndex: zIndex,
+//       },
+//       timePos,
+//     );
+
+//     // State 2: Next
+//     tl.to(
+//       card,
+//       {
+//         scale: 0.95,
+//         opacity: 0.6,
+//       },
+//       timePos + duration,
+//     );
+
+//     // State 3: Third
+//     tl.to(
+//       card,
+//       {
+//         scale: 0.9,
+//         opacity: 0.4,
+//       },
+//       timePos + duration * 2,
+//     );
+
+//     // State 4: Hidden
+//     tl.to(
+//       card,
+//       {
+//         opacity: 0,
+//         visibility: "hidden",
+//       },
+//       timePos + duration * 3,
+//     );
+//   }
+
+//   // Set initial position (show first 3 cards)
+//   let currentStep = 0;
+//   tl.seek(cardsPerView * duration);
+
+//   console.log("Timeline created, duration:", tl.duration());
+
+//   // Next button handler
+//   if (nextButton) {
+//     nextButton.addEventListener("click", () => {
+//       console.log("Next clicked, step:", currentStep);
+//       currentStep++;
+//       const targetTime = (currentStep + cardsPerView) * duration;
+
+//       gsap.to(tl, {
+//         time: targetTime,
+//         duration: duration,
+//         ease: "power2.out",
+//       });
+//     });
+//   }
+
+//   // Prev button handler
+//   if (prevButton) {
+//     prevButton.addEventListener("click", () => {
+//       console.log("Prev clicked, step:", currentStep);
+//       currentStep--;
+//       const targetTime = (currentStep + cardsPerView) * duration;
+
+//       gsap.to(tl, {
+//         time: targetTime,
+//         duration: duration,
+//         ease: "power2.out",
+//       });
+//     });
+//   }
+// });
+
 // ============================================
-// GSAP Card Stacking Animation
+// GSAP Card Stacking Animation (Auto-play version from reference)
 // ============================================
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("Initializing GSAP card stacking");
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .querySelectorAll("[data-cards-wrapper]")
+    .forEach(function (component) {
+      const items = component.querySelectorAll("[data-card-item]");
+      const duration = 0.5;
+      const delay = 0.8;
+      const dd = duration + delay;
+      const cardsPerView = 3;
+      let activeIndex = -1;
+      let zIndex = 99999;
 
-  // Query elements using data attributes
-  const wrapper = document.querySelector("[data-cards-wrapper]");
-  if (!wrapper) {
-    console.error("Card wrapper not found");
-    return;
-  }
-
-  const cards = wrapper.querySelectorAll("[data-card-item]");
-  const nextButton = document.querySelector("[data-card-next]");
-  const prevButton = document.querySelector("[data-card-prev]");
-
-  console.log("Cards found:", cards.length);
-  console.log("Next button:", nextButton);
-  console.log("Prev button:", prevButton);
-
-  if (cards.length === 0) {
-    console.error("No cards found");
-    return;
-  }
-
-  // Configuration
-  const duration = 0.5;
-  const cardsPerView = 3;
-
-  // Create timeline
-  const tl = gsap.timeline({
-    paused: true,
-    defaults: { duration: duration, ease: "power2.out" },
-  });
-
-  let activeIndex = -1;
-  let zIndex = 99999;
-
-  // Build timeline with all card states
-  for (let i = 0; i < cards.length + cardsPerView; i++) {
-    activeIndex++;
-    if (activeIndex === cards.length) activeIndex = 0;
-    const card = cards[activeIndex];
-    zIndex--;
-
-    const timePos = i * duration;
-
-    // State 1: Active
-    tl.set(
-      card,
-      {
-        scale: 1,
-        opacity: 1,
-        visibility: "visible",
-        zIndex: zIndex,
-      },
-      timePos,
-    );
-
-    // State 2: Next
-    tl.to(
-      card,
-      {
-        scale: 0.95,
-        opacity: 0.6,
-      },
-      timePos + duration,
-    );
-
-    // State 3: Third
-    tl.to(
-      card,
-      {
-        scale: 0.9,
-        opacity: 0.4,
-      },
-      timePos + duration * 2,
-    );
-
-    // State 4: Hidden
-    tl.to(
-      card,
-      {
-        opacity: 0,
-        visibility: "hidden",
-      },
-      timePos + duration * 3,
-    );
-  }
-
-  // Set initial position (show first 3 cards)
-  let currentStep = 0;
-  tl.seek(cardsPerView * duration);
-
-  console.log("Timeline created, duration:", tl.duration());
-
-  // Next button handler
-  if (nextButton) {
-    nextButton.addEventListener("click", () => {
-      console.log("Next clicked, step:", currentStep);
-      currentStep++;
-      const targetTime = (currentStep + cardsPerView) * duration;
-
-      gsap.to(tl, {
-        time: targetTime,
-        duration: duration,
-        ease: "power2.out",
+      const tl = gsap.timeline({
+        defaults: { duration: duration, ease: "power1.inOut" },
       });
-    });
-  }
 
-  // Prev button handler
-  if (prevButton) {
-    prevButton.addEventListener("click", () => {
-      console.log("Prev clicked, step:", currentStep);
-      currentStep--;
-      const targetTime = (currentStep + cardsPerView) * duration;
+      for (let i = 0; i < items.length + cardsPerView; i++) {
+        activeIndex++;
+        if (activeIndex === items.length) activeIndex = 0;
+        const item = items[activeIndex];
+        zIndex--;
+        tl.set(
+          item,
+          {
+            scale: 1,
+            yPercent: 0,
+            "--background-opacity": 0.2,
+            opacity: 1,
+            filter: "blur(0rem)",
+            delay: 0,
+            zIndex: zIndex,
+          },
+          i * dd,
+        );
+        tl.to(
+          item,
+          { scale: 1.1, yPercent: -30, "--background-opacity": 0.1 },
+          "<" + dd,
+        );
+        tl.to(
+          item,
+          { scale: 1.2, yPercent: -60, "--background-opacity": 0 },
+          "<" + dd,
+        );
+        tl.to(
+          item,
+          {
+            scale: 1.3,
+            yPercent: -90,
+            opacity: 0,
+            filter: "blur(0.5rem)",
+          },
+          "<" + dd,
+        );
+      }
 
-      gsap.to(tl, {
-        time: targetTime,
-        duration: duration,
-        ease: "power2.out",
+      const mainTl = gsap.timeline({
+        repeat: -1,
+        onUpdate: () => {
+          const offset = dd * cardsPerView;
+          if (
+            tl.time() < offset - delay ||
+            tl.time() > tl.duration() - offset
+          ) {
+            tl.time(offset - delay);
+          }
+        },
       });
+      mainTl.to(tl, { duration: tl.duration(), ease: "none" });
     });
-  }
 });
