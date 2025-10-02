@@ -605,43 +605,83 @@ document.addEventListener("DOMContentLoaded", () => {
     on: {
       init: function () {
         console.log("Swiper initialized");
-        // Set initial state for all slides
+        // Set initial state: only show 3 cards (active, next, next+1)
+        const activeIndex = this.activeIndex;
+
         this.slides.forEach((slide, index) => {
-          if (index === this.activeIndex) {
-            gsap.set(slide, { scale: 1, opacity: 1, y: 0 });
+          if (index === activeIndex) {
+            // Active card: full scale and opacity
+            gsap.set(slide, { scale: 1, opacity: 1, visibility: "visible" });
+          } else if (index === activeIndex + 1) {
+            // Next card: slightly smaller
+            gsap.set(slide, {
+              scale: 0.95,
+              opacity: 0.6,
+              visibility: "visible",
+            });
+          } else if (index === activeIndex + 2) {
+            // Third card: even smaller
+            gsap.set(slide, {
+              scale: 0.9,
+              opacity: 0.4,
+              visibility: "visible",
+            });
           } else {
-            gsap.set(slide, { scale: 0.95, opacity: 0.6, y: 0 });
+            // All other cards: hidden
+            gsap.set(slide, { opacity: 0, visibility: "hidden" });
           }
         });
       },
-      slideChange: function () {
-        console.log("Active slide index:", this.activeIndex);
+      slideChangeTransitionStart: function () {
+        console.log("Slide changing, active index:", this.activeIndex);
 
-        const activeSlide = this.slides[this.activeIndex];
-        const previousSlides = this.slides.filter(
-          (_, index) => index !== this.activeIndex,
-        );
+        const activeIndex = this.activeIndex;
+        const prevActiveIndex =
+          activeIndex === 0 ? this.slides.length - 1 : activeIndex - 1;
 
-        // Entry animation for the new active slide
-        gsap.to(activeSlide, {
-          scale: 1,
-          opacity: 1,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-
-        // Exit animation for all other slides
-        previousSlides.forEach((slide) => {
-          gsap.to(slide, {
-            y: 24,
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.in",
-            onComplete: () => {
-              // Reset position after animation for loop continuity
-              gsap.set(slide, { y: 0, scale: 0.95, opacity: 0.6 });
-            },
-          });
+        this.slides.forEach((slide, index) => {
+          if (index === activeIndex) {
+            // New active slide: animate scale up and fade in
+            gsap.to(slide, {
+              scale: 1,
+              opacity: 1,
+              visibility: "visible",
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          } else if (index === prevActiveIndex) {
+            // Previous active slide: exit with translateY and fade out
+            gsap.to(slide, {
+              y: 24,
+              opacity: 0,
+              duration: 0.4,
+              ease: "power2.in",
+              onComplete: () => {
+                gsap.set(slide, { y: 0, visibility: "hidden" });
+              },
+            });
+          } else if (index === activeIndex + 1) {
+            // Next card: show at scale 0.95
+            gsap.to(slide, {
+              scale: 0.95,
+              opacity: 0.6,
+              visibility: "visible",
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          } else if (index === activeIndex + 2) {
+            // Third card: show at scale 0.9
+            gsap.to(slide, {
+              scale: 0.9,
+              opacity: 0.4,
+              visibility: "visible",
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          } else {
+            // Hide all other cards
+            gsap.set(slide, { opacity: 0, visibility: "hidden" });
+          }
         });
       },
     },
