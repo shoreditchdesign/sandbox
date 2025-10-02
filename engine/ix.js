@@ -565,3 +565,38 @@ document.addEventListener("DOMContentLoaded", function () {
     clickInitialiser();
   }, 100);
 });
+
+///Swiper
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Initializing vertical stacked swiper");
+
+  const swiperContainer = document.querySelector("#reviews-swiper");
+  const prevButton = document.querySelector("[data-rv-prev]");
+  const nextButton = document.querySelector("[data-rv-next]");
+
+  console.log("Swiper container found:", swiperContainer);
+  console.log("Prev button found:", prevButton);
+  console.log("Next button found:", nextButton);
+
+  const swiper = new Swiper("#reviews-swiper", {
+    direction: "vertical",
+    slidesPerView: 3,
+    spaceBetween: -100,
+    loop: true,
+    speed: 600,
+    navigation: {
+      nextEl: "[data-rv-next]",
+      prevEl: "[data-rv-prev]",
+    },
+    on: {
+      init: function () {
+        console.log("Swiper initialized");
+      },
+      slideChange: function () {
+        console.log("Active slide index:", this.activeIndex);
+      },
+    },
+  });
+
+  console.log("Swiper instance created:", swiper);
+});
