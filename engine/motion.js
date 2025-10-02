@@ -754,92 +754,64 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //GSAP for Review Cards
-document.addEventListener("DOMContentLoaded", () => {
-  function initialiser() {
-    if (typeof gsap === "undefined") {
-      console.warn("Script terminated due to missing GSAP library");
-      return;
-    }
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
+    const items = component.querySelectorAll("[data-review-card]");
+    const duration = 0.5;
+    const delay = 0.8;
+    const dd = duration + delay;
+    const cardsPerView = 3;
+    let activeIndex = -1;
+    let zIndex = 99999;
 
-  function animator() {
-    const components = document.querySelectorAll("[data-review-wrap]");
-
-    if (components.length === 0) {
-      console.warn("Review card components not found");
-      return;
-    }
-
-    components.forEach((component) => {
-      const items = component.querySelectorAll("[data-review-card]");
-
-      if (items.length === 0) {
-        console.warn("Review card items not found in component");
-        return;
-      }
-
-      const duration = 0.5;
-      const delay = 0.8;
-      const dd = duration + delay;
-      const cardsPerView = 3;
-      let activeIndex = -1;
-      let zIndex = 99999;
-
-      const tl = gsap.timeline({
-        defaults: { duration: duration, ease: "power1.inOut" },
-      });
-
-      for (let i = 0; i < items.length + cardsPerView; i++) {
-        activeIndex++;
-        if (activeIndex === items.length) activeIndex = 0;
-        const item = items[activeIndex];
-        zIndex--;
-        tl.set(
-          item,
-          {
-            scale: 1,
-            yPercent: 0,
-            "--background-opacity": 0.2,
-            opacity: 1,
-            filter: "blur(0rem)",
-            delay: 0,
-            zIndex: zIndex,
-          },
-          i * dd,
-        );
-        tl.to(
-          item,
-          { scale: 1.1, yPercent: -30, "--background-opacity": 0.1 },
-          "<" + dd,
-        );
-        tl.to(
-          item,
-          { scale: 1.2, yPercent: -60, "--background-opacity": 0 },
-          "<" + dd,
-        );
-        tl.to(
-          item,
-          { scale: 1.3, yPercent: -90, opacity: 0, filter: "blur(0.5rem)" },
-          "<" + dd,
-        );
-      }
-
-      const mainTl = gsap.timeline({
-        repeat: -1,
-        onUpdate: () => {
-          const offset = dd * cardsPerView;
-          if (
-            tl.time() < offset - delay ||
-            tl.time() > tl.duration() - offset
-          ) {
-            tl.time(offset - delay);
-          }
-        },
-      });
-      mainTl.to(tl, { duration: tl.duration(), ease: "none" });
+    const tl = gsap.timeline({
+      defaults: { duration: duration, ease: "power1.inOut" },
     });
-  }
 
-  initialiser();
-  animator();
+    for (let i = 0; i < items.length + cardsPerView; i++) {
+      activeIndex++;
+      if (activeIndex === items.length) activeIndex = 0;
+      const item = items[activeIndex];
+      zIndex--;
+      tl.set(
+        item,
+        {
+          scale: 1,
+          yPercent: 0,
+          "--background-opacity": 0.2,
+          opacity: 1,
+          filter: "blur(0rem)",
+          delay: 0,
+          zIndex: zIndex,
+        },
+        i * dd,
+      );
+      tl.to(
+        item,
+        { scale: 1.1, yPercent: -30, "--background-opacity": 0.1 },
+        "<" + dd,
+      );
+      tl.to(
+        item,
+        { scale: 1.2, yPercent: -60, "--background-opacity": 0 },
+        "<" + dd,
+      );
+      tl.to(
+        item,
+        { scale: 1.3, yPercent: -90, opacity: 0, filter: "blur(0.5rem)" },
+        "<" + dd,
+      );
+    }
+
+    const mainTl = gsap.timeline({
+      repeat: -1,
+      onUpdate: () => {
+        const offset = dd * cardsPerView;
+        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
+          tl.time(offset - delay);
+        }
+      },
+    });
+    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
+  });
 });
