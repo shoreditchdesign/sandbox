@@ -605,9 +605,44 @@ document.addEventListener("DOMContentLoaded", () => {
     on: {
       init: function () {
         console.log("Swiper initialized");
+        // Set initial state for all slides
+        this.slides.forEach((slide, index) => {
+          if (index === this.activeIndex) {
+            gsap.set(slide, { scale: 1, opacity: 1, y: 0 });
+          } else {
+            gsap.set(slide, { scale: 0.95, opacity: 0.6, y: 0 });
+          }
+        });
       },
       slideChange: function () {
         console.log("Active slide index:", this.activeIndex);
+
+        const activeSlide = this.slides[this.activeIndex];
+        const previousSlides = this.slides.filter(
+          (_, index) => index !== this.activeIndex,
+        );
+
+        // Entry animation for the new active slide
+        gsap.to(activeSlide, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+
+        // Exit animation for all other slides
+        previousSlides.forEach((slide) => {
+          gsap.to(slide, {
+            y: 24,
+            opacity: 0,
+            duration: 0.4,
+            ease: "power2.in",
+            onComplete: () => {
+              // Reset position after animation for loop continuity
+              gsap.set(slide, { y: 0, scale: 0.95, opacity: 0.6 });
+            },
+          });
+        });
       },
     },
   });
