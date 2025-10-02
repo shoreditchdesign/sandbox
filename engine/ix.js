@@ -595,7 +595,8 @@ document.addEventListener("DOMContentLoaded", () => {
     slidesPerView: 3,
     spaceBetween: calculateSpaceBetween(),
     loop: true,
-    speed: 600,
+    speed: 0,
+    freeMode: false,
     allowTouchMove: false,
     navigation: {
       nextEl: "#reviews-next",
