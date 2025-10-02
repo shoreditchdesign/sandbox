@@ -608,9 +608,15 @@ document.addEventListener("DOMContentLoaded", () => {
       init: function () {
         console.log("Swiper initialized");
         console.log("Navigation enabled:", this.params.navigation);
+        // Apply initial styles to all slides
+        this.slides.forEach((slide) => {
+          slide.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        });
+        this.updateSlideStyles();
       },
       slideChange: function () {
         console.log("Active slide index:", this.activeIndex);
+        this.updateSlideStyles();
       },
       navigationNext: function () {
         console.log("Next button clicked");
@@ -620,6 +626,40 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
   });
+
+  // Add method to update slide styles based on Swiper classes
+  swiper.updateSlideStyles = function () {
+    this.slides.forEach((slide) => {
+      if (slide.classList.contains("swiper-slide-active")) {
+        // Active slide
+        slide.style.opacity = "1";
+        slide.style.transform = "scale(1)";
+        slide.style.zIndex = "3";
+        slide.style.pointerEvents = "auto";
+      } else if (slide.classList.contains("swiper-slide-next")) {
+        // Next slide
+        slide.style.opacity = "0.6";
+        slide.style.transform = "scale(0.95)";
+        slide.style.zIndex = "2";
+        slide.style.pointerEvents = "auto";
+      } else if (
+        slide.previousElementSibling &&
+        slide.previousElementSibling.classList.contains("swiper-slide-next")
+      ) {
+        // Slide after next
+        slide.style.opacity = "0.4";
+        slide.style.transform = "scale(0.9)";
+        slide.style.zIndex = "1";
+        slide.style.pointerEvents = "auto";
+      } else {
+        // All other slides
+        slide.style.opacity = "0";
+        slide.style.transform = "scale(0.85)";
+        slide.style.zIndex = "0";
+        slide.style.pointerEvents = "none";
+      }
+    });
+  };
 
   console.log("Swiper instance created:", swiper);
 
