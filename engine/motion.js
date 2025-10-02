@@ -764,7 +764,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const dd = duration + delay;
     const cardsPerView = 3;
     let activeIndex = -1;
-    let zIndex = 99999;
+    let zIndex = 5;
 
     const tl = gsap.timeline({
       defaults: { duration: duration, ease: "power1.inOut" },
