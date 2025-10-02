@@ -651,15 +651,19 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           } else if (index === prevActiveIndex) {
             // Previous active slide: exit with translateY and fade out
-            gsap.to(slide, {
-              y: 24,
-              opacity: 0,
-              duration: 0.4,
-              ease: "power2.in",
-              onComplete: () => {
-                gsap.set(slide, { y: 0, visibility: "hidden" });
+            gsap.fromTo(
+              slide,
+              { y: 0, opacity: 1 },
+              {
+                y: 24,
+                opacity: 0,
+                duration: 0.4,
+                ease: "power2.in",
+                onComplete: () => {
+                  gsap.set(slide, { y: 0, visibility: "hidden" });
+                },
               },
-            });
+            );
           } else if (index === activeIndex + 1) {
             // Next card: show at scale 0.95
             gsap.to(slide, {
