@@ -566,59 +566,187 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
 
-///Swiper
+// //Swiper
+// document.addEventListener("DOMContentLoaded", () => {
+//   console.log("Initializing vertical stacked swiper");
+
+//   const swiperContainer = document.querySelector("#reviews-swiper");
+//   const prevButton = document.querySelector("#reviews-prev");
+//   const nextButton = document.querySelector("#reviews-next");
+
+//   console.log("Swiper container found:", swiperContainer);
+//   console.log("Prev button found:", prevButton);
+//   console.log("Next button found:", nextButton);
+
+//   function calculateSpaceBetween() {
+//     const firstCard = document.querySelector(".swiper-slide");
+//     if (firstCard) {
+//       const cardHeight = firstCard.offsetHeight;
+//       const spaceBetween = -cardHeight + 24;
+//       console.log("Card height:", cardHeight);
+//       console.log("Calculated spaceBetween:", spaceBetween);
+//       return spaceBetween;
+//     }
+//     return -100;
+//   }
+
+//   const swiper = new Swiper("#reviews-swiper", {
+//     direction: "vertical",
+//     slidesPerView: 3,
+//     spaceBetween: calculateSpaceBetween(),
+//     loop: true,
+//     speed: 0,
+//     freeMode: false,
+//     allowTouchMove: false,
+//     navigation: {
+//       nextEl: "#reviews-next",
+//       prevEl: "#reviews-prev",
+//     },
+//     on: {
+//       init: function () {
+//         console.log("Swiper initialized");
+//       },
+//       slideChange: function () {
+//         console.log("Active slide index:", this.activeIndex);
+//       },
+//     },
+//   });
+
+//   console.log("Swiper instance created:", swiper);
+
+//   window.addEventListener("resize", () => {
+//     console.log("Window resized, recalculating spaceBetween");
+//     const newSpaceBetween = calculateSpaceBetween();
+//     swiper.params.spaceBetween = newSpaceBetween;
+//     swiper.update();
+//     console.log("Swiper updated with new spaceBetween:", newSpaceBetween);
+//   });
+// });
+
+// ============================================
+// GSAP Card Stacking Animation
+// ============================================
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Initializing vertical stacked swiper");
+  console.log("Initializing GSAP card stacking");
 
-  const swiperContainer = document.querySelector("#reviews-swiper");
-  const prevButton = document.querySelector("#reviews-prev");
-  const nextButton = document.querySelector("#reviews-next");
-
-  console.log("Swiper container found:", swiperContainer);
-  console.log("Prev button found:", prevButton);
-  console.log("Next button found:", nextButton);
-
-  function calculateSpaceBetween() {
-    const firstCard = document.querySelector(".swiper-slide");
-    if (firstCard) {
-      const cardHeight = firstCard.offsetHeight;
-      const spaceBetween = -cardHeight + 24;
-      console.log("Card height:", cardHeight);
-      console.log("Calculated spaceBetween:", spaceBetween);
-      return spaceBetween;
-    }
-    return -100;
+  // Query elements using data attributes
+  const wrapper = document.querySelector("[data-cards-wrapper]");
+  if (!wrapper) {
+    console.error("Card wrapper not found");
+    return;
   }
 
-  const swiper = new Swiper("#reviews-swiper", {
-    direction: "vertical",
-    slidesPerView: 3,
-    spaceBetween: calculateSpaceBetween(),
-    loop: true,
-    speed: 0,
-    freeMode: false,
-    allowTouchMove: false,
-    navigation: {
-      nextEl: "#reviews-next",
-      prevEl: "#reviews-prev",
-    },
-    on: {
-      init: function () {
-        console.log("Swiper initialized");
-      },
-      slideChange: function () {
-        console.log("Active slide index:", this.activeIndex);
-      },
-    },
+  const cards = wrapper.querySelectorAll("[data-card-item]");
+  const nextButton = document.querySelector("[data-card-next]");
+  const prevButton = document.querySelector("[data-card-prev]");
+
+  console.log("Cards found:", cards.length);
+  console.log("Next button:", nextButton);
+  console.log("Prev button:", prevButton);
+
+  if (cards.length === 0) {
+    console.error("No cards found");
+    return;
+  }
+
+  // Configuration
+  const duration = 0.5;
+  const cardsPerView = 3;
+
+  // Create timeline
+  const tl = gsap.timeline({
+    paused: true,
+    defaults: { duration: duration, ease: "power2.out" },
   });
 
-  console.log("Swiper instance created:", swiper);
+  let activeIndex = -1;
+  let zIndex = 99999;
 
-  window.addEventListener("resize", () => {
-    console.log("Window resized, recalculating spaceBetween");
-    const newSpaceBetween = calculateSpaceBetween();
-    swiper.params.spaceBetween = newSpaceBetween;
-    swiper.update();
-    console.log("Swiper updated with new spaceBetween:", newSpaceBetween);
-  });
+  // Build timeline with all card states
+  for (let i = 0; i < cards.length + cardsPerView; i++) {
+    activeIndex++;
+    if (activeIndex === cards.length) activeIndex = 0;
+    const card = cards[activeIndex];
+    zIndex--;
+
+    const timePos = i * duration;
+
+    // State 1: Active
+    tl.set(
+      card,
+      {
+        scale: 1,
+        opacity: 1,
+        visibility: "visible",
+        zIndex: zIndex,
+      },
+      timePos,
+    );
+
+    // State 2: Next
+    tl.to(
+      card,
+      {
+        scale: 0.95,
+        opacity: 0.6,
+      },
+      timePos + duration,
+    );
+
+    // State 3: Third
+    tl.to(
+      card,
+      {
+        scale: 0.9,
+        opacity: 0.4,
+      },
+      timePos + duration * 2,
+    );
+
+    // State 4: Hidden
+    tl.to(
+      card,
+      {
+        opacity: 0,
+        visibility: "hidden",
+      },
+      timePos + duration * 3,
+    );
+  }
+
+  // Set initial position (show first 3 cards)
+  let currentStep = 0;
+  tl.seek(cardsPerView * duration);
+
+  console.log("Timeline created, duration:", tl.duration());
+
+  // Next button handler
+  if (nextButton) {
+    nextButton.addEventListener("click", () => {
+      console.log("Next clicked, step:", currentStep);
+      currentStep++;
+      const targetTime = (currentStep + cardsPerView) * duration;
+
+      gsap.to(tl, {
+        time: targetTime,
+        duration: duration,
+        ease: "power2.out",
+      });
+    });
+  }
+
+  // Prev button handler
+  if (prevButton) {
+    prevButton.addEventListener("click", () => {
+      console.log("Prev clicked, step:", currentStep);
+      currentStep--;
+      const targetTime = (currentStep + cardsPerView) * duration;
+
+      gsap.to(tl, {
+        time: targetTime,
+        duration: duration,
+        ease: "power2.out",
+      });
+    });
+  }
 });
