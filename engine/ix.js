@@ -595,31 +595,59 @@ document.addEventListener("DOMContentLoaded", () => {
     slidesPerView: 3,
     spaceBetween: calculateSpaceBetween(),
     loop: true,
-    speed: 0,
-    freeMode: false,
+    speed: 400,
     allowTouchMove: false,
-    touchRatio: 0,
-    simulateTouch: false,
     navigation: {
       nextEl: "#reviews-next",
       prevEl: "#reviews-prev",
     },
+    watchSlidesProgress: true,
     on: {
       init: function () {
         console.log("Swiper initialized");
-        console.log("Navigation enabled:", this.params.navigation);
+        this.updateSlidesStyles();
       },
-      slideChange: function () {
-        console.log("Active slide index:", this.activeIndex);
+      progress: function () {
+        this.updateSlidesStyles();
       },
-      navigationNext: function () {
-        console.log("Next button clicked");
-      },
-      navigationPrev: function () {
-        console.log("Prev button clicked");
+      setTransition: function (speed) {
+        this.slides.forEach((slide) => {
+          slide.style.transition = `${speed}ms`;
+        });
       },
     },
   });
+
+  // Custom method to update slide styles based on position
+  swiper.updateSlidesStyles = function () {
+    this.slides.forEach((slide, index) => {
+      if (slide.classList.contains("swiper-slide-active")) {
+        slide.style.opacity = "1";
+        slide.style.transform = "scale(1)";
+        slide.style.zIndex = "3";
+        slide.style.pointerEvents = "auto";
+      } else if (slide.classList.contains("swiper-slide-next")) {
+        slide.style.opacity = "0.6";
+        slide.style.transform = "scale(0.95)";
+        slide.style.zIndex = "2";
+        slide.style.pointerEvents = "auto";
+      } else if (
+        slide.classList.contains("swiper-slide-next") ||
+        (slide.previousElementSibling &&
+          slide.previousElementSibling.classList.contains("swiper-slide-next"))
+      ) {
+        slide.style.opacity = "0.4";
+        slide.style.transform = "scale(0.9)";
+        slide.style.zIndex = "1";
+        slide.style.pointerEvents = "auto";
+      } else {
+        slide.style.opacity = "0.2";
+        slide.style.transform = "scale(0.85)";
+        slide.style.zIndex = "0";
+        slide.style.pointerEvents = "none";
+      }
+    });
+  };
 
   console.log("Swiper instance created:", swiper);
 
