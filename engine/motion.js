@@ -705,3 +705,50 @@ document.addEventListener("DOMContentLoaded", () => {
   initialiser();
   animator();
 });
+
+//GSAP for Sticky Headers
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const featuresWrap = document.querySelector("[data-features-wrap]");
+    const featuresHeader = document.querySelector("[data-features-header]");
+
+    if (!featuresWrap || !featuresHeader) {
+      console.warn("Features wrap or header not found");
+      return;
+    }
+
+    gsap.set(featuresHeader, { opacity: 1 });
+
+    ScrollTrigger.create({
+      trigger: featuresWrap,
+      start: "bottom 100%",
+      end: "bottom top",
+      onEnter: () => {
+        gsap.to(featuresHeader, {
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(featuresHeader, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+      markers: false,
+    });
+  }
+
+  initialiser();
+  animator();
+});
