@@ -858,7 +858,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (prevButton) {
       prevButton.addEventListener("click", () => {
-        console.log("Prev button clicked.");
+        console.log("Prev button clicked for rewind.");
+
+        // Pause the main forward loop to avoid conflicts
+        mainTl.pause();
+
         const currentTime = tl.time();
         const offset = dd * cardsPerView;
         const minTime = offset - delay;
@@ -868,18 +872,27 @@ document.addEventListener("DOMContentLoaded", function () {
         // Calculate the start time of the *previous* animation segment
         let newTime = (Math.ceil(currentTime / dd) - 1) * dd;
 
-        // If we're already at the start, the prev click should go to the end of the loop.
+        // Handle wrapping around to the end
         if (currentTime <= minTime) {
           newTime = maxTime;
         } else if (newTime < minTime) {
-          // Otherwise, if the calculated jump undershoots, wrap it using the original modulo logic.
           newTime = maxTime - ((minTime - newTime) % validRange);
         }
 
         console.log(
-          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
+          `Rewinding from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
         );
-        tl.time(newTime);
+
+        // Animate the timeline backward to the new time
+        gsap.to(tl, {
+          time: newTime,
+          duration: dd, // Make the rewind animation last for one "step" of time
+          ease: "power1.inOut",
+          onComplete: () => {
+            // Resume the main forward loop from the new position
+            mainTl.play();
+          },
+        });
       });
     }
   });
