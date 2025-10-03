@@ -777,7 +777,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const delay = 0.8;
     const dd = duration + delay;
     let activeIndex = -1;
-    let zIndex = 5;
 
     const tl = gsap.timeline({
       defaults: { duration: duration, ease: "power1.inOut" },
@@ -787,7 +786,9 @@ document.addEventListener("DOMContentLoaded", function () {
       activeIndex++;
       if (activeIndex === items.length) activeIndex = 0;
       const item = items[activeIndex];
-      zIndex--;
+      // The z-index is now calculated cyclically. This is the key to the seamless loop.
+      // It ensures recycled cards get the correct stacking order to appear at the bottom.
+      const zIndex = items.length - (i % items.length);
       tl.set(
         item,
         {
@@ -818,20 +819,15 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    const offset = dd * cardsPerView;
-    const minTime = offset - delay;
-    const maxTime = tl.duration() - offset;
-
-    // Set the timeline to the starting position of the loop
-    tl.time(minTime);
-
-    // Animate the timeline's time property to the end of the loopable section, and repeat indefinitely.
-    // This creates a smooth, seamless loop without the visual jump of the old method.
-    gsap.to(tl, {
-      time: maxTime,
-      duration: maxTime - minTime,
-      ease: "none",
+    const mainTl = gsap.timeline({
       repeat: -1,
+      onUpdate: () => {
+        const offset = dd * cardsPerView;
+        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
+          tl.time(offset - delay);
+        }
+      },
     });
+    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
   });
 });
