@@ -756,8 +756,8 @@ document.addEventListener("DOMContentLoaded", () => {
 //GSAP for Review Cards
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
-    const prevButton = component.querySelector("[data-review-prev]");
-    const nextButton = component.querySelector("[data-review-next]");
+    const prevButton = document.querySelector("[data-review-prev]");
+    const nextButton = document.querySelector("[data-review-next]");
     const duration = 0.5;
     const delay = 2;
     const dd = duration + delay;
