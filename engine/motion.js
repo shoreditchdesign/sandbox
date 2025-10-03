@@ -756,13 +756,26 @@ document.addEventListener("DOMContentLoaded", () => {
 //GSAP for Review Cards
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
-    const items = component.querySelectorAll("[data-review-card]");
+    const cardsPerView = 3; // Moved up to be used in the duplication check
+    let items = Array.from(component.querySelectorAll("[data-review-card]"));
+
+    // If there aren't enough items for a seamless loop (items <= cardsPerView), duplicate them.
+    if (items.length > 0 && items.length <= cardsPerView) {
+      const list = items[0].parentNode;
+      const originalItems = items.slice();
+      // Double the items to ensure there's a buffer for the seamless loop.
+      originalItems.forEach((item) => {
+        list.appendChild(item.cloneNode(true));
+      });
+      // After duplicating, re-query the NodeList to get all items, including the new clones.
+      items = Array.from(component.querySelectorAll("[data-review-card]"));
+    }
+
     const prevButton = component.querySelector("[data-review-prev]");
     const nextButton = component.querySelector("[data-review-next]");
     const duration = 0.5;
     const delay = 0.8;
     const dd = duration + delay;
-    const cardsPerView = 3;
     let activeIndex = -1;
     let zIndex = 5;
 
