@@ -805,16 +805,20 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    const mainTl = gsap.timeline({
+    const offset = dd * cardsPerView;
+    const minTime = offset - delay;
+    const maxTime = tl.duration() - offset;
+
+    // Set the initial time
+    tl.time(minTime);
+
+    // Create a repeating tween for the loopable section
+    gsap.to(tl, {
+      time: maxTime,
+      duration: maxTime - minTime,
+      ease: "none",
       repeat: -1,
-      onUpdate: () => {
-        const offset = dd * cardsPerView;
-        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
-          tl.time(offset - delay);
-        }
-      },
     });
-    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
 
     // Button click handlers
     if (nextButton) {
