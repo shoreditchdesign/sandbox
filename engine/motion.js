@@ -764,19 +764,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const cardsPerView = 3;
     let items = Array.from(component.querySelectorAll("[data-review-card]"));
 
-    // If there aren't enough items for a seamless loop (items <= cardsPerView), duplicate them.
     if (items.length > 0 && items.length <= cardsPerView) {
       const list = items[0].parentNode;
       const originalItems = items.slice();
-      // Double the items to ensure there's a buffer for the seamless loop.
+
       originalItems.forEach((item) => {
         list.appendChild(item.cloneNode(true));
       });
-      // After duplicating, re-query the NodeList to get all items, including the new clones.
+
       items = Array.from(component.querySelectorAll("[data-review-card]"));
     }
+
     let activeIndex = -1;
-    let zIndex = 999999;
+    let zIndex = 12;
 
     const tl = gsap.timeline({
       defaults: { duration: duration, ease: "power1.inOut" },
