@@ -827,5 +827,44 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     });
     mainTl.to(tl, { duration: tl.duration(), ease: "none" });
+
+    // Button click handlers
+    if (nextButton) {
+      nextButton.addEventListener("click", () => {
+        const currentTime = tl.time();
+        const offset = dd * cardsPerView;
+        const minTime = offset - delay;
+        const maxTime = tl.duration() - offset;
+        const validRange = maxTime - minTime;
+
+        let newTime = currentTime + dd;
+
+        // Keep within valid range using modulo
+        if (newTime > maxTime) {
+          newTime = minTime + ((newTime - minTime) % validRange);
+        }
+
+        tl.time(newTime);
+      });
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener("click", () => {
+        const currentTime = tl.time();
+        const offset = dd * cardsPerView;
+        const minTime = offset - delay;
+        const maxTime = tl.duration() - offset;
+        const validRange = maxTime - minTime;
+
+        let newTime = currentTime - dd;
+
+        // Keep within valid range using modulo
+        if (newTime < minTime) {
+          newTime = maxTime - ((minTime - newTime) % validRange);
+        }
+
+        tl.time(newTime);
+      });
+    }
   });
 });
