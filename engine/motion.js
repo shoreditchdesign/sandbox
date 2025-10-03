@@ -759,7 +759,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevButton = component.querySelector("[data-review-prev]");
     const nextButton = component.querySelector("[data-review-next]");
     const duration = 0.5;
-    const delay = 0.8;
+    const delay = 2;
     const dd = duration + delay;
     const cardsPerView = 3;
     let items = Array.from(component.querySelectorAll("[data-review-card]"));
