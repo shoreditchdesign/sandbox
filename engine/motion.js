@@ -831,17 +831,32 @@ document.addEventListener("DOMContentLoaded", function () {
     // Button click handlers
     if (nextButton) {
       nextButton.addEventListener("click", () => {
+        console.log("Next button clicked.");
         const currentTime = tl.time();
         const offset = dd * cardsPerView;
         const minTime = offset - delay;
         const maxTime = tl.duration() - offset;
         const validRange = maxTime - minTime;
 
+        if (validRange <= 0) {
+          console.warn("Warning: `validRange` for buttons is not positive.", {
+            validRange,
+          });
+        }
+
         let newTime = currentTime + dd;
 
-        // Keep within valid range using modulo
+        console.log("Button debug values:", {
+          currentTime: currentTime.toFixed(2),
+          minTime: minTime.toFixed(2),
+          maxTime: maxTime.toFixed(2),
+          step: dd.toFixed(2),
+          newTimeBeforeWrap: newTime.toFixed(2),
+        });
+
         if (newTime > maxTime) {
           newTime = minTime + ((newTime - minTime) % validRange);
+          console.log(`Time wrapped to: ${newTime.toFixed(2)}`);
         }
 
         tl.time(newTime);
@@ -850,17 +865,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (prevButton) {
       prevButton.addEventListener("click", () => {
+        console.log("Prev button clicked.");
         const currentTime = tl.time();
         const offset = dd * cardsPerView;
         const minTime = offset - delay;
         const maxTime = tl.duration() - offset;
         const validRange = maxTime - minTime;
 
+        if (validRange <= 0) {
+          console.warn("Warning: `validRange` for buttons is not positive.", {
+            validRange,
+          });
+        }
+
         let newTime = currentTime - dd;
 
-        // Keep within valid range using modulo
+        console.log("Button debug values:", {
+          currentTime: currentTime.toFixed(2),
+          minTime: minTime.toFixed(2),
+          maxTime: maxTime.toFixed(2),
+          step: dd.toFixed(2),
+          newTimeBeforeWrap: newTime.toFixed(2),
+        });
+
         if (newTime < minTime) {
           newTime = maxTime - ((minTime - newTime) % validRange);
+          console.log(`Time wrapped to: ${newTime.toFixed(2)}`);
         }
 
         tl.time(newTime);
