@@ -805,58 +805,15 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    const offset = dd * cardsPerView;
-    const minTime = offset - delay;
-    const maxTime = tl.duration() - offset;
-
-    // Set the initial time
-    tl.time(minTime);
-
-    // Create a repeating tween for the loopable section
-    gsap.to(tl, {
-      time: maxTime,
-      duration: maxTime - minTime,
-      ease: "none",
+    const mainTl = gsap.timeline({
       repeat: -1,
+      onUpdate: () => {
+        const offset = dd * cardsPerView;
+        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
+          tl.time(offset - delay);
+        }
+      },
     });
-
-    // Button click handlers
-    if (nextButton) {
-      nextButton.addEventListener("click", () => {
-        const currentTime = tl.time();
-        const offset = dd * cardsPerView;
-        const minTime = offset - delay;
-        const maxTime = tl.duration() - offset;
-        const validRange = maxTime - minTime;
-
-        let newTime = currentTime + dd;
-
-        // Keep within valid range using modulo
-        if (newTime > maxTime) {
-          newTime = minTime + ((newTime - minTime) % validRange);
-        }
-
-        tl.time(newTime);
-      });
-    }
-
-    if (prevButton) {
-      prevButton.addEventListener("click", () => {
-        const currentTime = tl.time();
-        const offset = dd * cardsPerView;
-        const minTime = offset - delay;
-        const maxTime = tl.duration() - offset;
-        const validRange = maxTime - minTime;
-
-        let newTime = currentTime - dd;
-
-        // Keep within valid range using modulo
-        if (newTime < minTime) {
-          newTime = maxTime - ((minTime - newTime) % validRange);
-        }
-
-        tl.time(newTime);
-      });
-    }
+    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
   });
 });
