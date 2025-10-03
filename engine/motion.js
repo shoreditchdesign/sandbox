@@ -838,27 +838,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const maxTime = tl.duration() - offset;
         const validRange = maxTime - minTime;
 
-        if (validRange <= 0) {
-          console.warn("Warning: `validRange` for buttons is not positive.", {
-            validRange,
-          });
-        }
+        // Calculate the start time of the *next* animation segment
+        let newTime = (Math.floor(currentTime / dd) + 1) * dd;
 
-        let newTime = currentTime + dd;
-
-        console.log("Button debug values:", {
-          currentTime: currentTime.toFixed(2),
-          minTime: minTime.toFixed(2),
-          maxTime: maxTime.toFixed(2),
-          step: dd.toFixed(2),
-          newTimeBeforeWrap: newTime.toFixed(2),
-        });
-
-        if (newTime > maxTime) {
+        // If we're already at the end, the next logical step is the beginning of the loop.
+        if (currentTime >= maxTime) {
+          newTime = minTime;
+        } else if (newTime > maxTime) {
+          // Otherwise, if the calculated jump overshoots, wrap it using the original modulo logic.
           newTime = minTime + ((newTime - minTime) % validRange);
-          console.log(`Time wrapped to: ${newTime.toFixed(2)}`);
         }
 
+        console.log(
+          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
+        );
         tl.time(newTime);
       });
     }
@@ -872,27 +865,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const maxTime = tl.duration() - offset;
         const validRange = maxTime - minTime;
 
-        if (validRange <= 0) {
-          console.warn("Warning: `validRange` for buttons is not positive.", {
-            validRange,
-          });
-        }
+        // Calculate the start time of the *previous* animation segment
+        let newTime = (Math.ceil(currentTime / dd) - 1) * dd;
 
-        let newTime = currentTime - dd;
-
-        console.log("Button debug values:", {
-          currentTime: currentTime.toFixed(2),
-          minTime: minTime.toFixed(2),
-          maxTime: maxTime.toFixed(2),
-          step: dd.toFixed(2),
-          newTimeBeforeWrap: newTime.toFixed(2),
-        });
-
-        if (newTime < minTime) {
+        // If we're already at the start, the prev click should go to the end of the loop.
+        if (currentTime <= minTime) {
+          newTime = maxTime;
+        } else if (newTime < minTime) {
+          // Otherwise, if the calculated jump undershoots, wrap it using the original modulo logic.
           newTime = maxTime - ((minTime - newTime) % validRange);
-          console.log(`Time wrapped to: ${newTime.toFixed(2)}`);
         }
 
+        console.log(
+          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
+        );
         tl.time(newTime);
       });
     }
