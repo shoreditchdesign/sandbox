@@ -870,7 +870,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const validRange = maxTime - minTime;
 
         // Calculate the start time of the *previous* animation segment
-        let newTime = (Math.ceil(currentTime / dd) - 1) * dd;
+        let newTime = (Math.floor(currentTime / dd) - 1) * dd;
 
         // Handle wrapping around to the end
         if (currentTime <= minTime) {
