@@ -802,17 +802,22 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       tl.to(
         item,
-        { scale: 1.1, yPercent: -30, "--background-opacity": 0.1 },
+        { scale: 1.1, yPercent: -15, "--background-opacity": 0.1 },
         "<" + dd,
       );
       tl.to(
         item,
-        { scale: 1.2, yPercent: -60, "--background-opacity": 0 },
+        { scale: 1.2, yPercent: -30, "--background-opacity": 0 },
         "<" + dd,
       );
       tl.to(
         item,
-        { scale: 1.3, yPercent: -90, opacity: 0, filter: "blur(0.5rem)" },
+        {
+          scale: 1.3,
+          yPercent: -45,
+          opacity: 0,
+          filter: "blur(0.5rem)",
+        },
         "<" + dd,
       );
     }
