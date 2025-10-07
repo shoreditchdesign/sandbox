@@ -613,7 +613,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       992: {
         slidesPerView: 2.5,
-        spaceBetween: 24,
+        spaceBetween: 16,
       },
     },
   });
