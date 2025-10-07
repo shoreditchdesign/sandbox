@@ -565,3 +565,56 @@ document.addEventListener("DOMContentLoaded", function () {
     clickInitialiser();
   }, 100);
 });
+
+//Swiper
+document.addEventListener("DOMContentLoaded", function () {
+  var mySwiper = new Swiper("#timeline-swiper", {
+    slidesPerGroup: 1,
+    grabCursor: true,
+    allowTouchMove: true,
+    autoHeight: false,
+    watchOverflow: true,
+    slidesOffsetBefore: 0,
+    slidesOffsetAfter: 0,
+    centeredSlides: false,
+    loop: false,
+    resistanceRatio: 0,
+    pagination: {
+      el: "#timeline-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: "#timeline-next",
+      prevEl: "#timeline-prev",
+    },
+    a11y: {
+      enabled: true,
+      prevSlideMessage: "Previous slide",
+      nextSlideMessage: "Next slide",
+      firstSlideMessage: "This is the first slide",
+      lastSlideMessage: "This is the last slide",
+      paginationBulletMessage: "Go to slide {{index}}",
+      notificationClass: "swiper-notification",
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true,
+    },
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+    breakpoints: {
+      0: {
+        slidesPerView: 1,
+        spaceBetween: 16,
+      },
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 16,
+      },
+      992: {
+        slidesPerView: 2.5,
+        spaceBetween: 24,
+      },
+    },
+  });
+});

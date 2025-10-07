@@ -1,9 +1,30 @@
 [data-scroll-overflow="mobile"] {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 @media screen and (max-width: 768px) {
-  [data-scroll-overflow="mobile"] {
-    overflow: auto;
-  }
+    [data-scroll-overflow="mobile"] {
+        overflow: auto;
+    }
+}
+
+/* Swiper Slide Styles */
+.swiper-slide {
+    transform: scale(0.95);
+    transition:
+        opacity 200ms,
+        transform 200ms;
+}
+
+.swiper-slide:nth-child(1) {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.swiper-slide:nth-child(2) {
+    opacity: 0.6;
+}
+
+.swiper-slide:nth-child(3) {
+    opacity: 0.4;
 }
