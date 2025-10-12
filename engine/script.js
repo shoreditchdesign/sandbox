@@ -87,11 +87,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const gridItems = Array.from(newsGrid.children);
   console.log(`Found ${gridItems.length} grid items`);
 
-  // Add 'extended' class to every 9th child (indexes 8, 17, 26, etc.)
+  // Add 'extended' class to every 9th item starting at index 0 (indexes 0, 9, 18, 27, etc.)
   gridItems.forEach((item, index) => {
-    if ((index + 1) % 9 === 0) {
+    if (index % 9 === 0) {
       item.classList.add("extended");
-      console.log(`Added 'extended' class to item at index ${index + 1}`);
+      console.log(`Added 'extended' class to item at index ${index}`);
     }
   });
 
