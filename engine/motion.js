@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const animatableElements = Array.from(slideElements).filter((element) => {
-      return !element.hasAttribute("data-motion-block");
+      return element.getAttribute("data-motion-slide") !== "blocked";
     });
 
     animatableElements.forEach((element, index) => {

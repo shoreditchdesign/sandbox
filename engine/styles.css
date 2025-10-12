@@ -14,6 +14,7 @@
 .s-nw_all-dyn-item.extended .c-nw_card .c-nw_image .c-nw_thumbnail {
     border-radius: var(--radius--radius-sm);
     overflow: clip;
+    aspect-ratio: 1 / 1;
 }
 
 .s-nw_all-dyn-item.extended .c-nw_card .c-nw_text {
