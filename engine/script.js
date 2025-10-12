@@ -70,3 +70,30 @@ document.addEventListener("DOMContentLoaded", function () {
   wrapper.remove();
   console.log("Clone operation complete, wrapper deleted");
 });
+
+//News Grid Extended Class
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, starting news grid extended class operation");
+
+  // Find the news grid
+  const newsGrid = document.querySelector("[data-news-grid]");
+  if (!newsGrid) {
+    console.log("News grid element not found, returning");
+    return;
+  }
+  console.log("News grid found:", newsGrid);
+
+  // Get all direct children of the news grid
+  const gridItems = Array.from(newsGrid.children);
+  console.log(`Found ${gridItems.length} grid items`);
+
+  // Add 'extended' class to every 9th child (indexes 8, 17, 26, etc.)
+  gridItems.forEach((item, index) => {
+    if ((index + 1) % 9 === 0) {
+      item.classList.add("extended");
+      console.log(`Added 'extended' class to item at index ${index + 1}`);
+    }
+  });
+
+  console.log("News grid extended class operation complete");
+});
