@@ -3,11 +3,12 @@
 }
 
 .s-nw_all-dyn-item.extended .c-nw_card {
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .s-nw_all-dyn-item.extended .c-nw_card .c-nw_image {
     flex-grow: 1;
+    max-width: 50%;
     padding: 0.75rem;
 }
 

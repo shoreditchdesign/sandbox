@@ -71,28 +71,58 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Clone operation complete, wrapper deleted");
 });
 
-//News Grid Extended Class
+//Dynamic Layouts
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, starting news grid extended class operation");
 
-  // Find the news grid
-  const newsGrid = document.querySelector("[data-news-grid]");
-  if (!newsGrid) {
+  // Find all news grids
+  const newsGrids = document.querySelectorAll("[data-news-grid]");
+  if (newsGrids.length === 0) {
     console.log("News grid element not found, returning");
     return;
   }
-  console.log("News grid found:", newsGrid);
+  console.log(`Found ${newsGrids.length} news grids`);
 
-  // Get all direct children of the news grid
-  const gridItems = Array.from(newsGrid.children);
-  console.log(`Found ${gridItems.length} grid items`);
+  // Process each news grid
+  newsGrids.forEach((newsGrid, gridIndex) => {
+    console.log(`Processing news grid ${gridIndex + 1}:`, newsGrid);
 
-  // Add 'extended' class to every 9th item starting at index 0 (indexes 0, 9, 18, 27, etc.)
-  gridItems.forEach((item, index) => {
-    if (index % 9 === 0) {
-      item.classList.add("extended");
-      console.log(`Added 'extended' class to item at index ${index}`);
+    // Get all direct children of the news grid
+    let gridItems = Array.from(newsGrid.children);
+    console.log(
+      `Found ${gridItems.length} grid items in grid ${gridIndex + 1}`,
+    );
+
+    // Check for data-news-offset attribute
+    const offset = newsGrid.getAttribute("data-news-offset");
+    if (offset) {
+      const offsetNum = parseInt(offset, 10);
+      if (!isNaN(offsetNum) && offsetNum > 0) {
+        console.log(
+          `Removing first ${offsetNum - 1} items from grid ${gridIndex + 1}`,
+        );
+        // Remove the first (offset - 1) items from the DOM
+        // If offset is 9, we remove items 0-7 (first 8 items)
+        const itemsToRemove = gridItems.slice(0, offsetNum - 1);
+        itemsToRemove.forEach((item) => item.remove());
+
+        // Update gridItems array to reflect remaining items
+        gridItems = Array.from(newsGrid.children);
+        console.log(
+          `${gridItems.length} items remaining in grid ${gridIndex + 1} after removal`,
+        );
+      }
     }
+
+    // Add 'extended' class to every 9th item starting at index 0 (indexes 0, 9, 18, 27, etc.)
+    gridItems.forEach((item, index) => {
+      if (index % 9 === 0) {
+        item.classList.add("extended");
+        console.log(
+          `Added 'extended' class to item at index ${index} in grid ${gridIndex + 1}`,
+        );
+      }
+    });
   });
 
   console.log("News grid extended class operation complete");
