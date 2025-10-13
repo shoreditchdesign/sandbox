@@ -1,4 +1,4 @@
-//GSAP for Tuck
+//GSAP for Navbar Tuck
 document.addEventListener("DOMContentLoaded", () => {
   const navbars = document.querySelectorAll(
     '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//GSAP to Slide
+//GSAP to Navbar Slide
 document.addEventListener("DOMContentLoaded", () => {
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -128,6 +128,68 @@ document.addEventListener("DOMContentLoaded", () => {
   animator();
 });
 
+//GSAP for Navbar Opacity Toggle
+document.addEventListener("DOMContentLoaded", function () {
+  let scrollTriggerInstance = null;
+
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const navbar = document.querySelector("[data-nav-element='navbar']");
+    const heroSection = document.querySelector("[data-section-hero]");
+
+    if (!navbar || !heroSection) {
+      console.warn("Navbar or hero section not found");
+      return;
+    }
+
+    // Kill existing ScrollTrigger if it exists
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+    }
+
+    // Check if at top of page and set opacity off
+    if (window.scrollY === 0) {
+      navbar.setAttribute("data-nav-opacity", "off");
+    }
+
+    scrollTriggerInstance = ScrollTrigger.create({
+      trigger: heroSection,
+      start: "top top",
+      end: "bottom top",
+      onEnter: () => {
+        navbar.setAttribute("data-nav-opacity", "on");
+      },
+      onLeaveBack: () => {
+        navbar.setAttribute("data-nav-opacity", "off");
+      },
+      markers: false,
+    });
+  }
+
+  initialiser();
+  animator();
+
+  // Reinitialize on window resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      console.log(
+        "Window resized - reinitializing navbar transparency ScrollTrigger",
+      );
+      animator();
+      ScrollTrigger.refresh();
+    }, 250);
+  });
+});
+
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
   const tickerWrap = document.querySelector("[data-ticker-wrap]");
@@ -190,6 +252,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the ticker
   setupTicker();
+});
+
+//GSAP for Sticky Headers
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const featuresWrap = document.querySelector("[data-features-wrap]");
+    const featuresHeader = document.querySelector("[data-features-header]");
+
+    if (!featuresWrap || !featuresHeader) {
+      console.warn("Features wrap or header not found");
+      return;
+    }
+
+    gsap.set(featuresHeader, { opacity: 1 });
+
+    ScrollTrigger.create({
+      trigger: featuresWrap,
+      start: "bottom bottom",
+      end: "bottom bottom-=1",
+      onEnter: () => {
+        gsap.to(featuresHeader, {
+          opacity: 0,
+          duration: 0.1,
+          ease: "power2.out",
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(featuresHeader, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+      markers: false,
+    });
+  }
+
+  initialiser();
+  animator();
 });
 
 //GSAP for Stacking Cards
@@ -267,6 +376,143 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+});
+
+//GSAP for Review Cards
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
+    const prevButton = document.querySelector("[data-review-prev]");
+    const nextButton = document.querySelector("[data-review-next]");
+    const duration = 0.5;
+    const delay = 2;
+    const dd = duration + delay;
+    const cardsPerView = 3;
+    let items = Array.from(component.querySelectorAll("[data-review-card]"));
+
+    if (items.length > 0 && items.length <= cardsPerView) {
+      const list = items[0].parentNode;
+      const originalItems = items.slice();
+
+      originalItems.forEach((item) => {
+        list.appendChild(item.cloneNode(true));
+      });
+
+      items = Array.from(component.querySelectorAll("[data-review-card]"));
+    }
+
+    let activeIndex = -1;
+    let zIndex = 12;
+
+    const tl = gsap.timeline({
+      defaults: { duration: duration, ease: "power1.inOut" },
+    });
+
+    for (let i = 0; i < items.length + cardsPerView; i++) {
+      activeIndex++;
+      if (activeIndex === items.length) activeIndex = 0;
+      const item = items[activeIndex];
+      zIndex--;
+      tl.set(
+        item,
+        {
+          scale: 1,
+          yPercent: 0,
+          "--background-opacity": 0.2,
+          opacity: 1,
+          filter: "blur(0rem)",
+          delay: 0,
+          zIndex: zIndex,
+        },
+        i * dd,
+      );
+      tl.to(
+        item,
+        { scale: 1.1, yPercent: -15, "--background-opacity": 0.1 },
+        "<" + dd,
+      );
+      tl.to(
+        item,
+        { scale: 1.2, yPercent: -30, "--background-opacity": 0 },
+        "<" + dd,
+      );
+      tl.to(
+        item,
+        {
+          scale: 1.3,
+          yPercent: -45,
+          opacity: 0,
+          filter: "blur(0.5rem)",
+        },
+        "<" + dd,
+      );
+    }
+
+    const mainTl = gsap.timeline({
+      repeat: -1,
+      onUpdate: () => {
+        const offset = dd * cardsPerView;
+        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
+          tl.time(offset - delay);
+        }
+      },
+    });
+    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
+
+    // Button click handlers
+    if (nextButton) {
+      nextButton.addEventListener("click", () => {
+        console.log("Next button clicked.");
+        const currentTime = tl.time();
+        const offset = dd * cardsPerView;
+        const minTime = offset - delay;
+        const maxTime = tl.duration() - offset;
+        const validRange = maxTime - minTime;
+
+        // Calculate the start time of the *next* animation segment
+        let newTime = (Math.floor(currentTime / dd) + 1) * dd;
+
+        // If we're already at the end, the next logical step is the beginning of the loop.
+        if (currentTime >= maxTime) {
+          newTime = minTime;
+        } else if (newTime > maxTime) {
+          // Otherwise, if the calculated jump overshoots, wrap it using the original modulo logic.
+          newTime = minTime + ((newTime - minTime) % validRange);
+        }
+
+        console.log(
+          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
+        );
+        tl.time(newTime);
+      });
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener("click", () => {
+        console.log("Prev button clicked.");
+        const currentTime = tl.time();
+        const offset = dd * cardsPerView;
+        const minTime = offset - delay;
+        const maxTime = tl.duration() - offset;
+        const validRange = maxTime - minTime;
+
+        // Calculate the start time of the *previous* animation segment
+        let newTime = (Math.floor(currentTime / dd) - 1) * dd;
+
+        // If we're already at the start, the prev click should go to the end of the loop.
+        if (currentTime <= minTime) {
+          newTime = maxTime;
+        } else if (newTime < minTime) {
+          // Otherwise, if the calculated jump undershoots, wrap it using the original modulo logic.
+          newTime = maxTime - ((minTime - newTime) % validRange);
+        }
+
+        console.log(
+          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
+        );
+        tl.time(newTime);
+      });
+    }
+  });
 });
 
 //GSAP for Headings
@@ -524,250 +770,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   initialiser();
   animator();
-});
-
-//GSAP for Sticky Headers
-document.addEventListener("DOMContentLoaded", () => {
-  function initialiser() {
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      console.warn("Script terminated due to missing libraries");
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-  }
-
-  function animator() {
-    const featuresWrap = document.querySelector("[data-features-wrap]");
-    const featuresHeader = document.querySelector("[data-features-header]");
-
-    if (!featuresWrap || !featuresHeader) {
-      console.warn("Features wrap or header not found");
-      return;
-    }
-
-    gsap.set(featuresHeader, { opacity: 1 });
-
-    ScrollTrigger.create({
-      trigger: featuresWrap,
-      start: "bottom bottom",
-      end: "bottom bottom-=1",
-      onEnter: () => {
-        gsap.to(featuresHeader, {
-          opacity: 0,
-          duration: 0.1,
-          ease: "power2.out",
-        });
-      },
-      onLeaveBack: () => {
-        gsap.to(featuresHeader, {
-          opacity: 1,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      },
-      markers: false,
-    });
-  }
-
-  initialiser();
-  animator();
-});
-
-//GSAP for Opacity Toggle
-document.addEventListener("DOMContentLoaded", function () {
-  let scrollTriggerInstance = null;
-
-  function initialiser() {
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      console.warn("Script terminated due to missing libraries");
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-  }
-
-  function animator() {
-    const navbar = document.querySelector("[data-nav-element='navbar']");
-    const heroSection = document.querySelector("[data-section-hero]");
-
-    if (!navbar || !heroSection) {
-      console.warn("Navbar or hero section not found");
-      return;
-    }
-
-    // Kill existing ScrollTrigger if it exists
-    if (scrollTriggerInstance) {
-      scrollTriggerInstance.kill();
-    }
-
-    // Check if at top of page and set opacity off
-    if (window.scrollY === 0) {
-      navbar.setAttribute("data-nav-opacity", "off");
-    }
-
-    scrollTriggerInstance = ScrollTrigger.create({
-      trigger: heroSection,
-      start: "top top",
-      end: "bottom top",
-      onEnter: () => {
-        navbar.setAttribute("data-nav-opacity", "on");
-      },
-      onLeaveBack: () => {
-        navbar.setAttribute("data-nav-opacity", "off");
-      },
-      markers: false,
-    });
-  }
-
-  initialiser();
-  animator();
-
-  // Reinitialize on window resize
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      console.log(
-        "Window resized - reinitializing navbar transparency ScrollTrigger",
-      );
-      animator();
-      ScrollTrigger.refresh();
-    }, 250);
-  });
-});
-
-//GSAP for Review Cards
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
-    const prevButton = document.querySelector("[data-review-prev]");
-    const nextButton = document.querySelector("[data-review-next]");
-    const duration = 0.5;
-    const delay = 2;
-    const dd = duration + delay;
-    const cardsPerView = 3;
-    let items = Array.from(component.querySelectorAll("[data-review-card]"));
-
-    if (items.length > 0 && items.length <= cardsPerView) {
-      const list = items[0].parentNode;
-      const originalItems = items.slice();
-
-      originalItems.forEach((item) => {
-        list.appendChild(item.cloneNode(true));
-      });
-
-      items = Array.from(component.querySelectorAll("[data-review-card]"));
-    }
-
-    let activeIndex = -1;
-    let zIndex = 12;
-
-    const tl = gsap.timeline({
-      defaults: { duration: duration, ease: "power1.inOut" },
-    });
-
-    for (let i = 0; i < items.length + cardsPerView; i++) {
-      activeIndex++;
-      if (activeIndex === items.length) activeIndex = 0;
-      const item = items[activeIndex];
-      zIndex--;
-      tl.set(
-        item,
-        {
-          scale: 1,
-          yPercent: 0,
-          "--background-opacity": 0.2,
-          opacity: 1,
-          filter: "blur(0rem)",
-          delay: 0,
-          zIndex: zIndex,
-        },
-        i * dd,
-      );
-      tl.to(
-        item,
-        { scale: 1.1, yPercent: -15, "--background-opacity": 0.1 },
-        "<" + dd,
-      );
-      tl.to(
-        item,
-        { scale: 1.2, yPercent: -30, "--background-opacity": 0 },
-        "<" + dd,
-      );
-      tl.to(
-        item,
-        {
-          scale: 1.3,
-          yPercent: -45,
-          opacity: 0,
-          filter: "blur(0.5rem)",
-        },
-        "<" + dd,
-      );
-    }
-
-    const mainTl = gsap.timeline({
-      repeat: -1,
-      onUpdate: () => {
-        const offset = dd * cardsPerView;
-        if (tl.time() < offset - delay || tl.time() > tl.duration() - offset) {
-          tl.time(offset - delay);
-        }
-      },
-    });
-    mainTl.to(tl, { duration: tl.duration(), ease: "none" });
-
-    // Button click handlers
-    if (nextButton) {
-      nextButton.addEventListener("click", () => {
-        console.log("Next button clicked.");
-        const currentTime = tl.time();
-        const offset = dd * cardsPerView;
-        const minTime = offset - delay;
-        const maxTime = tl.duration() - offset;
-        const validRange = maxTime - minTime;
-
-        // Calculate the start time of the *next* animation segment
-        let newTime = (Math.floor(currentTime / dd) + 1) * dd;
-
-        // If we're already at the end, the next logical step is the beginning of the loop.
-        if (currentTime >= maxTime) {
-          newTime = minTime;
-        } else if (newTime > maxTime) {
-          // Otherwise, if the calculated jump overshoots, wrap it using the original modulo logic.
-          newTime = minTime + ((newTime - minTime) % validRange);
-        }
-
-        console.log(
-          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
-        );
-        tl.time(newTime);
-      });
-    }
-
-    if (prevButton) {
-      prevButton.addEventListener("click", () => {
-        console.log("Prev button clicked.");
-        const currentTime = tl.time();
-        const offset = dd * cardsPerView;
-        const minTime = offset - delay;
-        const maxTime = tl.duration() - offset;
-        const validRange = maxTime - minTime;
-
-        // Calculate the start time of the *previous* animation segment
-        let newTime = (Math.floor(currentTime / dd) - 1) * dd;
-
-        // If we're already at the start, the prev click should go to the end of the loop.
-        if (currentTime <= minTime) {
-          newTime = maxTime;
-        } else if (newTime < minTime) {
-          // Otherwise, if the calculated jump undershoots, wrap it using the original modulo logic.
-          newTime = maxTime - ((minTime - newTime) % validRange);
-        }
-
-        console.log(
-          `Jumping from ${currentTime.toFixed(2)}s to ${newTime.toFixed(2)}s`,
-        );
-        tl.time(newTime);
-      });
-    }
-  });
 });
