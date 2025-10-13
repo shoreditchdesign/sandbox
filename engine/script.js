@@ -73,53 +73,106 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Dynamic Layouts
 document.addEventListener("DOMContentLoaded", function () {
-  // Find all news grids
-  const newsGrids = document.querySelectorAll("[data-news-grid]");
-  if (newsGrids.length === 0) {
-    return;
+  // Remove offset items from grid
+  function remove(grid) {
+    const offset = grid.getAttribute("data-news-offset");
+    if (!offset) return;
+
+    const offsetNum = parseInt(offset, 10);
+    if (isNaN(offsetNum) || offsetNum <= 0) return;
+
+    const gridItems = Array.from(grid.children);
+    const itemsToRemove = gridItems.slice(0, offsetNum - 1);
+    itemsToRemove.forEach((item) => item.remove());
   }
 
-  // Process each news grid
-  newsGrids.forEach((newsGrid, gridIndex) => {
-    // Get all direct children of the news grid
-    let gridItems = Array.from(newsGrid.children);
-
-    // Check for data-news-offset attribute
-    const offset = newsGrid.getAttribute("data-news-offset");
-    if (offset) {
-      const offsetNum = parseInt(offset, 10);
-      if (!isNaN(offsetNum) && offsetNum > 0) {
-        // Remove the first (offset - 1) items from the DOM
-        // If offset is 9, we remove items 0-7 (first 8 items)
-        const itemsToRemove = gridItems.slice(0, offsetNum - 1);
-        itemsToRemove.forEach((item) => item.remove());
-
-        // Update gridItems array to reflect remaining items
-        gridItems = Array.from(newsGrid.children);
-      }
-    }
-
-    // Get the interval from data-news-grid attribute (default to 10)
-    const intervalAttr = newsGrid.getAttribute("data-news-grid");
+  // Add 'wide' class to specific items based on interval
+  function layout(grid) {
+    const gridItems = Array.from(grid.children);
+    const intervalAttr = grid.getAttribute("data-news-grid");
     const interval =
       intervalAttr && !isNaN(parseInt(intervalAttr, 10))
         ? parseInt(intervalAttr, 10)
         : 10;
-    console.log(`Using interval of ${interval} for grid ${gridIndex + 1}`);
 
-    // Add 'wide' class to every nth item starting at index 0
-    // If interval is 10: indexes 0, 9, 18, 27, etc. (1st, 10th, 19th, 28th cards)
-    // If interval is 5: indexes 0, 4, 8, 12, etc. (1st, 5th, 9th, 13th cards)
     gridItems.forEach((item, index) => {
       if (index % (interval - 1) === 0 && index === 0) {
-        // First item always gets wide
         item.classList.add("wide");
       } else if (index > 0 && (index + 1) % interval === 0) {
-        // Every nth item after that (10th, 20th, etc.)
         item.classList.add("wide");
       }
     });
-  });
+  }
+
+  // Remove all 'wide' classes from grid
+  function reset(grid) {
+    const gridItems = Array.from(grid.children);
+    gridItems.forEach((item) => item.classList.remove("wide"));
+  }
+
+  // Check device and setup responsive behavior
+  function checkDevice(grid) {
+    const hasMobileAttr = grid.hasAttribute("data-grid-mobile");
+
+    // Check if should apply layout based on device
+    const shouldApply = () => {
+      if (!hasMobileAttr) return true;
+      const mediaQuery = window.matchMedia("(max-width: 768px)");
+      return mediaQuery.matches;
+    };
+
+    // Apply or reset layout based on device check
+    if (!shouldApply()) {
+      reset(grid);
+      return;
+    }
+    reset(grid);
+    layout(grid);
+
+    // Setup responsive listener if mobile attribute exists
+    if (hasMobileAttr) {
+      const mediaQuery = window.matchMedia("(max-width: 768px)");
+      const handleMediaQueryChange = (e) => {
+        if (e.matches) {
+          layout(grid);
+        } else {
+          reset(grid);
+        }
+      };
+      mediaQuery.addEventListener("change", handleMediaQueryChange);
+    }
+  }
+
+  // Process a single grid
+  function initialiseLayout(grid) {
+    remove(grid);
+    checkDevice(grid);
+  }
+
+  // Check pagination and setup load more buttons
+  function checkPagination() {
+    const loadMoreButtons = document.querySelectorAll("[data-news-load]");
+
+    loadMoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        // Find associated grid (assumes button is near/in grid context)
+        const grid = document.querySelector("[data-news-grid]");
+        if (!grid) return;
+
+        // Wait for new content to be added, then reprocess
+        setTimeout(() => {
+          checkDevice(grid);
+        }, 100);
+      });
+    });
+  }
+
+  // Main execution
+  const newsGrids = document.querySelectorAll("[data-news-grid]");
+  if (newsGrids.length === 0) return;
+
+  newsGrids.forEach((grid) => initialiseLayout(grid));
+  checkPagination();
 });
 
 //Query Parameters
