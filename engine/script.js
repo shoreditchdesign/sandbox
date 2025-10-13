@@ -155,19 +155,34 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check pagination and setup load more buttons
   function checkPagination() {
     const loadMoreButtons = document.querySelectorAll("[data-news-load]");
+    const grid = document.querySelector("[data-news-grid]");
+    if (!grid) return;
 
-    loadMoreButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        // Find associated grid (assumes button is near/in grid context)
-        const grid = document.querySelector("[data-news-grid]");
-        if (!grid) return;
-
-        // Wait for new content to be added, then reprocess
-        setTimeout(() => {
-          // When paginating, we need to recalculate from scratch
+    // Use MutationObserver to detect when new items are added
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length > 0) {
+          // New items were added, recalculate layout
           reset(grid);
           layout(grid);
-        }, 100);
+        }
+      });
+    });
+
+    // Start observing the grid for child additions
+    observer.observe(grid, {
+      childList: true,
+      subtree: false,
+    });
+
+    // Fallback: also add click listeners with longer delay
+    loadMoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        // Wait longer for Finsweet to load content
+        setTimeout(() => {
+          reset(grid);
+          layout(grid);
+        }, 500);
       });
     });
   }
