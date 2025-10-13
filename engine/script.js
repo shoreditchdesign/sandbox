@@ -96,9 +96,12 @@ document.addEventListener("DOMContentLoaded", function () {
         : 10;
 
     gridItems.forEach((item, index) => {
-      if (index % (interval - 1) === 0 && index === 0) {
+      // First item (index 0) gets wide
+      if (index === 0) {
         item.classList.add("wide");
-      } else if (index > 0 && (index + 1) % interval === 0) {
+      }
+      // Every 10th item after that (index 9, 19, 29, etc.) gets wide
+      else if ((index + 1) % interval === 0) {
         item.classList.add("wide");
       }
     });
@@ -161,7 +164,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Wait for new content to be added, then reprocess
         setTimeout(() => {
-          checkDevice(grid);
+          // When paginating, we need to recalculate from scratch
+          reset(grid);
+          layout(grid);
         }, 100);
       });
     });
