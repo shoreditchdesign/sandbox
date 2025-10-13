@@ -105,9 +105,17 @@ document.addEventListener("DOMContentLoaded", function () {
       intervalAttr && !isNaN(parseInt(intervalAttr, 10))
         ? parseInt(intervalAttr, 10)
         : 10;
+    console.log(`Using interval of ${interval} for grid ${gridIndex + 1}`);
 
+    // Add 'wide' class to every nth item starting at index 0
+    // If interval is 10: indexes 0, 9, 18, 27, etc. (1st, 10th, 19th, 28th cards)
+    // If interval is 5: indexes 0, 4, 8, 12, etc. (1st, 5th, 9th, 13th cards)
     gridItems.forEach((item, index) => {
-      if (index % interval === 0) {
+      if (index % (interval - 1) === 0 && index === 0) {
+        // First item always gets wide
+        item.classList.add("wide");
+      } else if (index > 0 && (index + 1) % interval === 0) {
+        // Every nth item after that (10th, 20th, etc.)
         item.classList.add("wide");
       }
     });
