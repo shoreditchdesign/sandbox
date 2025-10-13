@@ -606,7 +606,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     scrollTriggerInstance = ScrollTrigger.create({
       trigger: heroSection,
-      start: "top top-=200",
+      start: "top top",
       end: "bottom top",
       onEnter: () => {
         navbar.classList.remove("transparent");
