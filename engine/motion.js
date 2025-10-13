@@ -573,8 +573,10 @@ document.addEventListener("DOMContentLoaded", () => {
   animator();
 });
 
-//GSAP for Navbar Transparency
+//GSAP for Opacity Toggle
 document.addEventListener("DOMContentLoaded", function () {
+  let scrollTriggerInstance = null;
+
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -592,14 +594,19 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Check if at top of page on load and add transparent class
+    // Kill existing ScrollTrigger if it exists
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+    }
+
+    // Check if at top of page and add transparent class
     if (window.scrollY === 0) {
       navbar.classList.add("transparent");
     }
 
-    ScrollTrigger.create({
+    scrollTriggerInstance = ScrollTrigger.create({
       trigger: heroSection,
-      start: "top top",
+      start: "top top-=200",
       end: "bottom top",
       onEnter: () => {
         navbar.classList.remove("transparent");
@@ -613,6 +620,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   initialiser();
   animator();
+
+  // Reinitialize on window resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      console.log(
+        "Window resized - reinitializing navbar transparency ScrollTrigger",
+      );
+      animator();
+      ScrollTrigger.refresh();
+    }, 250);
+  });
 });
 
 //GSAP for Review Cards
