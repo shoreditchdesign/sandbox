@@ -122,9 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Query Parameters
 document.addEventListener("DOMContentLoaded", function () {
   const newsQueryElement = document.querySelector("[data-search-query]");
 
+  //Check if attribute exists
   if (!newsQueryElement) {
     return;
   }
@@ -134,8 +136,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (queryMatch && queryMatch[1]) {
     const decodedQuery = decodeURIComponent(queryMatch[1].replace(/\+/g, " "));
-
     newsQueryElement.textContent = decodedQuery;
   } else {
   }
+});
+
+//Sidebar Injection
+document.addEventListener("DOMContentLoaded", function () {
+  // Check for data-sidebar-source and data-sidebar-target
+  const sidebarSource = document.querySelector("[data-sidebar-source]");
+  const sidebarTarget = document.querySelector("[data-sidebar-target]");
+
+  if (!sidebarSource || !sidebarTarget) {
+    return;
+  }
+
+  // Store the original parent and next sibling to restore position later
+  const originalParent = sidebarSource.parentNode;
+  const originalNextSibling = sidebarSource.nextSibling;
+
+  // Define a media query for tablet and below (max-width 768px)
+  const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+  const handleMediaQueryChange = (e) => {
+    if (e.matches) {
+      // If screen is tablet or below, move the sidebar to the target
+      if (sidebarSource.parentNode !== sidebarTarget) {
+        sidebarTarget.appendChild(sidebarSource);
+      }
+    } else {
+      // If screen is larger than tablet, move it back to original position
+      if (sidebarSource.parentNode !== originalParent) {
+        if (originalNextSibling) {
+          originalParent.insertBefore(sidebarSource, originalNextSibling);
+        } else {
+          originalParent.appendChild(sidebarSource);
+        }
+      }
+    }
+  };
+
+  // Initial check
+  handleMediaQueryChange(mediaQuery);
+
+  // Listen for changes in the media query
+  mediaQuery.addEventListener("change", handleMediaQueryChange);
 });
