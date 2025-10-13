@@ -599,9 +599,9 @@ document.addEventListener("DOMContentLoaded", function () {
       scrollTriggerInstance.kill();
     }
 
-    // Check if at top of page and add transparent class
+    // Check if at top of page and set opacity off
     if (window.scrollY === 0) {
-      navbar.classList.add("transparent");
+      navbar.setAttribute("data-nav-opacity", "off");
     }
 
     scrollTriggerInstance = ScrollTrigger.create({
@@ -609,10 +609,10 @@ document.addEventListener("DOMContentLoaded", function () {
       start: "top top",
       end: "bottom top",
       onEnter: () => {
-        navbar.classList.remove("transparent");
+        navbar.setAttribute("data-nav-opacity", "on");
       },
       onLeaveBack: () => {
-        navbar.classList.add("transparent");
+        navbar.setAttribute("data-nav-opacity", "off");
       },
       markers: false,
     });
