@@ -96,12 +96,10 @@ document.addEventListener("DOMContentLoaded", function () {
         : 10;
 
     gridItems.forEach((item, index) => {
-      // First item (index 0) gets wide
-      if (index === 0) {
-        item.classList.add("wide");
-      }
-      // Every 10th item after that (index 9, 19, 29, etc.) gets wide
-      else if ((index + 1) % interval === 0) {
+      const groupNumber = Math.floor(index / interval);
+      const positionInGroup = index % interval;
+
+      if (positionInGroup === 0 || positionInGroup === interval - 1) {
         item.classList.add("wide");
       }
     });

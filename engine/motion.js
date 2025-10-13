@@ -128,186 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
   animator();
 });
 
-//GSAP for Image Sequence
-document.addEventListener("DOMContentLoaded", () => {
-  // Configuration
-  const config = {
-    selectors: {
-      chapter: {
-        container: '[data-sq-list="trigger"]',
-        items: '[data-sq-index][data-sq-item="trigger"]',
-      },
-      image: {
-        container: '[data-sq-list="image"]',
-        items: '[data-sq-index][data-sq-item="image"]',
-      },
-    },
-    animation: {
-      duration: 0.75,
-      ease: "power2.inOut",
-      force3D: true,
-    },
-  };
-
-  // Initializers
-  function initChapterAnimations() {
-    console.log("Initializing chapter animations");
-
-    // Check if GSAP and ScrollTrigger are available
-    if (!window.gsap) {
-      console.error("GSAP not found. Please ensure it is loaded.");
-      return;
-    }
-
-    // Register ScrollTrigger plugin
-    if (!window.ScrollTrigger) {
-      console.error(
-        "ScrollTrigger plugin not found. Please ensure it is loaded.",
-      );
-      return;
-    }
-
-    // Register the ScrollTrigger plugin with GSAP
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Get DOM elements
-    const chapterItems = document.querySelectorAll(
-      `${config.selectors.chapter.container} ${config.selectors.chapter.items}`,
-    );
-    const imageItems = document.querySelectorAll(
-      `${config.selectors.image.container} ${config.selectors.image.items}`,
-    );
-
-    console.log("Chapter items found:", chapterItems.length);
-    console.log("Image items found:", imageItems.length);
-
-    // Validate DOM elements
-    if (!chapterItems.length || !imageItems.length) {
-      console.warn("Image sequence not found");
-      return;
-    }
-
-    // Initialize images
-    initImageStates(imageItems);
-
-    // Set up scroll triggers for chapters
-    createImageScrollBatch(chapterItems, imageItems);
-  }
-
-  function initImageStates(items) {
-    console.log("Initializing image states");
-
-    // On mobile, show all images
-    if (window.innerWidth <= 991) {
-      gsap.set(items, { opacity: 1, force3D: config.animation.force3D });
-      return;
-    }
-
-    gsap.set(items, { opacity: 0, force3D: config.animation.force3D });
-    gsap.set(items[0], { opacity: 1, force3D: config.animation.force3D }); // First image visible
-  }
-
-  function createImageScrollBatch(chapterItems, imageItems) {
-    if (window.innerWidth <= 991) {
-      console.log("Mobile detected - skipping batch triggers");
-      return;
-    }
-
-    console.log("Creating batch scroll triggers");
-    const lastIndex = chapterItems.length;
-
-    // Batch for entering (scrolling down)
-    ScrollTrigger.batch(chapterItems, {
-      start: "top center",
-      onEnter: (elements) => {
-        elements.forEach((element, idx) => {
-          const currentIndex = Array.from(chapterItems).indexOf(element) + 1;
-          console.log("Batch enter triggered for index:", currentIndex);
-          handleItemEnter(currentIndex, lastIndex, imageItems);
-        });
-      },
-      onLeaveBack: (elements) => {
-        elements.forEach((element, idx) => {
-          const currentIndex = Array.from(chapterItems).indexOf(element) + 1;
-          console.log("Batch leave back triggered for index:", currentIndex);
-          handleItemLeaveBack(currentIndex, lastIndex, imageItems);
-        });
-      },
-      markers: false,
-      id: "chapter-batch",
-    });
-  }
-
-  function handleItemEnter(currentIndex, lastIndex, items) {
-    if (currentIndex <= 1) return;
-
-    console.log("Handling enter for index:", currentIndex);
-
-    // Create and play transition animation
-    const timeline = createTransitionTimeline(
-      items[currentIndex - 2], // Previous item
-      items[currentIndex - 1], // Current item
-    );
-
-    timeline.play();
-  }
-
-  function handleItemLeaveBack(currentIndex, lastIndex, items) {
-    if (currentIndex <= 1) {
-      console.log("Skipping leave back for first chapter");
-      return;
-    }
-
-    console.log("Handling leave back for index:", currentIndex);
-
-    // Create and play transition animation (reverse direction)
-    const timeline = createTransitionTimeline(
-      items[currentIndex - 1], // Current item
-      items[currentIndex - 2], // Previous item
-    );
-
-    timeline.play();
-  }
-
-  function createTransitionTimeline(fadeOutItem, fadeInItem) {
-    console.log("Creating transition timeline");
-
-    const tl = gsap.timeline();
-
-    tl.to(fadeOutItem, {
-      opacity: 0,
-      duration: config.animation.duration / 2,
-      ease: config.animation.ease,
-      force3D: config.animation.force3D,
-    });
-
-    tl.to(
-      fadeInItem,
-      {
-        opacity: 1,
-        duration: config.animation.duration / 2,
-        ease: config.animation.ease,
-        force3D: config.animation.force3D,
-      },
-      `-=${config.animation.duration / 4}`,
-    ); // Slight overlap for smoother transition
-
-    return tl;
-  }
-
-  // Initialize animation
-  initChapterAnimations();
-
-  // Cleanup function for SPA environments
-  function cleanup() {
-    console.log("Cleaning up ScrollTriggers");
-    ScrollTrigger.killAll();
-  }
-
-  // Expose cleanup for external use if needed
-  window.imageSequenceCleanup = cleanup;
-});
-
 //GSAP for Ticker
 document.addEventListener("DOMContentLoaded", () => {
   const tickerWrap = document.querySelector("[data-ticker-wrap]");
@@ -744,6 +564,48 @@ document.addEventListener("DOMContentLoaded", () => {
           duration: 0.3,
           ease: "power2.out",
         });
+      },
+      markers: false,
+    });
+  }
+
+  initialiser();
+  animator();
+});
+
+//GSAP for Navbar Transparency
+document.addEventListener("DOMContentLoaded", function () {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const navbar = document.querySelector("[data-nav-element='navbar']");
+    const heroSection = document.querySelector("[data-section-hero]");
+
+    if (!navbar || !heroSection) {
+      console.warn("Navbar or hero section not found");
+      return;
+    }
+
+    // Check if at top of page on load and add transparent class
+    if (window.scrollY === 0) {
+      navbar.classList.add("transparent");
+    }
+
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: "top top",
+      end: "bottom top",
+      onEnter: () => {
+        navbar.classList.remove("transparent");
+      },
+      onLeaveBack: () => {
+        navbar.classList.add("transparent");
       },
       markers: false,
     });
