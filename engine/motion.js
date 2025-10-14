@@ -301,6 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
   animator();
 });
 
+//check
+
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
