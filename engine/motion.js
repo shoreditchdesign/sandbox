@@ -378,6 +378,69 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//GSAP for Progress Bar
+document.addEventListener("DOMContentLoaded", function () {
+  // Get references to the elements
+  const progressContainer = document.querySelector(
+    '[data-duration-el="progress"]',
+  );
+  const progressBar = document.querySelector('[data-duration-el="bar"]');
+  const scrollContent = document.querySelector('[data-duration-el="scroll"]');
+
+  // Initialize GSAP
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Check if content is long enough to need a progress bar
+  const checkContentHeight = () => {
+    if (!scrollContent || !progressBar) return;
+
+    // Get content height and viewport height
+    const contentHeight = scrollContent.offsetHeight;
+    const viewportHeight = window.innerHeight;
+
+    // If content is less than 120vh, hide progress bar and skip animation
+    if (contentHeight < viewportHeight * 1.2) {
+      console.log("Content too short for progress bar, hiding");
+      gsap.set(progressBar, { width: 0 });
+      if (progressContainer) {
+        progressContainer.style.display = "none";
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  // Set initial state
+  gsap.set(progressBar, { width: 0 });
+
+  // Only create scroll animation if content is long enough
+  if (checkContentHeight()) {
+    // Create the scroll animation
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: scrollContent,
+        start: "top top",
+        end: "bottom 70%",
+        scrub: true,
+        onEnter: () => console.log("Scroll content entered viewport"),
+        onLeave: () => console.log("Scroll content left viewport"),
+        onEnterBack: () => console.log("Scroll content entered viewport again"),
+        onLeaveBack: () => console.log("Scroll content left viewport again"),
+      },
+    });
+
+    // Animation to scale the progress bar
+    tl.to(progressBar, {
+      width: "100%",
+      ease: "none",
+    });
+  }
+
+  // Update on resize
+  window.addEventListener("resize", checkContentHeight);
+});
+
 //GSAP for Review Cards
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
