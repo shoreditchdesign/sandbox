@@ -382,10 +382,10 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   // Get references to the elements
   const progressContainer = document.querySelector(
-    '[data-duration-el="progress"]',
+    '[data-progress-el="progress"]',
   );
-  const progressBar = document.querySelector('[data-duration-el="bar"]');
-  const scrollContent = document.querySelector('[data-duration-el="scroll"]');
+  const progressBar = document.querySelector('[data-progress-el="bar"]');
+  const scrollContent = document.querySelector('[data-progress-el="scroll"]');
 
   // Initialize GSAP
   gsap.registerPlugin(ScrollTrigger);
