@@ -383,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get references to the elements
   const progressContainer = document.querySelector("[data-progress-wrap]");
   const progressBar = document.querySelector("[data-progress-bar]");
-  const scrollContent = document.querySelector("[data-progress-scroll]");
+  const scrollContent = document.querySelector("[data-progress-section]");
   const progressArray = document.querySelector("[data-progress-array]");
   const progressCells = progressArray
     ? progressArray.querySelectorAll("[data-progress-cell]")
