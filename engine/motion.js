@@ -414,12 +414,9 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   };
 
-  // Set initial state
   gsap.set(progressBar, { width: 0 });
 
-  // Only create scroll animation if content is long enough
   if (checkContentHeight()) {
-    // Create the scroll animation
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: scrollContent,
@@ -430,6 +427,19 @@ document.addEventListener("DOMContentLoaded", function () {
         onLeave: () => console.log("Scroll content left viewport"),
         onEnterBack: () => console.log("Scroll content entered viewport again"),
         onLeaveBack: () => console.log("Scroll content left viewport again"),
+        onUpdate: (self) => {
+          if (cellCount > 0) {
+            const currentSegment = Math.floor(self.progress * cellCount);
+
+            progressCells.forEach((cell, index) => {
+              if (index < currentSegment) {
+                cell.setAttribute("data-progress-cell", "on");
+              } else {
+                cell.setAttribute("data-progress-cell", "off");
+              }
+            });
+          }
+        },
       },
     });
 
