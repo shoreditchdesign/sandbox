@@ -380,7 +380,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
-  // Get references to the elements
   const progressContainer = document.querySelector("[data-progress-wrap]");
   const progressBar = document.querySelector("[data-progress-bar]");
   const scrollContent = document.querySelector("[data-progress-section]");
@@ -390,20 +389,15 @@ document.addEventListener("DOMContentLoaded", function () {
     : [];
   const cellCount = progressCells.length;
 
-  // Initialize GSAP
   gsap.registerPlugin(ScrollTrigger);
 
-  // Check if content is long enough to need a progress bar
   const checkContentHeight = () => {
     if (!scrollContent || !progressBar) return;
 
-    // Get content height and viewport height
     const contentHeight = scrollContent.offsetHeight;
     const viewportHeight = window.innerHeight;
 
-    // If content is less than 120vh, hide progress bar and skip animation
     if (contentHeight < viewportHeight * 1.2) {
-      console.log("Content too short for progress bar, hiding");
       gsap.set(progressBar, { width: 0 });
       if (progressContainer) {
         progressContainer.style.display = "none";
@@ -423,10 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
         start: "top top",
         end: "bottom 70%",
         scrub: true,
-        onEnter: () => console.log("Scroll content entered viewport"),
-        onLeave: () => console.log("Scroll content left viewport"),
-        onEnterBack: () => console.log("Scroll content entered viewport again"),
-        onLeaveBack: () => console.log("Scroll content left viewport again"),
+
         onUpdate: (self) => {
           if (cellCount > 0) {
             // Calculate which segment we're in (0 to cellCount-1)
@@ -436,23 +427,12 @@ document.addEventListener("DOMContentLoaded", function () {
               cellCount - 1,
             );
 
-            console.log(
-              "Progress:",
-              self.progress,
-              "Current Segment:",
-              currentSegment,
-              "Cell Count:",
-              cellCount,
-            );
-
-            // Toggle cells - only current segment is "on", all others are "off"
+            // Toggle cells
             progressCells.forEach((cell, index) => {
               if (index === currentSegment) {
                 cell.setAttribute("data-progress-cell", "on");
-                console.log("Setting cell", index, "to ON");
               } else {
                 cell.setAttribute("data-progress-cell", "off");
-                console.log("Setting cell", index, "to OFF");
               }
             });
           }
