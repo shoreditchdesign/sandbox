@@ -281,12 +281,10 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   window.openFirstAccordion = function () {
-    console.log("Opening first accordion in each component");
     const components = document.querySelectorAll("[data-acc-component]");
     components.forEach((component) => {
       const firstToggle = component.querySelector("[data-acc-toggle]");
       if (firstToggle) {
-        console.log("Opening first toggle in component:", component);
         openAccordion(firstToggle);
       }
     });

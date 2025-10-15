@@ -181,9 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      console.log(
-        "Window resized - reinitializing navbar transparency ScrollTrigger",
-      );
+      console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
       animator();
       ScrollTrigger.refresh();
     }, 250);
@@ -200,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  console.log("Found ticker elements");
   const originalContent = tickerItem.outerHTML;
 
   function calculateRequiredCopies() {
@@ -208,10 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemWidth = tickerItem.offsetWidth;
     // Create a sequence 5 times the viewport width
     const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
-
-    console.log(
-      `Viewport width: ${viewportWidth}, Item width: ${itemWidth}, Copies needed: ${copiesNeeded}`,
-    );
 
     return {
       viewportWidth,
@@ -221,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupTicker() {
-    console.log("Setting up ticker");
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
     tickerWrap.innerHTML = "";
@@ -235,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Total width of the sequence
     const totalWidth = itemWidth * copiesNeeded;
-    console.log(`Total ticker width: ${totalWidth}px`);
 
     gsap.to(tickerWrap, {
       x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
@@ -246,8 +237,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(tickerWrap, { x: 0 });
       },
     });
-
-    console.log("Ticker animation started");
   }
 
   // Initialize the ticker
@@ -306,18 +295,14 @@ document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
   function sequenceInitialiser() {
     if (window.innerWidth <= 768) {
-      console.log("Tablet/mobile detected - skipping sequence initialization");
       return;
     }
 
-    console.log("Initializing all sections...");
     const scrollSection = document.querySelectorAll("[data-stack-section]");
     scrollSection.forEach((section) => {
       const wrapper = section.querySelector("[data-stack-wrap]");
       const list = wrapper.querySelector("[data-stack-list]");
       const items = list.querySelectorAll("[data-stack-card]");
-      console.log("Initializing section:", section);
-      console.log("Found items:", items.length);
       sectionInitialiser(section, items);
     });
   }
@@ -327,22 +312,18 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      console.log("Screen resized - reinitializing all ScrollTriggers");
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       sequenceInitialiser();
     }, 250);
   });
 
   function sectionInitialiser(section, items) {
-    console.log("Setting up vertical scroll for", items.length, "items");
     const wrapper = section.querySelector("[data-stack-wrap]");
     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
     wrapper.style.height = dynamicHeight;
-    console.log("Set wrapper height to:", dynamicHeight);
     items.forEach((item, index) => {
       if (index !== 0) {
         gsap.set(item, { yPercent: 100 });
-        console.log("Set item", index, "to yPercent: 100");
       }
     });
     const timeline = gsap.timeline({
@@ -359,7 +340,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     items.forEach((item, index) => {
-      console.log("Adding animation for item", index);
       if (index < items.length - 1) {
         timeline.to(item, {
           opacity: 0,

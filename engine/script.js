@@ -12,12 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Tab Injection
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, starting clone operation");
-
   // Find wrapper element
   const wrapper = document.querySelector('[data-clone-source="wrap"]');
   if (!wrapper) {
-    console.log("Wrapper element not found, returning");
+    console.warn("Tab Injection: Wrapper not found");
     return;
   }
   console.log("Wrapper found:", wrapper);
