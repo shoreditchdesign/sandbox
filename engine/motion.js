@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
       onEnter: () => {
         gsap.to(featuresHeader, {
           opacity: 0,
-          duration: 0.3,
+          duration: 0.1,
           ease: "power2.out",
         });
       },
