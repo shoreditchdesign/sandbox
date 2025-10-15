@@ -360,19 +360,81 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
-  const progressContainer = document.querySelector("[data-progress-wrap]");
-  const progressBar = document.querySelector("[data-progress-bar]");
-  const scrollContent = document.querySelector("[data-progress-section]");
-  const progressArray = document.querySelector("[data-progress-array]");
-  const progressCells = progressArray
-    ? progressArray.querySelectorAll("[data-progress-cell]")
-    : [];
-  const cellCount = progressCells.length;
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
 
-  gsap.registerPlugin(ScrollTrigger);
+    window.barAnimator = function (
+      bar,
+      trigger,
+      start = "top top",
+      end = "bottom 70%",
+    ) {
+      gsap.set(bar, { width: 0 });
 
-  const checkContentHeight = () => {
-    if (!scrollContent || !progressBar) return;
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: trigger,
+          start: start,
+          end: end,
+          scrub: true,
+        },
+      });
+
+      tl.to(bar, {
+        width: "100%",
+        ease: "none",
+      });
+
+      return tl;
+    };
+
+    window.cellAnimator = function (
+      cells,
+      trigger,
+      start = "top top",
+      end = "bottom 70%",
+    ) {
+      if (!cells || cells.length === 0) return null;
+
+      const cellCount = cells.length;
+
+      ScrollTrigger.create({
+        trigger: trigger,
+        start: start,
+        end: end,
+        scrub: true,
+        onUpdate: (self) => {
+          const currentSegment = Math.min(
+            Math.floor(self.progress * cellCount),
+            cellCount - 1,
+          );
+
+          cells.forEach((cell, index) => {
+            if (index === currentSegment) {
+              cell.setAttribute("data-progress-cell", "on");
+            } else {
+              cell.setAttribute("data-progress-cell", "off");
+            }
+          });
+        },
+      });
+    };
+  }
+
+  function animator() {
+    const progressContainer = document.querySelector("[data-progress-wrap]");
+    const progressBar = document.querySelector("[data-progress-bar]");
+    const scrollContent = document.querySelector("[data-progress-section]");
+    const progressArray = document.querySelector("[data-progress-array]");
+
+    if (!scrollContent || !progressBar) {
+      console.warn("Progress Bar: Required elements not found");
+      return;
+    }
 
     const contentHeight = scrollContent.offsetHeight;
     const viewportHeight = window.innerHeight;
@@ -382,53 +444,30 @@ document.addEventListener("DOMContentLoaded", function () {
       if (progressContainer) {
         progressContainer.style.display = "none";
       }
-      return false;
+      return;
     }
 
-    return true;
-  };
+    window.barAnimator(progressBar, scrollContent);
 
-  gsap.set(progressBar, { width: 0 });
-
-  if (checkContentHeight()) {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: scrollContent,
-        start: "top top",
-        end: "bottom 70%",
-        scrub: true,
-
-        onUpdate: (self) => {
-          if (cellCount > 0) {
-            // Calculate which segment we're in (0 to cellCount-1)
-            // Use Math.min to clamp at last cell when progress = 1
-            const currentSegment = Math.min(
-              Math.floor(self.progress * cellCount),
-              cellCount - 1,
-            );
-
-            // Toggle cells
-            progressCells.forEach((cell, index) => {
-              if (index === currentSegment) {
-                cell.setAttribute("data-progress-cell", "on");
-              } else {
-                cell.setAttribute("data-progress-cell", "off");
-              }
-            });
-          }
-        },
-      },
-    });
-
-    // Animation to scale the progress bar
-    tl.to(progressBar, {
-      width: "100%",
-      ease: "none",
-    });
+    if (progressArray) {
+      const progressCells = progressArray.querySelectorAll(
+        "[data-progress-cell]",
+      );
+      window.cellAnimator(progressCells, scrollContent);
+    }
   }
 
-  // Update on resize
-  window.addEventListener("resize", checkContentHeight);
+  initialiser();
+  animator();
+
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      animator();
+    }, 250);
+  });
 });
 
 //GSAP for Review Cards
