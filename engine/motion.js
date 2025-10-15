@@ -381,11 +381,14 @@ document.addEventListener("DOMContentLoaded", function () {
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
   // Get references to the elements
-  const progressContainer = document.querySelector(
-    '[data-progress-el="progress"]',
-  );
-  const progressBar = document.querySelector('[data-progress-el="bar"]');
-  const scrollContent = document.querySelector('[data-progress-el="scroll"]');
+  const progressContainer = document.querySelector("[data-progress-wrap]");
+  const progressBar = document.querySelector("[data-progress-bar]");
+  const scrollContent = document.querySelector("[data-progress-scroll]");
+  const progressArray = document.querySelector("[data-progress-array]");
+  const progressCells = progressArray
+    ? progressArray.querySelectorAll("[data-progress-cell]")
+    : [];
+  const cellCount = progressCells.length;
 
   // Initialize GSAP
   gsap.registerPlugin(ScrollTrigger);
