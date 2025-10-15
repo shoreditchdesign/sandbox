@@ -251,3 +251,58 @@ document.addEventListener("DOMContentLoaded", function () {
   // Listen for changes in the media query
   mediaQuery.addEventListener("change", handleMediaQueryChange);
 });
+
+//Countup Animation
+document.addEventListener("DOMContentLoaded", function () {
+  function initStatCells() {
+    const statArrays = document.querySelectorAll("[data-stat-array]");
+
+    statArrays.forEach((array) => {
+      const statCells = array.querySelectorAll("[data-stat-cell]");
+
+      statCells.forEach((cell, index) => {
+        const finalNumber = parseInt(cell.textContent) || 0;
+        const startNumber = Math.round(finalNumber * 0.7);
+
+        // Create unique ID for each cell
+        const cellId = `stat-${Date.now()}-${index}`;
+        cell.id = cellId;
+
+        // Create CountUp instance
+        const counter = new CountUp(cellId, startNumber, finalNumber, 0, 2);
+
+        if (!counter.error) {
+          createScrollTrigger(array, counter, index);
+        }
+      });
+    });
+  }
+
+  function createScrollTrigger(array, counter, index) {
+    const staggerDelay = index * 100;
+
+    // Reset on scroll back
+    ScrollTrigger.create({
+      trigger: array,
+      start: "top bottom",
+      end: "bottom top",
+      onLeaveBack: () => {
+        counter.reset();
+      },
+    });
+
+    // Start on scroll down
+    ScrollTrigger.create({
+      trigger: array,
+      start: "top 80%",
+      end: "bottom top",
+      onEnter: () => {
+        setTimeout(() => {
+          counter.start();
+        }, staggerDelay);
+      },
+    });
+  }
+
+  initStatCells();
+});
