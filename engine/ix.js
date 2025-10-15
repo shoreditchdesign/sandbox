@@ -519,13 +519,105 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Unified function to switch tabs - used by both clicks and autoplay
+  function switchToTab(isolatedTab, targetIndex, duration = null) {
+    const type = isolatedTab.getAttribute("data-tab-type");
+    const name = isolatedTab.getAttribute("data-tab-name");
+
+    // Get ALL links and panes from THIS isolated tab ONLY (direct children)
+    const tabMenuContainer = isolatedTab.querySelector("[data-tab-menu]");
+    const tabContentContainer = isolatedTab.querySelector("[data-tab-content]");
+
+    const sameTabLinks = tabMenuContainer
+      ? Array.from(tabMenuContainer.children).filter((child) =>
+          child.hasAttribute("data-tab-link"),
+        )
+      : [];
+    const sameTabPanes = tabContentContainer
+      ? Array.from(tabContentContainer.children).filter((child) =>
+          child.hasAttribute("data-tab-pane"),
+        )
+      : [];
+
+    // Find the target link
+    const targetLink = sameTabLinks.find(
+      (link) => link.getAttribute("data-tab-link") === String(targetIndex),
+    );
+
+    // Hide all other links in SAME tab, show target link
+    sameTabLinks.forEach((link) => {
+      if (link === targetLink) {
+        link.setAttribute("data-tab-state", "show");
+        link.classList.add("active");
+
+        // PROGRESS BAR ANIMATION - Reset and animate if data-tab-border exists
+        const progressBar = link.querySelector("[data-tab-border]");
+        if (progressBar && duration && window.gsap) {
+          // Reset to 0 width
+          window.gsap.set(progressBar, { width: "0%" });
+          // Animate to 100% over the duration
+          window.gsap.to(progressBar, {
+            width: "100%",
+            duration: duration / 1000, // Convert ms to seconds
+            ease: "linear",
+          });
+        }
+      } else {
+        link.setAttribute("data-tab-state", "hide");
+        link.classList.remove("active");
+
+        // Reset other progress bars to 0
+        const otherProgressBar = link.querySelector("[data-tab-border]");
+        if (otherProgressBar && window.gsap) {
+          window.gsap.set(otherProgressBar, { width: "0%" });
+        }
+      }
+    });
+
+    // Hide all panes in SAME tab
+    sameTabPanes.forEach((pane) => {
+      pane.setAttribute("data-tab-state", "hide");
+    });
+
+    // Show corresponding pane in SAME tab (direct children)
+    const targetPane =
+      tabContentContainer && tabContentContainer.children[targetIndex - 1];
+    if (targetPane) {
+      targetPane.setAttribute("data-tab-state", "show");
+
+      // ANIMATE THE TAB PANE WHEN IT BECOMES ACTIVE
+      if (window.elementAnimator) {
+        // Reset any existing GSAP properties first
+        if (window.gsap) {
+          window.gsap.set(targetPane, { clearProps: "all" });
+        }
+
+        // Animate the newly active pane
+        window.elementAnimator(targetPane, "top 100%");
+      } else {
+        console.warn(
+          "elementAnimator not available - ensure animation script loads first",
+        );
+      }
+
+      // Reinitialize accordions for the newly visible tab pane
+      setTimeout(() => {
+        if (window.initializeAccordions) {
+          window.initializeAccordions();
+        }
+        if (window.openFirstAccordion) {
+          window.openFirstAccordion();
+        }
+      }, 50);
+    } else {
+      console.log(`ERROR: No pane ${targetIndex} found in ${type}/${name}`);
+    }
+  }
+
   function clickInitialiser() {
     const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
-      const type = isolatedTab.getAttribute("data-tab-type");
-      const name = isolatedTab.getAttribute("data-tab-name");
-
       // Get links from THIS isolated tab only (direct children)
       const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
       const tabLinks = tabMenu
@@ -536,78 +628,90 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tabLinks.forEach((clickedLink) => {
         clickedLink.addEventListener("click", () => {
-          const clickedIndex = clickedLink.getAttribute("data-tab-link");
+          const clickedIndex = parseInt(
+            clickedLink.getAttribute("data-tab-link"),
+            10,
+          );
 
-          // Get ALL links and panes from THIS SAME isolated tab ONLY (direct children)
-          const tabMenuContainer = isolatedTab.querySelector("[data-tab-menu]");
-          const tabContentContainer =
-            isolatedTab.querySelector("[data-tab-content]");
+          // Get autoplay duration for progress bar animation
+          const autoplayAttr = isolatedTab.getAttribute("data-tab-autoplay");
+          const duration =
+            autoplayAttr !== null
+              ? autoplayAttr === ""
+                ? 5000
+                : parseInt(autoplayAttr, 10)
+              : null;
 
-          const sameTabLinks = tabMenuContainer
-            ? Array.from(tabMenuContainer.children).filter((child) =>
-                child.hasAttribute("data-tab-link"),
-              )
-            : [];
-          const sameTabPanes = tabContentContainer
-            ? Array.from(tabContentContainer.children).filter((child) =>
-                child.hasAttribute("data-tab-pane"),
-              )
-            : [];
+          // Switch to the clicked tab
+          switchToTab(isolatedTab, clickedIndex, duration);
 
-          // Hide all other links in SAME tab, show clicked link
-          sameTabLinks.forEach((link) => {
-            if (link === clickedLink) {
-              link.setAttribute("data-tab-state", "show");
-              link.classList.add("active");
-            } else {
-              link.setAttribute("data-tab-state", "hide");
-              link.classList.remove("active");
-            }
-          });
-
-          // Hide all panes in SAME tab
-          sameTabPanes.forEach((pane) => {
-            pane.setAttribute("data-tab-state", "hide");
-          });
-
-          // Show corresponding pane in SAME tab (direct children)
-          const targetPane =
-            tabContentContainer &&
-            tabContentContainer.children[clickedIndex - 1];
-          if (targetPane) {
-            targetPane.setAttribute("data-tab-state", "show");
-
-            // ANIMATE THE TAB PANE WHEN IT BECOMES ACTIVE
-            if (window.elementAnimator) {
-              // Reset any existing GSAP properties first
-              if (window.gsap) {
-                window.gsap.set(targetPane, { clearProps: "all" });
-              }
-
-              // Animate the newly active pane
-              window.elementAnimator(targetPane, "top 100%");
-            } else {
-              console.warn(
-                "elementAnimator not available - ensure animation script loads first",
-              );
-            }
-
-            // Reinitialize accordions for the newly visible tab pane
-            setTimeout(() => {
-              if (window.initializeAccordions) {
-                window.initializeAccordions();
-              }
-              if (window.openFirstAccordion) {
-                window.openFirstAccordion();
-              }
-            }, 50);
-          } else {
-            console.log(
-              `ERROR: No pane ${clickedIndex} found in ${type}/${name}`,
-            );
+          // Reset autoplay timer if autoplay is enabled
+          if (autoplayAttr !== null && isolatedTab._autoplayTimer) {
+            clearInterval(isolatedTab._autoplayTimer);
+            startAutoplay(isolatedTab, duration);
           }
         });
       });
+    });
+  }
+
+  function startAutoplay(isolatedTab, duration) {
+    const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
+    const tabLinks = tabMenu
+      ? Array.from(tabMenu.children).filter((child) =>
+          child.hasAttribute("data-tab-link"),
+        )
+      : [];
+
+    if (tabLinks.length === 0) return;
+
+    isolatedTab._autoplayTimer = setInterval(() => {
+      // Find current active tab
+      const currentActive = tabLinks.find((link) =>
+        link.classList.contains("active"),
+      );
+      const currentIndex = currentActive
+        ? parseInt(currentActive.getAttribute("data-tab-link"), 10)
+        : 1;
+
+      // Calculate next index (loop back to 1 after last tab)
+      const nextIndex = currentIndex >= tabLinks.length ? 1 : currentIndex + 1;
+
+      // Switch to next tab
+      switchToTab(isolatedTab, nextIndex, duration);
+    }, duration);
+  }
+
+  function autoplayInitialiser() {
+    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
+
+    allTabs.forEach((isolatedTab) => {
+      const autoplayAttr = isolatedTab.getAttribute("data-tab-autoplay");
+
+      // Only initialize autoplay if attribute exists
+      if (autoplayAttr !== null) {
+        // Parse duration: empty string = 5000, otherwise parse the value
+        const duration =
+          autoplayAttr === "" ? 5000 : parseInt(autoplayAttr, 10) || 5000;
+
+        // Start autoplay for this tab instance
+        startAutoplay(isolatedTab, duration);
+
+        // Trigger initial progress bar animation for the first active tab
+        const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
+        const firstLink = tabMenu ? tabMenu.children[0] : null;
+        if (firstLink) {
+          const progressBar = firstLink.querySelector("[data-tab-border]");
+          if (progressBar && window.gsap) {
+            window.gsap.set(progressBar, { width: "0%" });
+            window.gsap.to(progressBar, {
+              width: "100%",
+              duration: duration / 1000,
+              ease: "linear",
+            });
+          }
+        }
+      }
     });
   }
 
@@ -616,6 +720,7 @@ document.addEventListener("DOMContentLoaded", function () {
     indexInitialiser();
     tabInitialiser();
     clickInitialiser();
+    autoplayInitialiser();
   }, 100);
 });
 
