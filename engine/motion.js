@@ -429,13 +429,30 @@ document.addEventListener("DOMContentLoaded", function () {
         onLeaveBack: () => console.log("Scroll content left viewport again"),
         onUpdate: (self) => {
           if (cellCount > 0) {
-            const currentSegment = Math.floor(self.progress * cellCount);
+            // Calculate which segment we're in (0 to cellCount-1)
+            // Use Math.min to clamp at last cell when progress = 1
+            const currentSegment = Math.min(
+              Math.floor(self.progress * cellCount),
+              cellCount - 1,
+            );
 
+            console.log(
+              "Progress:",
+              self.progress,
+              "Current Segment:",
+              currentSegment,
+              "Cell Count:",
+              cellCount,
+            );
+
+            // Toggle cells - only current segment is "on", all others are "off"
             progressCells.forEach((cell, index) => {
-              if (index < currentSegment) {
+              if (index === currentSegment) {
                 cell.setAttribute("data-progress-cell", "on");
+                console.log("Setting cell", index, "to ON");
               } else {
                 cell.setAttribute("data-progress-cell", "off");
+                console.log("Setting cell", index, "to OFF");
               }
             });
           }

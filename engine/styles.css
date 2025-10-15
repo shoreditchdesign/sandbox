@@ -12,6 +12,16 @@
     background-color: transparent;
   }
 
+  /* Progress Cells */
+
+  [data-progress-cell="off"] {
+    color: var(--_themes---site--text--text-tertiary);
+  }
+
+  [data-progress-cell="on"] {
+    color: var(--_themes---site--text--text-primary);
+  }
+
 
   /* Mobile Hamburger */
 
