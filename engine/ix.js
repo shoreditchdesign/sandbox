@@ -250,6 +250,61 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//Navigation Drawer Links
+document.addEventListener("DOMContentLoaded", function () {
+  function drawerImageInitialiser() {
+    const drawerArrays = document.querySelectorAll("[data-drawer-array]");
+
+    drawerArrays.forEach((drawer) => {
+      const images = drawer
+        .closest('[data-nav-dd="drawer"]')
+        .querySelectorAll("[data-drawer-image]");
+
+      images.forEach((image, index) => {
+        if (index === 0) {
+          image.setAttribute("data-drawer-image", "show");
+        } else {
+          image.setAttribute("data-drawer-image", "hide");
+        }
+      });
+    });
+  }
+
+  function handleDrawerLinkHover(link) {
+    const linkIndex = link.getAttribute("data-link-index");
+    const drawer = link.closest('[data-nav-dd="drawer"]');
+
+    if (drawer) {
+      const allImages = drawer.querySelectorAll("[data-drawer-image]");
+
+      allImages.forEach((image) => {
+        const imageIndex = image.getAttribute("data-image-index");
+
+        if (imageIndex === linkIndex) {
+          image.setAttribute("data-drawer-image", "show");
+        } else {
+          image.setAttribute("data-drawer-image", "hide");
+        }
+      });
+    }
+  }
+
+  function setupDrawerListeners() {
+    const drawerLinks = document.querySelectorAll("[data-drawer-link]");
+
+    drawerLinks.forEach((link) => {
+      link.addEventListener("mouseenter", () => {
+        handleDrawerLinkHover(link);
+      });
+    });
+  }
+
+  setTimeout(function () {
+    drawerImageInitialiser();
+    setupDrawerListeners();
+  }, 100);
+});
+
 //Accordions
 document.addEventListener("DOMContentLoaded", function () {
   // Heights storage object
