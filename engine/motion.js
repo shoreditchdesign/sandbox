@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function () {
         pin: true,
         start: "top top",
         end: () => `+=${items.length * 100}%`,
-        scrub: 1,
+        scrub: true,
         invalidateOnRefresh: true,
         markers: false,
       },
