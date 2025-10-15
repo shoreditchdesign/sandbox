@@ -553,6 +553,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // PROGRESS BAR ANIMATION - Reset and animate if data-tab-border exists
         const progressBar = link.querySelector("[data-tab-border]");
         if (progressBar && duration && window.gsap) {
+          // Kill any ongoing animation first
+          window.gsap.killTweensOf(progressBar);
           // Reset to 0 width
           window.gsap.set(progressBar, { width: "0%" });
           // Animate to 100% over the duration
@@ -566,9 +568,10 @@ document.addEventListener("DOMContentLoaded", function () {
         link.setAttribute("data-tab-state", "hide");
         link.classList.remove("active");
 
-        // Reset other progress bars to 0
+        // Kill ongoing animations and reset other progress bars to 0
         const otherProgressBar = link.querySelector("[data-tab-border]");
         if (otherProgressBar && window.gsap) {
+          window.gsap.killTweensOf(otherProgressBar);
           window.gsap.set(otherProgressBar, { width: "0%" });
         }
       }
