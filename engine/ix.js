@@ -841,10 +841,13 @@ document.addEventListener("DOMContentLoaded", function () {
     pagination: {
       el: "#timeline-pagination",
       clickable: true,
+      bulletClass: "timeline-bullet",
+      bulletActiveClass: "timeline-bullet-active",
     },
     navigation: {
       nextEl: "#timeline-next",
       prevEl: "#timeline-prev",
+      disabledClass: "timeline-nav-disabled",
     },
     a11y: {
       enabled: true,
@@ -875,5 +878,41 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 16,
       },
     },
+    on: {
+      init: function () {
+        updateSlideAttributes(this);
+      },
+      slideChange: function () {
+        updateSlideAttributes(this);
+      },
+      resize: function () {
+        updateSlideAttributes(this);
+      },
+    },
   });
+
+  function updateSlideAttributes(swiper) {
+    const slides = swiper.slides;
+    const activeIndex = swiper.activeIndex;
+
+    slides.forEach((slide, index) => {
+      // Remove all custom attributes first
+      slide.removeAttribute("data-timeline-active");
+      slide.removeAttribute("data-timeline-next");
+      slide.removeAttribute("data-timeline-base");
+
+      // Active slide
+      if (index === activeIndex) {
+        slide.setAttribute("data-timeline-active", "");
+      }
+      // Next slide
+      else if (index === activeIndex + 1) {
+        slide.setAttribute("data-timeline-next", "");
+      }
+      // All other slides (base state)
+      else {
+        slide.setAttribute("data-timeline-base", "");
+      }
+    });
+  }
 });
