@@ -481,6 +481,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animator() {
+    // Only run on desktop (above 768px)
+    if (window.innerWidth <= 768) {
+      console.warn("Scroll Cards: Disabled on tablet and mobile");
+      return;
+    }
+
     const scrollLists = document.querySelectorAll("[data-scroll-list]");
 
     if (!scrollLists || scrollLists.length === 0) {
@@ -621,7 +627,17 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      ScrollTrigger.refresh();
+      // Kill all scroll card triggers and reinitialize
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (
+          trigger.vars &&
+          trigger.vars.trigger &&
+          trigger.vars.trigger.hasAttribute("data-scroll-card")
+        ) {
+          trigger.kill();
+        }
+      });
+      animator();
     }, 250);
   });
 });
