@@ -833,15 +833,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
               gsap.set(element, { opacity: 1 });
 
-              // If gradient, apply gradient styles to each line wrapper
+              // If gradient, apply gradient styles to each line div
               if (hasGradient) {
+                const gradientImage = getComputedStyle(element).backgroundImage;
                 self.lines.forEach((line) => {
-                  const wrapper = line.parentElement;
-                  wrapper.style.backgroundImage =
-                    getComputedStyle(element).backgroundImage;
-                  wrapper.style.webkitBackgroundClip = "text";
-                  wrapper.style.backgroundClip = "text";
-                  wrapper.style.webkitTextFillColor = "transparent";
+                  line.style.backgroundImage = gradientImage;
+                  line.style.webkitBackgroundClip = "text";
+                  line.style.backgroundClip = "text";
+                  line.style.webkitTextFillColor = "transparent";
                 });
               }
 
