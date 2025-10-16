@@ -480,10 +480,28 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.registerPlugin(ScrollTrigger);
   }
 
+  function setMobileStyles() {
+    // On mobile, set all cards to active state
+    const scrollLists = document.querySelectorAll("[data-scroll-list]");
+
+    scrollLists.forEach((list) => {
+      const cards = list.querySelectorAll("[data-scroll-card]");
+
+      cards.forEach((card) => {
+        gsap.set(card, {
+          opacity: 1,
+          scale: 1,
+        });
+        card.setAttribute("data-scroll-state", "active");
+      });
+    });
+  }
+
   function animator() {
     // Only run on desktop (above 768px)
     if (window.innerWidth <= 768) {
       console.warn("Scroll Cards: Disabled on tablet and mobile");
+      setMobileStyles();
       return;
     }
 
