@@ -828,7 +828,9 @@ document.addEventListener("DOMContentLoaded", function () {
 //Timeline Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#timeline-swiper", {
+    slidesPerView: 1,
     slidesPerGroup: 1,
+    spaceBetween: 16,
     grabCursor: true,
     allowTouchMove: true,
     autoHeight: false,
@@ -865,16 +867,8 @@ document.addEventListener("DOMContentLoaded", function () {
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
     breakpoints: {
-      0: {
-        slidesPerView: 1,
-        spaceBetween: 16,
-      },
-      768: {
-        slidesPerView: 1,
-        spaceBetween: 16,
-      },
       992: {
-        slidesPerView: 1,
+        slidesPerView: 2.5,
         spaceBetween: 16,
       },
     },
