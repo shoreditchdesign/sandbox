@@ -470,6 +470,103 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+//GSAP for Scroll Cards
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const scrollLists = document.querySelectorAll("[data-scroll-list]");
+
+    if (!scrollLists || scrollLists.length === 0) {
+      console.warn("Scroll Cards: No scroll lists found");
+      return;
+    }
+
+    scrollLists.forEach((list) => {
+      const cards = list.querySelectorAll("[data-scroll-card]");
+
+      if (!cards || cards.length === 0) {
+        console.warn("Scroll Cards: No cards found in list");
+        return;
+      }
+
+      // Set initial state for all cards (default state)
+      cards.forEach((card) => {
+        gsap.set(card, {
+          opacity: 0.4,
+          scale: 0.95,
+        });
+        card.setAttribute("data-scroll-state", "default");
+      });
+
+      // Create ScrollTrigger for each card
+      cards.forEach((card, index) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: "center 70%",
+          end: "center 30%",
+          scrub: 0.5,
+          markers: false,
+          onUpdate: (self) => {
+            const progress = self.progress;
+
+            // Calculate opacity and scale based on scroll progress
+            // Progress 0 → 0.5 → 1 maps to:
+            // opacity: 0.4 → 1 → 0.4
+            // scale: 0.95 → 1 → 0.95
+
+            let opacity, scale;
+
+            if (progress <= 0.5) {
+              // Entering phase (0 → 0.5)
+              const t = progress * 2; // Normalize to 0-1
+              opacity = gsap.utils.interpolate(0.4, 1, t);
+              scale = gsap.utils.interpolate(0.95, 1, t);
+            } else {
+              // Leaving phase (0.5 → 1)
+              const t = (progress - 0.5) * 2; // Normalize to 0-1
+              opacity = gsap.utils.interpolate(1, 0.4, t);
+              scale = gsap.utils.interpolate(1, 0.95, t);
+            }
+
+            gsap.to(card, {
+              opacity: opacity,
+              scale: scale,
+              duration: 0.1,
+              ease: "none",
+            });
+
+            // Update data attribute based on state
+            if (progress > 0.3 && progress < 0.7) {
+              card.setAttribute("data-scroll-state", "active");
+            } else {
+              card.setAttribute("data-scroll-state", "default");
+            }
+          },
+        });
+      });
+    });
+  }
+
+  initialiser();
+  animator();
+
+  // Refresh on resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 250);
+  });
+});
+
 //GSAP for Review Cards
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
