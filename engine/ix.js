@@ -939,7 +939,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const yearItems = document.querySelectorAll("[data-timeline-year]");
 
     yearItems.forEach((yearItem) => {
-      const yearValue = yearItem.getAttribute("data-timeline-year");
+      const yearValue = yearItem.getAttribute("data-year-target");
 
       if (yearValue === activeYear) {
         yearItem.setAttribute("data-year-state", "active");
@@ -983,7 +983,7 @@ document.addEventListener("DOMContentLoaded", function () {
       yearItem.style.cursor = "pointer";
 
       yearItem.addEventListener("click", function () {
-        const targetYear = this.getAttribute("data-timeline-year");
+        const targetYear = this.getAttribute("data-year-target");
         handleYearClick(swiper, targetYear);
       });
     });
