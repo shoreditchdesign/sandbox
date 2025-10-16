@@ -539,7 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ScrollTrigger.create({
             trigger: card,
             start: "top 70%",
-            end: "center 50%",
+            end: "center 30%",
             scrub: 0.5,
             markers: false,
             onUpdate: (self) => {
