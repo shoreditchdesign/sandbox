@@ -881,9 +881,12 @@ document.addEventListener("DOMContentLoaded", function () {
     on: {
       init: function () {
         updateSlideAttributes(this);
+        updateYearNavigation(this);
+        initializeYearNavigation(this);
       },
       slideChange: function () {
         updateSlideAttributes(this);
+        updateYearNavigation(this);
       },
       resize: function () {
         updateSlideAttributes(this);
@@ -891,6 +894,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
+  // Update slide visual states (active, next, base)
   function updateSlideAttributes(swiper) {
     const slides = swiper.slides;
     const activeIndex = swiper.activeIndex;
@@ -913,6 +917,75 @@ document.addEventListener("DOMContentLoaded", function () {
       else {
         slide.setAttribute("data-timeline-base", "");
       }
+    });
+  }
+
+  // Get year from active slide
+  function getActiveSlideYear(swiper) {
+    const activeSlide = swiper.slides[swiper.activeIndex];
+    if (!activeSlide) return null;
+
+    const yearSourceElement = activeSlide.querySelector("[data-year-source]");
+    return yearSourceElement
+      ? yearSourceElement.getAttribute("data-year-source")
+      : null;
+  }
+
+  // Update year navigation to match active slide
+  function updateYearNavigation(swiper) {
+    const activeYear = getActiveSlideYear(swiper);
+    if (!activeYear) return;
+
+    const yearItems = document.querySelectorAll("[data-timeline-year]");
+
+    yearItems.forEach((yearItem) => {
+      const yearValue = yearItem.getAttribute("data-timeline-year");
+
+      if (yearValue === activeYear) {
+        yearItem.setAttribute("data-year-state", "active");
+      } else {
+        yearItem.setAttribute("data-year-state", "inactive");
+      }
+    });
+  }
+
+  // Find first slide index with matching year
+  function findSlideIndexByYear(swiper, targetYear) {
+    const slides = swiper.slides;
+
+    for (let i = 0; i < slides.length; i++) {
+      const yearSourceElement = slides[i].querySelector("[data-year-source]");
+      if (yearSourceElement) {
+        const slideYear = yearSourceElement.getAttribute("data-year-source");
+        if (slideYear === targetYear) {
+          return i;
+        }
+      }
+    }
+
+    return -1;
+  }
+
+  // Handle year navigation click
+  function handleYearClick(swiper, targetYear) {
+    const slideIndex = findSlideIndexByYear(swiper, targetYear);
+
+    if (slideIndex !== -1) {
+      swiper.slideTo(slideIndex);
+    }
+  }
+
+  // Initialize click handlers for year navigation
+  function initializeYearNavigation(swiper) {
+    const yearItems = document.querySelectorAll("[data-timeline-year]");
+
+    yearItems.forEach((yearItem) => {
+      yearItem.style.cursor = "pointer";
+
+      yearItem.addEventListener("click", function () {
+        const targetYear = this.getAttribute("data-timeline-year");
+        handleYearClick(swiper, targetYear);
+      });
     });
   }
 });
