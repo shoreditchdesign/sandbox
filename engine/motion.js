@@ -828,7 +828,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 element.removeAttribute("data-motion-hide");
               }
 
+              // Check if element has gradient text styles
+              const hasGradient = element.classList.contains("u-grad-heading");
+
               gsap.set(element, { opacity: 1 });
+
+              // If gradient, apply gradient styles to each line wrapper
+              if (hasGradient) {
+                self.lines.forEach((line) => {
+                  const wrapper = line.parentElement;
+                  wrapper.style.backgroundImage =
+                    getComputedStyle(element).backgroundImage;
+                  wrapper.style.webkitBackgroundClip = "text";
+                  wrapper.style.backgroundClip = "text";
+                  wrapper.style.webkitTextFillColor = "transparent";
+                });
+              }
+
               gsap.set(self.lines, {
                 opacity: 0,
                 y: 20,
