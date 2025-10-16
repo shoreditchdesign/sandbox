@@ -507,49 +507,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Create ScrollTrigger for each card
       cards.forEach((card, index) => {
-        ScrollTrigger.create({
-          trigger: card,
-          start: "center 70%",
-          end: "center 30%",
-          scrub: 0.5,
-          markers: false,
-          onUpdate: (self) => {
-            const progress = self.progress;
+        const isFirstCard = index === 0;
+        const isLastCard = index === cards.length - 1;
 
-            // Calculate opacity and scale based on scroll progress
-            // Progress 0 → 0.5 → 1 maps to:
-            // opacity: 0.4 → 1 → 0.4
-            // scale: 0.95 → 1 → 0.95
+        // First card: stays active when at/above viewport, fades out when scrolling down
+        if (isFirstCard) {
+          ScrollTrigger.create({
+            trigger: card,
+            start: "top 70%",
+            end: "center 50%",
+            scrub: 0.5,
+            markers: false,
+            onUpdate: (self) => {
+              const progress = self.progress;
 
-            let opacity, scale;
+              // First card: stays at 1 until it starts leaving center
+              // Only fades out as it leaves (no fade in)
+              const opacity = gsap.utils.interpolate(1, 0.4, progress);
+              const scale = gsap.utils.interpolate(1, 0.95, progress);
 
-            if (progress <= 0.5) {
-              // Entering phase (0 → 0.5)
-              const t = progress * 2; // Normalize to 0-1
-              opacity = gsap.utils.interpolate(0.4, 1, t);
-              scale = gsap.utils.interpolate(0.95, 1, t);
-            } else {
-              // Leaving phase (0.5 → 1)
-              const t = (progress - 0.5) * 2; // Normalize to 0-1
-              opacity = gsap.utils.interpolate(1, 0.4, t);
-              scale = gsap.utils.interpolate(1, 0.95, t);
-            }
+              gsap.to(card, {
+                opacity: opacity,
+                scale: scale,
+                duration: 0.1,
+                ease: "none",
+              });
 
-            gsap.to(card, {
-              opacity: opacity,
-              scale: scale,
-              duration: 0.1,
-              ease: "none",
-            });
+              if (progress < 0.4) {
+                card.setAttribute("data-scroll-state", "active");
+              } else {
+                card.setAttribute("data-scroll-state", "default");
+              }
+            },
+          });
+        }
+        // Last card: stays active after reaching center
+        else if (isLastCard) {
+          ScrollTrigger.create({
+            trigger: card,
+            start: "center 70%",
+            end: "center 50%",
+            scrub: 0.5,
+            markers: false,
+            onUpdate: (self) => {
+              const progress = self.progress;
 
-            // Update data attribute based on state
-            if (progress > 0.3 && progress < 0.7) {
-              card.setAttribute("data-scroll-state", "active");
-            } else {
-              card.setAttribute("data-scroll-state", "default");
-            }
-          },
-        });
+              // Last card only goes from default → active (no fade out)
+              const opacity = gsap.utils.interpolate(0.4, 1, progress);
+              const scale = gsap.utils.interpolate(0.95, 1, progress);
+
+              gsap.to(card, {
+                opacity: opacity,
+                scale: scale,
+                duration: 0.1,
+                ease: "none",
+              });
+
+              if (progress > 0.6) {
+                card.setAttribute("data-scroll-state", "active");
+              } else {
+                card.setAttribute("data-scroll-state", "default");
+              }
+            },
+          });
+        }
+        // Middle cards: normal behavior
+        else {
+          ScrollTrigger.create({
+            trigger: card,
+            start: "center 70%",
+            end: "center 30%",
+            scrub: 0.5,
+            markers: false,
+            onUpdate: (self) => {
+              const progress = self.progress;
+
+              let opacity, scale;
+
+              if (progress <= 0.5) {
+                const t = progress * 2;
+                opacity = gsap.utils.interpolate(0.4, 1, t);
+                scale = gsap.utils.interpolate(0.95, 1, t);
+              } else {
+                const t = (progress - 0.5) * 2;
+                opacity = gsap.utils.interpolate(1, 0.4, t);
+                scale = gsap.utils.interpolate(1, 0.95, t);
+              }
+
+              gsap.to(card, {
+                opacity: opacity,
+                scale: scale,
+                duration: 0.1,
+                ease: "none",
+              });
+
+              if (progress > 0.3 && progress < 0.7) {
+                card.setAttribute("data-scroll-state", "active");
+              } else {
+                card.setAttribute("data-scroll-state", "default");
+              }
+            },
+          });
+        }
       });
     });
   }
