@@ -727,7 +727,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
 
-//Swiper
+//Gallery Swiper
+document.addEventListener("DOMContentLoaded", function () {
+  const galleryWrapper = document.querySelector("[data-gallery-wrap]");
+  if (!galleryWrapper) return;
+
+  const galleryList = galleryWrapper.querySelector("[data-gallery-list]");
+  if (!galleryList) return;
+
+  // Get autoplay duration from data attribute (default 3000ms)
+  const autoplayAttr = galleryList.getAttribute("data-gallery-autoplay");
+  const autoplayDelay =
+    autoplayAttr !== null
+      ? autoplayAttr === ""
+        ? 3000
+        : parseInt(autoplayAttr, 10) || 3000
+      : 3000;
+
+  var gallerySwiper = new Swiper("#gallery-swiper", {
+    slidesPerView: 1,
+    spaceBetween: 0,
+    speed: 0, // Instant switching - no animation
+    effect: "slide",
+    allowTouchMove: false, // Disable drag/swipe
+    grabCursor: false,
+    loop: true,
+    autoplay: {
+      delay: autoplayDelay,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      el: "#gallery-pagination",
+      clickable: true,
+      bulletClass: "gallery-pagination-bullet",
+      bulletActiveClass: "gallery-pagination-bullet-active",
+    },
+  });
+});
+
+//Timeline Swiper
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#timeline-swiper", {
     slidesPerGroup: 1,
