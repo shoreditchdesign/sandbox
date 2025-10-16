@@ -880,6 +880,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     on: {
       init: function () {
+        filterYearNavigation(this);
         updateSlideAttributes(this);
         updateYearNavigation(this);
         initializeYearNavigation(this);
@@ -973,6 +974,38 @@ document.addEventListener("DOMContentLoaded", function () {
     if (slideIndex !== -1) {
       swiper.slideTo(slideIndex);
     }
+  }
+
+  // Get all unique years from swiper slides
+  function getAvailableYears(swiper) {
+    const years = new Set();
+    const slides = swiper.slides;
+
+    slides.forEach((slide) => {
+      const yearSourceElement = slide.querySelector("[data-year-source]");
+      if (yearSourceElement) {
+        const year = yearSourceElement.getAttribute("data-year-source");
+        if (year) {
+          years.add(year);
+        }
+      }
+    });
+
+    return years;
+  }
+
+  // Remove year navigation items that don't have corresponding slides
+  function filterYearNavigation(swiper) {
+    const availableYears = getAvailableYears(swiper);
+    const yearItems = document.querySelectorAll("[data-timeline-year]");
+
+    yearItems.forEach((yearItem) => {
+      const yearValue = yearItem.getAttribute("data-year-target");
+
+      if (!availableYears.has(yearValue)) {
+        yearItem.remove();
+      }
+    });
   }
 
   // Initialize click handlers for year navigation
