@@ -729,40 +729,100 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Gallery Swiper
 document.addEventListener("DOMContentLoaded", function () {
-  const galleryWrapper = document.querySelector("[data-gallery-wrap]");
-  if (!galleryWrapper) return;
+  function galleryInitializer() {
+    const galleryWrapper = document.querySelector("[data-gallery-wrap]");
+    if (!galleryWrapper) return;
 
-  const galleryList = galleryWrapper.querySelector("[data-gallery-list]");
-  if (!galleryList) return;
+    const galleryList = galleryWrapper.querySelector("[data-gallery-list]");
+    const slides = galleryWrapper.querySelectorAll("[data-gallery-slide]");
+    const paginationContainer = document.getElementById("gallery-pagination");
 
-  // Get autoplay duration from data attribute (default 3000ms)
-  const autoplayAttr = galleryList.getAttribute("data-gallery-autoplay");
-  const autoplayDelay =
-    autoplayAttr !== null
-      ? autoplayAttr === ""
-        ? 3000
-        : parseInt(autoplayAttr, 10) || 3000
-      : 3000;
+    if (!galleryList || slides.length === 0 || !paginationContainer) return;
 
-  var gallerySwiper = new Swiper("#gallery-swiper", {
-    slidesPerView: 1,
-    spaceBetween: 0,
-    speed: 0, // Instant switching - no animation
-    effect: "slide",
-    allowTouchMove: false, // Disable drag/swipe
-    grabCursor: false,
-    loop: true,
-    autoplay: {
-      delay: autoplayDelay,
-      disableOnInteraction: false,
-    },
-    pagination: {
-      el: "#gallery-pagination",
-      clickable: true,
-      bulletClass: "gallery-pagination-bullet",
-      bulletActiveClass: "gallery-pagination-bullet-active",
-    },
-  });
+    let currentIndex = 0;
+    let autoplayTimer = null;
+
+    // Get autoplay duration from data attribute (default 3000ms)
+    const autoplayAttr = galleryList.getAttribute("data-gallery-autoplay");
+    const autoplayDuration =
+      autoplayAttr !== null
+        ? autoplayAttr === ""
+          ? 3000
+          : parseInt(autoplayAttr, 10) || 3000
+        : 3000;
+
+    // Function to switch to a specific slide
+    function switchToSlide(index) {
+      // Hide all slides
+      slides.forEach((slide) => {
+        slide.style.display = "none";
+      });
+
+      // Show target slide
+      slides[index].style.display = "block";
+
+      // Update pagination dots
+      const dots = paginationContainer.querySelectorAll("[data-gallery-dot]");
+      dots.forEach((dot, i) => {
+        if (i === index) {
+          dot.setAttribute("data-gallery-dot", "active");
+        } else {
+          dot.setAttribute("data-gallery-dot", "inactive");
+        }
+      });
+
+      currentIndex = index;
+    }
+
+    // Generate pagination dots
+    function generatePagination() {
+      paginationContainer.innerHTML = "";
+
+      slides.forEach((slide, index) => {
+        const dot = document.createElement("div");
+        dot.setAttribute(
+          "data-gallery-dot",
+          index === 0 ? "active" : "inactive",
+        );
+        dot.style.cursor = "pointer";
+
+        // Add click handler
+        dot.addEventListener("click", () => {
+          switchToSlide(index);
+          resetAutoplay();
+        });
+
+        paginationContainer.appendChild(dot);
+      });
+    }
+
+    // Autoplay function
+    function startAutoplay() {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+      }
+
+      autoplayTimer = setInterval(() => {
+        const nextIndex = (currentIndex + 1) % slides.length;
+        switchToSlide(nextIndex);
+      }, autoplayDuration);
+    }
+
+    // Reset autoplay timer
+    function resetAutoplay() {
+      startAutoplay();
+    }
+
+    // Initialize
+    generatePagination();
+    switchToSlide(0);
+    startAutoplay();
+  }
+
+  // Initialize gallery after a short delay
+  setTimeout(() => {
+    galleryInitializer();
+  }, 100);
 });
 
 //Timeline Swiper
