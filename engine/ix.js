@@ -870,11 +870,11 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 16,
       },
       768: {
-        slidesPerView: 2.5,
+        slidesPerView: 1,
         spaceBetween: 16,
       },
       992: {
-        slidesPerView: 2.5,
+        slidesPerView: 1,
         spaceBetween: 16,
       },
     },
