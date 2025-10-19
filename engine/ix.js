@@ -120,6 +120,345 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//Glowing Cards
+document.addEventListener("DOMContentLoaded", function () {
+  // Store animation frame IDs and last positions for each card
+  const cardAnimations = new WeakMap();
+  let isInitialized = false;
+  let resizeTimeout = null;
+
+  /**
+   * Main initialization function - finds all [data-card-glow] and sets up glow effects
+   */
+  function glowCardsInitialiser() {
+    if (window.innerWidth < 768) {
+      return;
+    }
+
+    const cards = document.querySelectorAll("[data-card-glow]");
+
+    if (cards.length === 0) {
+      return;
+    }
+
+    cards.forEach((card) => {
+      // Skip if already wrapped
+      if (card.parentElement?.classList.contains("o-glow-wrapper")) {
+        return;
+      }
+
+      // Check if disabled
+      const state = card.getAttribute("data-glow-state");
+      if (state === "disabled") {
+        // Still wrap but don't initialize glow
+        wrapCardWithGlow(card);
+        return;
+      }
+
+      // Wrap and initialize
+      const wrapper = wrapCardWithGlow(card);
+      initializeGlowEffect(wrapper, card);
+    });
+
+    isInitialized = true;
+  }
+
+  /**
+   * Cleanup function - removes glow effects and event listeners
+   */
+  function glowCardsCleanup() {
+    if (!isInitialized) return;
+
+    const wrappers = document.querySelectorAll(".o-glow-wrapper");
+
+    wrappers.forEach((wrapper) => {
+      // Call cleanup function if it exists
+      if (wrapper._glowCleanup) {
+        wrapper._glowCleanup();
+      }
+
+      // Remove glow container
+      const glowContainer = wrapper.querySelector(".o-glow-container");
+      if (glowContainer) {
+        glowContainer.remove();
+      }
+    });
+
+    isInitialized = false;
+  }
+
+  /**
+   * Wraps a card element with .o-glow-wrapper
+   * @param {HTMLElement} cardElement - The card to wrap
+   * @returns {HTMLElement} The wrapper element
+   */
+  function wrapCardWithGlow(cardElement) {
+    // Create wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "o-glow-wrapper";
+
+    // Get border-radius from card and apply to wrapper
+    const computedStyle = window.getComputedStyle(cardElement);
+    const borderRadius = computedStyle.borderRadius;
+    if (borderRadius && borderRadius !== "0px") {
+      wrapper.style.borderRadius = borderRadius;
+    }
+
+    // Copy data-glow-theme attribute to wrapper if it exists
+    const theme = cardElement.getAttribute("data-glow-theme");
+    if (theme) {
+      wrapper.setAttribute("data-glow-theme", theme);
+    }
+
+    // Insert wrapper before card
+    cardElement.parentNode.insertBefore(wrapper, cardElement);
+
+    // Move card inside wrapper
+    wrapper.appendChild(cardElement);
+
+    return wrapper;
+  }
+
+  /**
+   * Creates the glow DOM elements
+   * @returns {Object} Object with container and effect element references
+   */
+  function createGlowElements() {
+    const container = document.createElement("div");
+    container.className = "o-glow-container";
+
+    const effect = document.createElement("div");
+    effect.className = "o-glow-effect";
+
+    container.appendChild(effect);
+
+    return { container, effect };
+  }
+
+  /**
+   * Initialize glow effect for a wrapped card
+   * @param {HTMLElement} wrapper - The wrapper element
+   * @param {HTMLElement} cardElement - The original card element
+   */
+  function initializeGlowEffect(wrapper, cardElement) {
+    // Read config from card attributes
+    const config = {
+      spread: parseFloat(cardElement.getAttribute("data-glow-spread")) || 40,
+      proximity:
+        parseFloat(cardElement.getAttribute("data-glow-proximity")) || 64,
+      deadzone:
+        parseFloat(cardElement.getAttribute("data-glow-deadzone")) || 0.03,
+      duration:
+        parseFloat(cardElement.getAttribute("data-glow-duration")) || 0.6,
+      borderWidth:
+        parseFloat(cardElement.getAttribute("data-glow-border")) || 1,
+    };
+
+    // Create glow elements
+    const { container, effect } = createGlowElements();
+
+    // Set CSS variables
+    container.style.setProperty("--glow-start", "0");
+    container.style.setProperty("--glow-active", "0");
+    container.style.setProperty("--glow-spread", config.spread);
+    container.style.setProperty(
+      "--glow-border-width",
+      `${config.borderWidth}px`,
+    );
+
+    // Inject into wrapper (as first child, before card)
+    wrapper.insertBefore(container, wrapper.firstChild);
+
+    // Setup event listeners
+    setupEventListeners(wrapper, container, config);
+  }
+
+  /**
+   * Setup mouse and scroll event listeners
+   * @param {HTMLElement} wrapper - The wrapper element
+   * @param {HTMLElement} glowContainer - The glow container element
+   * @param {Object} config - Configuration object
+   */
+  function setupEventListeners(wrapper, glowContainer, config) {
+    // Store last mouse position and animation state
+    const state = {
+      lastPosition: { x: 0, y: 0 },
+      animationFrameId: null,
+      currentAngle: 0,
+      activeAnimation: null,
+    };
+
+    // Store state in WeakMap
+    cardAnimations.set(wrapper, state);
+
+    // Mouse move handler
+    const handleMove = (e) => {
+      if (state.animationFrameId) {
+        cancelAnimationFrame(state.animationFrameId);
+      }
+
+      state.animationFrameId = requestAnimationFrame(() => {
+        const mouseX = e?.clientX ?? state.lastPosition.x;
+        const mouseY = e?.clientY ?? state.lastPosition.y;
+
+        if (e) {
+          state.lastPosition = { x: mouseX, y: mouseY };
+        }
+
+        const rect = wrapper.getBoundingClientRect();
+        const { left, top, width, height } = rect;
+
+        // Calculate center
+        const centerX = left + width * 0.5;
+        const centerY = top + height * 0.5;
+
+        // Calculate distance from center
+        const distanceFromCenter = Math.hypot(
+          mouseX - centerX,
+          mouseY - centerY,
+        );
+
+        // Check inactive zone (deadzone)
+        const inactiveRadius = 0.5 * Math.min(width, height) * config.deadzone;
+
+        if (distanceFromCenter < inactiveRadius) {
+          glowContainer.style.setProperty("--glow-active", "0");
+          return;
+        }
+
+        // Check proximity
+        const isActive =
+          mouseX > left - config.proximity &&
+          mouseX < left + width + config.proximity &&
+          mouseY > top - config.proximity &&
+          mouseY < top + height + config.proximity;
+
+        glowContainer.style.setProperty("--glow-active", isActive ? "1" : "0");
+
+        if (!isActive) return;
+
+        // Calculate angle
+        const targetAngle =
+          (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90;
+
+        // Calculate shortest rotation path
+        const angleDiff =
+          ((targetAngle - state.currentAngle + 180) % 360) - 180;
+        const newAngle = state.currentAngle + angleDiff;
+
+        // Update angle immediately - CSS transition will smooth it
+        glowContainer.style.setProperty("--glow-start", String(newAngle));
+        state.currentAngle = newAngle;
+      });
+    };
+
+    // Scroll handler (uses last known position)
+    const handleScroll = () => handleMove();
+
+    // Add listeners
+    document.body.addEventListener("pointermove", handleMove, {
+      passive: true,
+    });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Store cleanup function (for future use if needed)
+    wrapper._glowCleanup = () => {
+      if (state.animationFrameId) {
+        cancelAnimationFrame(state.animationFrameId);
+      }
+      if (state.activeAnimation) {
+        state.activeAnimation.cancel();
+      }
+      document.body.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }
+
+  /**
+   * Animate angle rotation with easing
+   * @param {number} currentAngle - Current angle in degrees
+   * @param {number} targetAngle - Target angle in degrees
+   * @param {number} duration - Duration in seconds
+   * @param {HTMLElement} element - Element to apply CSS variable to
+   * @param {Object} state - Animation state object
+   */
+  function animateAngle(currentAngle, targetAngle, duration, element, state) {
+    // Calculate shortest rotation path
+    const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+    const newAngle = currentAngle + angleDiff;
+
+    // Cancel previous animation
+    if (state.activeAnimation) {
+      state.activeAnimation.cancel();
+    }
+
+    // Animate using custom easing
+    const startTime = performance.now();
+    const startAngle = currentAngle;
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / (duration * 1000), 1);
+
+      // Apply easing (cubic-bezier approximation of [0.16, 1, 0.3, 1])
+      const eased = easeOutExpo(progress);
+
+      // Calculate current angle
+      const angle = startAngle + (newAngle - startAngle) * eased;
+
+      // Update CSS variable
+      element.style.setProperty("--glow-start", String(angle));
+      state.currentAngle = angle;
+
+      // Continue animation if not complete
+      if (progress < 1) {
+        state.activeAnimation = requestAnimationFrame(animate);
+      } else {
+        state.activeAnimation = null;
+      }
+    }
+
+    state.activeAnimation = requestAnimationFrame(animate);
+  }
+
+  /**
+   * Easing function - smooth cubic-bezier for fluid motion
+   * @param {number} t - Progress from 0 to 1
+   * @returns {number} Eased value
+   */
+  function easeOutExpo(t) {
+    // Smooth cubic easing out - decelerates smoothly
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  /**
+   * Handle responsive behavior on window resize
+   */
+  function handleResize() {
+    // Clear previous timeout
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
+    }
+
+    // Debounce resize events
+    resizeTimeout = setTimeout(() => {
+      if (window.innerWidth >= 768 && !isInitialized) {
+        // Switched to desktop - initialize
+        glowCardsInitialiser();
+      } else if (window.innerWidth < 768 && isInitialized) {
+        // Switched to mobile - cleanup
+        glowCardsCleanup();
+      }
+    }, 200);
+  }
+
+  // Initialize on load
+  glowCardsInitialiser();
+
+  // Add resize listener
+  window.addEventListener("resize", handleResize, { passive: true });
+});
+
 //Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
   if (window.innerWidth <= 991) {
