@@ -199,12 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const originalContent = tickerItem.outerHTML;
+  let currentAnimation = null;
 
   function calculateRequiredCopies() {
     const viewportWidth = window.innerWidth;
     const itemWidth = tickerItem.offsetWidth;
-    // Create a sequence 5 times the viewport width
-    const copiesNeeded = Math.ceil((viewportWidth * 5) / itemWidth) + 2;
+    // Create enough copies to fill viewport plus buffer
+    const copiesNeeded = Math.ceil(viewportWidth / itemWidth) + 2;
 
     return {
       viewportWidth,
@@ -214,6 +215,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupTicker() {
+    // Kill existing animation if any
+    if (currentAnimation) {
+      currentAnimation.kill();
+    }
+
     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
     tickerWrap.innerHTML = "";
@@ -225,12 +231,13 @@ document.addEventListener("DOMContentLoaded", () => {
       tickerWrap.appendChild(clonedItem);
     }
 
-    // Total width of the sequence
-    const totalWidth = itemWidth * copiesNeeded;
+    // Reset position before starting new animation
+    gsap.set(tickerWrap, { x: 0 });
 
-    gsap.to(tickerWrap, {
-      x: -totalWidth + itemWidth, // Subtract one item width to ensure smooth loop
-      duration: totalWidth / 100, // Increased speed by reducing duration divisor from 25 to 100
+    // Animate by one item width for seamless loop
+    currentAnimation = gsap.to(tickerWrap, {
+      x: -itemWidth,
+      duration: itemWidth / 100,
       ease: "none",
       repeat: -1,
       onRepeat: () => {
@@ -241,6 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the ticker
   setupTicker();
+
+  // Recalculate on window resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      setupTicker();
+    }, 250); // Debounce resize events
+  });
 });
 
 //GSAP for Sticky Headers
