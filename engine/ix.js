@@ -122,10 +122,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Glowing Cards
 document.addEventListener("DOMContentLoaded", function () {
-  // Store animation frame IDs and last positions for each card
-  const cardAnimations = new WeakMap();
+  // Store card states
+  const cardStates = new Map();
   let isInitialized = false;
   let resizeTimeout = null;
+  let globalAnimationFrame = null;
+  let lastMousePosition = { x: 0, y: 0 };
 
   /**
    * Main initialization function - finds all [data-card-glow] and sets up glow effects
@@ -160,6 +162,14 @@ document.addEventListener("DOMContentLoaded", function () {
       initializeGlowEffect(wrapper, card);
     });
 
+    // Add global event listeners (only once)
+    if (cardStates.size > 0) {
+      document.body.addEventListener("pointermove", handleGlobalMouseMove, {
+        passive: true,
+      });
+      window.addEventListener("scroll", handleGlobalScroll, { passive: true });
+    }
+
     isInitialized = true;
   }
 
@@ -169,22 +179,41 @@ document.addEventListener("DOMContentLoaded", function () {
   function glowCardsCleanup() {
     if (!isInitialized) return;
 
-    const wrappers = document.querySelectorAll(".o-glow-wrapper");
+    // Remove global event listeners
+    document.body.removeEventListener("pointermove", handleGlobalMouseMove);
+    window.removeEventListener("scroll", handleGlobalScroll);
 
-    wrappers.forEach((wrapper) => {
-      // Call cleanup function if it exists
-      if (wrapper._glowCleanup) {
-        wrapper._glowCleanup();
-      }
+    // Cancel any pending animation frame
+    if (globalAnimationFrame) {
+      cancelAnimationFrame(globalAnimationFrame);
+      globalAnimationFrame = null;
+    }
 
-      // Remove glow container
+    // Remove glow containers from DOM
+    cardStates.forEach((state, wrapper) => {
       const glowContainer = wrapper.querySelector(".o-glow-container");
       if (glowContainer) {
         glowContainer.remove();
       }
     });
 
+    // Clear card states
+    cardStates.clear();
+
     isInitialized = false;
+  }
+
+  /**
+   * Handle scroll events - update cards with last known mouse position
+   */
+  function handleGlobalScroll() {
+    if (globalAnimationFrame) {
+      cancelAnimationFrame(globalAnimationFrame);
+    }
+
+    globalAnimationFrame = requestAnimationFrame(() => {
+      updateAllCards(lastMousePosition.x, lastMousePosition.y);
+    });
   }
 
   /**
@@ -269,166 +298,84 @@ document.addEventListener("DOMContentLoaded", function () {
     // Inject into wrapper (as first child, before card)
     wrapper.insertBefore(container, wrapper.firstChild);
 
-    // Setup event listeners
-    setupEventListeners(wrapper, container, config);
-  }
-
-  /**
-   * Setup mouse and scroll event listeners
-   * @param {HTMLElement} wrapper - The wrapper element
-   * @param {HTMLElement} glowContainer - The glow container element
-   * @param {Object} config - Configuration object
-   */
-  function setupEventListeners(wrapper, glowContainer, config) {
-    // Store last mouse position and animation state
-    const state = {
-      lastPosition: { x: 0, y: 0 },
-      animationFrameId: null,
+    // Store card state
+    cardStates.set(wrapper, {
+      glowContainer: container,
+      config: config,
       currentAngle: 0,
-      activeAnimation: null,
-    };
-
-    // Store state in WeakMap
-    cardAnimations.set(wrapper, state);
-
-    // Mouse move handler
-    const handleMove = (e) => {
-      if (state.animationFrameId) {
-        cancelAnimationFrame(state.animationFrameId);
-      }
-
-      state.animationFrameId = requestAnimationFrame(() => {
-        const mouseX = e?.clientX ?? state.lastPosition.x;
-        const mouseY = e?.clientY ?? state.lastPosition.y;
-
-        if (e) {
-          state.lastPosition = { x: mouseX, y: mouseY };
-        }
-
-        const rect = wrapper.getBoundingClientRect();
-        const { left, top, width, height } = rect;
-
-        // Calculate center
-        const centerX = left + width * 0.5;
-        const centerY = top + height * 0.5;
-
-        // Calculate distance from center
-        const distanceFromCenter = Math.hypot(
-          mouseX - centerX,
-          mouseY - centerY,
-        );
-
-        // Check inactive zone (deadzone)
-        const inactiveRadius = 0.5 * Math.min(width, height) * config.deadzone;
-
-        if (distanceFromCenter < inactiveRadius) {
-          glowContainer.style.setProperty("--glow-active", "0");
-          return;
-        }
-
-        // Check proximity
-        const isActive =
-          mouseX > left - config.proximity &&
-          mouseX < left + width + config.proximity &&
-          mouseY > top - config.proximity &&
-          mouseY < top + height + config.proximity;
-
-        glowContainer.style.setProperty("--glow-active", isActive ? "1" : "0");
-
-        if (!isActive) return;
-
-        // Calculate angle
-        const targetAngle =
-          (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90;
-
-        // Calculate shortest rotation path
-        const angleDiff =
-          ((targetAngle - state.currentAngle + 180) % 360) - 180;
-        const newAngle = state.currentAngle + angleDiff;
-
-        // Update angle immediately - CSS transition will smooth it
-        glowContainer.style.setProperty("--glow-start", String(newAngle));
-        state.currentAngle = newAngle;
-      });
-    };
-
-    // Scroll handler (uses last known position)
-    const handleScroll = () => handleMove();
-
-    // Add listeners
-    document.body.addEventListener("pointermove", handleMove, {
-      passive: true,
     });
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    // Store cleanup function (for future use if needed)
-    wrapper._glowCleanup = () => {
-      if (state.animationFrameId) {
-        cancelAnimationFrame(state.animationFrameId);
-      }
-      if (state.activeAnimation) {
-        state.activeAnimation.cancel();
-      }
-      document.body.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("scroll", handleScroll);
-    };
   }
 
   /**
-   * Animate angle rotation with easing
-   * @param {number} currentAngle - Current angle in degrees
-   * @param {number} targetAngle - Target angle in degrees
-   * @param {number} duration - Duration in seconds
-   * @param {HTMLElement} element - Element to apply CSS variable to
-   * @param {Object} state - Animation state object
+   * Global mouse move handler - updates all cards at once
    */
-  function animateAngle(currentAngle, targetAngle, duration, element, state) {
+  function handleGlobalMouseMove(e) {
+    lastMousePosition = { x: e.clientX, y: e.clientY };
+
+    if (globalAnimationFrame) {
+      cancelAnimationFrame(globalAnimationFrame);
+    }
+
+    globalAnimationFrame = requestAnimationFrame(() => {
+      updateAllCards(lastMousePosition.x, lastMousePosition.y);
+    });
+  }
+
+  /**
+   * Update all card glow effects based on mouse position
+   */
+  function updateAllCards(mouseX, mouseY) {
+    cardStates.forEach((state, wrapper) => {
+      updateCardGlow(wrapper, state, mouseX, mouseY);
+    });
+  }
+
+  /**
+   * Update a single card's glow effect
+   */
+  function updateCardGlow(wrapper, state, mouseX, mouseY) {
+    const { glowContainer, config } = state;
+
+    const rect = wrapper.getBoundingClientRect();
+    const { left, top, width, height } = rect;
+
+    // Calculate center
+    const centerX = left + width * 0.5;
+    const centerY = top + height * 0.5;
+
+    // Calculate distance from center
+    const distanceFromCenter = Math.hypot(mouseX - centerX, mouseY - centerY);
+
+    // Check inactive zone (deadzone)
+    const inactiveRadius = 0.5 * Math.min(width, height) * config.deadzone;
+
+    if (distanceFromCenter < inactiveRadius) {
+      glowContainer.style.setProperty("--glow-active", "0");
+      return;
+    }
+
+    // Check proximity
+    const isActive =
+      mouseX > left - config.proximity &&
+      mouseX < left + width + config.proximity &&
+      mouseY > top - config.proximity &&
+      mouseY < top + height + config.proximity;
+
+    glowContainer.style.setProperty("--glow-active", isActive ? "1" : "0");
+
+    if (!isActive) return;
+
+    // Calculate angle
+    const targetAngle =
+      (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90;
+
     // Calculate shortest rotation path
-    const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
-    const newAngle = currentAngle + angleDiff;
+    const angleDiff = ((targetAngle - state.currentAngle + 180) % 360) - 180;
+    const newAngle = state.currentAngle + angleDiff;
 
-    // Cancel previous animation
-    if (state.activeAnimation) {
-      state.activeAnimation.cancel();
-    }
-
-    // Animate using custom easing
-    const startTime = performance.now();
-    const startAngle = currentAngle;
-
-    function animate(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / (duration * 1000), 1);
-
-      // Apply easing (cubic-bezier approximation of [0.16, 1, 0.3, 1])
-      const eased = easeOutExpo(progress);
-
-      // Calculate current angle
-      const angle = startAngle + (newAngle - startAngle) * eased;
-
-      // Update CSS variable
-      element.style.setProperty("--glow-start", String(angle));
-      state.currentAngle = angle;
-
-      // Continue animation if not complete
-      if (progress < 1) {
-        state.activeAnimation = requestAnimationFrame(animate);
-      } else {
-        state.activeAnimation = null;
-      }
-    }
-
-    state.activeAnimation = requestAnimationFrame(animate);
-  }
-
-  /**
-   * Easing function - smooth cubic-bezier for fluid motion
-   * @param {number} t - Progress from 0 to 1
-   * @returns {number} Eased value
-   */
-  function easeOutExpo(t) {
-    // Smooth cubic easing out - decelerates smoothly
-    return 1 - Math.pow(1 - t, 3);
+    // Update angle immediately - CSS transition will smooth it
+    glowContainer.style.setProperty("--glow-start", String(newAngle));
+    state.currentAngle = newAngle;
   }
 
   /**
