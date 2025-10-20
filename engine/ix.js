@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let resizeTimeout = null;
   let globalAnimationFrame = null;
   let lastMousePosition = { x: 0, y: 0 };
+  let isDOMStable = false; // Prevent running during DOM mutations
 
   /**
    * Main initialization function - finds all [data-card-glow] and sets up glow effects
@@ -139,6 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Guard against multiple initializations
     if (isInitialized) {
+      return;
+    }
+
+    // Wait for DOM to stabilize (prevent conflicts with other scripts)
+    if (!isDOMStable) {
       return;
     }
 
@@ -336,15 +342,24 @@ document.addEventListener("DOMContentLoaded", function () {
    * Global mouse move handler - updates all cards at once
    */
   function handleGlobalMouseMove(e) {
-    lastMousePosition = { x: e.clientX, y: e.clientY };
+    try {
+      lastMousePosition = { x: e.clientX, y: e.clientY };
 
-    if (globalAnimationFrame) {
-      cancelAnimationFrame(globalAnimationFrame);
+      if (globalAnimationFrame) {
+        cancelAnimationFrame(globalAnimationFrame);
+      }
+
+      globalAnimationFrame = requestAnimationFrame(() => {
+        try {
+          updateAllCards(lastMousePosition.x, lastMousePosition.y);
+        } catch (error) {
+          // Silently fail to prevent crashes during animation
+          console.error("Glow Cards: Update failed", error);
+        }
+      });
+    } catch (error) {
+      console.error("Glow Cards: Mouse handler failed", error);
     }
-
-    globalAnimationFrame = requestAnimationFrame(() => {
-      updateAllCards(lastMousePosition.x, lastMousePosition.y);
-    });
   }
 
   /**
@@ -408,12 +423,17 @@ document.addEventListener("DOMContentLoaded", function () {
    * Handle responsive behavior on window resize
    */
   function handleResize() {
+    // Don't run if DOM is not stable yet
+    if (!isDOMStable) {
+      return;
+    }
+
     // Clear previous timeout
     if (resizeTimeout) {
       clearTimeout(resizeTimeout);
     }
 
-    // Debounce resize events
+    // Debounce resize events with longer delay to avoid conflicts
     resizeTimeout = setTimeout(() => {
       if (window.innerWidth >= 768 && !isInitialized) {
         // Switched to desktop - initialize
@@ -422,14 +442,33 @@ document.addEventListener("DOMContentLoaded", function () {
         // Switched to mobile - cleanup
         glowCardsCleanup();
       }
-    }, 200);
+    }, 300); // Increased from 200ms to avoid conflicts
   }
 
-  // Initialize on load
-  glowCardsInitialiser();
+  // Delay initialization to run AFTER all other scripts
+  // This prevents conflicts with MutationObservers and other DOM manipulation
+  setTimeout(() => {
+    try {
+      isDOMStable = true; // Mark DOM as stable
+      glowCardsInitialiser();
+    } catch (error) {
+      console.error("Glow Cards: Initialization failed", error);
+      // Fail silently to not break other scripts
+    }
+  }, 500);
 
-  // Add resize listener
-  window.addEventListener("resize", handleResize, { passive: true });
+  // Add resize listener with error handling
+  window.addEventListener(
+    "resize",
+    () => {
+      try {
+        handleResize();
+      } catch (error) {
+        console.error("Glow Cards: Resize handler failed", error);
+      }
+    },
+    { passive: true },
+  );
 });
 
 //Navigation Dropdowns
