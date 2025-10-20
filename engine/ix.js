@@ -137,17 +137,37 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const cards = document.querySelectorAll("[data-card-glow]");
+    // Guard against multiple initializations
+    if (isInitialized) {
+      return;
+    }
+
+    // Convert to array to avoid live collection issues
+    const cards = Array.from(document.querySelectorAll("[data-card-glow]"));
 
     if (cards.length === 0) {
       return;
     }
 
+    // Process cards in a stable way
     cards.forEach((card) => {
+      // Skip if element is no longer in DOM
+      if (!card.isConnected) {
+        return;
+      }
+
       // Skip if already wrapped
       if (card.parentElement?.classList.contains("o-glow-wrapper")) {
         return;
       }
+
+      // Skip if already processed (marked with attribute)
+      if (card.hasAttribute("data-glow-initialized")) {
+        return;
+      }
+
+      // Mark as being processed
+      card.setAttribute("data-glow-initialized", "true");
 
       // Check if disabled
       const state = card.getAttribute("data-glow-state");
@@ -189,11 +209,17 @@ document.addEventListener("DOMContentLoaded", function () {
       globalAnimationFrame = null;
     }
 
-    // Remove glow containers from DOM
+    // Remove glow containers from DOM and clean up markers
     cardStates.forEach((state, wrapper) => {
       const glowContainer = wrapper.querySelector(".o-glow-container");
       if (glowContainer) {
         glowContainer.remove();
+      }
+
+      // Remove initialization marker from card
+      const card = wrapper.querySelector("[data-glow-initialized]");
+      if (card) {
+        card.removeAttribute("data-glow-initialized");
       }
     });
 
