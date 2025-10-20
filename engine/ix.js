@@ -120,356 +120,356 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-//Glowing Cards
-document.addEventListener("DOMContentLoaded", function () {
-  // Store card states
-  const cardStates = new Map();
-  let isInitialized = false;
-  let resizeTimeout = null;
-  let globalAnimationFrame = null;
-  let lastMousePosition = { x: 0, y: 0 };
-  let isDOMStable = false; // Prevent running during DOM mutations
+// //Glowing Cards
+// document.addEventListener("DOMContentLoaded", function () {
+//   // Store card states
+//   const cardStates = new Map();
+//   let isInitialized = false;
+//   let resizeTimeout = null;
+//   let globalAnimationFrame = null;
+//   let lastMousePosition = { x: 0, y: 0 };
+//   let isDOMStable = false; // Prevent running during DOM mutations
 
-  /**
-   * Main initialization function - finds all [data-card-glow] and sets up glow effects
-   */
-  function glowCardsInitialiser() {
-    if (window.innerWidth < 768) {
-      return;
-    }
+//   /**
+//    * Main initialization function - finds all [data-card-glow] and sets up glow effects
+//    */
+//   function glowCardsInitialiser() {
+//     if (window.innerWidth < 768) {
+//       return;
+//     }
 
-    // Guard against multiple initializations
-    if (isInitialized) {
-      return;
-    }
+//     // Guard against multiple initializations
+//     if (isInitialized) {
+//       return;
+//     }
 
-    // Wait for DOM to stabilize (prevent conflicts with other scripts)
-    if (!isDOMStable) {
-      return;
-    }
+//     // Wait for DOM to stabilize (prevent conflicts with other scripts)
+//     if (!isDOMStable) {
+//       return;
+//     }
 
-    // Convert to array to avoid live collection issues
-    const cards = Array.from(document.querySelectorAll("[data-card-glow]"));
+//     // Convert to array to avoid live collection issues
+//     const cards = Array.from(document.querySelectorAll("[data-card-glow]"));
 
-    if (cards.length === 0) {
-      return;
-    }
+//     if (cards.length === 0) {
+//       return;
+//     }
 
-    // Process cards in a stable way
-    cards.forEach((card) => {
-      // Skip if element is no longer in DOM
-      if (!card.isConnected) {
-        return;
-      }
+//     // Process cards in a stable way
+//     cards.forEach((card) => {
+//       // Skip if element is no longer in DOM
+//       if (!card.isConnected) {
+//         return;
+//       }
 
-      // Skip if already wrapped
-      if (card.parentElement?.classList.contains("o-glow-wrapper")) {
-        return;
-      }
+//       // Skip if already wrapped
+//       if (card.parentElement?.classList.contains("o-glow-wrapper")) {
+//         return;
+//       }
 
-      // Skip if already processed (marked with attribute)
-      if (card.hasAttribute("data-glow-initialized")) {
-        return;
-      }
+//       // Skip if already processed (marked with attribute)
+//       if (card.hasAttribute("data-glow-initialized")) {
+//         return;
+//       }
 
-      // Mark as being processed
-      card.setAttribute("data-glow-initialized", "true");
+//       // Mark as being processed
+//       card.setAttribute("data-glow-initialized", "true");
 
-      // Check if disabled
-      const state = card.getAttribute("data-glow-state");
-      if (state === "disabled") {
-        // Still wrap but don't initialize glow
-        wrapCardWithGlow(card);
-        return;
-      }
+//       // Check if disabled
+//       const state = card.getAttribute("data-glow-state");
+//       if (state === "disabled") {
+//         // Still wrap but don't initialize glow
+//         wrapCardWithGlow(card);
+//         return;
+//       }
 
-      // Wrap and initialize
-      const wrapper = wrapCardWithGlow(card);
-      initializeGlowEffect(wrapper, card);
-    });
+//       // Wrap and initialize
+//       const wrapper = wrapCardWithGlow(card);
+//       initializeGlowEffect(wrapper, card);
+//     });
 
-    // Add global event listeners (only once)
-    if (cardStates.size > 0) {
-      document.body.addEventListener("pointermove", handleGlobalMouseMove, {
-        passive: true,
-      });
-      window.addEventListener("scroll", handleGlobalScroll, { passive: true });
-    }
+//     // Add global event listeners (only once)
+//     if (cardStates.size > 0) {
+//       document.body.addEventListener("pointermove", handleGlobalMouseMove, {
+//         passive: true,
+//       });
+//       window.addEventListener("scroll", handleGlobalScroll, { passive: true });
+//     }
 
-    isInitialized = true;
-  }
+//     isInitialized = true;
+//   }
 
-  /**
-   * Cleanup function - removes glow effects and event listeners
-   */
-  function glowCardsCleanup() {
-    if (!isInitialized) return;
+//   /**
+//    * Cleanup function - removes glow effects and event listeners
+//    */
+//   function glowCardsCleanup() {
+//     if (!isInitialized) return;
 
-    // Remove global event listeners
-    document.body.removeEventListener("pointermove", handleGlobalMouseMove);
-    window.removeEventListener("scroll", handleGlobalScroll);
+//     // Remove global event listeners
+//     document.body.removeEventListener("pointermove", handleGlobalMouseMove);
+//     window.removeEventListener("scroll", handleGlobalScroll);
 
-    // Cancel any pending animation frame
-    if (globalAnimationFrame) {
-      cancelAnimationFrame(globalAnimationFrame);
-      globalAnimationFrame = null;
-    }
+//     // Cancel any pending animation frame
+//     if (globalAnimationFrame) {
+//       cancelAnimationFrame(globalAnimationFrame);
+//       globalAnimationFrame = null;
+//     }
 
-    // Remove glow containers from DOM and clean up markers
-    cardStates.forEach((state, wrapper) => {
-      const glowContainer = wrapper.querySelector(".o-glow-container");
-      if (glowContainer) {
-        glowContainer.remove();
-      }
+//     // Remove glow containers from DOM and clean up markers
+//     cardStates.forEach((state, wrapper) => {
+//       const glowContainer = wrapper.querySelector(".o-glow-container");
+//       if (glowContainer) {
+//         glowContainer.remove();
+//       }
 
-      // Remove initialization marker from card
-      const card = wrapper.querySelector("[data-glow-initialized]");
-      if (card) {
-        card.removeAttribute("data-glow-initialized");
-      }
-    });
+//       // Remove initialization marker from card
+//       const card = wrapper.querySelector("[data-glow-initialized]");
+//       if (card) {
+//         card.removeAttribute("data-glow-initialized");
+//       }
+//     });
 
-    // Clear card states
-    cardStates.clear();
+//     // Clear card states
+//     cardStates.clear();
 
-    isInitialized = false;
-  }
+//     isInitialized = false;
+//   }
 
-  /**
-   * Handle scroll events - update cards with last known mouse position
-   */
-  function handleGlobalScroll() {
-    if (globalAnimationFrame) {
-      cancelAnimationFrame(globalAnimationFrame);
-    }
+//   /**
+//    * Handle scroll events - update cards with last known mouse position
+//    */
+//   function handleGlobalScroll() {
+//     if (globalAnimationFrame) {
+//       cancelAnimationFrame(globalAnimationFrame);
+//     }
 
-    globalAnimationFrame = requestAnimationFrame(() => {
-      updateAllCards(lastMousePosition.x, lastMousePosition.y);
-    });
-  }
+//     globalAnimationFrame = requestAnimationFrame(() => {
+//       updateAllCards(lastMousePosition.x, lastMousePosition.y);
+//     });
+//   }
 
-  /**
-   * Wraps a card element with .o-glow-wrapper
-   * @param {HTMLElement} cardElement - The card to wrap
-   * @returns {HTMLElement} The wrapper element
-   */
-  function wrapCardWithGlow(cardElement) {
-    // Create wrapper
-    const wrapper = document.createElement("div");
-    wrapper.className = "o-glow-wrapper";
+//   /**
+//    * Wraps a card element with .o-glow-wrapper
+//    * @param {HTMLElement} cardElement - The card to wrap
+//    * @returns {HTMLElement} The wrapper element
+//    */
+//   function wrapCardWithGlow(cardElement) {
+//     // Create wrapper
+//     const wrapper = document.createElement("div");
+//     wrapper.className = "o-glow-wrapper";
 
-    // Get border-radius from card and apply to wrapper
-    const computedStyle = window.getComputedStyle(cardElement);
-    const borderRadius = computedStyle.borderRadius;
-    if (borderRadius && borderRadius !== "0px") {
-      wrapper.style.borderRadius = borderRadius;
-    }
+//     // Get border-radius from card and apply to wrapper
+//     const computedStyle = window.getComputedStyle(cardElement);
+//     const borderRadius = computedStyle.borderRadius;
+//     if (borderRadius && borderRadius !== "0px") {
+//       wrapper.style.borderRadius = borderRadius;
+//     }
 
-    // Copy data-glow-theme attribute to wrapper if it exists
-    const theme = cardElement.getAttribute("data-glow-theme");
-    if (theme) {
-      wrapper.setAttribute("data-glow-theme", theme);
-    }
+//     // Copy data-glow-theme attribute to wrapper if it exists
+//     const theme = cardElement.getAttribute("data-glow-theme");
+//     if (theme) {
+//       wrapper.setAttribute("data-glow-theme", theme);
+//     }
 
-    // Insert wrapper before card
-    cardElement.parentNode.insertBefore(wrapper, cardElement);
+//     // Insert wrapper before card
+//     cardElement.parentNode.insertBefore(wrapper, cardElement);
 
-    // Move card inside wrapper
-    wrapper.appendChild(cardElement);
+//     // Move card inside wrapper
+//     wrapper.appendChild(cardElement);
 
-    return wrapper;
-  }
+//     return wrapper;
+//   }
 
-  /**
-   * Creates the glow DOM elements
-   * @returns {Object} Object with container and effect element references
-   */
-  function createGlowElements() {
-    const container = document.createElement("div");
-    container.className = "o-glow-container";
+//   /**
+//    * Creates the glow DOM elements
+//    * @returns {Object} Object with container and effect element references
+//    */
+//   function createGlowElements() {
+//     const container = document.createElement("div");
+//     container.className = "o-glow-container";
 
-    const effect = document.createElement("div");
-    effect.className = "o-glow-effect";
+//     const effect = document.createElement("div");
+//     effect.className = "o-glow-effect";
 
-    container.appendChild(effect);
+//     container.appendChild(effect);
 
-    return { container, effect };
-  }
+//     return { container, effect };
+//   }
 
-  /**
-   * Initialize glow effect for a wrapped card
-   * @param {HTMLElement} wrapper - The wrapper element
-   * @param {HTMLElement} cardElement - The original card element
-   */
-  function initializeGlowEffect(wrapper, cardElement) {
-    // Read config from card attributes
-    const config = {
-      spread: parseFloat(cardElement.getAttribute("data-glow-spread")) || 40,
-      proximity:
-        parseFloat(cardElement.getAttribute("data-glow-proximity")) || 64,
-      deadzone:
-        parseFloat(cardElement.getAttribute("data-glow-deadzone")) || 0.03,
-      duration:
-        parseFloat(cardElement.getAttribute("data-glow-duration")) || 0.6,
-      borderWidth:
-        parseFloat(cardElement.getAttribute("data-glow-border")) || 1,
-    };
+//   /**
+//    * Initialize glow effect for a wrapped card
+//    * @param {HTMLElement} wrapper - The wrapper element
+//    * @param {HTMLElement} cardElement - The original card element
+//    */
+//   function initializeGlowEffect(wrapper, cardElement) {
+//     // Read config from card attributes
+//     const config = {
+//       spread: parseFloat(cardElement.getAttribute("data-glow-spread")) || 40,
+//       proximity:
+//         parseFloat(cardElement.getAttribute("data-glow-proximity")) || 64,
+//       deadzone:
+//         parseFloat(cardElement.getAttribute("data-glow-deadzone")) || 0.03,
+//       duration:
+//         parseFloat(cardElement.getAttribute("data-glow-duration")) || 0.6,
+//       borderWidth:
+//         parseFloat(cardElement.getAttribute("data-glow-border")) || 1,
+//     };
 
-    // Create glow elements
-    const { container, effect } = createGlowElements();
+//     // Create glow elements
+//     const { container, effect } = createGlowElements();
 
-    // Set CSS variables
-    container.style.setProperty("--glow-start", "0");
-    container.style.setProperty("--glow-active", "0");
-    container.style.setProperty("--glow-spread", config.spread);
-    container.style.setProperty(
-      "--glow-border-width",
-      `${config.borderWidth}px`,
-    );
+//     // Set CSS variables
+//     container.style.setProperty("--glow-start", "0");
+//     container.style.setProperty("--glow-active", "0");
+//     container.style.setProperty("--glow-spread", config.spread);
+//     container.style.setProperty(
+//       "--glow-border-width",
+//       `${config.borderWidth}px`,
+//     );
 
-    // Inject into wrapper (as first child, before card)
-    wrapper.insertBefore(container, wrapper.firstChild);
+//     // Inject into wrapper (as first child, before card)
+//     wrapper.insertBefore(container, wrapper.firstChild);
 
-    // Store card state
-    cardStates.set(wrapper, {
-      glowContainer: container,
-      config: config,
-      currentAngle: 0,
-    });
-  }
+//     // Store card state
+//     cardStates.set(wrapper, {
+//       glowContainer: container,
+//       config: config,
+//       currentAngle: 0,
+//     });
+//   }
 
-  /**
-   * Global mouse move handler - updates all cards at once
-   */
-  function handleGlobalMouseMove(e) {
-    try {
-      lastMousePosition = { x: e.clientX, y: e.clientY };
+//   /**
+//    * Global mouse move handler - updates all cards at once
+//    */
+//   function handleGlobalMouseMove(e) {
+//     try {
+//       lastMousePosition = { x: e.clientX, y: e.clientY };
 
-      if (globalAnimationFrame) {
-        cancelAnimationFrame(globalAnimationFrame);
-      }
+//       if (globalAnimationFrame) {
+//         cancelAnimationFrame(globalAnimationFrame);
+//       }
 
-      globalAnimationFrame = requestAnimationFrame(() => {
-        try {
-          updateAllCards(lastMousePosition.x, lastMousePosition.y);
-        } catch (error) {
-          // Silently fail to prevent crashes during animation
-          console.error("Glow Cards: Update failed", error);
-        }
-      });
-    } catch (error) {
-      console.error("Glow Cards: Mouse handler failed", error);
-    }
-  }
+//       globalAnimationFrame = requestAnimationFrame(() => {
+//         try {
+//           updateAllCards(lastMousePosition.x, lastMousePosition.y);
+//         } catch (error) {
+//           // Silently fail to prevent crashes during animation
+//           console.error("Glow Cards: Update failed", error);
+//         }
+//       });
+//     } catch (error) {
+//       console.error("Glow Cards: Mouse handler failed", error);
+//     }
+//   }
 
-  /**
-   * Update all card glow effects based on mouse position
-   */
-  function updateAllCards(mouseX, mouseY) {
-    cardStates.forEach((state, wrapper) => {
-      updateCardGlow(wrapper, state, mouseX, mouseY);
-    });
-  }
+//   /**
+//    * Update all card glow effects based on mouse position
+//    */
+//   function updateAllCards(mouseX, mouseY) {
+//     cardStates.forEach((state, wrapper) => {
+//       updateCardGlow(wrapper, state, mouseX, mouseY);
+//     });
+//   }
 
-  /**
-   * Update a single card's glow effect
-   */
-  function updateCardGlow(wrapper, state, mouseX, mouseY) {
-    const { glowContainer, config } = state;
+//   /**
+//    * Update a single card's glow effect
+//    */
+//   function updateCardGlow(wrapper, state, mouseX, mouseY) {
+//     const { glowContainer, config } = state;
 
-    const rect = wrapper.getBoundingClientRect();
-    const { left, top, width, height } = rect;
+//     const rect = wrapper.getBoundingClientRect();
+//     const { left, top, width, height } = rect;
 
-    // Calculate center
-    const centerX = left + width * 0.5;
-    const centerY = top + height * 0.5;
+//     // Calculate center
+//     const centerX = left + width * 0.5;
+//     const centerY = top + height * 0.5;
 
-    // Calculate distance from center
-    const distanceFromCenter = Math.hypot(mouseX - centerX, mouseY - centerY);
+//     // Calculate distance from center
+//     const distanceFromCenter = Math.hypot(mouseX - centerX, mouseY - centerY);
 
-    // Check inactive zone (deadzone)
-    const inactiveRadius = 0.5 * Math.min(width, height) * config.deadzone;
+//     // Check inactive zone (deadzone)
+//     const inactiveRadius = 0.5 * Math.min(width, height) * config.deadzone;
 
-    if (distanceFromCenter < inactiveRadius) {
-      glowContainer.style.setProperty("--glow-active", "0");
-      return;
-    }
+//     if (distanceFromCenter < inactiveRadius) {
+//       glowContainer.style.setProperty("--glow-active", "0");
+//       return;
+//     }
 
-    // Check proximity
-    const isActive =
-      mouseX > left - config.proximity &&
-      mouseX < left + width + config.proximity &&
-      mouseY > top - config.proximity &&
-      mouseY < top + height + config.proximity;
+//     // Check proximity
+//     const isActive =
+//       mouseX > left - config.proximity &&
+//       mouseX < left + width + config.proximity &&
+//       mouseY > top - config.proximity &&
+//       mouseY < top + height + config.proximity;
 
-    glowContainer.style.setProperty("--glow-active", isActive ? "1" : "0");
+//     glowContainer.style.setProperty("--glow-active", isActive ? "1" : "0");
 
-    if (!isActive) return;
+//     if (!isActive) return;
 
-    // Calculate angle
-    const targetAngle =
-      (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90;
+//     // Calculate angle
+//     const targetAngle =
+//       (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90;
 
-    // Calculate shortest rotation path
-    const angleDiff = ((targetAngle - state.currentAngle + 180) % 360) - 180;
-    const newAngle = state.currentAngle + angleDiff;
+//     // Calculate shortest rotation path
+//     const angleDiff = ((targetAngle - state.currentAngle + 180) % 360) - 180;
+//     const newAngle = state.currentAngle + angleDiff;
 
-    // Update angle immediately - CSS transition will smooth it
-    glowContainer.style.setProperty("--glow-start", String(newAngle));
-    state.currentAngle = newAngle;
-  }
+//     // Update angle immediately - CSS transition will smooth it
+//     glowContainer.style.setProperty("--glow-start", String(newAngle));
+//     state.currentAngle = newAngle;
+//   }
 
-  /**
-   * Handle responsive behavior on window resize
-   */
-  function handleResize() {
-    // Don't run if DOM is not stable yet
-    if (!isDOMStable) {
-      return;
-    }
+//   /**
+//    * Handle responsive behavior on window resize
+//    */
+//   function handleResize() {
+//     // Don't run if DOM is not stable yet
+//     if (!isDOMStable) {
+//       return;
+//     }
 
-    // Clear previous timeout
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout);
-    }
+//     // Clear previous timeout
+//     if (resizeTimeout) {
+//       clearTimeout(resizeTimeout);
+//     }
 
-    // Debounce resize events with longer delay to avoid conflicts
-    resizeTimeout = setTimeout(() => {
-      if (window.innerWidth >= 768 && !isInitialized) {
-        // Switched to desktop - initialize
-        glowCardsInitialiser();
-      } else if (window.innerWidth < 768 && isInitialized) {
-        // Switched to mobile - cleanup
-        glowCardsCleanup();
-      }
-    }, 300); // Increased from 200ms to avoid conflicts
-  }
+//     // Debounce resize events with longer delay to avoid conflicts
+//     resizeTimeout = setTimeout(() => {
+//       if (window.innerWidth >= 768 && !isInitialized) {
+//         // Switched to desktop - initialize
+//         glowCardsInitialiser();
+//       } else if (window.innerWidth < 768 && isInitialized) {
+//         // Switched to mobile - cleanup
+//         glowCardsCleanup();
+//       }
+//     }, 300); // Increased from 200ms to avoid conflicts
+//   }
 
-  // Delay initialization to run AFTER all other scripts
-  // This prevents conflicts with MutationObservers and other DOM manipulation
-  setTimeout(() => {
-    try {
-      isDOMStable = true; // Mark DOM as stable
-      glowCardsInitialiser();
-    } catch (error) {
-      console.error("Glow Cards: Initialization failed", error);
-      // Fail silently to not break other scripts
-    }
-  }, 500);
+//   // Delay initialization to run AFTER all other scripts
+//   // This prevents conflicts with MutationObservers and other DOM manipulation
+//   setTimeout(() => {
+//     try {
+//       isDOMStable = true; // Mark DOM as stable
+//       glowCardsInitialiser();
+//     } catch (error) {
+//       console.error("Glow Cards: Initialization failed", error);
+//       // Fail silently to not break other scripts
+//     }
+//   }, 500);
 
-  // Add resize listener with error handling
-  window.addEventListener(
-    "resize",
-    () => {
-      try {
-        handleResize();
-      } catch (error) {
-        console.error("Glow Cards: Resize handler failed", error);
-      }
-    },
-    { passive: true },
-  );
-});
+//   // Add resize listener with error handling
+//   window.addEventListener(
+//     "resize",
+//     () => {
+//       try {
+//         handleResize();
+//       } catch (error) {
+//         console.error("Glow Cards: Resize handler failed", error);
+//       }
+//     },
+//     { passive: true },
+//   );
+// });
 
 //Navigation Dropdowns
 document.addEventListener("DOMContentLoaded", function () {
