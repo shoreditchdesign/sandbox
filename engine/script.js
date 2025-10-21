@@ -306,3 +306,81 @@ document.addEventListener("DOMContentLoaded", function () {
 
   initStatCells();
 });
+
+//Array Animation on Load More
+document.addEventListener("DOMContentLoaded", function () {
+  function checkLoadMore() {
+    const loadMoreButtons = document.querySelectorAll("[data-load-more]");
+    const containers = document.querySelectorAll(
+      "[data-motion-array]:not([data-motion-block])",
+    );
+    if (containers.length === 0) return;
+
+    containers.forEach((container) => {
+      // Use MutationObserver to detect when new items are added
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.addedNodes.length > 0) {
+            // Get only the newly added child elements
+            const newChildren = Array.from(mutation.addedNodes).filter(
+              (node) =>
+                node.nodeType === 1 && !node.hasAttribute("data-motion-block"),
+            );
+
+            if (newChildren.length > 0) {
+              // Animate only the new children
+              if (window.innerWidth > 991) {
+                gsap.set(newChildren, {
+                  opacity: 0,
+                  y: 5,
+                });
+                gsap.to(newChildren, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  stagger: 0.15,
+                  ease: "power2.out",
+                });
+              } else {
+                gsap.set(newChildren, {
+                  opacity: 1,
+                  y: 0,
+                });
+              }
+            }
+          }
+        });
+      });
+
+      // Start observing the container for child additions
+      observer.observe(container, {
+        childList: true,
+        subtree: false,
+      });
+    });
+
+    // Fallback: also add click listeners with delay
+    loadMoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setTimeout(() => {
+          containers.forEach((container) => {
+            const children = Array.from(container.children).filter(
+              (child) => !child.hasAttribute("data-motion-block"),
+            );
+            if (window.innerWidth > 991) {
+              gsap.to(children, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                ease: "power2.out",
+              });
+            }
+          });
+        }, 500);
+      });
+    });
+  }
+
+  checkLoadMore();
+});

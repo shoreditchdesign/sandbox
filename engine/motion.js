@@ -1002,6 +1002,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 200);
   }
+
   initialiser();
   animator();
 });
