@@ -188,76 +188,112 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// //GSAP for Ticker
-// document.addEventListener("DOMContentLoaded", () => {
-//   const tickerWrap = document.querySelector("[data-ticker-wrap]");
-//   const tickerItem = document.querySelector("[data-ticker-item]");
+//GSAP for Ticker
+document.addEventListener("DOMContentLoaded", () => {
+  const tickerWrap = document.querySelector("[data-ticker-wrap]");
+  const tickerItem = document.querySelector("[data-ticker-item]");
 
-//   if (!tickerWrap || !tickerItem) {
-//     console.warn("Ticker elements not found");
-//     return;
-//   }
+  if (!tickerWrap || !tickerItem) {
+    console.warn("Ticker elements not found");
+    return;
+  }
 
-//   const originalContent = tickerItem.outerHTML;
-//   let currentAnimation = null;
+  const originalContent = tickerItem.outerHTML;
+  let currentAnimation = null;
+  let resizeTimeout;
 
-//   function calculateRequiredCopies() {
-//     const viewportWidth = window.innerWidth;
-//     const itemWidth = tickerItem.offsetWidth;
-//     // Create enough copies to fill viewport plus buffer
-//     const copiesNeeded = Math.ceil(viewportWidth / itemWidth) + 2;
+  function calculateRequiredCopies() {
+    const viewportWidth = window.innerWidth;
+    // Get fresh reference to first ticker item
+    const firstItem = tickerWrap.querySelector("[data-ticker-item]");
 
-//     return {
-//       viewportWidth,
-//       itemWidth,
-//       copiesNeeded,
-//     };
-//   }
+    if (!firstItem) {
+      console.warn("Ticker: No item found in wrap");
+      return null;
+    }
 
-//   function setupTicker() {
-//     // Kill existing animation if any
-//     if (currentAnimation) {
-//       currentAnimation.kill();
-//     }
+    const itemWidth = firstItem.offsetWidth;
 
-//     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
+    // Prevent infinite loop if itemWidth is 0
+    if (itemWidth <= 0) {
+      console.warn("Ticker: Item width is 0, cannot calculate copies");
+      return null;
+    }
 
-//     tickerWrap.innerHTML = "";
+    // Create enough copies to fill viewport plus buffer
+    const copiesNeeded = Math.ceil(viewportWidth / itemWidth) + 2;
 
-//     for (let i = 0; i < copiesNeeded; i++) {
-//       const clone = document.createElement("div");
-//       clone.innerHTML = originalContent;
-//       const clonedItem = clone.firstElementChild;
-//       tickerWrap.appendChild(clonedItem);
-//     }
+    return {
+      viewportWidth,
+      itemWidth,
+      copiesNeeded,
+    };
+  }
 
-//     // Reset position before starting new animation
-//     gsap.set(tickerWrap, { x: 0 });
+  function setupTicker() {
+    // Kill existing animation if any
+    if (currentAnimation) {
+      currentAnimation.kill();
+      currentAnimation = null;
+    }
 
-//     // Animate by one item width for seamless loop
-//     currentAnimation = gsap.to(tickerWrap, {
-//       x: -itemWidth,
-//       duration: itemWidth / 100,
-//       ease: "none",
-//       repeat: -1,
-//       onRepeat: () => {
-//         gsap.set(tickerWrap, { x: 0 });
-//       },
-//     });
-//   }
+    const calculations = calculateRequiredCopies();
 
-//   // Initialize the ticker
-//   setupTicker();
+    if (!calculations) {
+      console.warn("Ticker: Unable to setup, invalid calculations");
+      return;
+    }
 
-//   // Recalculate on window resize
-//   let resizeTimeout;
-//   window.addEventListener("resize", () => {
-//     clearTimeout(resizeTimeout);
-//     resizeTimeout = setTimeout(() => {
-//       setupTicker();
-//     }, 250); // Debounce resize events
-//   });
-// });
+    const { copiesNeeded, itemWidth } = calculations;
+
+    tickerWrap.innerHTML = "";
+
+    for (let i = 0; i < copiesNeeded; i++) {
+      const clone = document.createElement("div");
+      clone.innerHTML = originalContent;
+      const clonedItem = clone.firstElementChild;
+      tickerWrap.appendChild(clonedItem);
+    }
+
+    // Reset position before starting new animation
+    gsap.set(tickerWrap, { x: 0 });
+
+    // Animate by one item width for seamless loop
+    currentAnimation = gsap.to(tickerWrap, {
+      x: -itemWidth,
+      duration: itemWidth / 100,
+      ease: "none",
+      repeat: -1,
+      onRepeat: () => {
+        gsap.set(tickerWrap, { x: 0 });
+      },
+    });
+  }
+
+  // Resize handler function (so we can remove it if needed)
+  function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      setupTicker();
+    }, 250); // Debounce resize events
+  }
+
+  // Initialize the ticker
+  setupTicker();
+
+  // Recalculate on window resize
+  window.addEventListener("resize", handleResize);
+
+  // Cleanup function (optional - can be called if ticker needs to be destroyed)
+  window.destroyTicker = () => {
+    window.removeEventListener("resize", handleResize);
+    clearTimeout(resizeTimeout);
+    if (currentAnimation) {
+      currentAnimation.kill();
+      currentAnimation = null;
+    }
+  };
+});
 
 //GSAP for Sticky Headers
 document.addEventListener("DOMContentLoaded", () => {
