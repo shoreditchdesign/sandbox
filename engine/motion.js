@@ -259,120 +259,120 @@ document.addEventListener("DOMContentLoaded", function () {
 //   });
 // });
 
-// //GSAP for Sticky Headers
-// document.addEventListener("DOMContentLoaded", () => {
-//   function initialiser() {
-//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-//       console.warn("Script terminated due to missing libraries");
-//       return;
-//     }
-//     gsap.registerPlugin(ScrollTrigger);
-//   }
+//GSAP for Sticky Headers
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
 
-//   function animator() {
-//     const featuresWrap = document.querySelector("[data-features-wrap]");
-//     const featuresHeader = document.querySelector("[data-features-header]");
+  function animator() {
+    const featuresWrap = document.querySelector("[data-features-wrap]");
+    const featuresHeader = document.querySelector("[data-features-header]");
 
-//     if (!featuresWrap || !featuresHeader) {
-//       console.warn("Features wrap or header not found");
-//       return;
-//     }
+    if (!featuresWrap || !featuresHeader) {
+      console.warn("Features wrap or header not found");
+      return;
+    }
 
-//     gsap.set(featuresHeader, { opacity: 1 });
+    gsap.set(featuresHeader, { opacity: 1 });
 
-//     ScrollTrigger.create({
-//       trigger: featuresWrap,
-//       start: "bottom bottom-=32px",
-//       end: "bottom bottom-=33px",
-//       onEnter: () => {
-//         gsap.to(featuresHeader, {
-//           opacity: 0,
-//           duration: 0.1,
-//           ease: "power2.out",
-//         });
-//       },
-//       onLeaveBack: () => {
-//         gsap.to(featuresHeader, {
-//           opacity: 1,
-//           duration: 0.3,
-//           ease: "power2.out",
-//         });
-//       },
-//       markers: false,
-//     });
-//   }
+    ScrollTrigger.create({
+      trigger: featuresWrap,
+      start: "bottom bottom-=32px",
+      end: "bottom bottom-=33px",
+      onEnter: () => {
+        gsap.to(featuresHeader, {
+          opacity: 0,
+          duration: 0.1,
+          ease: "power2.out",
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(featuresHeader, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+      markers: false,
+    });
+  }
 
-//   initialiser();
-//   animator();
-// });
+  initialiser();
+  animator();
+});
 
-// //GSAP for Stacking Cards
-// document.addEventListener("DOMContentLoaded", function () {
-//   gsap.registerPlugin(ScrollTrigger);
-//   function sequenceInitialiser() {
-//     if (window.innerWidth <= 768) {
-//       return;
-//     }
+//GSAP for Stacking Cards
+document.addEventListener("DOMContentLoaded", function () {
+  gsap.registerPlugin(ScrollTrigger);
+  function sequenceInitialiser() {
+    if (window.innerWidth <= 768) {
+      return;
+    }
 
-//     const scrollSection = document.querySelectorAll("[data-stack-section]");
-//     scrollSection.forEach((section) => {
-//       const wrapper = section.querySelector("[data-stack-wrap]");
-//       const list = wrapper.querySelector("[data-stack-list]");
-//       const items = list.querySelectorAll("[data-stack-card]");
-//       sectionInitialiser(section, items);
-//     });
-//   }
+    const scrollSection = document.querySelectorAll("[data-stack-section]");
+    scrollSection.forEach((section) => {
+      const wrapper = section.querySelector("[data-stack-wrap]");
+      const list = wrapper.querySelector("[data-stack-list]");
+      const items = list.querySelectorAll("[data-stack-card]");
+      sectionInitialiser(section, items);
+    });
+  }
 
-//   sequenceInitialiser();
-//   let resizeTimeout;
-//   window.addEventListener("resize", () => {
-//     clearTimeout(resizeTimeout);
-//     resizeTimeout = setTimeout(() => {
-//       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-//       sequenceInitialiser();
-//     }, 250);
-//   });
+  sequenceInitialiser();
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      sequenceInitialiser();
+    }, 250);
+  });
 
-//   function sectionInitialiser(section, items) {
-//     const wrapper = section.querySelector("[data-stack-wrap]");
-//     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
-//     wrapper.style.height = dynamicHeight;
-//     items.forEach((item, index) => {
-//       if (index !== 0) {
-//         gsap.set(item, { yPercent: 100 });
-//       }
-//     });
-//     const timeline = gsap.timeline({
-//       scrollTrigger: {
-//         trigger: section,
-//         pin: true,
-//         start: "top top",
-//         end: () => `+=${items.length * 100}%`,
-//         scrub: true,
-//         invalidateOnRefresh: true,
-//         markers: false,
-//       },
-//       defaults: { ease: "none" },
-//     });
+  function sectionInitialiser(section, items) {
+    const wrapper = section.querySelector("[data-stack-wrap]");
+    const dynamicHeight = `${(items.length + 1) * 100}lvh`;
+    wrapper.style.height = dynamicHeight;
+    items.forEach((item, index) => {
+      if (index !== 0) {
+        gsap.set(item, { yPercent: 100 });
+      }
+    });
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        pin: true,
+        start: "top top",
+        end: () => `+=${items.length * 100}%`,
+        scrub: true,
+        invalidateOnRefresh: true,
+        markers: false,
+      },
+      defaults: { ease: "none" },
+    });
 
-//     items.forEach((item, index) => {
-//       if (index < items.length - 1) {
-//         timeline.to(item, {
-//           opacity: 0,
-//           scale: 0.9,
-//           borderRadius: "10px",
-//         });
-//         timeline.to(
-//           items[index + 1],
-//           {
-//             yPercent: 0,
-//           },
-//           "<",
-//         );
-//       }
-//     });
-//   }
-// });
+    items.forEach((item, index) => {
+      if (index < items.length - 1) {
+        timeline.to(item, {
+          opacity: 0,
+          scale: 0.9,
+          borderRadius: "10px",
+        });
+        timeline.to(
+          items[index + 1],
+          {
+            yPercent: 0,
+          },
+          "<",
+        );
+      }
+    });
+  }
+});
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
