@@ -883,7 +883,7 @@ document.addEventListener("DOMContentLoaded", function () {
           scale: 1.3,
           yPercent: -45,
           opacity: 0,
-          filter: "blur(0.2rem)",
+          filter: "blur(0rem)",
         },
         "<" + dd,
       );
