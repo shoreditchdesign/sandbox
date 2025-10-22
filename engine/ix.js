@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
       proximity:
         parseFloat(cardElement.getAttribute("data-glow-proximity")) || 64,
       deadzone:
-        parseFloat(cardElement.getAttribute("data-glow-deadzone")) || 0.03,
+        parseFloat(cardElement.getAttribute("data-glow-deadzone")) || 0.6,
       duration:
         parseFloat(cardElement.getAttribute("data-glow-duration")) || 0.6,
       borderWidth:
