@@ -345,39 +345,97 @@ document.addEventListener("DOMContentLoaded", () => {
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
+
+  // Track initialization state and store references
+  let isInitialized = false;
+  let stackTriggers = [];
+  let stackTimelines = [];
+
   function sequenceInitialiser() {
+    // Clean up existing animations first
+    cleanupStackAnimations();
+
     if (window.innerWidth <= 768) {
+      // Mobile/tablet - reset cards to default state
+      resetCardsToMobile();
+      isInitialized = false;
       return;
     }
 
     const scrollSection = document.querySelectorAll("[data-stack-section]");
+
+    if (scrollSection.length === 0) {
+      return;
+    }
+
     scrollSection.forEach((section) => {
       const wrapper = section.querySelector("[data-stack-wrap]");
-      const list = wrapper.querySelector("[data-stack-list]");
-      const items = list.querySelectorAll("[data-stack-card]");
-      sectionInitialiser(section, items);
+      const list = wrapper?.querySelector("[data-stack-list]");
+      const items = list?.querySelectorAll("[data-stack-card]");
+
+      if (wrapper && list && items && items.length > 0) {
+        sectionInitialiser(section, items);
+      }
     });
+
+    isInitialized = true;
   }
 
-  sequenceInitialiser();
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      sequenceInitialiser();
-    }, 250);
-  });
+  function cleanupStackAnimations() {
+    // Kill all tracked ScrollTriggers
+    stackTriggers.forEach((trigger) => {
+      if (trigger && trigger.kill) {
+        trigger.kill();
+      }
+    });
+    stackTriggers = [];
+
+    // Kill all tracked timelines
+    stackTimelines.forEach((timeline) => {
+      if (timeline && timeline.kill) {
+        timeline.kill();
+      }
+    });
+    stackTimelines = [];
+  }
+
+  function resetCardsToMobile() {
+    const scrollSection = document.querySelectorAll("[data-stack-section]");
+
+    scrollSection.forEach((section) => {
+      const wrapper = section.querySelector("[data-stack-wrap]");
+      const list = wrapper?.querySelector("[data-stack-list]");
+      const items = list?.querySelectorAll("[data-stack-card]");
+
+      if (wrapper && items) {
+        // Reset wrapper height to auto
+        wrapper.style.height = "auto";
+
+        // Reset all card styles to default
+        items.forEach((item) => {
+          gsap.set(item, {
+            clearProps: "all", // Clear all GSAP properties
+          });
+        });
+      }
+    });
+  }
 
   function sectionInitialiser(section, items) {
     const wrapper = section.querySelector("[data-stack-wrap]");
     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
     wrapper.style.height = dynamicHeight;
+
+    // Set initial positions
     items.forEach((item, index) => {
       if (index !== 0) {
         gsap.set(item, { yPercent: 100 });
+      } else {
+        gsap.set(item, { yPercent: 0, opacity: 1, scale: 1 });
       }
     });
+
+    // Create timeline with ScrollTrigger
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -387,10 +445,20 @@ document.addEventListener("DOMContentLoaded", function () {
         scrub: true,
         invalidateOnRefresh: true,
         markers: false,
+        onRefresh: (self) => {
+          // Store reference to this trigger
+          if (!stackTriggers.includes(self)) {
+            stackTriggers.push(self);
+          }
+        },
       },
       defaults: { ease: "none" },
     });
 
+    // Store timeline reference
+    stackTimelines.push(timeline);
+
+    // Build animation sequence
     items.forEach((item, index) => {
       if (index < items.length - 1) {
         timeline.to(item, {
@@ -407,7 +475,47 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
+
+    // Store the ScrollTrigger instance
+    if (timeline.scrollTrigger) {
+      stackTriggers.push(timeline.scrollTrigger);
+    }
   }
+
+  // Initial setup
+  sequenceInitialiser();
+
+  // Resize handler with debouncing
+  let resizeTimeout;
+  let previousWidth = window.innerWidth;
+
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+      const currentWidth = window.innerWidth;
+      const crossedThreshold =
+        (previousWidth > 768 && currentWidth <= 768) ||
+        (previousWidth <= 768 && currentWidth > 768);
+
+      // Only reinitialize if we crossed the 768px threshold or width changed significantly
+      if (crossedThreshold || Math.abs(currentWidth - previousWidth) > 50) {
+        sequenceInitialiser();
+
+        // Refresh ScrollTrigger to recalculate positions
+        if (isInitialized) {
+          ScrollTrigger.refresh();
+        }
+      }
+
+      previousWidth = currentWidth;
+    }, 250);
+  });
+
+  // Cleanup on page unload (prevent memory leaks)
+  window.addEventListener("beforeunload", () => {
+    cleanupStackAnimations();
+  });
 });
 
 //GSAP for Progress Bar
