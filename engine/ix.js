@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let isDOMStable = false; // Prevent running during DOM mutations
 
   /**
-   * Main initialization function - finds all [data-card-glow] and sets up glow effects
+   * Main initialization function - finds all [data-glow-card] and sets up glow effects
    */
   function glowCardsInitialiser() {
     if (window.innerWidth < 768) {
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Convert to array to avoid live collection issues
-    const cards = Array.from(document.querySelectorAll("[data-card-glow]"));
+    const cards = Array.from(document.querySelectorAll("[data-glow-card]"));
 
     if (cards.length === 0) {
       return;
