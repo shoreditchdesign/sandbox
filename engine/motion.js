@@ -1,378 +1,378 @@
-//GSAP for Navbar Tuck
-document.addEventListener("DOMContentLoaded", () => {
-  const navbars = document.querySelectorAll(
-    '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
-  );
-  if (navbars.length === 0) {
-    console.warn("No navbar elements found - animation aborted");
-    return;
-  }
+// //GSAP for Navbar Tuck
+// document.addEventListener("DOMContentLoaded", () => {
+//   const navbars = document.querySelectorAll(
+//     '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
+//   );
+//   if (navbars.length === 0) {
+//     console.warn("No navbar elements found - animation aborted");
+//     return;
+//   }
 
-  // Set initial attribute state
-  navbars.forEach((navbar) => {
-    navbar.setAttribute("data-tuck-state", "default");
-  });
+//   // Set initial attribute state
+//   navbars.forEach((navbar) => {
+//     navbar.setAttribute("data-tuck-state", "default");
+//   });
 
-  gsap.set(navbars, { yPercent: 0, translateY: "0%" });
-  const showAnim = gsap
-    .from(navbars, {
-      yPercent: -100,
-      paused: true,
-      duration: 0.2,
-    })
-    .progress(1);
-  let lastScrollTop = 0;
-  const downScrollThreshold = 200;
-  const upScrollThreshold = 200;
-  let accumulatedScroll = 0;
-  let navbarVisible = true;
-  window.addEventListener("scroll", () => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-    const scrollAmount = Math.abs(scrollTop - lastScrollTop);
-    if (
-      (scrollDirection === "down" && accumulatedScroll < 0) ||
-      (scrollDirection === "up" && accumulatedScroll > 0)
-    ) {
-      accumulatedScroll = 0;
-    }
-    accumulatedScroll +=
-      scrollDirection === "down" ? scrollAmount : -scrollAmount;
-    if (accumulatedScroll > downScrollThreshold && navbarVisible) {
-      showAnim.reverse();
-      navbarVisible = false;
-      accumulatedScroll = 0;
+//   gsap.set(navbars, { yPercent: 0, translateY: "0%" });
+//   const showAnim = gsap
+//     .from(navbars, {
+//       yPercent: -100,
+//       paused: true,
+//       duration: 0.2,
+//     })
+//     .progress(1);
+//   let lastScrollTop = 0;
+//   const downScrollThreshold = 200;
+//   const upScrollThreshold = 200;
+//   let accumulatedScroll = 0;
+//   let navbarVisible = true;
+//   window.addEventListener("scroll", () => {
+//     const scrollTop = window.scrollY || document.documentElement.scrollTop;
+//     const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+//     const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+//     if (
+//       (scrollDirection === "down" && accumulatedScroll < 0) ||
+//       (scrollDirection === "up" && accumulatedScroll > 0)
+//     ) {
+//       accumulatedScroll = 0;
+//     }
+//     accumulatedScroll +=
+//       scrollDirection === "down" ? scrollAmount : -scrollAmount;
+//     if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+//       showAnim.reverse();
+//       navbarVisible = false;
+//       accumulatedScroll = 0;
 
-      // Set attribute to default when hiding navbar (reverse animation)
-      navbars.forEach((navbar) => {
-        navbar.setAttribute("data-tuck-state", "default");
-      });
-    } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
-      showAnim.play();
-      navbarVisible = true;
-      accumulatedScroll = 0;
+//       // Set attribute to default when hiding navbar (reverse animation)
+//       navbars.forEach((navbar) => {
+//         navbar.setAttribute("data-tuck-state", "default");
+//       });
+//     } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+//       showAnim.play();
+//       navbarVisible = true;
+//       accumulatedScroll = 0;
 
-      // Set attribute to hidden when showing navbar (play animation)
-      navbars.forEach((navbar) => {
-        navbar.setAttribute("data-tuck-state", "hidden");
-      });
-    }
-    lastScrollTop = scrollTop;
-  });
-});
+//       // Set attribute to hidden when showing navbar (play animation)
+//       navbars.forEach((navbar) => {
+//         navbar.setAttribute("data-tuck-state", "hidden");
+//       });
+//     }
+//     lastScrollTop = scrollTop;
+//   });
+// });
 
-//GSAP to Navbar Slide
-document.addEventListener("DOMContentLoaded", () => {
-  function initialiser() {
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      console.error(
-        "Required libraries (GSAP or ScrollTrigger) are not loaded",
-      );
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-  }
+// //GSAP to Navbar Slide
+// document.addEventListener("DOMContentLoaded", () => {
+//   function initialiser() {
+//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+//       console.error(
+//         "Required libraries (GSAP or ScrollTrigger) are not loaded",
+//       );
+//       return;
+//     }
+//     gsap.registerPlugin(ScrollTrigger);
+//   }
 
-  function animator() {
-    const slideElements = document.querySelectorAll("[data-motion-slide]");
+//   function animator() {
+//     const slideElements = document.querySelectorAll("[data-motion-slide]");
 
-    if (!slideElements || slideElements.length === 0) {
-      console.warn("Motion: Slide elements not found");
-      return;
-    }
+//     if (!slideElements || slideElements.length === 0) {
+//       console.warn("Motion: Slide elements not found");
+//       return;
+//     }
 
-    const animatableElements = Array.from(slideElements).filter((element) => {
-      return element.getAttribute("data-motion-slide") !== "blocked";
-    });
+//     const animatableElements = Array.from(slideElements).filter((element) => {
+//       return element.getAttribute("data-motion-slide") !== "blocked";
+//     });
 
-    animatableElements.forEach((element, index) => {
-      try {
-        const delay = element.getAttribute("data-motion-delay")
-          ? parseFloat(element.getAttribute("data-motion-delay"))
-          : 0;
+//     animatableElements.forEach((element, index) => {
+//       try {
+//         const delay = element.getAttribute("data-motion-delay")
+//           ? parseFloat(element.getAttribute("data-motion-delay"))
+//           : 0;
 
-        gsap.set(element, {
-          opacity: 1,
-          y: "-120%",
-        });
+//         gsap.set(element, {
+//           opacity: 1,
+//           y: "-120%",
+//         });
 
-        const tl = gsap.timeline({
-          paused: true,
-        });
+//         const tl = gsap.timeline({
+//           paused: true,
+//         });
 
-        tl.to(element, {
-          opacity: 1,
-          y: "0%",
-          duration: 0.8,
-          ease: "power2.out",
-        });
+//         tl.to(element, {
+//           opacity: 1,
+//           y: "0%",
+//           duration: 0.8,
+//           ease: "power2.out",
+//         });
 
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 95%",
-          markers: false,
-          once: true,
-          onEnter: () => {
-            setTimeout(() => {
-              tl.play(0);
-            }, delay * 1000);
-          },
-        });
-      } catch (error) {
-        console.error(`Motion: Slide animation failed at ${index + 1}:`, error);
-      }
-    });
-  }
+//         ScrollTrigger.create({
+//           trigger: element,
+//           start: "top 95%",
+//           markers: false,
+//           once: true,
+//           onEnter: () => {
+//             setTimeout(() => {
+//               tl.play(0);
+//             }, delay * 1000);
+//           },
+//         });
+//       } catch (error) {
+//         console.error(`Motion: Slide animation failed at ${index + 1}:`, error);
+//       }
+//     });
+//   }
 
-  initialiser();
-  animator();
-});
+//   initialiser();
+//   animator();
+// });
 
-//GSAP for Navbar Opacity Toggle
-document.addEventListener("DOMContentLoaded", function () {
-  let scrollTriggerInstance = null;
+// //GSAP for Navbar Opacity Toggle
+// document.addEventListener("DOMContentLoaded", function () {
+//   let scrollTriggerInstance = null;
 
-  function initialiser() {
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      console.warn("Script terminated due to missing libraries");
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-  }
+//   function initialiser() {
+//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+//       console.warn("Script terminated due to missing libraries");
+//       return;
+//     }
+//     gsap.registerPlugin(ScrollTrigger);
+//   }
 
-  function animator() {
-    const navbar = document.querySelector("[data-nav-element='navbar']");
-    const heroSection = document.querySelector("[data-section-hero]");
+//   function animator() {
+//     const navbar = document.querySelector("[data-nav-element='navbar']");
+//     const heroSection = document.querySelector("[data-section-hero]");
 
-    if (!navbar || !heroSection) {
-      console.warn("Navbar or hero section not found");
-      return;
-    }
+//     if (!navbar || !heroSection) {
+//       console.warn("Navbar or hero section not found");
+//       return;
+//     }
 
-    // Kill existing ScrollTrigger if it exists
-    if (scrollTriggerInstance) {
-      scrollTriggerInstance.kill();
-    }
+//     // Kill existing ScrollTrigger if it exists
+//     if (scrollTriggerInstance) {
+//       scrollTriggerInstance.kill();
+//     }
 
-    // Check if at top of page and set opacity off
-    if (window.scrollY === 0) {
-      navbar.setAttribute("data-nav-opacity", "off");
-    }
+//     // Check if at top of page and set opacity off
+//     if (window.scrollY === 0) {
+//       navbar.setAttribute("data-nav-opacity", "off");
+//     }
 
-    scrollTriggerInstance = ScrollTrigger.create({
-      trigger: heroSection,
-      start: "top top",
-      end: "bottom top",
-      onEnter: () => {
-        navbar.setAttribute("data-nav-opacity", "on");
-      },
-      onLeaveBack: () => {
-        navbar.setAttribute("data-nav-opacity", "off");
-      },
-      markers: false,
-    });
-  }
+//     scrollTriggerInstance = ScrollTrigger.create({
+//       trigger: heroSection,
+//       start: "top top",
+//       end: "bottom top",
+//       onEnter: () => {
+//         navbar.setAttribute("data-nav-opacity", "on");
+//       },
+//       onLeaveBack: () => {
+//         navbar.setAttribute("data-nav-opacity", "off");
+//       },
+//       markers: false,
+//     });
+//   }
 
-  initialiser();
-  animator();
+//   initialiser();
+//   animator();
 
-  // Reinitialize on window resize
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
-      animator();
-      ScrollTrigger.refresh();
-    }, 250);
-  });
-});
+//   // Reinitialize on window resize
+//   let resizeTimeout;
+//   window.addEventListener("resize", () => {
+//     clearTimeout(resizeTimeout);
+//     resizeTimeout = setTimeout(() => {
+//       console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
+//       animator();
+//       ScrollTrigger.refresh();
+//     }, 250);
+//   });
+// });
 
-//GSAP for Ticker
-document.addEventListener("DOMContentLoaded", () => {
-  const tickerWrap = document.querySelector("[data-ticker-wrap]");
-  const tickerItem = document.querySelector("[data-ticker-item]");
+// //GSAP for Ticker
+// document.addEventListener("DOMContentLoaded", () => {
+//   const tickerWrap = document.querySelector("[data-ticker-wrap]");
+//   const tickerItem = document.querySelector("[data-ticker-item]");
 
-  if (!tickerWrap || !tickerItem) {
-    console.warn("Ticker elements not found");
-    return;
-  }
+//   if (!tickerWrap || !tickerItem) {
+//     console.warn("Ticker elements not found");
+//     return;
+//   }
 
-  const originalContent = tickerItem.outerHTML;
-  let currentAnimation = null;
+//   const originalContent = tickerItem.outerHTML;
+//   let currentAnimation = null;
 
-  function calculateRequiredCopies() {
-    const viewportWidth = window.innerWidth;
-    const itemWidth = tickerItem.offsetWidth;
-    // Create enough copies to fill viewport plus buffer
-    const copiesNeeded = Math.ceil(viewportWidth / itemWidth) + 2;
+//   function calculateRequiredCopies() {
+//     const viewportWidth = window.innerWidth;
+//     const itemWidth = tickerItem.offsetWidth;
+//     // Create enough copies to fill viewport plus buffer
+//     const copiesNeeded = Math.ceil(viewportWidth / itemWidth) + 2;
 
-    return {
-      viewportWidth,
-      itemWidth,
-      copiesNeeded,
-    };
-  }
+//     return {
+//       viewportWidth,
+//       itemWidth,
+//       copiesNeeded,
+//     };
+//   }
 
-  function setupTicker() {
-    // Kill existing animation if any
-    if (currentAnimation) {
-      currentAnimation.kill();
-    }
+//   function setupTicker() {
+//     // Kill existing animation if any
+//     if (currentAnimation) {
+//       currentAnimation.kill();
+//     }
 
-    const { copiesNeeded, itemWidth } = calculateRequiredCopies();
+//     const { copiesNeeded, itemWidth } = calculateRequiredCopies();
 
-    tickerWrap.innerHTML = "";
+//     tickerWrap.innerHTML = "";
 
-    for (let i = 0; i < copiesNeeded; i++) {
-      const clone = document.createElement("div");
-      clone.innerHTML = originalContent;
-      const clonedItem = clone.firstElementChild;
-      tickerWrap.appendChild(clonedItem);
-    }
+//     for (let i = 0; i < copiesNeeded; i++) {
+//       const clone = document.createElement("div");
+//       clone.innerHTML = originalContent;
+//       const clonedItem = clone.firstElementChild;
+//       tickerWrap.appendChild(clonedItem);
+//     }
 
-    // Reset position before starting new animation
-    gsap.set(tickerWrap, { x: 0 });
+//     // Reset position before starting new animation
+//     gsap.set(tickerWrap, { x: 0 });
 
-    // Animate by one item width for seamless loop
-    currentAnimation = gsap.to(tickerWrap, {
-      x: -itemWidth,
-      duration: itemWidth / 100,
-      ease: "none",
-      repeat: -1,
-      onRepeat: () => {
-        gsap.set(tickerWrap, { x: 0 });
-      },
-    });
-  }
+//     // Animate by one item width for seamless loop
+//     currentAnimation = gsap.to(tickerWrap, {
+//       x: -itemWidth,
+//       duration: itemWidth / 100,
+//       ease: "none",
+//       repeat: -1,
+//       onRepeat: () => {
+//         gsap.set(tickerWrap, { x: 0 });
+//       },
+//     });
+//   }
 
-  // Initialize the ticker
-  setupTicker();
+//   // Initialize the ticker
+//   setupTicker();
 
-  // Recalculate on window resize
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      setupTicker();
-    }, 250); // Debounce resize events
-  });
-});
+//   // Recalculate on window resize
+//   let resizeTimeout;
+//   window.addEventListener("resize", () => {
+//     clearTimeout(resizeTimeout);
+//     resizeTimeout = setTimeout(() => {
+//       setupTicker();
+//     }, 250); // Debounce resize events
+//   });
+// });
 
-//GSAP for Sticky Headers
-document.addEventListener("DOMContentLoaded", () => {
-  function initialiser() {
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      console.warn("Script terminated due to missing libraries");
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-  }
+// //GSAP for Sticky Headers
+// document.addEventListener("DOMContentLoaded", () => {
+//   function initialiser() {
+//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+//       console.warn("Script terminated due to missing libraries");
+//       return;
+//     }
+//     gsap.registerPlugin(ScrollTrigger);
+//   }
 
-  function animator() {
-    const featuresWrap = document.querySelector("[data-features-wrap]");
-    const featuresHeader = document.querySelector("[data-features-header]");
+//   function animator() {
+//     const featuresWrap = document.querySelector("[data-features-wrap]");
+//     const featuresHeader = document.querySelector("[data-features-header]");
 
-    if (!featuresWrap || !featuresHeader) {
-      console.warn("Features wrap or header not found");
-      return;
-    }
+//     if (!featuresWrap || !featuresHeader) {
+//       console.warn("Features wrap or header not found");
+//       return;
+//     }
 
-    gsap.set(featuresHeader, { opacity: 1 });
+//     gsap.set(featuresHeader, { opacity: 1 });
 
-    ScrollTrigger.create({
-      trigger: featuresWrap,
-      start: "bottom bottom-=32px",
-      end: "bottom bottom-=33px",
-      onEnter: () => {
-        gsap.to(featuresHeader, {
-          opacity: 0,
-          duration: 0.1,
-          ease: "power2.out",
-        });
-      },
-      onLeaveBack: () => {
-        gsap.to(featuresHeader, {
-          opacity: 1,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      },
-      markers: false,
-    });
-  }
+//     ScrollTrigger.create({
+//       trigger: featuresWrap,
+//       start: "bottom bottom-=32px",
+//       end: "bottom bottom-=33px",
+//       onEnter: () => {
+//         gsap.to(featuresHeader, {
+//           opacity: 0,
+//           duration: 0.1,
+//           ease: "power2.out",
+//         });
+//       },
+//       onLeaveBack: () => {
+//         gsap.to(featuresHeader, {
+//           opacity: 1,
+//           duration: 0.3,
+//           ease: "power2.out",
+//         });
+//       },
+//       markers: false,
+//     });
+//   }
 
-  initialiser();
-  animator();
-});
+//   initialiser();
+//   animator();
+// });
 
-//GSAP for Stacking Cards
-document.addEventListener("DOMContentLoaded", function () {
-  gsap.registerPlugin(ScrollTrigger);
-  function sequenceInitialiser() {
-    if (window.innerWidth <= 768) {
-      return;
-    }
+// //GSAP for Stacking Cards
+// document.addEventListener("DOMContentLoaded", function () {
+//   gsap.registerPlugin(ScrollTrigger);
+//   function sequenceInitialiser() {
+//     if (window.innerWidth <= 768) {
+//       return;
+//     }
 
-    const scrollSection = document.querySelectorAll("[data-stack-section]");
-    scrollSection.forEach((section) => {
-      const wrapper = section.querySelector("[data-stack-wrap]");
-      const list = wrapper.querySelector("[data-stack-list]");
-      const items = list.querySelectorAll("[data-stack-card]");
-      sectionInitialiser(section, items);
-    });
-  }
+//     const scrollSection = document.querySelectorAll("[data-stack-section]");
+//     scrollSection.forEach((section) => {
+//       const wrapper = section.querySelector("[data-stack-wrap]");
+//       const list = wrapper.querySelector("[data-stack-list]");
+//       const items = list.querySelectorAll("[data-stack-card]");
+//       sectionInitialiser(section, items);
+//     });
+//   }
 
-  sequenceInitialiser();
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      sequenceInitialiser();
-    }, 250);
-  });
+//   sequenceInitialiser();
+//   let resizeTimeout;
+//   window.addEventListener("resize", () => {
+//     clearTimeout(resizeTimeout);
+//     resizeTimeout = setTimeout(() => {
+//       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+//       sequenceInitialiser();
+//     }, 250);
+//   });
 
-  function sectionInitialiser(section, items) {
-    const wrapper = section.querySelector("[data-stack-wrap]");
-    const dynamicHeight = `${(items.length + 1) * 100}lvh`;
-    wrapper.style.height = dynamicHeight;
-    items.forEach((item, index) => {
-      if (index !== 0) {
-        gsap.set(item, { yPercent: 100 });
-      }
-    });
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        pin: true,
-        start: "top top",
-        end: () => `+=${items.length * 100}%`,
-        scrub: true,
-        invalidateOnRefresh: true,
-        markers: false,
-      },
-      defaults: { ease: "none" },
-    });
+//   function sectionInitialiser(section, items) {
+//     const wrapper = section.querySelector("[data-stack-wrap]");
+//     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
+//     wrapper.style.height = dynamicHeight;
+//     items.forEach((item, index) => {
+//       if (index !== 0) {
+//         gsap.set(item, { yPercent: 100 });
+//       }
+//     });
+//     const timeline = gsap.timeline({
+//       scrollTrigger: {
+//         trigger: section,
+//         pin: true,
+//         start: "top top",
+//         end: () => `+=${items.length * 100}%`,
+//         scrub: true,
+//         invalidateOnRefresh: true,
+//         markers: false,
+//       },
+//       defaults: { ease: "none" },
+//     });
 
-    items.forEach((item, index) => {
-      if (index < items.length - 1) {
-        timeline.to(item, {
-          opacity: 0,
-          scale: 0.9,
-          borderRadius: "10px",
-        });
-        timeline.to(
-          items[index + 1],
-          {
-            yPercent: 0,
-          },
-          "<",
-        );
-      }
-    });
-  }
-});
+//     items.forEach((item, index) => {
+//       if (index < items.length - 1) {
+//         timeline.to(item, {
+//           opacity: 0,
+//           scale: 0.9,
+//           borderRadius: "10px",
+//         });
+//         timeline.to(
+//           items[index + 1],
+//           {
+//             yPercent: 0,
+//           },
+//           "<",
+//         );
+//       }
+//     });
+//   }
+// });
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
