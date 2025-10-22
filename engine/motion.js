@@ -1,192 +1,192 @@
-// //GSAP for Navbar Tuck
-// document.addEventListener("DOMContentLoaded", () => {
-//   const navbars = document.querySelectorAll(
-//     '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
-//   );
-//   if (navbars.length === 0) {
-//     console.warn("No navbar elements found - animation aborted");
-//     return;
-//   }
+//GSAP for Navbar Tuck
+document.addEventListener("DOMContentLoaded", () => {
+  const navbars = document.querySelectorAll(
+    '[data-nav-element="navbar"]:not([data-tuck-block="blocked"])',
+  );
+  if (navbars.length === 0) {
+    console.warn("No navbar elements found - animation aborted");
+    return;
+  }
 
-//   // Set initial attribute state
-//   navbars.forEach((navbar) => {
-//     navbar.setAttribute("data-tuck-state", "default");
-//   });
+  // Set initial attribute state
+  navbars.forEach((navbar) => {
+    navbar.setAttribute("data-tuck-state", "default");
+  });
 
-//   gsap.set(navbars, { yPercent: 0, translateY: "0%" });
-//   const showAnim = gsap
-//     .from(navbars, {
-//       yPercent: -100,
-//       paused: true,
-//       duration: 0.2,
-//     })
-//     .progress(1);
-//   let lastScrollTop = 0;
-//   const downScrollThreshold = 200;
-//   const upScrollThreshold = 200;
-//   let accumulatedScroll = 0;
-//   let navbarVisible = true;
-//   window.addEventListener("scroll", () => {
-//     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-//     const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
-//     const scrollAmount = Math.abs(scrollTop - lastScrollTop);
-//     if (
-//       (scrollDirection === "down" && accumulatedScroll < 0) ||
-//       (scrollDirection === "up" && accumulatedScroll > 0)
-//     ) {
-//       accumulatedScroll = 0;
-//     }
-//     accumulatedScroll +=
-//       scrollDirection === "down" ? scrollAmount : -scrollAmount;
-//     if (accumulatedScroll > downScrollThreshold && navbarVisible) {
-//       showAnim.reverse();
-//       navbarVisible = false;
-//       accumulatedScroll = 0;
+  gsap.set(navbars, { yPercent: 0, translateY: "0%" });
+  const showAnim = gsap
+    .from(navbars, {
+      yPercent: -100,
+      paused: true,
+      duration: 0.2,
+    })
+    .progress(1);
+  let lastScrollTop = 0;
+  const downScrollThreshold = 200;
+  const upScrollThreshold = 200;
+  let accumulatedScroll = 0;
+  let navbarVisible = true;
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const scrollDirection = scrollTop > lastScrollTop ? "down" : "up";
+    const scrollAmount = Math.abs(scrollTop - lastScrollTop);
+    if (
+      (scrollDirection === "down" && accumulatedScroll < 0) ||
+      (scrollDirection === "up" && accumulatedScroll > 0)
+    ) {
+      accumulatedScroll = 0;
+    }
+    accumulatedScroll +=
+      scrollDirection === "down" ? scrollAmount : -scrollAmount;
+    if (accumulatedScroll > downScrollThreshold && navbarVisible) {
+      showAnim.reverse();
+      navbarVisible = false;
+      accumulatedScroll = 0;
 
-//       // Set attribute to default when hiding navbar (reverse animation)
-//       navbars.forEach((navbar) => {
-//         navbar.setAttribute("data-tuck-state", "default");
-//       });
-//     } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
-//       showAnim.play();
-//       navbarVisible = true;
-//       accumulatedScroll = 0;
+      // Set attribute to default when hiding navbar (reverse animation)
+      navbars.forEach((navbar) => {
+        navbar.setAttribute("data-tuck-state", "default");
+      });
+    } else if (accumulatedScroll < -upScrollThreshold && !navbarVisible) {
+      showAnim.play();
+      navbarVisible = true;
+      accumulatedScroll = 0;
 
-//       // Set attribute to hidden when showing navbar (play animation)
-//       navbars.forEach((navbar) => {
-//         navbar.setAttribute("data-tuck-state", "hidden");
-//       });
-//     }
-//     lastScrollTop = scrollTop;
-//   });
-// });
+      // Set attribute to hidden when showing navbar (play animation)
+      navbars.forEach((navbar) => {
+        navbar.setAttribute("data-tuck-state", "hidden");
+      });
+    }
+    lastScrollTop = scrollTop;
+  });
+});
 
-// //GSAP to Navbar Slide
-// document.addEventListener("DOMContentLoaded", () => {
-//   function initialiser() {
-//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-//       console.error(
-//         "Required libraries (GSAP or ScrollTrigger) are not loaded",
-//       );
-//       return;
-//     }
-//     gsap.registerPlugin(ScrollTrigger);
-//   }
+//GSAP to Navbar Slide
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.error(
+        "Required libraries (GSAP or ScrollTrigger) are not loaded",
+      );
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
 
-//   function animator() {
-//     const slideElements = document.querySelectorAll("[data-motion-slide]");
+  function animator() {
+    const slideElements = document.querySelectorAll("[data-motion-slide]");
 
-//     if (!slideElements || slideElements.length === 0) {
-//       console.warn("Motion: Slide elements not found");
-//       return;
-//     }
+    if (!slideElements || slideElements.length === 0) {
+      console.warn("Motion: Slide elements not found");
+      return;
+    }
 
-//     const animatableElements = Array.from(slideElements).filter((element) => {
-//       return element.getAttribute("data-motion-slide") !== "blocked";
-//     });
+    const animatableElements = Array.from(slideElements).filter((element) => {
+      return element.getAttribute("data-motion-slide") !== "blocked";
+    });
 
-//     animatableElements.forEach((element, index) => {
-//       try {
-//         const delay = element.getAttribute("data-motion-delay")
-//           ? parseFloat(element.getAttribute("data-motion-delay"))
-//           : 0;
+    animatableElements.forEach((element, index) => {
+      try {
+        const delay = element.getAttribute("data-motion-delay")
+          ? parseFloat(element.getAttribute("data-motion-delay"))
+          : 0;
 
-//         gsap.set(element, {
-//           opacity: 1,
-//           y: "-120%",
-//         });
+        gsap.set(element, {
+          opacity: 1,
+          y: "-120%",
+        });
 
-//         const tl = gsap.timeline({
-//           paused: true,
-//         });
+        const tl = gsap.timeline({
+          paused: true,
+        });
 
-//         tl.to(element, {
-//           opacity: 1,
-//           y: "0%",
-//           duration: 0.8,
-//           ease: "power2.out",
-//         });
+        tl.to(element, {
+          opacity: 1,
+          y: "0%",
+          duration: 0.8,
+          ease: "power2.out",
+        });
 
-//         ScrollTrigger.create({
-//           trigger: element,
-//           start: "top 95%",
-//           markers: false,
-//           once: true,
-//           onEnter: () => {
-//             setTimeout(() => {
-//               tl.play(0);
-//             }, delay * 1000);
-//           },
-//         });
-//       } catch (error) {
-//         console.error(`Motion: Slide animation failed at ${index + 1}:`, error);
-//       }
-//     });
-//   }
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 95%",
+          markers: false,
+          once: true,
+          onEnter: () => {
+            setTimeout(() => {
+              tl.play(0);
+            }, delay * 1000);
+          },
+        });
+      } catch (error) {
+        console.error(`Motion: Slide animation failed at ${index + 1}:`, error);
+      }
+    });
+  }
 
-//   initialiser();
-//   animator();
-// });
+  initialiser();
+  animator();
+});
 
-// //GSAP for Navbar Opacity Toggle
-// document.addEventListener("DOMContentLoaded", function () {
-//   let scrollTriggerInstance = null;
+//GSAP for Navbar Opacity Toggle
+document.addEventListener("DOMContentLoaded", function () {
+  let scrollTriggerInstance = null;
 
-//   function initialiser() {
-//     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-//       console.warn("Script terminated due to missing libraries");
-//       return;
-//     }
-//     gsap.registerPlugin(ScrollTrigger);
-//   }
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
 
-//   function animator() {
-//     const navbar = document.querySelector("[data-nav-element='navbar']");
-//     const heroSection = document.querySelector("[data-section-hero]");
+  function animator() {
+    const navbar = document.querySelector("[data-nav-element='navbar']");
+    const heroSection = document.querySelector("[data-section-hero]");
 
-//     if (!navbar || !heroSection) {
-//       console.warn("Navbar or hero section not found");
-//       return;
-//     }
+    if (!navbar || !heroSection) {
+      console.warn("Navbar or hero section not found");
+      return;
+    }
 
-//     // Kill existing ScrollTrigger if it exists
-//     if (scrollTriggerInstance) {
-//       scrollTriggerInstance.kill();
-//     }
+    // Kill existing ScrollTrigger if it exists
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+    }
 
-//     // Check if at top of page and set opacity off
-//     if (window.scrollY === 0) {
-//       navbar.setAttribute("data-nav-opacity", "off");
-//     }
+    // Check if at top of page and set opacity off
+    if (window.scrollY === 0) {
+      navbar.setAttribute("data-nav-opacity", "off");
+    }
 
-//     scrollTriggerInstance = ScrollTrigger.create({
-//       trigger: heroSection,
-//       start: "top top",
-//       end: "bottom top",
-//       onEnter: () => {
-//         navbar.setAttribute("data-nav-opacity", "on");
-//       },
-//       onLeaveBack: () => {
-//         navbar.setAttribute("data-nav-opacity", "off");
-//       },
-//       markers: false,
-//     });
-//   }
+    scrollTriggerInstance = ScrollTrigger.create({
+      trigger: heroSection,
+      start: "top top",
+      end: "bottom top",
+      onEnter: () => {
+        navbar.setAttribute("data-nav-opacity", "on");
+      },
+      onLeaveBack: () => {
+        navbar.setAttribute("data-nav-opacity", "off");
+      },
+      markers: false,
+    });
+  }
 
-//   initialiser();
-//   animator();
+  initialiser();
+  animator();
 
-//   // Reinitialize on window resize
-//   let resizeTimeout;
-//   window.addEventListener("resize", () => {
-//     clearTimeout(resizeTimeout);
-//     resizeTimeout = setTimeout(() => {
-//       console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
-//       animator();
-//       ScrollTrigger.refresh();
-//     }, 250);
-//   });
-// });
+  // Reinitialize on window resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
+      animator();
+      ScrollTrigger.refresh();
+    }, 250);
+  });
+});
 
 // //GSAP for Ticker
 // document.addEventListener("DOMContentLoaded", () => {
