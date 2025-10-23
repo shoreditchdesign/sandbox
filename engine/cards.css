@@ -1,0 +1,102 @@
+/* Wrapper - Contains the glow effect and card */
+.o-glow-wrapper {
+    position: relative;
+    padding: 0.8px;
+    isolation: isolate;
+    width: 100%;
+    height: 100%;
+}
+
+/* Glow Container - Manages the glow effect positioning and animation */
+.o-glow-container {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 1;
+    transition:
+        opacity 300ms ease,
+        --glow-start 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glow Effect - Creates the animated conic gradient border */
+.o-glow-effect {
+    border-radius: inherit;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.o-glow-effect::after {
+    content: "";
+    border-radius: inherit;
+    position: absolute;
+    inset: calc(-1 * var(--glow-border-width, 1px));
+    border: var(--glow-border-width, 1px) solid transparent;
+
+    /* Gradient definition */
+    background: var(--glow-gradient);
+    background-attachment: fixed;
+
+    /* Opacity controlled by --glow-active variable */
+    opacity: var(--glow-active, 0);
+    transition: opacity 300ms ease;
+
+    /* Mask creates the rotating spotlight effect */
+    -webkit-mask-clip: padding-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-clip: padding-box, border-box;
+    mask-composite: exclude;
+
+    /* Conic gradient mask that rotates based on --glow-start */
+    -webkit-mask-image:
+        linear-gradient(transparent, transparent),
+        conic-gradient(
+            from calc((var(--glow-start, 0) - var(--glow-spread, 40)) * 1deg),
+            transparent 0deg,
+            white,
+            transparent calc(var(--glow-spread, 40) * 2deg)
+        );
+    mask-image:
+        linear-gradient(transparent, transparent),
+        conic-gradient(
+            from calc((var(--glow-start, 0) - var(--glow-spread, 40)) * 1deg),
+            transparent 0deg,
+            white,
+            transparent calc(var(--glow-spread, 40) * 2deg)
+        );
+}
+
+/* Optional blur effect */
+.o-glow-container.has-blur {
+    filter: blur(var(--glow-blur, 0px));
+}
+
+/* Default gradient - White at 80% opacity */
+:root {
+    --glow-gradient-white: rgba(255, 255, 255, 0.6);
+    --glow-gradient-green: conic-gradient(
+        from 180deg at 50% 50%,
+        #4ab765 0deg,
+        #5ecab6 46.00778102874756deg,
+        #4ab765 89.62071418762207deg,
+        #5ecab6 131.52294516563416deg,
+        #4ab765 178.52785348892212deg,
+        #5ecab6 227.6949119567871deg,
+        #4ab765 270.59914112091064deg,
+        #5ecab6 312.77668476104736deg
+    );
+}
+
+/* Apply default white gradient */
+.o-glow-effect::after {
+    --glow-gradient: var(--glow-gradient-white);
+    transition:
+        opacity 300ms ease,
+        background 200ms ease;
+}
+
+/* Green theme variant */
+[data-glow-theme="green"] .o-glow-effect::after {
+    --glow-gradient: var(--glow-gradient-green);
+}
