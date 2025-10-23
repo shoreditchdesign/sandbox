@@ -1042,12 +1042,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // function selectors() {
-  //   const allH1s = document.querySelectorAll("h1");
-  //   allH1s.forEach((h1) => {
-  //     h1.setAttribute("data-motion-text", "");
-  //   });
-  // }
+  function selectors() {
+    const allH1s = document.querySelectorAll("h1");
+    // allH1s.forEach((h1) => {
+    //   h1.setAttribute("data-motion-text", "");
+    // });
+  }
 
   function animator() {
     document.fonts.ready.then(() => {
