@@ -411,11 +411,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const scriptContainer = document.createElement("div");
     scriptContainer.innerHTML = decodedContent;
 
-    // Get all script elements from the parsed content
-    const scriptElements = scriptContainer.querySelectorAll("script");
+    // Hide or remove the editor preview message
+    const editorPreview = formTarget.querySelector("[data-editor-preview]");
+    if (editorPreview) {
+      editorPreview.style.display = "none";
+    }
 
-    // Inject each script element into the target div
-    scriptElements.forEach((script) => {
+    // Get all script elements from the parsed content
+    const scriptElements = Array.from(
+      scriptContainer.querySelectorAll("script"),
+    );
+
+    // Function to inject scripts sequentially
+    function injectScriptsSequentially(scripts, index = 0) {
+      if (index >= scripts.length) return;
+
+      const script = scripts[index];
       const newScript = document.createElement("script");
 
       // Copy all attributes
@@ -425,15 +436,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Copy the script content
       if (script.src) {
-        // External script
+        // External script - wait for it to load before continuing
         newScript.src = script.src;
+        newScript.onload = () => {
+          injectScriptsSequentially(scripts, index + 1);
+        };
+        newScript.onerror = () => {
+          console.error("Failed to load script:", script.src);
+          injectScriptsSequentially(scripts, index + 1);
+        };
       } else {
-        // Inline script
+        // Inline script - executes immediately
         newScript.textContent = script.textContent;
+        // Continue to next script after a small delay
+        setTimeout(() => {
+          injectScriptsSequentially(scripts, index + 1);
+        }, 0);
       }
 
       // Append the new script to the target
       formTarget.appendChild(newScript);
-    });
+    }
+
+    // Start injecting scripts
+    injectScriptsSequentially(scriptElements);
   });
 });
