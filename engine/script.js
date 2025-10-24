@@ -374,3 +374,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
   checkLoadMore();
 });
+
+//Form Injection
+document.addEventListener("DOMContentLoaded", function () {
+  // Find all form embed wrapper elements
+  const formWrappers = document.querySelectorAll("[data-form-embed]");
+
+  if (formWrappers.length === 0) {
+    return;
+  }
+
+  formWrappers.forEach((wrapper) => {
+    // Find source and target within this wrapper
+    const formSource = wrapper.querySelector("[data-form-source]");
+    const formTarget = wrapper.querySelector("[data-form-target]");
+
+    if (!formSource || !formTarget) {
+      return;
+    }
+
+    // Get the text content from the source div
+    const scriptContent = formSource.textContent.trim();
+
+    if (!scriptContent) {
+      return;
+    }
+
+    // Create a temporary div to parse the HTML string
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = scriptContent;
+
+    // Get all script elements from the parsed content
+    const scriptElements = tempDiv.querySelectorAll("script");
+
+    // Inject each script element into the target div
+    scriptElements.forEach((script) => {
+      const newScript = document.createElement("script");
+
+      // Copy all attributes
+      Array.from(script.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+
+      // Copy the script content
+      if (script.src) {
+        // External script
+        newScript.src = script.src;
+      } else {
+        // Inline script
+        newScript.textContent = script.textContent;
+      }
+
+      // Append the new script to the target
+      formTarget.appendChild(newScript);
+    });
+  });
+});
