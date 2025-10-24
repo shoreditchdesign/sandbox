@@ -393,19 +393,26 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Get the text content from the source div
-    const scriptContent = formSource.textContent.trim();
+    // Get the innerHTML from the source div (which contains escaped HTML entities)
+    const scriptContent = formSource.innerHTML.trim();
 
     if (!scriptContent) {
       return;
     }
 
-    // Create a temporary div to parse the HTML string
+    // Create a temporary div to decode HTML entities and remove <br> tags
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = scriptContent;
 
+    // Get the decoded text content and remove line breaks
+    const decodedContent = tempDiv.textContent.replace(/\n/g, "");
+
+    // Create another temp div to parse the decoded HTML into actual script elements
+    const scriptContainer = document.createElement("div");
+    scriptContainer.innerHTML = decodedContent;
+
     // Get all script elements from the parsed content
-    const scriptElements = tempDiv.querySelectorAll("script");
+    const scriptElements = scriptContainer.querySelectorAll("script");
 
     // Inject each script element into the target div
     scriptElements.forEach((script) => {
