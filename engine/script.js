@@ -281,21 +281,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function createScrollTrigger(array, counter, index) {
     const staggerDelay = index * 100;
 
-    // Reset on scroll back
-    ScrollTrigger.create({
-      trigger: array,
-      start: "top bottom",
-      end: "bottom top",
-      onLeaveBack: () => {
-        counter.reset();
-      },
-    });
-
-    // Start on scroll down
+    // Start on scroll down - only once
     ScrollTrigger.create({
       trigger: array,
       start: "top 80%",
-      end: "bottom top",
+      once: true, // Only trigger once
       onEnter: () => {
         setTimeout(() => {
           counter.start();
