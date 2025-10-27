@@ -1372,9 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.style.left = "50%";
     toast.style.transform = "translateX(-50%)";
     toast.style.padding = "10px 20px";
-    toast.style.backgroundColor = getComputedStyle(
-      document.documentElement,
-    ).getPropertyValue("var(--_themes---neutral--black--charcoal)");
+    toast.style.backgroundColor = "#1c1c24";
     toast.style.color = "#fff";
     toast.style.borderRadius = "4px";
     toast.style.zIndex = "1000";
