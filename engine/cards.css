@@ -35,7 +35,7 @@
     border: var(--glow-border-width, 1px) solid transparent;
 
     /* Gradient definition */
-    background: var(--glow-gradient);
+    background: var(--glow-conic-gradient);
     background-attachment: fixed;
 
     /* Opacity controlled by --glow-active variable */
@@ -72,10 +72,10 @@
     filter: blur(var(--glow-blur, 0px));
 }
 
-/* Default gradient - White at 80% opacity */
+/* Gradient configurations */
 :root {
-    --glow-gradient-white: rgba(255, 255, 255, 0.6);
-    --glow-gradient-green: conic-gradient(
+    --glow-conic-white: rgba(255, 255, 255, 0.6);
+    --glow-conic-green: conic-gradient(
         from 180deg at 50% 50%,
         #4ab765 0deg,
         #5ecab6 46.00778102874756deg,
@@ -86,11 +86,83 @@
         #4ab765 270.59914112091064deg,
         #5ecab6 312.77668476104736deg
     );
+    --glow-conic-blue: conic-gradient(
+        from 180deg at 50% 50%,
+        #3fb3fc 0deg,
+        #acf 44.27463412284851deg,
+        #3fb3fc 90deg,
+        #acf 132.00513124465942deg,
+        #3fb3fc 180deg,
+        #acf 223.81375551223755deg,
+        #3fb3fc 270deg,
+        #acf 313.8260293006897deg
+    );
+    --glow-conic-purple: conic-gradient(
+        from 180deg at 50% 50%,
+        #f28cff 0deg,
+        #a194ff 44.27463412284851deg,
+        #f28cff 90deg,
+        #a194ff 132.00513124465942deg,
+        #f28cff 180deg,
+        #a194ff 223.81375551223755deg,
+        #f28cff 270deg,
+        #a194ff 313.8260293006897deg
+    );
+    --glow-conic-yellow: conic-gradient(
+        from 180deg at 50% 50%,
+        #ffc765 0deg,
+        #ffa069 44.27463412284851deg,
+        #ffc765 90deg,
+        #ffa069 132.00513124465942deg,
+        #ffc765 180deg,
+        #ffa069 223.81375551223755deg,
+        #ffc765 270deg,
+        #ffa069 313.8260293006897deg
+    );
+    --glow-linear-gradient: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0.6) 100%
+    );
+    --glow-linear-green: linear-gradient(
+        270deg,
+        rgba(136, 255, 166, 0) 0%,
+        rgba(136, 255, 166, 0.4) 30%,
+        #81fdea 50%,
+        rgba(136, 255, 166, 0.4) 70%,
+        rgba(136, 255, 166, 0) 100%
+    );
+    --glow-linear-blue: linear-gradient(
+        270deg,
+        rgba(170, 204, 255, 0) 0%,
+        rgba(170, 204, 255, 0.4) 30%,
+        #3fb3fc 50%,
+        rgba(170, 204, 255, 0.4) 70%,
+        rgba(170, 204, 255, 0) 100%
+    );
+    --glow-linear-purple: linear-gradient(
+        270deg,
+        rgba(161, 148, 255, 0) 0%,
+        rgba(161, 148, 255, 0.4) 30%,
+        #f5a5ff 50%,
+        rgba(161, 148, 255, 0.4) 70%,
+        rgba(161, 148, 255, 0) 100%
+    );
+    --glow-linear-yellow: linear-gradient(
+        270deg,
+        rgba(255, 199, 101, 0) 0%,
+        rgba(255, 199, 101, 0.46) 30%,
+        #ffa069 50%,
+        rgba(255, 199, 101, 0.4) 70%,
+        rgba(255, 199, 101, 0) 100%
+    );
 }
 
-/* Apply default white gradient */
+/* Apply default white conic gradient */
 .o-glow-effect::after {
-    --glow-gradient: var(--glow-gradient-white);
+    --glow-conic-gradient: var(--glow-conic-white);
+    background: var(--glow-conic-gradient);
     transition:
         opacity 300ms ease,
         background 200ms ease;
@@ -98,5 +170,48 @@
 
 /* Green theme variant */
 [data-glow-theme="green"] .o-glow-effect::after {
-    --glow-gradient: var(--glow-gradient-green);
+    --glow-conic-gradient: var(--glow-conic-green);
+}
+
+/* Blue theme variant */
+[data-glow-theme="blue"] .o-glow-effect::after {
+    --glow-conic-gradient: var(--glow-conic-blue);
+}
+
+/* Purple theme variant */
+[data-glow-theme="purple"] .o-glow-effect::after {
+    --glow-conic-gradient: var(--glow-conic-purple);
+}
+
+/* Yellow theme variant */
+[data-glow-theme="yellow"] .o-glow-effect::after {
+    --glow-conic-gradient: var(--glow-conic-yellow);
+}
+
+/* Glow Line Effect - Simple linear gradient line */
+.o-glow-line {
+    width: 100%;
+    height: 4px;
+    margin-right: auto;
+    margin-left: auto;
+    align-self: center;
+    --glow-line-color: var(--glow-linear-green);
+    background-image: var(--glow-line-color);
+}
+
+/* Motion glow variants - linear gradients */
+[data-motion-glow="green"] .o-glow-line {
+    --glow-line-color: var(--glow-linear-green);
+}
+
+[data-motion-glow="blue"] .o-glow-line {
+    --glow-line-color: var(--glow-linear-blue);
+}
+
+[data-motion-glow="purple"] .o-glow-line {
+    --glow-line-color: var(--glow-linear-purple);
+}
+
+[data-motion-glow="yellow"] .o-glow-line {
+    --glow-line-color: var(--glow-linear-yellow);
 }
