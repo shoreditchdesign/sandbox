@@ -1196,6 +1196,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateSlideAttributes(this);
         updateYearNavigation(this);
         initializeYearNavigation(this);
+        removeInlineScales(this);
       },
       slideChange: function () {
         updateSlideAttributes(this);
@@ -1203,6 +1204,9 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       resize: function () {
         updateSlideAttributes(this);
+      },
+      setTranslate: function () {
+        removeInlineScales(this);
       },
     },
   });
@@ -1229,6 +1233,19 @@ document.addEventListener("DOMContentLoaded", function () {
       // All other slides (base state)
       else {
         slide.setAttribute("data-timeline-base", "");
+      }
+    });
+  }
+
+  // Remove inline scale transforms to let CSS handle scaling
+  function removeInlineScales(swiper) {
+    swiper.slides.forEach((slide) => {
+      const currentTransform = slide.style.transform;
+      if (currentTransform && currentTransform.includes("scale")) {
+        // Remove scale from transform, keep translate3d for positioning
+        slide.style.transform = currentTransform
+          .replace(/scale\([^)]+\)/g, "")
+          .trim();
       }
     });
   }
