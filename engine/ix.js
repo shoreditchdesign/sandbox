@@ -881,6 +881,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
+    // Reset all videos in all panes to t=0 and pause
     sameTabPanes.forEach((pane) => {
       const videos = pane.querySelectorAll("video");
       videos.forEach((video) => {
@@ -933,6 +934,14 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         });
       }
+
+      // Play videos in the active pane
+      const activeVideos = targetPane.querySelectorAll("video");
+      activeVideos.forEach((video) => {
+        video.play().catch((error) => {
+          console.warn("Hero Video: Video autoplay prevented:", error);
+        });
+      });
     }
   }
 
