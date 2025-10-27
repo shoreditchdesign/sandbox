@@ -935,7 +935,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
 
-      // Play videos in the active pane
+      // Play videos in the active panes
       const activeVideos = targetPane.querySelectorAll("video");
       activeVideos.forEach((video) => {
         video.play().catch((error) => {
