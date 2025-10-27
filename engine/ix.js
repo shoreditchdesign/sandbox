@@ -1182,8 +1182,8 @@ document.addEventListener("DOMContentLoaded", function () {
       enabled: true,
       onlyInViewport: true,
     },
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
+    watchSlidesProgress: false,
+    watchSlidesVisibility: false,
     breakpoints: {
       992: {
         slidesPerView: 2.5,
