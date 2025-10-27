@@ -769,31 +769,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Tab Switchers
 document.addEventListener("DOMContentLoaded", function () {
-  function rowInitialiser() {
-    const tabTables = document.querySelectorAll("[data-tab-table]");
-
-    tabTables.forEach((table) => {
-      const rows = Array.from(table.querySelectorAll("[data-tab-row]"));
-      rows.sort((a, b) => {
-        const aValue = parseInt(a.getAttribute("data-tab-row"), 10);
-        const bValue = parseInt(b.getAttribute("data-tab-row"), 10);
-        return aValue - bValue;
-      });
-      rows.forEach((row) => {
-        table.appendChild(row);
-      });
-    });
-  }
-
   function indexInitialiser() {
-    // Get each unique tab element
-    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
+    const allTabs = document.querySelectorAll("[data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
-      const type = isolatedTab.getAttribute("data-tab-type");
-      const name = isolatedTab.getAttribute("data-tab-name");
-
-      // Get ONLY direct children of data-tab-menu and data-tab-content
       const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
       const tabContent = isolatedTab.querySelector("[data-tab-content]");
 
@@ -810,25 +789,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Set indices based on array position
       linksArray.forEach((link, index) => {
-        const linkIndex = index + 1;
-        link.setAttribute("data-tab-link", linkIndex);
+        link.setAttribute("data-tab-link", index + 1);
       });
 
       panesArray.forEach((pane, index) => {
-        const paneIndex = index + 1;
-        pane.setAttribute("data-tab-pane", paneIndex);
+        pane.setAttribute("data-tab-pane", index + 1);
       });
     });
   }
 
   function tabInitialiser() {
-    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
+    const allTabs = document.querySelectorAll("[data-tab-name]");
 
     allTabs.forEach((tab) => {
-      const type = tab.getAttribute("data-tab-type");
-      const name = tab.getAttribute("data-tab-name");
-
-      // Get menu and content containers
       const tabMenu = tab.querySelector("[data-tab-menu]");
       const tabContent = tab.querySelector("[data-tab-content]");
 
@@ -850,7 +823,6 @@ document.addEventListener("DOMContentLoaded", function () {
         Array.from(tabContent.children).forEach((pane, index) => {
           if (index === 0) {
             pane.setAttribute("data-tab-state", "show");
-            // ANIMATE FIRST PANE ON LOAD
             if (window.elementAnimator) {
               window.elementAnimator(pane, "top 100%");
             }
@@ -860,22 +832,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     });
-
-    // Initialize accordions after tab setup
-    if (window.initializeAccordions) {
-      window.initializeAccordions();
-    }
-    if (window.openFirstAccordion) {
-      window.openFirstAccordion();
-    }
   }
 
-  // Unified function to switch tabs - used by both clicks and autoplay
   function switchToTab(isolatedTab, targetIndex, duration = null) {
-    const type = isolatedTab.getAttribute("data-tab-type");
-    const name = isolatedTab.getAttribute("data-tab-name");
-
-    // Get ALL links and panes from THIS isolated tab ONLY (direct children)
     const tabMenuContainer = isolatedTab.querySelector("[data-tab-menu]");
     const tabContentContainer = isolatedTab.querySelector("[data-tab-content]");
 
@@ -890,28 +849,23 @@ document.addEventListener("DOMContentLoaded", function () {
         )
       : [];
 
-    // Find the target link
     const targetLink = sameTabLinks.find(
       (link) => link.getAttribute("data-tab-link") === String(targetIndex),
     );
 
-    // Hide all other links in SAME tab, show target link
+    // Update links and progress bars
     sameTabLinks.forEach((link) => {
       if (link === targetLink) {
         link.setAttribute("data-tab-state", "show");
         link.classList.add("active");
 
-        // PROGRESS BAR ANIMATION - Reset and animate if data-tab-border exists
         const progressBar = link.querySelector("[data-tab-border]");
         if (progressBar && duration && window.gsap) {
-          // Kill any ongoing animation first
           window.gsap.killTweensOf(progressBar);
-          // Reset to 0 width
           window.gsap.set(progressBar, { width: "0%" });
-          // Animate to 100% over the duration
           window.gsap.to(progressBar, {
             width: "100%",
-            duration: duration / 1000, // Convert ms to seconds
+            duration: duration / 1000,
             ease: "linear",
           });
         }
@@ -919,7 +873,6 @@ document.addEventListener("DOMContentLoaded", function () {
         link.setAttribute("data-tab-state", "hide");
         link.classList.remove("active");
 
-        // Kill ongoing animations and reset other progress bars to 0
         const otherProgressBar = link.querySelector("[data-tab-border]");
         if (otherProgressBar && window.gsap) {
           window.gsap.killTweensOf(otherProgressBar);
@@ -928,51 +881,65 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Hide all panes in SAME tab
+    sameTabPanes.forEach((pane) => {
+      const videos = pane.querySelectorAll("video");
+      videos.forEach((video) => {
+        video.currentTime = 0;
+        video.pause();
+      });
+    });
+
+    // Reset all glow elements to 0% width
+    sameTabPanes.forEach((pane) => {
+      const glows = pane.querySelectorAll("[data-tab-glow]");
+      if (window.gsap) {
+        glows.forEach((glow) => {
+          window.gsap.killTweensOf(glow);
+          window.gsap.set(glow, { width: "0%" });
+        });
+      }
+    });
+
+    // Hide all panes
     sameTabPanes.forEach((pane) => {
       pane.setAttribute("data-tab-state", "hide");
     });
 
-    // Show corresponding pane in SAME tab (direct children)
+    // Show target pane
     const targetPane =
       tabContentContainer && tabContentContainer.children[targetIndex - 1];
     if (targetPane) {
       targetPane.setAttribute("data-tab-state", "show");
 
-      // ANIMATE THE TAB PANE WHEN IT BECOMES ACTIVE
       if (window.elementAnimator) {
-        // Reset any existing GSAP properties first
         if (window.gsap) {
           window.gsap.set(targetPane, { clearProps: "all" });
         }
-
-        // Animate the newly active pane
         window.elementAnimator(targetPane, "top 100%");
-      } else {
-        console.warn(
-          "elementAnimator not available - ensure animation script loads first",
-        );
       }
 
-      // Reinitialize accordions for the newly visible tab pane
-      setTimeout(() => {
-        if (window.initializeAccordions) {
-          window.initializeAccordions();
-        }
-        if (window.openFirstAccordion) {
-          window.openFirstAccordion();
-        }
-      }, 50);
-    } else {
-      console.log(`ERROR: No pane ${targetIndex} found in ${type}/${name}`);
+      // Animate glow effect for the active pane (CRT shimmer effect)
+      const glows = targetPane.querySelectorAll("[data-tab-glow]");
+      if (glows.length > 0 && window.gsap) {
+        glows.forEach((glow) => {
+          window.gsap.fromTo(
+            glow,
+            { width: "0%" },
+            {
+              width: "100%",
+              duration: 2,
+              ease: "power4.out",
+            },
+          );
+        });
+      }
     }
   }
 
   function clickInitialiser() {
-    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
+    const allTabs = document.querySelectorAll("[data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
-      // Get links from THIS isolated tab only (direct children)
       const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
       const tabLinks = tabMenu
         ? Array.from(tabMenu.children).filter((child) =>
@@ -987,7 +954,6 @@ document.addEventListener("DOMContentLoaded", function () {
             10,
           );
 
-          // Get autoplay duration for progress bar animation
           const autoplayAttr = isolatedTab.getAttribute("data-tab-autoplay");
           const duration =
             autoplayAttr !== null
@@ -996,7 +962,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 : parseInt(autoplayAttr, 10)
               : null;
 
-          // Switch to the clicked tab
           switchToTab(isolatedTab, clickedIndex, duration);
 
           // Reset autoplay timer if autoplay is enabled
@@ -1020,7 +985,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (tabLinks.length === 0) return;
 
     isolatedTab._autoplayTimer = setInterval(() => {
-      // Find current active tab
       const currentActive = tabLinks.find((link) =>
         link.classList.contains("active"),
       );
@@ -1028,30 +992,25 @@ document.addEventListener("DOMContentLoaded", function () {
         ? parseInt(currentActive.getAttribute("data-tab-link"), 10)
         : 1;
 
-      // Calculate next index (loop back to 1 after last tab)
       const nextIndex = currentIndex >= tabLinks.length ? 1 : currentIndex + 1;
 
-      // Switch to next tab
       switchToTab(isolatedTab, nextIndex, duration);
     }, duration);
   }
 
   function autoplayInitialiser() {
-    const allTabs = document.querySelectorAll("[data-tab-type][data-tab-name]");
+    const allTabs = document.querySelectorAll("[data-tab-name]");
 
     allTabs.forEach((isolatedTab) => {
       const autoplayAttr = isolatedTab.getAttribute("data-tab-autoplay");
 
-      // Only initialize autoplay if attribute exists
       if (autoplayAttr !== null) {
-        // Parse duration: empty string = 5000, otherwise parse the value
         const duration =
           autoplayAttr === "" ? 5000 : parseInt(autoplayAttr, 10) || 5000;
 
-        // Start autoplay for this tab instance
         startAutoplay(isolatedTab, duration);
 
-        // Trigger initial progress bar animation for the first active tab
+        // Trigger initial progress bar animation
         const tabMenu = isolatedTab.querySelector("[data-tab-menu]");
         const firstLink = tabMenu ? tabMenu.children[0] : null;
         if (firstLink) {
@@ -1070,7 +1029,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setTimeout(() => {
-    rowInitialiser();
     indexInitialiser();
     tabInitialiser();
     clickInitialiser();
