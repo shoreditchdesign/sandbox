@@ -1374,7 +1374,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.style.padding = "10px 20px";
     toast.style.backgroundColor = getComputedStyle(
       document.documentElement,
-    ).getPropertyValue("--_themes---site--bg--bg-secondary");
+    ).getPropertyValue("var(--_themes---neutral--black--charcoal)");
     toast.style.color = "#fff";
     toast.style.borderRadius = "4px";
     toast.style.zIndex = "1000";
