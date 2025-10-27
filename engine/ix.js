@@ -1158,20 +1158,6 @@ document.addEventListener("DOMContentLoaded", function () {
     centeredSlides: false,
     loop: false,
     resistanceRatio: 0,
-    effect: "creative",
-    creativeEffect: {
-      limitProgress: 3,
-      prev: {
-        opacity: 0.4,
-        scale: 0.9,
-        translate: [0, 0, 0],
-      },
-      next: {
-        opacity: 0.6,
-        scale: 0.95,
-        translate: [0, 0, 0],
-      },
-    },
     pagination: {
       el: "#timeline-pagination",
       clickable: true,
@@ -1196,8 +1182,7 @@ document.addEventListener("DOMContentLoaded", function () {
       enabled: true,
       onlyInViewport: true,
     },
-    watchSlidesProgress: false,
-    watchSlidesVisibility: false,
+    watchSlidesProgress: true,
     breakpoints: {
       992: {
         slidesPerView: 2.5,
@@ -1210,6 +1195,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateSlideAttributes(this);
         updateYearNavigation(this);
         initializeYearNavigation(this);
+        applySlideScaling(this);
       },
       slideChange: function () {
         updateSlideAttributes(this);
@@ -1217,6 +1203,14 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       resize: function () {
         updateSlideAttributes(this);
+      },
+      progress: function () {
+        applySlideScaling(this);
+      },
+      setTransition: function (swiper, transition) {
+        this.slides.forEach((slide) => {
+          slide.style.transition = `${transition}ms`;
+        });
       },
     },
   });
@@ -1244,6 +1238,39 @@ document.addEventListener("DOMContentLoaded", function () {
       else {
         slide.setAttribute("data-timeline-base", "");
       }
+    });
+  }
+
+  // Apply scale and opacity based on slide progress (desktop only)
+  function applySlideScaling(swiper) {
+    // Only apply on desktop (992px+)
+    if (window.innerWidth < 992) return;
+
+    swiper.slides.forEach((slide, index) => {
+      const slideProgress = slide.progress || 0;
+      const activeIndex = swiper.activeIndex;
+
+      let scale = 1;
+      let opacity = 1;
+
+      // Active slide
+      if (index === activeIndex) {
+        scale = 1;
+        opacity = 1;
+      }
+      // Next slide (immediately after active)
+      else if (index === activeIndex + 1) {
+        scale = 0.95;
+        opacity = 0.6;
+      }
+      // Previous or other slides
+      else {
+        scale = 0.9;
+        opacity = 0.4;
+      }
+
+      slide.style.transform = `translate3d(${slide.style.transform.match(/translate3d\(([^)]+)\)/)?.[1] || "0px, 0px, 0px"}) scale(${scale})`;
+      slide.style.opacity = opacity;
     });
   }
 
