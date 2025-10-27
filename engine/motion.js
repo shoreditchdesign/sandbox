@@ -1229,3 +1229,66 @@ document.addEventListener("DOMContentLoaded", () => {
   initialiser();
   animator();
 });
+
+//GSAP for Glow Elements
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  function animator() {
+    const glowElements = document.querySelectorAll(
+      "[data-motion-glow]:not([data-motion-block])",
+    );
+
+    if (!glowElements || glowElements.length === 0) {
+      console.warn("Motion: Glow elements not found");
+      return;
+    }
+
+    glowElements.forEach((element, index) => {
+      try {
+        const delay = element.getAttribute("data-motion-delay")
+          ? parseFloat(element.getAttribute("data-motion-delay"))
+          : 0;
+
+        // Set initial state
+        gsap.set(element, {
+          width: "0%",
+        });
+
+        const tl = gsap.timeline({
+          paused: true,
+        });
+
+        // CRT shimmer effect animation
+        tl.to(element, {
+          width: "100%",
+          duration: 2,
+          ease: "power4.out",
+        });
+
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 95%",
+          markers: false,
+          once: true,
+          onEnter: () => {
+            setTimeout(() => {
+              tl.play(0);
+            }, delay * 1000);
+          },
+        });
+      } catch (error) {
+        console.error(`Motion: Glow animation failed at ${index + 1}:`, error);
+      }
+    });
+  }
+
+  initialiser();
+  animator();
+});
