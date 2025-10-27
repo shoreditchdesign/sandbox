@@ -1158,6 +1158,20 @@ document.addEventListener("DOMContentLoaded", function () {
     centeredSlides: false,
     loop: false,
     resistanceRatio: 0,
+    effect: "creative",
+    creativeEffect: {
+      limitProgress: 3,
+      prev: {
+        opacity: 0.4,
+        scale: 0.9,
+        translate: [0, 0, 0],
+      },
+      next: {
+        opacity: 0.6,
+        scale: 0.95,
+        translate: [0, 0, 0],
+      },
+    },
     pagination: {
       el: "#timeline-pagination",
       clickable: true,
