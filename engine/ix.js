@@ -257,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create wrapper
     const wrapper = document.createElement("div");
     wrapper.className = "o-glow-wrapper";
+    wrapper.setAttribute("data-motion-element", "");
 
     // Get border-radius from card and apply to wrapper
     const computedStyle = window.getComputedStyle(cardElement);
