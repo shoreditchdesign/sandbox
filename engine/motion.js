@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Animate by one item width for seamless loop
     currentAnimation = gsap.to(tickerWrap, {
       x: -itemWidth,
-      duration: itemWidth / 100,
+      duration: itemWidth / 250,
       ease: "none",
       repeat: -1,
       onRepeat: () => {
