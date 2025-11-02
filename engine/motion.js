@@ -352,19 +352,24 @@ document.addEventListener("DOMContentLoaded", function () {
   let stackTimelines = [];
 
   function sequenceInitialiser() {
+    console.log("sequenceInitialiser called, width:", window.innerWidth);
+
     // Clean up existing animations first
     cleanupStackAnimations();
 
     if (window.innerWidth <= 768) {
       // Mobile/tablet - reset cards to default state
+      console.log("Mobile mode - resetting cards");
       mobileInitializer();
       isInitialized = false;
       return;
     }
 
+    console.log("Desktop mode - initializing stack animations");
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
     if (scrollSection.length === 0) {
+      console.log("No stack sections found");
       return;
     }
 
@@ -377,11 +382,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const items = list?.querySelectorAll("[data-stack-card]");
 
       if (wrapper && list && items && items.length > 0) {
+        console.log("Initializing section with", items.length, "cards");
         sectionInitialiser(section, items);
       }
     });
 
     isInitialized = true;
+    console.log("Desktop initialization complete");
   }
 
   function cleanupStackAnimations() {
@@ -512,12 +519,22 @@ document.addEventListener("DOMContentLoaded", function () {
         (previousWidth > 768 && currentWidth <= 768) ||
         (previousWidth <= 768 && currentWidth > 768);
 
+      console.log("Resize detected:", {
+        previousWidth,
+        currentWidth,
+        crossedThreshold,
+        goingToMobile: previousWidth > 768 && currentWidth <= 768,
+        goingToDesktop: previousWidth <= 768 && currentWidth > 768,
+      });
+
       // Only reinitialize if we crossed the 768px threshold
       if (crossedThreshold) {
+        console.log("Threshold crossed - reinitializing");
         sequenceInitialiser();
 
         // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
         requestAnimationFrame(() => {
+          console.log("Refreshing ScrollTrigger");
           ScrollTrigger.refresh();
         });
       }
