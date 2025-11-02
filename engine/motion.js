@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (window.innerWidth <= 768) {
       // Mobile/tablet - reset cards to default state
-      resetCardsToMobile();
+      mobileInitializer();
       isInitialized = false;
       return;
     }
@@ -367,6 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (scrollSection.length === 0) {
       return;
     }
+
+    // Force a full reset before desktop init
+    mobileInitializer();
 
     scrollSection.forEach((section) => {
       const wrapper = section.querySelector("[data-stack-wrap]");
@@ -382,7 +385,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function cleanupStackAnimations() {
-    // Kill all tracked ScrollTriggers
+    // Kill all tracked timelines first (includes their ScrollTriggers)
+    stackTimelines.forEach((timeline) => {
+      if (timeline && timeline.kill) {
+        timeline.kill();
+      }
+    });
+    stackTimelines = [];
+
+    // Kill any remaining ScrollTriggers
     stackTriggers.forEach((trigger) => {
       if (trigger && trigger.kill) {
         trigger.kill();
@@ -390,16 +401,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     stackTriggers = [];
 
-    // Kill all tracked timelines
-    stackTimelines.forEach((timeline) => {
-      if (timeline && timeline.kill) {
-        timeline.kill();
+    // Force ScrollTrigger to clear all instances for our sections
+    ScrollTrigger.getAll().forEach((trigger) => {
+      if (
+        trigger.vars &&
+        trigger.vars.trigger &&
+        trigger.vars.trigger.hasAttribute("data-stack-section")
+      ) {
+        trigger.kill();
       }
     });
-    stackTimelines = [];
   }
 
-  function resetCardsToMobile() {
+  function mobileInitializer() {
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
     scrollSection.forEach((section) => {
@@ -498,14 +512,14 @@ document.addEventListener("DOMContentLoaded", function () {
         (previousWidth > 768 && currentWidth <= 768) ||
         (previousWidth <= 768 && currentWidth > 768);
 
-      // Only reinitialize if we crossed the 768px threshold or width changed significantly
-      if (crossedThreshold || Math.abs(currentWidth - previousWidth) > 50) {
+      // Only reinitialize if we crossed the 768px threshold
+      if (crossedThreshold) {
         sequenceInitialiser();
 
-        // Refresh ScrollTrigger to recalculate positions
-        if (isInitialized) {
+        // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
+        requestAnimationFrame(() => {
           ScrollTrigger.refresh();
-        }
+        });
       }
 
       previousWidth = currentWidth;
