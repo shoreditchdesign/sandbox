@@ -128,12 +128,21 @@ document.addEventListener("DOMContentLoaded", function () {
     reset(grid);
     layout(grid);
 
+    // Animate cards after layout is complete
+    if (window.arrayAnimator) {
+      window.arrayAnimator(grid);
+    }
+
     // Setup responsive listener if mobile attribute exists
     if (hasMobileAttr) {
       const mediaQuery = window.matchMedia("(max-width: 768px)");
       const handleMediaQueryChange = (e) => {
         if (e.matches) {
           layout(grid);
+          // Animate cards after layout is complete
+          if (window.arrayAnimator) {
+            window.arrayAnimator(grid);
+          }
         } else {
           reset(grid);
         }
@@ -161,6 +170,11 @@ document.addEventListener("DOMContentLoaded", function () {
           // New items were added, recalculate layout
           reset(grid);
           layout(grid);
+
+          // Animate cards after layout is complete
+          if (window.arrayAnimator) {
+            window.arrayAnimator(grid);
+          }
         }
       });
     });
@@ -178,6 +192,11 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           reset(grid);
           layout(grid);
+
+          // Animate cards after layout is complete
+          if (window.arrayAnimator) {
+            window.arrayAnimator(grid);
+          }
         }, 500);
       });
     });
