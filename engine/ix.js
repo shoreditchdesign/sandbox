@@ -1046,7 +1046,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
 
-//Gallery Swiper
+//Gallery Carousel
 document.addEventListener("DOMContentLoaded", function () {
   function galleryInitializer() {
     const galleryWrapper = document.querySelector("[data-gallery-wrap]");
@@ -1072,13 +1072,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to switch to a specific slide
     function switchToSlide(index) {
-      // Hide all slides
-      slides.forEach((slide) => {
-        slide.style.display = "none";
-      });
+      const oldSlide = slides[currentIndex];
+      const newSlide = slides[index];
 
-      // Show target slide
-      slides[index].style.display = "block";
+      // Skip if clicking the same slide
+      if (currentIndex === index) return;
+
+      // Exit animation for current slide
+      oldSlide.style.opacity = "1";
+      oldSlide.style.transition = "opacity 0.4s ease-out";
+      oldSlide.style.opacity = "0";
+
+      // After exit animation completes, show new slide
+      setTimeout(() => {
+        oldSlide.style.display = "none";
+        oldSlide.style.opacity = "1";
+        oldSlide.style.transition = "";
+
+        // Entry animation for new slide
+        newSlide.style.display = "block";
+        newSlide.style.opacity = "0";
+        newSlide.style.transition = "opacity 0.4s ease-in";
+
+        // Trigger reflow to ensure transition works
+        newSlide.offsetHeight;
+
+        newSlide.style.opacity = "1";
+
+        // Clean up transition after animation
+        setTimeout(() => {
+          newSlide.style.transition = "";
+        }, 400);
+      }, 400);
 
       // Update pagination dots
       const dots = paginationContainer.querySelectorAll("[data-gallery-dot]");
