@@ -281,6 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Countup Animation
 document.addEventListener("DOMContentLoaded", function () {
+  // Fix mobile viewport height issues (address bar showing/hiding)
+  ScrollTrigger.normalizeScroll(true);
+
   function initStatCells() {
     const statArrays = document.querySelectorAll("[data-stat-array]");
 
@@ -311,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Start on scroll down - only once
     ScrollTrigger.create({
       trigger: array,
-      start: "top 80%",
+      start: "top 85%", // Increased from 80% for better mobile trigger reliability
       once: true, // Only trigger once
       onEnter: () => {
         setTimeout(() => {
@@ -322,6 +325,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   initStatCells();
+
+  // Refresh ScrollTrigger after layout settles to account for any initial shifts
+  setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 100);
 });
 
 //Array Animation on Load More
