@@ -71,6 +71,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Dynamic Layouts
 document.addEventListener("DOMContentLoaded", function () {
+  // Subtle fade-in for news cards
+  function animate(grid) {
+    const cards = Array.from(grid.children).filter((child) =>
+      child.hasAttribute("data-news-card"),
+    );
+
+    if (cards.length === 0) return;
+
+    gsap.set(cards, { opacity: 0 });
+    gsap.to(cards, {
+      opacity: 1,
+      duration: 0.3,
+      ease: "power1.out",
+    });
+  }
+
   // Remove offset items from grid
   function remove(grid) {
     const offset = grid.getAttribute("data-news-offset");
@@ -123,19 +139,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Apply or reset layout based on device check
     if (!shouldApply()) {
       reset(grid);
-      // Animate cards even when resetting (desktop view for mobile-only grids)
-      if (window.arrayAnimator) {
-        window.arrayAnimator(grid);
-      }
+      // Fade in cards even when resetting (desktop view for mobile-only grids)
+      animate(grid);
       return;
     }
     reset(grid);
     layout(grid);
 
-    // Animate cards after layout is complete
-    if (window.arrayAnimator) {
-      window.arrayAnimator(grid);
-    }
+    // Fade in cards after layout is complete
+    animate(grid);
 
     // Setup responsive listener if mobile attribute exists
     if (hasMobileAttr) {
@@ -143,10 +155,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const handleMediaQueryChange = (e) => {
         if (e.matches) {
           layout(grid);
-          // Animate cards after layout is complete
-          if (window.arrayAnimator) {
-            window.arrayAnimator(grid);
-          }
+          // Fade in cards after layout is complete
+          animate(grid);
         } else {
           reset(grid);
         }
@@ -175,10 +185,8 @@ document.addEventListener("DOMContentLoaded", function () {
           reset(grid);
           layout(grid);
 
-          // Animate cards after layout is complete
-          if (window.arrayAnimator) {
-            window.arrayAnimator(grid);
-          }
+          // Fade in cards after layout is complete
+          animate(grid);
         }
       });
     });
@@ -197,10 +205,8 @@ document.addEventListener("DOMContentLoaded", function () {
           reset(grid);
           layout(grid);
 
-          // Animate cards after layout is complete
-          if (window.arrayAnimator) {
-            window.arrayAnimator(grid);
-          }
+          // Fade in cards after layout is complete
+          animate(grid);
         }, 500);
       });
     });
