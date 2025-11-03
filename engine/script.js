@@ -72,10 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
 //Dynamic Layouts
 document.addEventListener("DOMContentLoaded", function () {
   // Subtle fade-in for news cards
-  function animate(grid) {
-    const cards = Array.from(grid.children).filter((child) =>
-      child.hasAttribute("data-news-card"),
-    );
+  function animate() {
+    const cards = document.querySelectorAll("[data-news-card]");
 
     if (cards.length === 0) return;
 
@@ -140,14 +138,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!shouldApply()) {
       reset(grid);
       // Fade in cards even when resetting (desktop view for mobile-only grids)
-      animate(grid);
+      animate();
       return;
     }
     reset(grid);
     layout(grid);
 
     // Fade in cards after layout is complete
-    animate(grid);
+    animate();
 
     // Setup responsive listener if mobile attribute exists
     if (hasMobileAttr) {
@@ -156,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.matches) {
           layout(grid);
           // Fade in cards after layout is complete
-          animate(grid);
+          animate();
         } else {
           reset(grid);
         }
@@ -186,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
           layout(grid);
 
           // Fade in cards after layout is complete
-          animate(grid);
+          animate();
         }
       });
     });
@@ -206,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
           layout(grid);
 
           // Fade in cards after layout is complete
-          animate(grid);
+          animate();
         }, 500);
       });
     });
