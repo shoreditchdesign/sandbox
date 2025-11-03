@@ -1080,7 +1080,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Exit animation for current slide
       oldSlide.style.opacity = "1";
-      oldSlide.style.transition = "opacity 0.4s ease-out";
+      oldSlide.style.transition = "opacity 0.25s ease-out";
       oldSlide.style.opacity = "0";
 
       // After exit animation completes, show new slide
@@ -1092,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Entry animation for new slide
         newSlide.style.display = "block";
         newSlide.style.opacity = "0";
-        newSlide.style.transition = "opacity 0.4s ease-in";
+        newSlide.style.transition = "opacity 0.25s ease-in";
 
         // Trigger reflow to ensure transition works
         newSlide.offsetHeight;
@@ -1102,8 +1102,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Clean up transition after animation
         setTimeout(() => {
           newSlide.style.transition = "";
-        }, 400);
-      }, 400);
+        }, 250);
+      }, 250);
 
       // Update pagination dots
       const dots = paginationContainer.querySelectorAll("[data-gallery-dot]");
