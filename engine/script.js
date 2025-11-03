@@ -123,6 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Apply or reset layout based on device check
     if (!shouldApply()) {
       reset(grid);
+      // Animate cards even when resetting (desktop view for mobile-only grids)
+      if (window.arrayAnimator) {
+        window.arrayAnimator(grid);
+      }
       return;
     }
     reset(grid);
