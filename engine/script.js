@@ -279,11 +279,19 @@ document.addEventListener("DOMContentLoaded", function () {
   mediaQuery.addEventListener("change", handleMediaQueryChange);
 });
 
+//GSAP Normalize Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+    ScrollTrigger.normalizeScroll({
+      allowNestedScroll: true,
+      lockAxis: true,
+      type: "touch,wheel",
+    });
+  }
+});
+
 //Countup Animation
 document.addEventListener("DOMContentLoaded", function () {
-  // Fix mobile viewport height issues (address bar showing/hiding)
-  ScrollTrigger.normalizeScroll(true);
-
   function initStatCells() {
     const statArrays = document.querySelectorAll("[data-stat-array]");
 
