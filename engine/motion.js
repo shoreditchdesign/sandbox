@@ -151,9 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener(
       "stackCardsInitialized",
       () => {
-        console.log(
-          "Stacking cards initialized, now initializing progress bar",
-        );
         animator();
       },
       { once: true },
@@ -419,19 +416,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const items = list?.querySelectorAll("[data-stack-card]");
 
       if (wrapper && list && items && items.length > 0) {
-        console.log("Initializing section with", items.length, "cards");
         sectionInitialiser(section, wrapper, items);
       }
     });
 
     isInitialized = true;
-    console.log("Desktop initialization complete");
 
     // Refresh ScrollTrigger to ensure all triggers (including progress bar) recalculate
     // This allows progress bar to remeasure now that stacking cards have set their heights
     requestAnimationFrame(() => {
       ScrollTrigger.refresh();
-      console.log("ScrollTrigger refreshed after desktop init");
 
       // Dispatch custom event to notify other scripts that layout is ready
       window.dispatchEvent(new CustomEvent("stackCardsInitialized"));
@@ -441,24 +435,18 @@ document.addEventListener("DOMContentLoaded", function () {
   function domSettler(callback) {
     // Force reflow first to ensure DOM has settled
     document.body.offsetHeight;
-    console.log("Forced reflow - DOM settled");
 
     // Wait for browser to complete paint cycles
-    console.log("Waiting for DOM to settle via double RAF");
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        console.log("DOM settled - executing callback");
         callback();
       });
     });
   }
 
   function sequenceInitialiser() {
-    console.log("sequenceInitialiser called, width:", window.innerWidth);
-
     // Prevent overlapping initializations
     if (isInitialized === "initializing") {
-      console.log("Already initializing, skipping");
       return;
     }
 
@@ -467,17 +455,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (window.innerWidth <= 768) {
       // Mobile/tablet - reset cards to default state
-      console.log("Mobile mode - resetting cards");
       mobileInitializer();
       isInitialized = false;
       return;
     }
 
-    console.log("Desktop mode - initializing stack animations");
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
     if (scrollSection.length === 0) {
-      console.log("No stack sections found");
       isInitialized = false;
       return;
     }
@@ -495,13 +480,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function animationCleaner() {
-    console.log(
-      "Cleaning up animations, timelines:",
-      stackTimelines.length,
-      "triggers:",
-      stackTriggers.length,
-    );
-
     // Kill all tracked timelines first (includes their ScrollTriggers)
     stackTimelines.forEach((timeline) => {
       if (timeline && timeline.kill) {
@@ -530,17 +508,13 @@ document.addEventListener("DOMContentLoaded", function () {
       ) {
         // Only kill if not already killed by our tracked arrays
         if (!trigger.killed) {
-          console.log("Killing orphaned stack trigger");
           trigger.kill();
         }
       }
     });
-
-    console.log("Cleanup complete");
   }
 
   function mobileInitializer() {
-    console.log("Running mobileInitializer");
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
     // Batch DOM operations to minimize reflows
@@ -569,8 +543,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Force single reflow after all sections processed (performance optimization)
     document.body.offsetHeight;
-
-    console.log("mobileInitializer complete");
   }
 
   function sectionInitialiser(section, wrapper, items) {
@@ -580,7 +552,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Force reflow after setting height
     wrapper.offsetHeight;
-    console.log("Wrapper height set to:", dynamicHeight);
 
     // Set initial positions with explicit values
     items.forEach((item, index) => {
@@ -590,8 +561,6 @@ document.addEventListener("DOMContentLoaded", function () {
         gsap.set(item, { yPercent: 0, opacity: 1, scale: 1 });
       }
     });
-
-    console.log("Initial card positions set");
 
     // Create timeline with ScrollTrigger
     const timeline = gsap.timeline({
@@ -631,7 +600,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Store the ScrollTrigger instance (only once)
     if (timeline.scrollTrigger) {
       stackTriggers.push(timeline.scrollTrigger);
-      console.log("ScrollTrigger created and stored");
     }
   }
 
@@ -643,22 +611,12 @@ document.addEventListener("DOMContentLoaded", function () {
       (prevWidth > 768 && currentWidth <= 768) ||
       (prevWidth <= 768 && currentWidth > 768);
 
-    console.log("Resize detected:", {
-      previousWidth: prevWidth,
-      currentWidth,
-      crossedThreshold,
-      goingToMobile: prevWidth > 768 && currentWidth <= 768,
-      goingToDesktop: prevWidth <= 768 && currentWidth > 768,
-    });
-
     // Only reinitialize if we crossed the 768px threshold
     if (crossedThreshold) {
-      console.log("Threshold crossed - reinitializing");
       sequenceInitialiser();
 
       // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
       requestAnimationFrame(() => {
-        console.log("Refreshing ScrollTrigger after threshold cross");
         ScrollTrigger.refresh();
       });
     }
@@ -810,9 +768,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener(
       "stackCardsInitialized",
       () => {
-        console.log(
-          "Stacking cards initialized, now initializing progress bar",
-        );
         animator();
       },
       { once: true },
