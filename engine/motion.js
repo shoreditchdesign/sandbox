@@ -615,6 +615,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     isInitialized = true;
     console.log("Desktop initialization complete");
+
+    // Refresh ScrollTrigger to ensure all triggers (including progress bar) recalculate
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      console.log("ScrollTrigger refreshed after desktop init");
+    });
   }
 
   function domSettler(callback) {
@@ -689,7 +695,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     stackTimelines = [];
 
-    // Kill any remaining ScrollTriggers
+    // Kill any remaining tracked ScrollTriggers
     stackTriggers.forEach((trigger) => {
       if (trigger && trigger.kill) {
         trigger.kill();
@@ -697,14 +703,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     stackTriggers = [];
 
-    // Force ScrollTrigger to clear all instances for our sections
-    ScrollTrigger.getAll().forEach((trigger) => {
+    // Safety net: Only kill orphaned stack-section triggers not in our tracking arrays
+    // This prevents killing unrelated triggers (like progress bars)
+    const allTriggers = ScrollTrigger.getAll();
+    allTriggers.forEach((trigger) => {
       if (
         trigger.vars &&
         trigger.vars.trigger &&
+        trigger.vars.trigger.hasAttribute &&
         trigger.vars.trigger.hasAttribute("data-stack-section")
       ) {
-        trigger.kill();
+        // Only kill if not already killed by our tracked arrays
+        if (!trigger.killed) {
+          console.log("Killing orphaned stack trigger");
+          trigger.kill();
+        }
       }
     });
 
