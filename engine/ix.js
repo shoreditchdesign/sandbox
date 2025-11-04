@@ -1212,7 +1212,7 @@ document.addEventListener("DOMContentLoaded", function () {
     watchSlidesVisibility: false,
     breakpoints: {
       992: {
-        slidesPerView: 2.5,
+        slidesPerView: 2,
         spaceBetween: 16,
       },
     },
