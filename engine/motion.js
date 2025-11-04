@@ -385,6 +385,213 @@ document.addEventListener("DOMContentLoaded", () => {
   triggers();
 });
 
+// //GSAP for Stacking Cards
+// document.addEventListener("DOMContentLoaded", function () {
+//   gsap.registerPlugin(ScrollTrigger);
+
+//   // Track initialization state and store references
+//   let isInitialized = false;
+//   let stackTriggers = [];
+//   let stackTimelines = [];
+
+//   function sequenceInitialiser() {
+//     console.log("sequenceInitialiser called, width:", window.innerWidth);
+
+//     // Clean up existing animations first
+//     cleanupStackAnimations();
+
+//     if (window.innerWidth <= 768) {
+//       // Mobile/tablet - reset cards to default state
+//       console.log("Mobile mode - resetting cards");
+//       mobileInitializer();
+//       isInitialized = false;
+//       return;
+//     }
+
+//     console.log("Desktop mode - initializing stack animations");
+//     const scrollSection = document.querySelectorAll("[data-stack-section]");
+
+//     if (scrollSection.length === 0) {
+//       console.log("No stack sections found");
+//       return;
+//     }
+
+//     // Force a full reset before desktop init
+//     mobileInitializer();
+
+//     scrollSection.forEach((section) => {
+//       const wrapper = section.querySelector("[data-stack-wrap]");
+//       const list = wrapper?.querySelector("[data-stack-list]");
+//       const items = list?.querySelectorAll("[data-stack-card]");
+
+//       if (wrapper && list && items && items.length > 0) {
+//         console.log("Initializing section with", items.length, "cards");
+//         sectionInitialiser(section, items);
+//       }
+//     });
+
+//     isInitialized = true;
+//     console.log("Desktop initialization complete");
+//   }
+
+//   function cleanupStackAnimations() {
+//     // Kill all tracked timelines first (includes their ScrollTriggers)
+//     stackTimelines.forEach((timeline) => {
+//       if (timeline && timeline.kill) {
+//         timeline.kill();
+//       }
+//     });
+//     stackTimelines = [];
+
+//     // Kill any remaining ScrollTriggers
+//     stackTriggers.forEach((trigger) => {
+//       if (trigger && trigger.kill) {
+//         trigger.kill();
+//       }
+//     });
+//     stackTriggers = [];
+
+//     // Force ScrollTrigger to clear all instances for our sections
+//     ScrollTrigger.getAll().forEach((trigger) => {
+//       if (
+//         trigger.vars &&
+//         trigger.vars.trigger &&
+//         trigger.vars.trigger.hasAttribute("data-stack-section")
+//       ) {
+//         trigger.kill();
+//       }
+//     });
+//   }
+
+//   function mobileInitializer() {
+//     const scrollSection = document.querySelectorAll("[data-stack-section]");
+
+//     scrollSection.forEach((section) => {
+//       const wrapper = section.querySelector("[data-stack-wrap]");
+//       const list = wrapper?.querySelector("[data-stack-list]");
+//       const items = list?.querySelectorAll("[data-stack-card]");
+
+//       if (wrapper && items) {
+//         // Reset wrapper height to auto
+//         wrapper.style.height = "auto";
+
+//         // Reset all card styles to default
+//         items.forEach((item) => {
+//           gsap.set(item, {
+//             clearProps: "all", // Clear all GSAP properties
+//           });
+//         });
+//       }
+//     });
+//   }
+
+//   function sectionInitialiser(section, items) {
+//     const wrapper = section.querySelector("[data-stack-wrap]");
+//     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
+//     wrapper.style.height = dynamicHeight;
+
+//     // Set initial positions
+//     items.forEach((item, index) => {
+//       if (index !== 0) {
+//         gsap.set(item, { yPercent: 100 });
+//       } else {
+//         gsap.set(item, { yPercent: 0, opacity: 1, scale: 1 });
+//       }
+//     });
+
+//     // Create timeline with ScrollTrigger
+//     const timeline = gsap.timeline({
+//       scrollTrigger: {
+//         trigger: section,
+//         pin: true,
+//         start: "top top",
+//         end: () => `+=${items.length * 100}%`,
+//         scrub: true,
+//         invalidateOnRefresh: true,
+//         markers: false,
+//         onRefresh: (self) => {
+//           // Store reference to this trigger
+//           if (!stackTriggers.includes(self)) {
+//             stackTriggers.push(self);
+//           }
+//         },
+//       },
+//       defaults: { ease: "none" },
+//     });
+
+//     // Store timeline reference
+//     stackTimelines.push(timeline);
+
+//     // Build animation sequence
+//     items.forEach((item, index) => {
+//       if (index < items.length - 1) {
+//         timeline.to(item, {
+//           opacity: 0,
+//           scale: 0.9,
+//           borderRadius: "10px",
+//         });
+//         timeline.to(
+//           items[index + 1],
+//           {
+//             yPercent: 0,
+//           },
+//           "<",
+//         );
+//       }
+//     });
+
+//     // Store the ScrollTrigger instance
+//     if (timeline.scrollTrigger) {
+//       stackTriggers.push(timeline.scrollTrigger);
+//     }
+//   }
+
+//   // Initial setup
+//   sequenceInitialiser();
+
+//   // Resize handler with debouncing
+//   let resizeTimeout;
+//   let previousWidth = window.innerWidth;
+
+//   window.addEventListener("resize", () => {
+//     clearTimeout(resizeTimeout);
+
+//     resizeTimeout = setTimeout(() => {
+//       const currentWidth = window.innerWidth;
+//       const crossedThreshold =
+//         (previousWidth > 768 && currentWidth <= 768) ||
+//         (previousWidth <= 768 && currentWidth > 768);
+
+//       console.log("Resize detected:", {
+//         previousWidth,
+//         currentWidth,
+//         crossedThreshold,
+//         goingToMobile: previousWidth > 768 && currentWidth <= 768,
+//         goingToDesktop: previousWidth <= 768 && currentWidth > 768,
+//       });
+
+//       // Only reinitialize if we crossed the 768px threshold
+//       if (crossedThreshold) {
+//         console.log("Threshold crossed - reinitializing");
+//         sequenceInitialiser();
+
+//         // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
+//         requestAnimationFrame(() => {
+//           console.log("Refreshing ScrollTrigger");
+//           ScrollTrigger.refresh();
+//         });
+//       }
+
+//       previousWidth = currentWidth;
+//     }, 250);
+//   });
+
+//   // Cleanup on page unload (prevent memory leaks)
+//   window.addEventListener("beforeunload", () => {
+//     cleanupStackAnimations();
+//   });
+// });
+
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
   gsap.registerPlugin(ScrollTrigger);
@@ -394,11 +601,48 @@ document.addEventListener("DOMContentLoaded", function () {
   let stackTriggers = [];
   let stackTimelines = [];
 
+  function desktopInitializer(scrollSections) {
+    scrollSections.forEach((section) => {
+      const wrapper = section.querySelector("[data-stack-wrap]");
+      const list = wrapper?.querySelector("[data-stack-list]");
+      const items = list?.querySelectorAll("[data-stack-card]");
+
+      if (wrapper && list && items && items.length > 0) {
+        console.log("Initializing section with", items.length, "cards");
+        sectionInitialiser(section, wrapper, items);
+      }
+    });
+
+    isInitialized = true;
+    console.log("Desktop initialization complete");
+  }
+
+  function domSettler(callback) {
+    // Force reflow first to ensure DOM has settled
+    document.body.offsetHeight;
+    console.log("Forced reflow - DOM settled");
+
+    // Wait for browser to complete paint cycles
+    console.log("Waiting for DOM to settle via double RAF");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        console.log("DOM settled - executing callback");
+        callback();
+      });
+    });
+  }
+
   function sequenceInitialiser() {
     console.log("sequenceInitialiser called, width:", window.innerWidth);
 
+    // Prevent overlapping initializations
+    if (isInitialized === "initializing") {
+      console.log("Already initializing, skipping");
+      return;
+    }
+
     // Clean up existing animations first
-    cleanupStackAnimations();
+    animationCleaner();
 
     if (window.innerWidth <= 768) {
       // Mobile/tablet - reset cards to default state
@@ -413,28 +657,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (scrollSection.length === 0) {
       console.log("No stack sections found");
+      isInitialized = false;
       return;
     }
+
+    // Mark as initializing to prevent race conditions
+    isInitialized = "initializing";
 
     // Force a full reset before desktop init
     mobileInitializer();
 
-    scrollSection.forEach((section) => {
-      const wrapper = section.querySelector("[data-stack-wrap]");
-      const list = wrapper?.querySelector("[data-stack-list]");
-      const items = list?.querySelectorAll("[data-stack-card]");
-
-      if (wrapper && list && items && items.length > 0) {
-        console.log("Initializing section with", items.length, "cards");
-        sectionInitialiser(section, items);
-      }
+    // Wait for browser to complete paint cycle before initializing
+    domSettler(() => {
+      desktopInitializer(scrollSection);
     });
-
-    isInitialized = true;
-    console.log("Desktop initialization complete");
   }
 
-  function cleanupStackAnimations() {
+  function animationCleaner() {
+    console.log(
+      "Cleaning up animations, timelines:",
+      stackTimelines.length,
+      "triggers:",
+      stackTriggers.length,
+    );
+
     // Kill all tracked timelines first (includes their ScrollTriggers)
     stackTimelines.forEach((timeline) => {
       if (timeline && timeline.kill) {
@@ -461,11 +707,15 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger.kill();
       }
     });
+
+    console.log("Cleanup complete");
   }
 
   function mobileInitializer() {
+    console.log("Running mobileInitializer");
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
+    // Batch DOM operations to minimize reflows
     scrollSection.forEach((section) => {
       const wrapper = section.querySelector("[data-stack-wrap]");
       const list = wrapper?.querySelector("[data-stack-list]");
@@ -477,20 +727,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Reset all card styles to default
         items.forEach((item) => {
+          // Clear all GSAP properties
           gsap.set(item, {
-            clearProps: "all", // Clear all GSAP properties
+            clearProps: "all",
           });
+
+          // Explicitly reset transform-related properties
+          item.style.transformOrigin = "";
+          item.style.removeProperty("transform");
         });
       }
     });
+
+    // Force single reflow after all sections processed (performance optimization)
+    document.body.offsetHeight;
+
+    console.log("mobileInitializer complete");
   }
 
-  function sectionInitialiser(section, items) {
-    const wrapper = section.querySelector("[data-stack-wrap]");
+  function sectionInitialiser(section, wrapper, items) {
+    // Calculate dynamic height with current viewport
     const dynamicHeight = `${(items.length + 1) * 100}lvh`;
     wrapper.style.height = dynamicHeight;
 
-    // Set initial positions
+    // Force reflow after setting height
+    wrapper.offsetHeight;
+    console.log("Wrapper height set to:", dynamicHeight);
+
+    // Set initial positions with explicit values
     items.forEach((item, index) => {
       if (index !== 0) {
         gsap.set(item, { yPercent: 100 });
@@ -498,6 +762,8 @@ document.addEventListener("DOMContentLoaded", function () {
         gsap.set(item, { yPercent: 0, opacity: 1, scale: 1 });
       }
     });
+
+    console.log("Initial card positions set");
 
     // Create timeline with ScrollTrigger
     const timeline = gsap.timeline({
@@ -509,12 +775,6 @@ document.addEventListener("DOMContentLoaded", function () {
         scrub: true,
         invalidateOnRefresh: true,
         markers: false,
-        onRefresh: (self) => {
-          // Store reference to this trigger
-          if (!stackTriggers.includes(self)) {
-            stackTriggers.push(self);
-          }
-        },
       },
       defaults: { ease: "none" },
     });
@@ -540,14 +800,37 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Store the ScrollTrigger instance
+    // Store the ScrollTrigger instance (only once)
     if (timeline.scrollTrigger) {
       stackTriggers.push(timeline.scrollTrigger);
+      console.log("ScrollTrigger created and stored");
     }
   }
 
   // Initial setup
   sequenceInitialiser();
+
+  function thresholdChecker(currentWidth, prevWidth) {
+    const crossedThreshold =
+      (prevWidth > 768 && currentWidth <= 768) ||
+      (prevWidth <= 768 && currentWidth > 768);
+
+    console.log("Resize detected:", {
+      previousWidth: prevWidth,
+      currentWidth,
+      crossedThreshold,
+      goingToMobile: prevWidth > 768 && currentWidth <= 768,
+      goingToDesktop: prevWidth <= 768 && currentWidth > 768,
+    });
+
+    // Only reinitialize if we crossed the 768px threshold
+    if (crossedThreshold) {
+      console.log("Threshold crossed - reinitializing");
+      sequenceInitialiser();
+    }
+
+    return currentWidth; // Return new width to update previousWidth
+  }
 
   // Resize handler with debouncing
   let resizeTimeout;
@@ -557,38 +840,13 @@ document.addEventListener("DOMContentLoaded", function () {
     clearTimeout(resizeTimeout);
 
     resizeTimeout = setTimeout(() => {
-      const currentWidth = window.innerWidth;
-      const crossedThreshold =
-        (previousWidth > 768 && currentWidth <= 768) ||
-        (previousWidth <= 768 && currentWidth > 768);
-
-      console.log("Resize detected:", {
-        previousWidth,
-        currentWidth,
-        crossedThreshold,
-        goingToMobile: previousWidth > 768 && currentWidth <= 768,
-        goingToDesktop: previousWidth <= 768 && currentWidth > 768,
-      });
-
-      // Only reinitialize if we crossed the 768px threshold
-      if (crossedThreshold) {
-        console.log("Threshold crossed - reinitializing");
-        sequenceInitialiser();
-
-        // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
-        requestAnimationFrame(() => {
-          console.log("Refreshing ScrollTrigger");
-          ScrollTrigger.refresh();
-        });
-      }
-
-      previousWidth = currentWidth;
-    }, 250);
+      previousWidth = thresholdChecker(window.innerWidth, previousWidth);
+    }, 300); // Increased debounce to allow viewport units to settle
   });
 
   // Cleanup on page unload (prevent memory leaks)
   window.addEventListener("beforeunload", () => {
-    cleanupStackAnimations();
+    animationCleaner();
   });
 });
 
