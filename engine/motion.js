@@ -1437,6 +1437,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-glow")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
+  triggers();
 });
