@@ -1218,6 +1218,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     on: {
       init: function () {
+        console.log("Swiper initialized:", {
+          slidesPerView: this.params.slidesPerView,
+          actualWidth: this.width,
+          slideWidth: this.slides[0]?.offsetWidth,
+          breakpoint: this.currentBreakpoint,
+        });
         filterYearNavigation(this);
         updateSlideAttributes(this);
         updateYearNavigation(this);
