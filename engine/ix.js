@@ -1215,7 +1215,6 @@ document.addEventListener("DOMContentLoaded", function () {
       992: {
         slidesPerView: 2,
         spaceBetween: 16,
-        slidesOffsetAfter: 648,
       },
     },
     on: {
