@@ -1340,14 +1340,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Remove year navigation items that don't have corresponding slides
+  // Also remove the last slide's year on desktop (≥992px) if it's ONLY on the last slide
   function filterYearNavigation(swiper) {
     const availableYears = getAvailableYears(swiper);
     const yearItems = document.querySelectorAll("[data-timeline-year]");
+    const isDesktop = window.innerWidth >= 992;
+
+    // Get the last slide's year
+    const lastSlideYear =
+      swiper.slides.length > 0
+        ? swiper.slides[swiper.slides.length - 1]
+            .querySelector("[data-year-source]")
+            ?.getAttribute("data-year-source")
+        : null;
+
+    // Check if the last slide's year appears on any other slide
+    const lastYearOccurrences = lastSlideYear
+      ? Array.from(swiper.slides).filter((slide) => {
+          const yearSource = slide.querySelector("[data-year-source]");
+          return (
+            yearSource &&
+            yearSource.getAttribute("data-year-source") === lastSlideYear
+          );
+        }).length
+      : 0;
 
     yearItems.forEach((yearItem) => {
       const yearValue = yearItem.getAttribute("data-year-target");
 
+      // Remove if year doesn't exist in slides
       if (!availableYears.has(yearValue)) {
+        yearItem.remove();
+      }
+      // Remove last slide's year ONLY if it appears exclusively on the last slide
+      else if (
+        isDesktop &&
+        yearValue === lastSlideYear &&
+        lastYearOccurrences === 1 &&
+        swiper.params.slidesPerView >= 2
+      ) {
         yearItem.remove();
       }
     });
