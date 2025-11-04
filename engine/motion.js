@@ -124,14 +124,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-slide")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
+  triggers();
 });
 
 //GSAP for Navbar Opacity Toggle
 document.addEventListener("DOMContentLoaded", function () {
-  let scrollTriggerInstance = null;
-
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -149,17 +167,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Kill existing ScrollTrigger if it exists
-    if (scrollTriggerInstance) {
-      scrollTriggerInstance.kill();
-    }
-
     // Check if at top of page and set opacity off
     if (window.scrollY === 0) {
       navbar.setAttribute("data-nav-opacity", "off");
     }
 
-    scrollTriggerInstance = ScrollTrigger.create({
+    ScrollTrigger.create({
       trigger: heroSection,
       start: "top top",
       end: "bottom top",
@@ -173,19 +186,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-section-hero")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+        ScrollTrigger.refresh();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
-
-  // Reinitialize on window resize
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      console.warn("Navbar Opacity Toggle: Browser resized, rerunning");
-      animator();
-      ScrollTrigger.refresh();
-    }, 250);
-  });
+  triggers();
 });
 
 //GSAP for Ticker
@@ -338,8 +361,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-features-wrap")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
+  triggers();
 });
 
 //GSAP for Stacking Cards
@@ -648,17 +691,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-progress-section")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
-
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      animator();
-    }, 250);
-  });
+  triggers();
 });
 
 //GSAP for Scroll Cards
@@ -1094,9 +1148,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-text")
+          ) {
+            trigger.kill();
+          }
+        });
+        document.fonts.ready.then(() => {
+          animator();
+        });
+      }, 250);
+    });
+  }
+
   initialiser();
   selectors();
   animator();
+  triggers();
 });
 
 //GSAP for Arrays
@@ -1178,8 +1254,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 200);
   }
 
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-array")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
+  triggers();
 });
 
 //GSAP for Single Elements
@@ -1257,8 +1353,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 200);
   }
+
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-element")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
   initialiser();
   animator();
+  triggers();
 });
 
 //GSAP for Glow Elements
