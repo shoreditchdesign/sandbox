@@ -144,7 +144,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initialiser();
-  animator();
+
+  // Wait for stacking cards to initialize before measuring content height
+  // This ensures we get accurate measurements after dynamic heights are set
+  if (window.innerWidth > 768) {
+    window.addEventListener(
+      "stackCardsInitialized",
+      () => {
+        console.log(
+          "Stacking cards initialized, now initializing progress bar",
+        );
+        animator();
+      },
+      { once: true },
+    );
+  } else {
+    // On mobile, no stacking cards, initialize immediately
+    animator();
+  }
+
   triggers();
 });
 
@@ -617,9 +635,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Desktop initialization complete");
 
     // Refresh ScrollTrigger to ensure all triggers (including progress bar) recalculate
+    // This allows progress bar to remeasure now that stacking cards have set their heights
     requestAnimationFrame(() => {
       ScrollTrigger.refresh();
       console.log("ScrollTrigger refreshed after desktop init");
+
+      // Dispatch custom event to notify other scripts that layout is ready
+      window.dispatchEvent(new CustomEvent("stackCardsInitialized"));
     });
   }
 
@@ -840,6 +862,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (crossedThreshold) {
       console.log("Threshold crossed - reinitializing");
       sequenceInitialiser();
+
+      // Refresh ScrollTrigger after a brief delay to ensure DOM has settled
+      requestAnimationFrame(() => {
+        console.log("Refreshing ScrollTrigger after threshold cross");
+        ScrollTrigger.refresh();
+      });
     }
 
     return currentWidth; // Return new width to update previousWidth
@@ -982,7 +1010,25 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   initialiser();
-  animator();
+
+  // Wait for stacking cards to initialize before measuring content height
+  // This ensures we get accurate measurements after dynamic heights are set
+  if (window.innerWidth > 768) {
+    window.addEventListener(
+      "stackCardsInitialized",
+      () => {
+        console.log(
+          "Stacking cards initialized, now initializing progress bar",
+        );
+        animator();
+      },
+      { once: true },
+    );
+  } else {
+    // On mobile, no stacking cards, initialize immediately
+    animator();
+  }
+
   triggers();
 });
 
