@@ -1,3 +1,14 @@
+//Normalise Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+    ScrollTrigger.normalizeScroll({
+      allowNestedScroll: true,
+      lockAxis: true,
+      type: "touch,wheel",
+    });
+  }
+});
+
 //Textarea Resizer
 document.addEventListener("DOMContentLoaded", () => {
   const textareas = document.querySelectorAll("textarea");
@@ -277,17 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Listen for changes in the media query
   mediaQuery.addEventListener("change", handleMediaQueryChange);
-});
-
-//GSAP Normalize Scroll
-document.addEventListener("DOMContentLoaded", function () {
-  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
-    ScrollTrigger.normalizeScroll({
-      allowNestedScroll: true,
-      lockAxis: true,
-      type: "touch,wheel",
-    });
-  }
 });
 
 //Countup Animation
