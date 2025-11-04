@@ -1169,9 +1169,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
 
-//Timeline Swiper
+//Timeline Swipers
 document.addEventListener("DOMContentLoaded", function () {
   var mySwiper = new Swiper("#timeline-swiper", {
+    direction: "horizontal",
     slidesPerView: 1,
     slidesPerGroup: 1,
     spaceBetween: 16,
