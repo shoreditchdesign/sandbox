@@ -26,6 +26,8 @@ interface CarouselProps {
   enableDrag: boolean;
   componentGapDesktop: number;
   componentGapMobile: number;
+  autoplay: boolean;
+  autoplayDelay: number;
   style?: CSSProperties;
 }
 
@@ -47,6 +49,8 @@ export default function CMSSwiper(props: CarouselProps) {
     enableDrag = true,
     componentGapDesktop = 40,
     componentGapMobile = 24,
+    autoplay = false,
+    autoplayDelay = 3000,
   } = props;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -111,6 +115,23 @@ export default function CMSSwiper(props: CarouselProps) {
       startTransition(() => setTranslateX(newTranslate));
     }
   }, [currentIndex, slidesPerView, slideGap, isMobile]);
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (!autoplay || isDragging) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        // Loop back to start when reaching the end
+        if (prev >= maxIndex) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, autoplayDelay);
+
+    return () => clearInterval(interval);
+  }, [autoplay, autoplayDelay, maxIndex, isDragging]);
 
   const handlePrevious = () => {
     startTransition(() => setCurrentIndex((prev) => Math.max(0, prev - 1)));
@@ -201,6 +222,7 @@ export default function CMSSwiper(props: CarouselProps) {
             display: "flex",
             gap: 12,
             alignItems: "center",
+            paddingRight: 80,
           }}
         >
           <div
@@ -230,7 +252,7 @@ export default function CMSSwiper(props: CarouselProps) {
         ref={containerRef}
         style={{
           width: "100%",
-          overflow: "hidden",
+          overflow: "visible",
           position: "relative",
         }}
       >
@@ -258,6 +280,7 @@ export default function CMSSwiper(props: CarouselProps) {
             onTouchEnd={handleTouchEnd}
             style={{
               display: "flex",
+              alignItems: "stretch",
               gap: slideGap,
               transform: `translateX(${translateX + dragOffset}px)`,
               transition: isDragging ? "none" : "transform 0.3s ease-out",
@@ -275,9 +298,30 @@ export default function CMSSwiper(props: CarouselProps) {
                 style={{
                   flex: `0 0 calc((100% - ${slideGap * (slidesPerView - 1)}px) / ${slidesPerView})`,
                   minWidth: 0,
+                  maxWidth: `calc((100% - ${slideGap * (slidesPerView - 1)}px) / ${slidesPerView})`,
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                {slide}
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {React.isValidElement(slide)
+                    ? React.cloneElement(slide as React.ReactElement<any>, {
+                        style: {
+                          ...(slide.props.style || {}),
+                          width: "100%",
+                          height: "100%",
+                          flex: 1,
+                        },
+                      })
+                    : slide}
+                </div>
               </div>
             ))}
           </div>
@@ -328,7 +372,7 @@ addPropertyControls(CMSSwiper, {
     defaultValue: 3,
     min: 1,
     max: 10,
-    step: 1,
+    step: 0.1,
     displayStepper: true,
   },
   slidesPerViewMobile: {
@@ -337,7 +381,7 @@ addPropertyControls(CMSSwiper, {
     defaultValue: 1,
     min: 1,
     max: 5,
-    step: 1,
+    step: 0.1,
     displayStepper: true,
   },
   slideGap: {
@@ -373,5 +417,22 @@ addPropertyControls(CMSSwiper, {
     max: 100,
     step: 1,
     unit: "px",
+  },
+  autoplay: {
+    type: ControlType.Boolean,
+    title: "Autoplay",
+    defaultValue: false,
+    enabledTitle: "On",
+    disabledTitle: "Off",
+  },
+  autoplayDelay: {
+    type: ControlType.Number,
+    title: "Autoplay Delay",
+    defaultValue: 3000,
+    min: 500,
+    max: 10000,
+    step: 100,
+    unit: "ms",
+    hidden: (props) => !props.autoplay,
   },
 });
