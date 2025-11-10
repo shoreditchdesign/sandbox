@@ -1,5 +1,5 @@
-// Carousel component with CMS collection list support, navigation buttons, heading, and responsive configuration
-import { addPropertyControls, ControlType, RenderTarget } from "framer";
+// Carousel component with static items support, navigation buttons, heading, and responsive configuration
+import { addPropertyControls, ControlType } from "framer";
 import {
   useEffect,
   useRef,
@@ -8,13 +8,9 @@ import {
   type CSSProperties,
 } from "react";
 import React from "react";
-import {
-  CanvasPlaceholder,
-  getCollectionListItems,
-} from "https://framer.com/m/CMSSlideshow-xxTt.js@Gwq5XNGR2fw3oxqNnFeg";
 
 interface CarouselProps {
-  collectionList?: React.ReactNode[];
+  staticItems?: React.ReactNode;
   startLayers?: React.ReactNode[];
   endLayers?: React.ReactNode[];
   heading: React.ReactNode;
@@ -35,9 +31,9 @@ interface CarouselProps {
  * @framerSupportedLayoutWidth any
  * @framerSupportedLayoutHeight auto
  */
-export default function CMSSwiper(props: CarouselProps) {
+export default function StaticSwiper(props: CarouselProps) {
   const {
-    collectionList,
+    staticItems,
     startLayers = [],
     endLayers = [],
     heading,
@@ -62,9 +58,7 @@ export default function CMSSwiper(props: CarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
-  const isCanvas = RenderTarget.current() === RenderTarget.canvas;
-
-  // Extract children from collection list wrapper (ONLY CHANGE FROM ORIGINAL)
+  // Extract children from static items
   let slides: React.ReactNode[] = [];
 
   // Add start layers
@@ -72,12 +66,21 @@ export default function CMSSwiper(props: CarouselProps) {
     slides = slides.concat(startLayers);
   }
 
-  // Extract CMS List children - THIS IS THE ONLY CMS-SPECIFIC ADDITION
-  if (!isCanvas) {
-    const items = getCollectionListItems(collectionList?.[0]);
-    if (items && items.length > 0) {
-      for (let i = 0; i < items.length; i++) {
-        slides.push(items[i].props.children.props.children);
+  // Extract children from staticItems (Framer Stack/Frame with child cards)
+  if (staticItems) {
+    if (React.isValidElement(staticItems)) {
+      const element = staticItems as React.ReactElement;
+
+      // Try to get children from props
+      if (element.props && element.props.children) {
+        const children = React.Children.toArray(element.props.children);
+
+        // Filter out empty/null children and add valid ones
+        children.forEach((child) => {
+          if (child && React.isValidElement(child)) {
+            slides.push(child);
+          }
+        });
       }
     }
   }
@@ -86,6 +89,18 @@ export default function CMSSwiper(props: CarouselProps) {
   if (endLayers && endLayers.length > 0) {
     slides = slides.concat(endLayers);
   }
+
+  // Debug logging to see what we're receiving
+  console.log("StaticSwiper Debug:", {
+    staticItemsType: typeof staticItems,
+    staticItemsIsArray: Array.isArray(staticItems),
+    staticItemsIsElement: React.isValidElement(staticItems),
+    staticItemsProps: React.isValidElement(staticItems)
+      ? (staticItems as any).props
+      : null,
+    totalSlides: slides.length,
+    slidesPreview: slides.slice(0, 3),
+  });
 
   // Convert children to array of slides
   const totalSlides = slides.length;
@@ -222,7 +237,6 @@ export default function CMSSwiper(props: CarouselProps) {
             display: "flex",
             gap: 12,
             alignItems: "center",
-            paddingRight: 80,
           }}
         >
           <div
@@ -266,7 +280,8 @@ export default function CMSSwiper(props: CarouselProps) {
               color: "#666",
             }}
           >
-            No slides found. Connect a CMS List to the Collection List slot.
+            No slides found. Add a parent div with child divs to the Static
+            Items slot.
           </div>
         ) : (
           <div
@@ -331,12 +346,12 @@ export default function CMSSwiper(props: CarouselProps) {
   );
 }
 
-CMSSwiper.displayName = "CMS Swiper";
+StaticSwiper.displayName = "Static Swiper";
 
-addPropertyControls(CMSSwiper, {
-  collectionList: {
+addPropertyControls(StaticSwiper, {
+  staticItems: {
     type: ControlType.ComponentInstance,
-    title: "Collection List",
+    title: "Static Items",
   },
   startLayers: {
     type: ControlType.Array,

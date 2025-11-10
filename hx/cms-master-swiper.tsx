@@ -1,4 +1,4 @@
-// CMS-enabled Carousel component with collection list support, navigation buttons, heading, and responsive configuration
+// Carousel component with CMS collection list support, navigation buttons, heading, and responsive configuration
 import { addPropertyControls, ControlType, RenderTarget } from "framer";
 import {
   useEffect,
@@ -26,6 +26,8 @@ interface CarouselProps {
   enableDrag: boolean;
   componentGapDesktop: number;
   componentGapMobile: number;
+  autoplay: boolean;
+  autoplayDelay: number;
   style?: CSSProperties;
 }
 
@@ -33,7 +35,7 @@ interface CarouselProps {
  * @framerSupportedLayoutWidth any
  * @framerSupportedLayoutHeight auto
  */
-export default function CMSMasterSwiper(props: CarouselProps) {
+export default function CMSSwiper(props: CarouselProps) {
   const {
     collectionList,
     startLayers = [],
@@ -47,6 +49,8 @@ export default function CMSMasterSwiper(props: CarouselProps) {
     enableDrag = true,
     componentGapDesktop = 40,
     componentGapMobile = 24,
+    autoplay = false,
+    autoplayDelay = 3000,
   } = props;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,10 +64,7 @@ export default function CMSMasterSwiper(props: CarouselProps) {
 
   const isCanvas = RenderTarget.current() === RenderTarget.canvas;
 
-  // Extract CMS collection list items properly
-  const cmsItems = isCanvas ? [] : getCollectionListItems(collectionList?.[0]);
-
-  // Build slides array
+  // Extract children from collection list wrapper (ONLY CHANGE FROM ORIGINAL)
   let slides: React.ReactNode[] = [];
 
   // Add start layers
@@ -71,22 +72,13 @@ export default function CMSMasterSwiper(props: CarouselProps) {
     slides = slides.concat(startLayers);
   }
 
-  // Extract CMS List children using the proper method from reference
-  if (!isCanvas && cmsItems.length > 0) {
-    for (let i = 0; i < cmsItems.length; i++) {
-      slides.push(cmsItems[i].props.children.props.children);
-    }
-  } else if (isCanvas) {
-    // Show placeholder in canvas
-    const slidesPerView = slidesPerViewDesktop;
-    for (let i = 0; i < slidesPerView; i++) {
-      slides.push(
-        <CanvasPlaceholder
-          key={`placeholder-${i}`}
-          title="Run project to view carousel content"
-          subtitle="Collection List content is not accessible to the carousel component in the editor. Run your project or visit the live website to view the carousel with CMS content."
-        />,
-      );
+  // Extract CMS List children - THIS IS THE ONLY CMS-SPECIFIC ADDITION
+  if (!isCanvas) {
+    const items = getCollectionListItems(collectionList?.[0]);
+    if (items && items.length > 0) {
+      for (let i = 0; i < items.length; i++) {
+        slides.push(items[i].props.children.props.children);
+      }
     }
   }
 
@@ -95,12 +87,8 @@ export default function CMSMasterSwiper(props: CarouselProps) {
     slides = slides.concat(endLayers);
   }
 
+  // Convert children to array of slides
   const totalSlides = slides.length;
-
-  // Calculate these before effects
-  const slidesPerView = isMobile ? slidesPerViewMobile : slidesPerViewDesktop;
-  const maxIndex = Math.max(0, totalSlides - slidesPerView);
-  const componentGap = isMobile ? componentGapMobile : componentGapDesktop;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -109,37 +97,41 @@ export default function CMSMasterSwiper(props: CarouselProps) {
       startTransition(() => setIsMobile(window.innerWidth < 768));
     };
 
-    const handleResize = () => {
-      checkMobile();
-      // Force recalculation of translateX on resize
-      if (slidesRef.current && containerRef.current) {
-        const currentIsMobile = window.innerWidth < 768;
-        const currentSlidesPerView = currentIsMobile
-          ? slidesPerViewMobile
-          : slidesPerViewDesktop;
-        const containerWidth = containerRef.current.offsetWidth;
-        const totalGapWidth = slideGap * (currentSlidesPerView - 1);
-        const slideWidth =
-          (containerWidth - totalGapWidth) / currentSlidesPerView;
-        const newTranslate = -(currentIndex * (slideWidth + slideGap));
-        startTransition(() => setTranslateX(newTranslate));
-      }
-    };
-
     checkMobile();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [currentIndex, slideGap, slidesPerViewMobile, slidesPerViewDesktop]);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const slidesPerView = isMobile ? slidesPerViewMobile : slidesPerViewDesktop;
+  const maxIndex = Math.max(0, totalSlides - slidesPerView);
+  const componentGap = isMobile ? componentGapMobile : componentGapDesktop;
 
   useEffect(() => {
-    if (slidesRef.current && containerRef.current) {
+    if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
       const totalGapWidth = slideGap * (slidesPerView - 1);
       const slideWidth = (containerWidth - totalGapWidth) / slidesPerView;
       const newTranslate = -(currentIndex * (slideWidth + slideGap));
       startTransition(() => setTranslateX(newTranslate));
     }
-  }, [currentIndex, slidesPerView, slideGap, isMobile, totalSlides]);
+  }, [currentIndex, slidesPerView, slideGap, isMobile]);
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (!autoplay || isDragging) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        // Loop back to start when reaching the end
+        if (prev >= maxIndex) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, autoplayDelay);
+
+    return () => clearInterval(interval);
+  }, [autoplay, autoplayDelay, maxIndex, isDragging]);
 
   const handlePrevious = () => {
     startTransition(() => setCurrentIndex((prev) => Math.max(0, prev - 1)));
@@ -232,28 +224,26 @@ export default function CMSMasterSwiper(props: CarouselProps) {
             alignItems: "center",
           }}
         >
-          {React.isValidElement(previousButton) &&
-            React.cloneElement(previousButton as React.ReactElement<any>, {
-              onClick: currentIndex > 0 ? handlePrevious : undefined,
-              onTap: currentIndex > 0 ? handlePrevious : undefined,
-              style: {
-                ...(previousButton.props.style || {}),
-                cursor: currentIndex > 0 ? "pointer" : "not-allowed",
-                opacity: currentIndex > 0 ? 1 : 0.3,
-                pointerEvents: currentIndex > 0 ? "auto" : "none",
-              },
-            })}
-          {React.isValidElement(nextButton) &&
-            React.cloneElement(nextButton as React.ReactElement<any>, {
-              onClick: currentIndex < maxIndex ? handleNext : undefined,
-              onTap: currentIndex < maxIndex ? handleNext : undefined,
-              style: {
-                ...(nextButton.props.style || {}),
-                cursor: currentIndex < maxIndex ? "pointer" : "not-allowed",
-                opacity: currentIndex < maxIndex ? 1 : 0.3,
-                pointerEvents: currentIndex < maxIndex ? "auto" : "none",
-              },
-            })}
+          <div
+            onClick={handlePrevious}
+            style={{
+              cursor: currentIndex > 0 ? "pointer" : "not-allowed",
+              opacity: currentIndex > 0 ? 1 : 0.3,
+              pointerEvents: currentIndex > 0 ? "auto" : "none",
+            }}
+          >
+            {previousButton}
+          </div>
+          <div
+            onClick={handleNext}
+            style={{
+              cursor: currentIndex < maxIndex ? "pointer" : "not-allowed",
+              opacity: currentIndex < maxIndex ? 1 : 0.3,
+              pointerEvents: currentIndex < maxIndex ? "auto" : "none",
+            }}
+          >
+            {nextButton}
+          </div>
         </div>
       </div>
 
@@ -261,7 +251,7 @@ export default function CMSMasterSwiper(props: CarouselProps) {
         ref={containerRef}
         style={{
           width: "100%",
-          overflow: "hidden",
+          overflow: "visible",
           position: "relative",
         }}
       >
@@ -275,8 +265,7 @@ export default function CMSMasterSwiper(props: CarouselProps) {
               color: "#666",
             }}
           >
-            No slides found. Connect a CMS List or component with children to
-            the Collection List slot.
+            No slides found. Connect a CMS List to the Collection List slot.
           </div>
         ) : (
           <div
@@ -290,6 +279,7 @@ export default function CMSMasterSwiper(props: CarouselProps) {
             onTouchEnd={handleTouchEnd}
             style={{
               display: "flex",
+              alignItems: "stretch",
               gap: slideGap,
               transform: `translateX(${translateX + dragOffset}px)`,
               transition: isDragging ? "none" : "transform 0.3s ease-out",
@@ -306,14 +296,31 @@ export default function CMSMasterSwiper(props: CarouselProps) {
                 key={index}
                 style={{
                   flex: `0 0 calc((100% - ${slideGap * (slidesPerView - 1)}px) / ${slidesPerView})`,
-                  width: `calc((100% - ${slideGap * (slidesPerView - 1)}px) / ${slidesPerView})`,
                   minWidth: 0,
                   maxWidth: `calc((100% - ${slideGap * (slidesPerView - 1)}px) / ${slidesPerView})`,
                   display: "flex",
                   flexDirection: "column",
                 }}
               >
-                <div style={{ width: "100%", height: "100%" }}>{slide}</div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {React.isValidElement(slide)
+                    ? React.cloneElement(slide as React.ReactElement<any>, {
+                        style: {
+                          ...(slide.props.style || {}),
+                          width: "100%",
+                          height: "100%",
+                          flex: 1,
+                        },
+                      })
+                    : slide}
+                </div>
               </div>
             ))}
           </div>
@@ -323,9 +330,9 @@ export default function CMSMasterSwiper(props: CarouselProps) {
   );
 }
 
-CMSMasterSwiper.displayName = "CMS Master Swiper";
+CMSSwiper.displayName = "CMS Swiper";
 
-addPropertyControls(CMSMasterSwiper, {
+addPropertyControls(CMSSwiper, {
   collectionList: {
     type: ControlType.ComponentInstance,
     title: "Collection List",
@@ -364,7 +371,7 @@ addPropertyControls(CMSMasterSwiper, {
     defaultValue: 3,
     min: 1,
     max: 10,
-    step: 1,
+    step: 0.1,
     displayStepper: true,
   },
   slidesPerViewMobile: {
@@ -373,7 +380,7 @@ addPropertyControls(CMSMasterSwiper, {
     defaultValue: 1,
     min: 1,
     max: 5,
-    step: 1,
+    step: 0.1,
     displayStepper: true,
   },
   slideGap: {
@@ -409,5 +416,22 @@ addPropertyControls(CMSMasterSwiper, {
     max: 100,
     step: 1,
     unit: "px",
+  },
+  autoplay: {
+    type: ControlType.Boolean,
+    title: "Autoplay",
+    defaultValue: false,
+    enabledTitle: "On",
+    disabledTitle: "Off",
+  },
+  autoplayDelay: {
+    type: ControlType.Number,
+    title: "Autoplay Delay",
+    defaultValue: 3000,
+    min: 500,
+    max: 10000,
+    step: 100,
+    unit: "ms",
+    hidden: (props) => !props.autoplay,
   },
 });
