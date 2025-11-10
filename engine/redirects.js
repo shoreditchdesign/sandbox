@@ -11,29 +11,32 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Extract the parent folder from the current path
-  function getParentFolder(path) {
+  // Extract path segments and check depth
+  function getPathInfo(path) {
     // Remove trailing slash if present
     const cleanPath = path.endsWith("/") ? path.slice(0, -1) : path;
 
     // Split path into segments and filter out empty strings
     const segments = cleanPath.split("/").filter((segment) => segment !== "");
 
-    // If we have at least one segment, return the first segment as parent folder
-    if (segments.length > 0) {
-      return `/${segments[0]}`;
-    }
-
-    return null;
+    return {
+      segments: segments,
+      depth: segments.length,
+      parentFolder: segments.length > 0 ? `/${segments[0]}` : null,
+    };
   }
 
-  // Check if parent folder matches any redirect category
-  function shouldRedirect(parentFolder) {
-    if (!parentFolder) return null;
+  // Check if we should perform redirect
+  function shouldRedirect(pathInfo) {
+    // Only redirect if we're at level 2 or deeper (e.g., /news/article-123)
+    // Exit early for level 0 (/) or level 1 (/news, /resources, etc.)
+    if (pathInfo.depth <= 1) {
+      return null;
+    }
 
     // Check if the parent folder exists in our redirect categories
     const matchedCategory = redirectCategories.find(
-      (category) => category === parentFolder,
+      (category) => category === pathInfo.parentFolder,
     );
 
     return matchedCategory || null;
@@ -46,14 +49,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Main execution
-  const parentFolder = getParentFolder(currentPath);
-  const redirectTarget = shouldRedirect(parentFolder);
+  const pathInfo = getPathInfo(currentPath);
+  const redirectTarget = shouldRedirect(pathInfo);
 
   if (redirectTarget) {
     redirectToParent(redirectTarget);
   } else {
     console.log(
-      `No redirect rule found for path: ${currentPath} (parent: ${parentFolder})`,
+      `No redirect rule found for path: ${currentPath} (depth: ${pathInfo.depth}, parent: ${pathInfo.parentFolder})`,
     );
   }
 });
