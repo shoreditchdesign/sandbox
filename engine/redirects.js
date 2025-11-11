@@ -6,8 +6,9 @@ function handleRedirect() {
   // Get the current URL that led to this 404 page
   const currentPath = window.location.pathname;
 
-  // Exit early if we're on the homepage or root
+  // Exit early if we're on the homepage or root - show the page
   if (currentPath === "/" || currentPath === "") {
+    document.body.classList.remove("hide");
     return;
   }
 
@@ -42,19 +43,17 @@ function handleRedirect() {
     return matchedCategory || null;
   }
 
-  // Perform the redirect
-  function redirectToParent(targetPath) {
-    console.log(`Redirecting from ${currentPath} to ${targetPath}`);
-    window.location.href = targetPath;
-  }
-
   // Main execution
   const pathInfo = getPathInfo(currentPath);
   const redirectTarget = shouldRedirect(pathInfo);
 
   if (redirectTarget) {
-    redirectToParent(redirectTarget);
+    // Redirect to parent folder - keep page hidden, no style changes needed
+    console.log(`Redirecting from ${currentPath} to ${redirectTarget}`);
+    window.location.href = redirectTarget;
   } else {
+    // Authentic 404 - show the 404 page
+    document.body.classList.remove("hide");
     console.log(
       `No redirect rule found for path: ${currentPath} (depth: ${pathInfo.depth}, parent: ${pathInfo.parentFolder})`,
     );
