@@ -1,5 +1,5 @@
 //404 Redirect Handler
-document.addEventListener("DOMContentLoaded", function () {
+function handleRedirect() {
   // Configuration: Add parent folders that should redirect to their landing page
   const redirectCategories = ["/news"];
 
@@ -59,4 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
       `No redirect rule found for path: ${currentPath} (depth: ${pathInfo.depth}, parent: ${pathInfo.parentFolder})`,
     );
   }
-});
+}
+
+handleRedirect();
