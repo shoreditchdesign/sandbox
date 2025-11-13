@@ -1343,6 +1343,106 @@ document.addEventListener("DOMContentLoaded", () => {
   triggers();
 });
 
+//GSAP for Stagger
+document.addEventListener("DOMContentLoaded", () => {
+  function initialiser() {
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      console.warn("Script terminated due to missing libraries");
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+
+    window.staggerAnimator = function (
+      container,
+      scrollTriggerOffset = "top 95%",
+    ) {
+      const delay = container.getAttribute("data-motion-delay")
+        ? parseFloat(container.getAttribute("data-motion-delay"))
+        : 0;
+
+      const childElements = Array.from(container.children).filter(
+        (child) => !child.hasAttribute("data-motion-block"),
+      );
+
+      if (childElements.length === 0) {
+        console.warn(
+          "Motion for Stagger: No animatable children found or all are blocked.",
+        );
+        return null;
+      }
+
+      if (window.innerWidth <= 991) {
+        gsap.set(childElements, {
+          opacity: 1,
+        });
+        return null;
+      }
+
+      gsap.set(childElements, {
+        opacity: 0,
+      });
+      let tl = gsap.timeline({
+        paused: true,
+      });
+      tl.to(childElements, {
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+      });
+      ScrollTrigger.create({
+        trigger: container,
+        start: scrollTriggerOffset,
+        once: true,
+        onEnter: () => {
+          setTimeout(() => {
+            tl.play(0);
+          }, delay * 1000);
+        },
+      });
+      return tl;
+    };
+  }
+
+  function animator() {
+    setTimeout(() => {
+      const containers = document.querySelectorAll(
+        "[data-motion-stagger]:not([data-motion-block])",
+      );
+      if (containers.length === 0) {
+        console.warn("Motion for Stagger: Stagger not found");
+        return;
+      }
+      containers.forEach((container) => {
+        window.staggerAnimator(container);
+      });
+    }, 200);
+  }
+
+  function triggers() {
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (
+            trigger.vars &&
+            trigger.vars.trigger &&
+            trigger.vars.trigger.hasAttribute("data-motion-stagger")
+          ) {
+            trigger.kill();
+          }
+        });
+        animator();
+      }, 250);
+    });
+  }
+
+  initialiser();
+  animator();
+  triggers();
+});
+
 //GSAP for Single Elements
 document.addEventListener("DOMContentLoaded", () => {
   function initialiser() {

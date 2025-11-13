@@ -345,11 +345,14 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkLoadMore() {
     const loadMoreButtons = document.querySelectorAll("[data-load-more]");
     const containers = document.querySelectorAll(
-      "[data-motion-array]:not([data-motion-block])",
+      "[data-motion-array]:not([data-motion-block]), [data-motion-stagger]:not([data-motion-block])",
     );
     if (containers.length === 0) return;
 
     containers.forEach((container) => {
+      // Determine animation type based on attribute
+      const isStagger = container.hasAttribute("data-motion-stagger");
+
       // Use MutationObserver to detect when new items are added
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -363,17 +366,31 @@ document.addEventListener("DOMContentLoaded", function () {
             if (newChildren.length > 0) {
               // Animate only the new children
               if (window.innerWidth > 991) {
-                gsap.set(newChildren, {
-                  opacity: 0,
-                  y: 5,
-                });
-                gsap.to(newChildren, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.8,
-                  stagger: 0.15,
-                  ease: "power2.out",
-                });
+                if (isStagger) {
+                  // Stagger: opacity only (no y translate)
+                  gsap.set(newChildren, {
+                    opacity: 0,
+                  });
+                  gsap.to(newChildren, {
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "power2.out",
+                  });
+                } else {
+                  // Array: opacity + y translate
+                  gsap.set(newChildren, {
+                    opacity: 0,
+                    y: 5,
+                  });
+                  gsap.to(newChildren, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "power2.out",
+                  });
+                }
               } else {
                 gsap.set(newChildren, {
                   opacity: 1,
@@ -397,17 +414,29 @@ document.addEventListener("DOMContentLoaded", function () {
       button.addEventListener("click", () => {
         setTimeout(() => {
           containers.forEach((container) => {
+            const isStagger = container.hasAttribute("data-motion-stagger");
             const children = Array.from(container.children).filter(
               (child) => !child.hasAttribute("data-motion-block"),
             );
             if (window.innerWidth > 991) {
-              gsap.to(children, {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "power2.out",
-              });
+              if (isStagger) {
+                // Stagger: opacity only
+                gsap.to(children, {
+                  opacity: 1,
+                  duration: 0.8,
+                  stagger: 0.15,
+                  ease: "power2.out",
+                });
+              } else {
+                // Array: opacity + y translate
+                gsap.to(children, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  stagger: 0.15,
+                  ease: "power2.out",
+                });
+              }
             }
           });
         }, 500);
