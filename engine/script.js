@@ -534,3 +534,29 @@ document.addEventListener("DOMContentLoaded", function () {
     injectScriptsSequentially(scriptElements);
   });
 });
+
+//Resource Categories
+document.addEventListener("DOMContentLoaded", function () {
+  const resourceLinks = document.querySelectorAll("[data-resource-link]");
+
+  if (resourceLinks.length === 0) {
+    return;
+  }
+
+  resourceLinks.forEach((link) => {
+    const linkText = link.textContent.trim();
+
+    if (!linkText) {
+      return;
+    }
+
+    // Capitalize first letter of each word for the query parameter
+    const formattedCategory = linkText
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+
+    // Set the href with the category query parameter
+    link.href = `/resources?category_equal=${formattedCategory}`;
+  });
+});
