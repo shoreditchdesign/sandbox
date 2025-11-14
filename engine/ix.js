@@ -968,7 +968,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const duration =
             autoplayAttr !== null
               ? autoplayAttr === ""
-                ? 5000
+                ? 15000
                 : parseInt(autoplayAttr, 10)
               : null;
 
@@ -1016,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (autoplayAttr !== null) {
         const duration =
-          autoplayAttr === "" ? 5000 : parseInt(autoplayAttr, 10) || 5000;
+          autoplayAttr === "" ? 15000 : parseInt(autoplayAttr, 10) || 15000;
 
         startAutoplay(isolatedTab, duration);
 
