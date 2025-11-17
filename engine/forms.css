@@ -104,3 +104,21 @@
     margin-top: 1.5rem !important;
     cursor: pointer;
 }
+
+.o-form-block input[type="submit"]:hover,
+.o-form-block button:hover {
+    background: linear-gradient(
+        94deg,
+        #86fca4 0.04%,
+        #80fff0 99.96%
+    ) !important;
+}
+
+.o-form-block input[type="submit"]:active,
+.o-form-block button:active {
+    background: linear-gradient(
+        94deg,
+        #4aff77 0.04%,
+        #2dffe6 99.96%
+    ) !important;
+}

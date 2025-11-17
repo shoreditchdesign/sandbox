@@ -970,13 +970,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//GSAP for Review Cards
+//GSAP for Quote Cards
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-review-wrap]").forEach(function (component) {
     const prevButton = document.querySelector("[data-review-prev]");
     const nextButton = document.querySelector("[data-review-next]");
     const duration = 0.5;
-    const delay = 4;
+    const delay = 6;
     const dd = duration + delay;
     const cardsPerView = 3;
     let items = Array.from(component.querySelectorAll("[data-review-card]"));
