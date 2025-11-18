@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ComponentType } from "react";
-import { useFilterContext } from "./cms-filter-context";
 
 // Customizable constants
 
@@ -18,9 +17,15 @@ const TEXT_SIZE = "16px";
 const TEXT_WEIGHT = 400;
 const LINE_HEIGHT = "130%";
 
+// Button font settings
+const BUTTON_TEXT_SIZE = "14px";
+const BUTTON_LINE_HEIGHT = "100%";
+
 // Padding and spacing
 const PADDING_VERTICAL = "12px";
 const PADDING_HORIZONTAL = "12px";
+const BUTTON_PADDING_VERTICAL = "12px";
+const BUTTON_PADDING_HORIZONTAL = "32px";
 const FILTER_GAP = "10px";
 const FILTER_BOTTOM_MARGIN = "20px";
 
@@ -31,15 +36,23 @@ const SELECTED_BACKGROUND_COLOR = "#EEEDFD";
 const ACTIVE_BORDER_COLOR = "#594FEE";
 const HOVER_BACKGROUND_COLOR = "#F8FAFC";
 const ACTIVE_TEXT_COLOR = "#594FEE";
+const BUTTON_BACKGROUND_COLOR = "#1B1B1B";
+const BUTTON_HOVER_COLOR = "#000000";
+const BUTTON_TEXT_COLOR = "#FFFFFF";
+const BUTTON_ARROW_COLOR = "#ADADAD";
 
 // Borders and dimensions
 const BORDER_RADIUS = "8px";
+const BUTTON_BORDER_RADIUS = "32px";
 const BORDER_WIDTH = "1px";
 const ICON_SIZE = "16px";
 
 // Shadow
 const BOX_SHADOW =
   "0px 0.301px 1.505px -1.5px rgba(0, 0, 0, 0.18), 0px 1.144px 5.721px -3px rgba(0, 0, 0, 0.04)";
+
+// Redirect target
+const REDIRECT_URL = "/careers/openings";
 
 // Base styles for the select component
 const baseFilterStyles = {
@@ -54,15 +67,33 @@ const baseFilterStyles = {
   fontWeight: TEXT_WEIGHT,
   lineHeight: LINE_HEIGHT,
   boxSizing: "border-box" as const,
-  width: "auto",
-  minWidth: "100%",
-  maxWidth: "none",
+  width: "100%",
   appearance: "none",
   whiteSpace: "nowrap" as const,
   overflow: "visible" as const,
   textOverflow: "clip" as const,
   paddingRight: `calc(${PADDING_HORIZONTAL} + ${ICON_SIZE} + 2px)`,
   position: "relative" as const,
+};
+
+// Base styles for the submit button
+const baseButtonStyles = {
+  borderRadius: BUTTON_BORDER_RADIUS,
+  border: "none",
+  background: BUTTON_BACKGROUND_COLOR,
+  boxShadow: BOX_SHADOW,
+  padding: `${BUTTON_PADDING_VERTICAL} ${BUTTON_PADDING_HORIZONTAL}`,
+  fontFamily: FONT_FAMILY,
+  color: BUTTON_TEXT_COLOR,
+  fontSize: BUTTON_TEXT_SIZE,
+  fontWeight: TEXT_WEIGHT,
+  lineHeight: BUTTON_LINE_HEIGHT,
+  boxSizing: "border-box" as const,
+  cursor: "pointer",
+  whiteSpace: "nowrap" as const,
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
 };
 
 // Helper function to format filter labels
@@ -98,16 +129,13 @@ const formatFilterLabel = (filterId: string): string => {
   }
 };
 
-export function nestedFilterCMS(Component: ComponentType): ComponentType {
+export function filterRedirectCMS(Component: ComponentType): ComponentType {
   return (props) => {
     const [filters, setFilters] = useState<{ [key: string]: string }>({});
     const [filtersInitialized, setFiltersInitialized] = useState(false);
     const [renderTarget, setRenderTarget] = useState<HTMLElement | null>(null);
     const selectRefs = useRef<{ [key: string]: HTMLSelectElement | null }>({});
     const fallbackContainerRef = useRef<HTMLDivElement | null>(null);
-
-    // Optional: Connect to filter context if available (for swiper integration)
-    const filterContext = useFilterContext();
 
     // Determine where to render the filters
     useEffect(() => {
@@ -146,115 +174,29 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
       };
     }, []);
 
-    // Filter items and hide/show wrappers based on child visibility
-    useEffect(() => {
-      const items = document.querySelectorAll(`[aria-label="${ITEM_LABEL}"]`);
-      const wrappers = document.querySelectorAll(
-        `[aria-label="${WRAPPER_LABEL}"]`,
-      );
+    const handleFilterChange = (filterId: string, value: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [filterId]: value,
+      }));
+    };
 
-      items.forEach((item) => {
-        let matchAll = true;
-        Object.entries(filters).forEach(([filterId, filterValue]) => {
-          if (filterValue) {
-            const filterElement = item.querySelector(
-              `[aria-label="${FILTER_PREFIX}${filterId}"]`,
-            );
-            if (filterElement) {
-              const text = filterElement.textContent?.toLowerCase() || "";
-              if (!text.includes(filterValue.toLowerCase())) {
-                matchAll = false;
-              }
-            }
-          }
-        });
-        item.classList.toggle("hidden", !matchAll);
-      });
-
-      // Check each wrapper and hide if:
-      // 1. It has no filter-item children at all (empty department)
-      // 2. All its filter-item children are hidden (filtered out)
-      wrappers.forEach((wrapper) => {
-        const childItems = wrapper.querySelectorAll(
-          `[aria-label="${ITEM_LABEL}"]`,
-        );
-
-        // Hide if no items exist
-        if (childItems.length === 0) {
-          wrapper.classList.add("hidden");
-          return;
-        }
-
-        // Hide if all items are hidden
-        const allHidden = Array.from(childItems).every((child) =>
-          child.classList.contains("hidden"),
-        );
-        wrapper.classList.toggle("hidden", allHidden);
-      });
-
-      // Notify any listening swipers that filtering has occurred
-      if (filterContext) {
-        filterContext.notifyFilterChange();
-      }
-    }, [filters, filterContext]);
-
-    // Update URL query parameters when filters change
-    const updateURL = (newFilters: { [key: string]: string }) => {
-      const url = new URL(window.location.href);
+    // Handle submit button click - redirect to /careers/openings with query params
+    const handleSubmit = () => {
       const params = new URLSearchParams();
 
-      Object.entries(newFilters).forEach(([key, value]) => {
+      Object.entries(filters).forEach(([key, value]) => {
         if (value) {
           params.set(key, value);
         }
       });
 
-      const newUrl = params.toString()
-        ? `${url.pathname}?${params.toString()}`
-        : url.pathname;
+      const queryString = params.toString();
+      const redirectTo = queryString
+        ? `${REDIRECT_URL}?${queryString}`
+        : REDIRECT_URL;
 
-      window.history.replaceState({}, "", newUrl);
-    };
-
-    // Read URL query parameters on mount
-    const getFiltersFromURL = (): { [key: string]: string } => {
-      const params = new URLSearchParams(window.location.search);
-      const urlFilters: { [key: string]: string } = {};
-      params.forEach((value, key) => {
-        urlFilters[key] = value;
-      });
-      return urlFilters;
-    };
-
-    const handleFilterChange = (filterId: string, value: string) => {
-      setFilters((prevFilters) => {
-        const newFilters = {
-          ...prevFilters,
-          [filterId]: value,
-        };
-        updateURL(newFilters);
-        return newFilters;
-      });
-      setTimeout(() => adjustSelectWidth(filterId), 0);
-    };
-
-    const adjustSelectWidth = (filterId: string) => {
-      const select = selectRefs.current[filterId];
-      if (select) {
-        const tempSpan = document.createElement("span");
-        tempSpan.style.visibility = "hidden";
-        tempSpan.style.position = "absolute";
-        tempSpan.style.whiteSpace = "nowrap";
-        tempSpan.style.font = window.getComputedStyle(select).font;
-        tempSpan.textContent = select.options[select.selectedIndex].text;
-        document.body.appendChild(tempSpan);
-        const textWidth = tempSpan.offsetWidth;
-        document.body.removeChild(tempSpan);
-
-        const extraSpace =
-          parseInt(PADDING_HORIZONTAL) * 2 + parseInt(ICON_SIZE) + 8;
-        select.style.width = `${textWidth + extraSpace}px`;
-      }
+      window.location.href = redirectTo;
     };
 
     // Discover filters from all filter-item elements in the document
@@ -293,18 +235,9 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
         initialFilters[filterId] = "";
       });
 
-      // Merge URL parameters with initial filters
-      const urlFilters = getFiltersFromURL();
-      const mergedFilters = { ...initialFilters, ...urlFilters };
-
-      setFilters(mergedFilters);
+      setFilters(initialFilters);
       setFiltersInitialized(true);
     }, []);
-
-    // Adjust widths when filters change
-    useEffect(() => {
-      Object.keys(filters).forEach(adjustSelectWidth);
-    }, [filters]);
 
     const filterUI = (
       <>
@@ -315,7 +248,7 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
             gap: FILTER_GAP,
             marginBottom: "0px",
             justifyContent: "flex-start",
-            width: "auto",
+            width: "100%",
           }}
         >
           {Object.entries(filters).map(([filterId, filterValue]) => {
@@ -333,8 +266,8 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
                 key={filterId}
                 style={{
                   position: "relative",
-                  display: "inline-block",
-                  width: "auto",
+                  display: "flex",
+                  flexGrow: 1,
                 }}
               >
                 <select
@@ -391,14 +324,18 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
               </div>
             );
           })}
+
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            style={baseButtonStyles}
+            className="filter-submit-button"
+          >
+            <span style={{ color: BUTTON_TEXT_COLOR }}>Submit</span>
+            <span style={{ color: BUTTON_ARROW_COLOR }}>→</span>
+          </button>
         </div>
         <style>{`
-          [aria-label="${ITEM_LABEL}"].hidden {
-            display: none;
-          }
-          [aria-label="${WRAPPER_LABEL}"].hidden {
-            display: none;
-          }
           select:hover {
             background-color: ${HOVER_BACKGROUND_COLOR} !important;
           }
@@ -406,6 +343,12 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
+          }
+          .filter-submit-button:hover {
+            background-color: ${BUTTON_HOVER_COLOR} !important;
+          }
+          .filter-submit-button:active {
+            transform: scale(0.98);
           }
         `}</style>
       </>

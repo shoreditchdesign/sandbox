@@ -60,6 +60,7 @@ const baseFilterStyles = {
 export function multiFilterCMS(Component: ComponentType): ComponentType {
   return (props) => {
     const [filters, setFilters] = useState<{ [key: string]: string }>({});
+    const [filtersInitialized, setFiltersInitialized] = useState(false);
     const selectRefs = useRef<{ [key: string]: HTMLSelectElement | null }>({});
 
     useEffect(() => {
@@ -86,11 +87,43 @@ export function multiFilterCMS(Component: ComponentType): ComponentType {
       }
     }, [props.className, filters]);
 
+    // Update URL query parameters when filters change
+    const updateURL = (newFilters: { [key: string]: string }) => {
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams();
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        }
+      });
+
+      const newUrl = params.toString()
+        ? `${url.pathname}?${params.toString()}`
+        : url.pathname;
+
+      window.history.replaceState({}, "", newUrl);
+    };
+
+    // Read URL query parameters on mount
+    const getFiltersFromURL = (): { [key: string]: string } => {
+      const params = new URLSearchParams(window.location.search);
+      const urlFilters: { [key: string]: string } = {};
+      params.forEach((value, key) => {
+        urlFilters[key] = value;
+      });
+      return urlFilters;
+    };
+
     const handleFilterChange = (filterId: string, value: string) => {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        [filterId]: value,
-      }));
+      setFilters((prevFilters) => {
+        const newFilters = {
+          ...prevFilters,
+          [filterId]: value,
+        };
+        updateURL(newFilters);
+        return newFilters;
+      });
       setTimeout(() => adjustSelectWidth(filterId), 0);
     };
 
@@ -135,7 +168,13 @@ export function multiFilterCMS(Component: ComponentType): ComponentType {
         Object.keys(uniqueFilters).forEach((filterId) => {
           initialFilters[filterId] = "";
         });
-        setFilters(initialFilters);
+
+        // Merge URL parameters with initial filters
+        const urlFilters = getFiltersFromURL();
+        const mergedFilters = { ...initialFilters, ...urlFilters };
+
+        setFilters(mergedFilters);
+        setFiltersInitialized(true);
       }
     }, [props.className]);
 

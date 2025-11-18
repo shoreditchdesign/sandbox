@@ -12,6 +12,7 @@ import {
   CanvasPlaceholder,
   getCollectionListItems,
 } from "https://framer.com/m/CMSSlideshow-xxTt.js@Gwq5XNGR2fw3oxqNnFeg";
+import { useFilterContext } from "./cms-filter-context";
 
 interface CarouselProps {
   collectionList?: React.ReactNode[];
@@ -59,10 +60,14 @@ export default function CMSSwiper(props: CarouselProps) {
   const [translateX, setTranslateX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [reinitKey, setReinitKey] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
   const isCanvas = RenderTarget.current() === RenderTarget.canvas;
+
+  // Optional: Connect to filter context if available (for filter integration)
+  const filterContext = useFilterContext();
 
   // Extract children from collection list wrapper (ONLY CHANGE FROM ORIGINAL)
   let slides: React.ReactNode[] = [];
@@ -72,12 +77,20 @@ export default function CMSSwiper(props: CarouselProps) {
     slides = slides.concat(startLayers);
   }
 
-  // Extract CMS List children - THIS IS THE ONLY CMS-SPECIFIC ADDITION
+  // Extract CMS List children and filter out hidden items
   if (!isCanvas) {
     const items = getCollectionListItems(collectionList?.[0]);
     if (items && items.length > 0) {
       for (let i = 0; i < items.length; i++) {
-        slides.push(items[i].props.children.props.children);
+        const item = items[i];
+        // Check if the item has the hidden class (from filter)
+        const itemElement = item.props.children;
+        const isHidden = itemElement?.props?.className?.includes("hidden");
+
+        // Only include items that are not hidden
+        if (!isHidden) {
+          slides.push(item.props.children.props.children);
+        }
       }
     }
   }
@@ -87,7 +100,7 @@ export default function CMSSwiper(props: CarouselProps) {
     slides = slides.concat(endLayers);
   }
 
-  // Convert children to array of slides
+  // Convert children to array of slides (reinitKey ensures recalculation on filter)
   const totalSlides = slides.length;
 
   useEffect(() => {
@@ -101,6 +114,19 @@ export default function CMSSwiper(props: CarouselProps) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Listen for filter changes and reinitialize the swiper
+  useEffect(() => {
+    if (!filterContext) return;
+
+    // Reset to first slide when filter changes
+    setCurrentIndex(0);
+    setDragOffset(0);
+    setIsDragging(false);
+
+    // Force re-render to recalculate visible slides
+    setReinitKey((prev) => prev + 1);
+  }, [filterContext?.filterVersion]);
 
   const slidesPerView = isMobile ? slidesPerViewMobile : slidesPerViewDesktop;
   const maxIndex = Math.max(0, totalSlides - slidesPerView);
