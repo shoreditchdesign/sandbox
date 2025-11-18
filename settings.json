@@ -1,0 +1,69 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "terminal": {
+    "dock": "bottom"
+  },
+  "agent_servers": {
+    "claude": {
+      "default_mode": "acceptEdits"
+    }
+  },
+  "context_servers": {
+    "mcp-server-figma": {
+      "source": "extension",
+      "enabled": true,
+      "settings": {
+        "figma_api_key": "figd_tlAWbSqaZcFNm2E9gJRJRexgc0Pze3gPUKIk-Nk0"
+      }
+    }
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "edit_predictions": {
+    "mode": "subtle",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null
+    },
+    "enabled_in_text_threads": false
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "features": {
+    "edit_prediction_provider": "zed"
+  },
+  "icon_theme": "Material Icon Theme",
+  "agent": {
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
+    "inline_assistant_model": {
+      "provider": "openrouter",
+      "model": "anthropic/claude-haiku-4.5"
+    },
+    "default_model": {
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4.5"
+    }
+  },
+  "active_pane_modifiers": {
+    "border_size": 0.0,
+    "inactive_opacity": 0.6
+  },
+  "ui_font_size": 18,
+  "buffer_font_size": 20,
+  "buffer_font_family": "DM Mono",
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Oxocarbon Dark (Variation III)"
+  }
+}
