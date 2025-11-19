@@ -640,6 +640,19 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("beforeunload", () => {
     animationCleaner();
   });
+
+  // Force reinitialization when page is shown (handles Safari bfcache)
+  window.addEventListener("pageshow", (event) => {
+    // event.persisted is true when page is restored from bfcache
+    if (event.persisted) {
+      // Reset scroll position to top
+      window.scrollTo(0, 0);
+
+      // Force complete reinitialization
+      isInitialized = false;
+      sequenceInitialiser();
+    }
+  });
 });
 
 //GSAP for Progress Bar
