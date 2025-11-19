@@ -347,6 +347,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Sticky Headers
 document.addEventListener("DOMContentLoaded", () => {
+  // Force scroll to top immediately on page load (before animations initialize)
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -414,6 +420,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
+  // Force scroll to top immediately on page load (before animations initialize)
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
   gsap.registerPlugin(ScrollTrigger);
 
   // Track initialization state and store references
@@ -669,6 +681,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
+  // Force scroll to top immediately on page load (before animations initialize)
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
