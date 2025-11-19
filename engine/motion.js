@@ -224,6 +224,18 @@ document.addEventListener("DOMContentLoaded", function () {
   initialiser();
   animator();
   triggers();
+
+  // Prevent bfcache from caching this page
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
+
+  // Backup: Force reload if bfcache activates
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  });
 });
 
 //GSAP for Ticker
@@ -791,6 +803,18 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   triggers();
+
+  // Prevent bfcache from caching this page
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
+
+  // Backup: Force reload if bfcache activates
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  });
 });
 
 //GSAP for Scroll Cards
