@@ -1377,9 +1377,15 @@ document.addEventListener("DOMContentLoaded", function () {
         manualYearValue = targetYear;
         setYearNavState(targetYear);
       } else {
-        // Normal navigation - clear override
+        // Normal navigation - clear override and update year nav
         manualYearOverride = false;
         manualYearValue = null;
+
+        // If we're already on the target slide, manually update year nav
+        // (since slideChange won't fire)
+        if (swiper.activeIndex === targetSlideIndex) {
+          setYearNavState(targetYear);
+        }
       }
 
       swiper.slideTo(targetSlideIndex);
