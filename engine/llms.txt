@@ -1,0 +1,82 @@
+# ENGINE Homepage
+
+> Marine fuel procurement and market intelligence platform for the shipping industry. Transparent, efficient, and data-driven solution for securing the best marine fuel, price, and supplier.
+
+## Overview
+
+ENGINE is a comprehensive platform serving shipping companies, vessel operators, and fleet managers with end-to-end marine fuel procurement solutions. The platform integrates market intelligence, bunker management, and benchmarking capabilities while emphasizing support for alternative fuels and sustainable marine solutions.
+
+**Core Value Proposition:** From market intelligence to order execution – get the data you need to secure the best marine fuel, price, and supplier, all in one platform.
+
+**Brand Tagline:** "Transparent. Efficient. Smarter Fuel Procurement."
+
+## Product Features
+
+**Market Intelligence**
+Buy fuel with confidence and avoid costly mistakes. Provides real-time market data and insights, price tracking and analysis tools, and comprehensive market visibility for informed decision-making.
+
+**Bunker Management**
+Manage your marine fuel purchases in one platform. Offers centralized fuel procurement operations, order management and tracking, and streamlined workflow automation for efficient fuel purchasing.
+
+**Benchmarking**
+Track your buying performance live against the wider market. Delivers performance comparison metrics, market position analysis, and competitive intelligence to optimize procurement strategies.
+
+## Alternative Fuels Capabilities
+
+ENGINE specializes in supporting the transition to sustainable marine fuels:
+
+- Find trusted suppliers certified to trade compliant biofuels with verification and compliance assurance
+- Assess the cost and coverage of various biofuel blends and LNG with comprehensive fuel option comparison
+- Understand the 'real cost' of burning conventional vs. alternative fuels through total cost of ownership calculations including emissions impact
+
+## Trust and Credibility
+
+**Global Client Base:** Trusted by major shipping companies including Union Maritime, Great Eastern, Stolt Nielsen, Star Bulk, Safe Bulkers, Nomikos, Clearlake, and Navig8.
+
+**Strategic Partnerships:**
+
+London Stock Exchange Group (LSEG) - ENGINE serves as a trusted news and data provider delivering market insights and real-time bunkering information via API.
+
+Freight Investor Services (FIS) - Partnership providing up-to-date market intelligence and industry data integration. Fabrice Maille, Head of Shipping & Agriculture at FIS, states: "as more shipowners look to alternative marine fuels as viable solutions for reducing their carbon footprints, we are pleased to be able to deliver key benchmark prices in partnership with ENGINE."
+
+Prima Markets - Feedstock research agency collaboration developing proprietary biofuel price benchmarks and low carbon fuels expertise. Matthew Stone, VP Business Development & Low Carbon Fuels at Prima Markets, notes: "Prima is proud to be working with ENGINE to extend its services to shipping firms, bunker blenders, and the end-users looking to reduce the emissions profile of their products as they cross the globe."
+
+## Target Users
+
+**Primary Audience:**
+- Ship owners managing fuel procurement
+- Bunker buyers making purchasing decisions
+- Operations teams tracking fuel consumption and costs
+- Sustainability officers evaluating alternative fuels
+
+**Secondary Audience:**
+- Fuel suppliers and traders
+- Maritime consultants
+- Energy analysts in shipping sector
+
+## Key Differentiators
+
+- Comprehensive end-to-end solution from intelligence to execution
+- Specialized support for biofuels and LNG with proprietary benchmarks
+- Live performance tracking against market standards
+- Integration with LSEG, FIS, and Prima Markets for authoritative data
+- Recognized data provider status delivering market intelligence
+- Custom biofuel pricing indices developed with Prima Markets
+
+## Platform Access
+
+**Login Portal:** https://trade.engine.online - Direct access to the trading platform for existing users
+
+**Demo Booking:** Contact form available for prospective clients to schedule platform demonstrations and consultations
+
+## Navigation Structure
+
+Main sections include Features (Market Intelligence, Bunker Management, Benchmarking), About, Data, News, and Resources.
+
+## Messaging Themes
+
+The platform emphasizes transparency through clear pricing and market visibility, efficiency via streamlined procurement processes, intelligence with data-driven decision making, sustainability supporting alternative fuels and emissions reduction, trust built on global partnerships and established client base, and innovation as a modern platform for evolving market needs.
+
+## Industry Context
+
+ENGINE addresses critical challenges facing the shipping industry: managing complex fuel procurement in a volatile market, adapting to alternative fuels and regulatory requirements, understanding market dynamics and pricing trends, and optimizing costs while reducing environmental impact. The platform positions itself as essential infrastructure for the maritime energy transition, supporting the industry's shift toward sustainable fuel solutions while maintaining operational efficiency and cost control.
