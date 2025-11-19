@@ -645,12 +645,27 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("pageshow", (event) => {
     // event.persisted is true when page is restored from bfcache
     if (event.persisted) {
+      // Aggressive cleanup and reinitialization
+      animationCleaner();
+
+      // Force mobile reset to clear all transforms
+      mobileInitializer();
+
+      // Reset initialization state
+      isInitialized = false;
+
       // Reset scroll position to top
       window.scrollTo(0, 0);
 
-      // Force complete reinitialization
-      isInitialized = false;
-      sequenceInitialiser();
+      // Force DOM to settle before reinitializing
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          sequenceInitialiser();
+
+          // Force ScrollTrigger to recalculate everything
+          ScrollTrigger.refresh(true);
+        });
+      });
     }
   });
 });
