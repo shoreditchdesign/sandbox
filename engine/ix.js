@@ -1171,6 +1171,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Timeline Swipers
 document.addEventListener("DOMContentLoaded", function () {
+  // Flag to track manual year override (when year nav doesn't match active slide)
+  let manualYearOverride = false;
+  let manualYearValue = null;
+
   var mySwiper = new Swiper("#timeline-swiper", {
     direction: "horizontal",
     slidesPerView: 1,
@@ -1229,6 +1233,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateSlideAttributes(this);
         updateYearNavigation(this);
         initializeYearNavigation(this);
+        initializeNavigationButtons(this);
       },
       slideChange: function () {
         updateSlideAttributes(this);
@@ -1279,6 +1284,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Update year navigation to match active slide
   function updateYearNavigation(swiper) {
+    // If manual override is active, don't update year nav from slide changes
+    if (manualYearOverride) {
+      return;
+    }
+
     const activeYear = getActiveSlideYear(swiper);
     if (!activeYear) return;
 
@@ -1347,21 +1357,31 @@ document.addEventListener("DOMContentLoaded", function () {
   function handleYearClick(swiper, targetYear) {
     const isDesktop = window.innerWidth >= 992;
 
-    // Always set year nav to clicked year
-    setYearNavState(targetYear);
-
     // Determine navigation target
     let targetSlideIndex;
+    let isSpecialNavigation = false;
 
     if (isDesktop && isYearOnlyOnLastSlide(swiper, targetYear)) {
-      // Navigate to second-to-last slide
+      // Navigate to second-to-last slide (special case)
       targetSlideIndex = swiper.slides.length - 2;
+      isSpecialNavigation = true;
     } else {
       // Navigate to first occurrence of year
       targetSlideIndex = findSlideIndexByYear(swiper, targetYear);
     }
 
     if (targetSlideIndex !== -1 && targetSlideIndex >= 0) {
+      // Set manual override flag if navigating to a different slide than the year's first occurrence
+      if (isSpecialNavigation) {
+        manualYearOverride = true;
+        manualYearValue = targetYear;
+        setYearNavState(targetYear);
+      } else {
+        // Normal navigation - clear override
+        manualYearOverride = false;
+        manualYearValue = null;
+      }
+
       swiper.slideTo(targetSlideIndex);
     }
   }
@@ -1411,6 +1431,28 @@ document.addEventListener("DOMContentLoaded", function () {
         handleYearClick(swiper, targetYear);
       });
     });
+  }
+
+  // Initialize click handlers for Next/Prev navigation buttons
+  function initializeNavigationButtons(swiper) {
+    const nextButton = document.querySelector("#timeline-next");
+    const prevButton = document.querySelector("#timeline-prev");
+
+    if (nextButton) {
+      nextButton.addEventListener("click", function () {
+        // Clear manual override when using Next/Prev buttons
+        manualYearOverride = false;
+        manualYearValue = null;
+      });
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener("click", function () {
+        // Clear manual override when using Next/Prev buttons
+        manualYearOverride = false;
+        manualYearValue = null;
+      });
+    }
   }
 });
 
