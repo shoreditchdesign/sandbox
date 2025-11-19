@@ -641,31 +641,16 @@ document.addEventListener("DOMContentLoaded", function () {
     animationCleaner();
   });
 
-  // Force reinitialization when page is shown (handles Safari bfcache)
+  // Prevent bfcache from caching this page (Safari and other browsers)
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
+
+  // Backup: Also handle any bfcache restoration attempts
   window.addEventListener("pageshow", (event) => {
-    // event.persisted is true when page is restored from bfcache
     if (event.persisted) {
-      // Aggressive cleanup and reinitialization
-      animationCleaner();
-
-      // Force mobile reset to clear all transforms
-      mobileInitializer();
-
-      // Reset initialization state
-      isInitialized = false;
-
-      // Reset scroll position to top
-      window.scrollTo(0, 0);
-
-      // Force DOM to settle before reinitializing
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          sequenceInitialiser();
-
-          // Force ScrollTrigger to recalculate everything
-          ScrollTrigger.refresh(true);
-        });
-      });
+      // Force full page reload if bfcache somehow still activated
+      window.location.reload();
     }
   });
 });
