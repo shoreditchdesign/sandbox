@@ -347,12 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Sticky Headers
 document.addEventListener("DOMContentLoaded", () => {
-  // Force scroll to top immediately on page load (before animations initialize)
-  if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-  }
-  window.scrollTo(0, 0);
-
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -369,6 +363,12 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Features wrap or header not found");
       return;
     }
+
+    // Force scroll to top only when these elements are present
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
 
     gsap.set(featuresHeader, { opacity: 1 });
 
@@ -420,12 +420,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //GSAP for Stacking Cards
 document.addEventListener("DOMContentLoaded", function () {
-  // Force scroll to top immediately on page load (before animations initialize)
-  if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-  }
-  window.scrollTo(0, 0);
-
   gsap.registerPlugin(ScrollTrigger);
 
   // Track initialization state and store references
@@ -490,6 +484,12 @@ document.addEventListener("DOMContentLoaded", function () {
       isInitialized = false;
       return;
     }
+
+    // Force scroll to top only when these elements are present
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
 
     // Mark as initializing to prevent race conditions
     isInitialized = "initializing";
@@ -681,12 +681,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //GSAP for Progress Bar
 document.addEventListener("DOMContentLoaded", function () {
-  // Force scroll to top immediately on page load (before animations initialize)
-  if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-  }
-  window.scrollTo(0, 0);
-
   function initialiser() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       console.warn("Script terminated due to missing libraries");
@@ -762,6 +756,12 @@ document.addEventListener("DOMContentLoaded", function () {
       console.warn("Progress Bar: Required elements not found");
       return;
     }
+
+    // Force scroll to top only when these elements are present
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
 
     const contentHeight = scrollContent.offsetHeight;
     const viewportHeight = window.innerHeight;
