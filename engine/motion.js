@@ -226,9 +226,9 @@ document.addEventListener("DOMContentLoaded", function () {
   triggers();
 
   // Prevent bfcache from caching this page
-  // window.addEventListener("unload", () => {
-  //   // Empty handler - presence of unload listener prevents bfcache
-  // });
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
 
   // Backup: Force reload if bfcache activates
   window.addEventListener("pageshow", (event) => {
@@ -666,9 +666,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Prevent bfcache from caching this page (Safari and other browsers)
-  // window.addEventListener("unload", () => {
-  //   // Empty handler - presence of unload listener prevents bfcache
-  // });
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
 
   // Backup: Also handle any bfcache restoration attempts
   window.addEventListener("pageshow", (event) => {
@@ -823,9 +823,9 @@ document.addEventListener("DOMContentLoaded", function () {
   triggers();
 
   // Prevent bfcache from caching this page
-  // window.addEventListener("unload", () => {
-  //   // Empty handler - presence of unload listener prevents bfcache
-  // });
+  window.addEventListener("unload", () => {
+    // Empty handler - presence of unload listener prevents bfcache
+  });
 
   // Backup: Force reload if bfcache activates
   window.addEventListener("pageshow", (event) => {
