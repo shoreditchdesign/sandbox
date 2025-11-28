@@ -4,9 +4,10 @@
   const urlParams = new URLSearchParams(window.location.search);
   const postId = urlParams.get("postId");
 
-  // If no postId, do nothing
+  // If no postId, redirect to news homepage
   if (!postId) {
     console.warn("No postId found in query parameters");
+    window.location.href = "/news";
     return;
   }
 
@@ -28,7 +29,7 @@
 
   if (!articleSlug) {
     console.warn(`No article found for postId: ${postId}`);
-    // Redirect to news homepage as fallback
+    // Redirect to news homepage if postId not found
     window.location.href = "/news";
     return;
   }
