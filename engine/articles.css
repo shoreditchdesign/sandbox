@@ -1,0 +1,66 @@
+/* Rich Text Styles for News Articles */
+
+/* Paragraphs */
+.d-nw_rich-text p {
+    font-size: 1.25em;
+}
+
+/* Links */
+.d-nw_rich-text a {
+    font-size: 1.25em;
+    color: var(--_themes---site--text--text-brand);
+    text-decoration: underline;
+}
+
+/* Lists */
+.d-nw_rich-text ul {
+    font-size: 1.25em;
+    margin-left: 1.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    list-style-type: disc;
+}
+
+.d-nw_rich-text ol {
+    font-size: 1.25em;
+    margin-left: 1.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    list-style-type: decimal;
+}
+
+.d-nw_rich-text li {
+    font-size: 1.25em;
+    margin-bottom: 0.5em;
+}
+
+/* Blockquote */
+.d-nw_rich-text blockquote {
+    font-size: 1.25em;
+    font-style: italic;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    padding-left: 1em;
+    border-left: 4px solid var(--_themes---site--text--text-brand);
+}
+
+/* Figures */
+.d-nw_rich-text figure {
+    font-size: 1.25em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.d-nw_rich-text figcaption {
+    font-size: 1em;
+    font-style: italic;
+    margin-top: 0.5em;
+}
+
+/* Custom Standfirst Style */
+.d-nw_rich-text p:has(.ql-font-standfirst) {
+    font-size: 1.5em;
+    margin-bottom: 2rem !important;
+}

@@ -1,13 +1,22 @@
 //Query Parameter Redirect Handler for news-single page
 (function () {
+  // Check redirect flag for testing purposes
+  const redirectFlag = document.querySelector("[data-post-redirect]");
+  const shouldRedirect =
+    !redirectFlag || redirectFlag.textContent.trim() !== "0";
+
   // Get the postId from the query parameter
   const urlParams = new URLSearchParams(window.location.search);
   const postId = urlParams.get("postId");
 
-  // If no postId, redirect to news homepage
+  // If no postId, redirect to news homepage (unless flag is 0)
   if (!postId) {
     console.warn("No postId found in query parameters");
-    window.location.href = "/news";
+    if (shouldRedirect) {
+      window.location.href = "/news";
+    } else {
+      console.log("Redirect disabled for testing - staying on /news-single");
+    }
     return;
   }
 
@@ -29,8 +38,12 @@
 
   if (!articleSlug) {
     console.warn(`No article found for postId: ${postId}`);
-    // Redirect to news homepage if postId not found
-    window.location.href = "/news";
+    // Redirect to news homepage if postId not found (unless flag is 0)
+    if (shouldRedirect) {
+      window.location.href = "/news";
+    } else {
+      console.log("Redirect disabled for testing - staying on /news-single");
+    }
     return;
   }
 
