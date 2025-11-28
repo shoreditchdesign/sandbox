@@ -8,7 +8,7 @@
   }
 
   function init() {
-    // Wait 5 seconds for all articles to load via Finsweet pagination
+    // Wait 20 seconds for all articles to load via Finsweet pagination
     setTimeout(() => {
       // Check redirect flag for testing purposes
       const redirectFlag = document.querySelector("[data-post-redirect]");
@@ -73,6 +73,6 @@
       // Redirect to the article
       console.log(`Redirecting postId ${postId} to article: ${articleLink}`);
       window.location.href = articleLink;
-    }, 5000);
+    }, 20000);
   }
 })();
