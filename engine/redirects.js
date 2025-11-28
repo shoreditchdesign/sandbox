@@ -1,6 +1,17 @@
 //404 Redirect Handler
 function handleRedirect() {
   const redirectCategories = ["/news"];
+
+  // Old article category slugs from the previous site structure
+  const oldArticleCategories = [
+    "general-news",
+    "fuel-quality",
+    "availability",
+    "alternative-fuels",
+    "bunkering-info",
+    "regulations",
+  ];
+
   const currentPath = window.location.pathname;
 
   if (currentPath === "/" || currentPath === "") {
@@ -27,20 +38,32 @@ function handleRedirect() {
       return null;
     }
 
-    const matchedCategory = redirectCategories.find(
-      (category) => category === pathInfo.parentFolder,
-    );
+    // Check if this is a /news path
+    if (pathInfo.parentFolder !== "/news") {
+      return null;
+    }
 
-    return matchedCategory || null;
+    // Check if this is depth 3 with an old article category
+    // Pattern: /news/[old-category]/[article-slug]
+    if (pathInfo.depth === 3 && pathInfo.segments[0] === "news") {
+      const categorySlug = pathInfo.segments[1];
+      const articleSlug = pathInfo.segments[2];
+
+      // If the middle segment is a known old category, redirect to /news/article-slug
+      if (oldArticleCategories.includes(categorySlug)) {
+        return `/news/${articleSlug}`;
+      }
+    }
+
+    // Default behavior: redirect to /news for any other news sub-paths
+    return "/news";
   }
 
   const pathInfo = getPathInfo(currentPath);
   const redirectTarget = shouldRedirect(pathInfo);
 
   if (redirectTarget) {
-    console.warn(
-      "Client-side Redirect: Reference source detected, redirecting to parent page",
-    );
+    console.warn("Client-side Redirect: Redirecting to", redirectTarget);
     window.location.href = redirectTarget;
   } else {
     // Authentic 404 - show the page
