@@ -33,6 +33,11 @@ function handleRedirect() {
   }
 
   function shouldRedirect(pathInfo) {
+    // Special case: /news-single should redirect to /news
+    if (pathInfo.segments[0] === "news-single") {
+      return "/news";
+    }
+
     // Only redirect if we're at level 2 or deeper (e.g., /news/article-123)
     if (pathInfo.depth <= 1) {
       return null;
