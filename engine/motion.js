@@ -651,12 +651,22 @@ document.addEventListener("DOMContentLoaded", function () {
   // Resize handler with debouncing
   let resizeTimeout;
   let previousWidth = window.innerWidth;
+  let previousScale = window.visualViewport ? window.visualViewport.scale : 1;
 
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
 
     resizeTimeout = setTimeout(() => {
-      previousWidth = thresholdChecker(window.innerWidth, previousWidth);
+      const currentScale = window.visualViewport
+        ? window.visualViewport.scale
+        : 1;
+
+      // Only trigger reinitialization if scale hasn't changed (meaning it's an actual resize, not zoom)
+      if (currentScale === previousScale) {
+        previousWidth = thresholdChecker(window.innerWidth, previousWidth);
+      }
+
+      previousScale = currentScale;
     }, 300); // Increased debounce to allow viewport units to settle
   });
 
