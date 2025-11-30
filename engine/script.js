@@ -574,7 +574,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!countdownElement) return;
 
     const startTime =
-      parseInt(countdownElement.getAttribute("data-time-start")) || 20;
+      parseInt(countdownElement.getAttribute("data-time-start")) || 3;
     let timeRemaining = startTime;
     countdownElement.textContent = timeRemaining;
 

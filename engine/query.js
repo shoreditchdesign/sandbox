@@ -73,6 +73,6 @@
       // Redirect to the article
       console.log(`Redirecting postId ${postId} to article: ${articleLink}`);
       window.location.href = articleLink;
-    }, 20000);
+    }, 3000);
   }
 })();
