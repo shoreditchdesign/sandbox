@@ -70,6 +70,14 @@
       // Construct the full article URL
       const articleLink = `/news/${articleSlug}`;
 
+      // Check redirect flag before redirecting to article
+      if (!shouldRedirect) {
+        console.log(
+          `Article found (${articleLink}) but redirect disabled for testing`,
+        );
+        return;
+      }
+
       // Redirect to the article
       console.log(`Redirecting postId ${postId} to article: ${articleLink}`);
       window.location.href = articleLink;
