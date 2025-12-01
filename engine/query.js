@@ -1,86 +1,90 @@
 //Query Parameter Redirect Handler for news-single page
-(function () {
-  // Wait for DOM to be ready to check redirect flag
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  // Check redirect flag once
+  const redirectFlag = document.querySelector("[data-post-redirect]");
+  const shouldRedirect =
+    !redirectFlag || redirectFlag.getAttribute("data-post-redirect") !== "0";
 
-  function init() {
-    // Wait 20 seconds for all articles to load via Finsweet pagination
+  // Get postId from URL once
+  const postId = new URLSearchParams(window.location.search).get("postId");
+
+  // Wait for tab focus, then wait for Finsweet pagination to load
+  waitForFocus(() => {
     setTimeout(() => {
-      // Check redirect flag for testing purposes
-      const redirectFlag = document.querySelector("[data-post-redirect]");
-      const flagValue = redirectFlag
-        ? redirectFlag.getAttribute("data-post-redirect")
-        : null;
-      const shouldRedirect = !flagValue || flagValue !== "0";
+      performRedirect(postId, shouldRedirect);
+    }, 3000);
+  });
 
-      console.log("Redirect flag found:", redirectFlag);
-      console.log("Redirect flag value:", flagValue || "not found");
-      console.log("Should redirect:", shouldRedirect);
-
-      // Get the postId from the query parameter
-      const urlParams = new URLSearchParams(window.location.search);
-      const postId = urlParams.get("postId");
-
-      // If no postId, redirect to news homepage (unless flag is 0)
-      if (!postId) {
-        console.warn("No postId found in query parameters");
-        if (shouldRedirect) {
-          window.location.href = "/news";
-        } else {
-          console.log(
-            "Redirect disabled for testing - staying on /news-single",
-          );
-        }
-        return;
+  function performRedirect(postId, shouldRedirect) {
+    // Single nested if-else logic tree
+    if (!postId) {
+      // No postId in URL
+      if (shouldRedirect) {
+        startCountdown();
+        window.location.href = "/news";
       }
-
-      // Find the parent item with data-post-target that contains the matching postId
-      const allPostTargets = document.querySelectorAll("[data-post-target]");
-      let articleSlug = null;
-
-      for (const item of allPostTargets) {
-        const postIdElement = item.querySelector("[data-post-id]");
-        const postSlugElement = item.querySelector("[data-post-slug]");
-
-        if (postIdElement && postIdElement.textContent.trim() === postId) {
-          if (postSlugElement) {
-            articleSlug = postSlugElement.textContent.trim();
-            break;
-          }
-        }
-      }
+    } else {
+      // PostId exists, try to find article
+      const articleSlug = findArticleSlug(postId);
 
       if (!articleSlug) {
-        console.warn(`No article found for postId: ${postId}`);
-        // Redirect to news homepage if postId not found (unless flag is 0)
+        // Article not found in DOM
         if (shouldRedirect) {
+          startCountdown();
           window.location.href = "/news";
-        } else {
-          console.log(
-            "Redirect disabled for testing - staying on /news-single",
-          );
         }
-        return;
+      } else {
+        // Article found
+        if (shouldRedirect) {
+          startCountdown();
+          window.location.href = `/news/${articleSlug}`;
+        }
       }
-
-      // Construct the full article URL
-      const articleLink = `/news/${articleSlug}`;
-
-      // Check redirect flag before redirecting to article
-      if (!shouldRedirect) {
-        console.log(
-          `Article found (${articleLink}) but redirect disabled for testing`,
-        );
-        return;
-      }
-
-      // Redirect to the article
-      console.log(`Redirecting postId ${postId} to article: ${articleLink}`);
-      window.location.href = articleLink;
-    }, 3000);
+    }
   }
-})();
+
+  function findArticleSlug(postId) {
+    const allPostTargets = document.querySelectorAll("[data-post-target]");
+
+    for (const item of allPostTargets) {
+      const postIdElement = item.querySelector("[data-post-id]");
+      const postSlugElement = item.querySelector("[data-post-slug]");
+
+      if (postIdElement && postIdElement.textContent.trim() === postId) {
+        return postSlugElement ? postSlugElement.textContent.trim() : null;
+      }
+    }
+
+    return null;
+  }
+
+  function waitForFocus(callback) {
+    if (document.hasFocus()) {
+      callback();
+    } else {
+      window.addEventListener("focus", function onFocus() {
+        window.removeEventListener("focus", onFocus);
+        callback();
+      });
+    }
+  }
+
+  function startCountdown() {
+    const countdownElement = document.querySelector("[data-post-time]");
+    if (!countdownElement) return;
+
+    const startTime =
+      parseInt(countdownElement.getAttribute("data-time-start")) || 3;
+    let timeRemaining = startTime;
+    countdownElement.textContent = timeRemaining;
+
+    const interval = setInterval(() => {
+      timeRemaining--;
+      countdownElement.textContent = timeRemaining;
+
+      if (timeRemaining <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+  }
+});
