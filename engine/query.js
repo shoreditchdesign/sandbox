@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!postId) {
       // No postId in URL
       if (shouldRedirect) {
-        window.location.href = "/news";
+        window.location.replace("/news");
       }
     } else {
       // PostId exists, try to find article
@@ -30,12 +30,12 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!articleSlug) {
         // Article not found in DOM
         if (shouldRedirect) {
-          window.location.href = "/news";
+          window.location.replace("/news");
         }
       } else {
         // Article found
         if (shouldRedirect) {
-          window.location.href = `/news/${articleSlug}`;
+          window.location.replace(`/news/${articleSlug}`);
         }
       }
     }
