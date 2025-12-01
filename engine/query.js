@@ -8,8 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get postId from URL once
   const postId = new URLSearchParams(window.location.search).get("postId");
 
-  // Wait for tab focus, then wait for Finsweet pagination to load
+  // Wait for tab focus, then start countdown and wait for Finsweet pagination to load
   waitForFocus(() => {
+    startCountdown();
     setTimeout(() => {
       performRedirect(postId, shouldRedirect);
     }, 3000);
@@ -20,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!postId) {
       // No postId in URL
       if (shouldRedirect) {
-        startCountdown();
         window.location.href = "/news";
       }
     } else {
@@ -30,13 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!articleSlug) {
         // Article not found in DOM
         if (shouldRedirect) {
-          startCountdown();
           window.location.href = "/news";
         }
       } else {
         // Article found
         if (shouldRedirect) {
-          startCountdown();
           window.location.href = `/news/${articleSlug}`;
         }
       }
