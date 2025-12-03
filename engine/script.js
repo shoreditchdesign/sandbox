@@ -1,5 +1,11 @@
 //Normalise Scroll
 document.addEventListener("DOMContentLoaded", function () {
+  // Skip scroll normalization for /news and all URLs inside /news/
+  const currentPath = window.location.pathname;
+  if (currentPath === "/news" || currentPath.startsWith("/news/")) {
+    return;
+  }
+
   if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
     ScrollTrigger.normalizeScroll({
       allowNestedScroll: true,
