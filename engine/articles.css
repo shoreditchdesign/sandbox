@@ -64,3 +64,11 @@
     font-size: 1.5em;
     margin-bottom: 2rem !important;
 }
+
+/* Custom Title Bullets Style */
+.d-nw_rich-text .ql-font-titlebullets {
+    display: list-item;
+    list-style-type: disc;
+    list-style-position: inside;
+    margin-left: 1.5em;
+}

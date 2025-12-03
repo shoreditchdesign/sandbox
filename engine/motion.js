@@ -365,10 +365,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Force scroll to top only when these elements are present
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
+    if (window.innerWidth > 768) {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
     }
-    window.scrollTo(0, 0);
 
     gsap.set(featuresHeader, { opacity: 1 });
 
@@ -480,16 +482,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const scrollSection = document.querySelectorAll("[data-stack-section]");
 
-    if (scrollSection.length === 0) {
+    if (!scrollSection || scrollSection.length === 0) {
       isInitialized = false;
       return;
     }
 
-    // Force scroll to top only when these elements are present
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
+    // Force scroll to top only when these elements are present (desktop only)
+    if (window.innerWidth > 768) {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
     }
-    window.scrollTo(0, 0);
 
     // Mark as initializing to prevent race conditions
     isInitialized = "initializing";
@@ -767,11 +771,13 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Force scroll to top only when these elements are present
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
+    // Force scroll to top only when these elements are present (desktop only)
+    if (window.innerWidth > 768) {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
     }
-    window.scrollTo(0, 0);
 
     const contentHeight = scrollContent.offsetHeight;
     const viewportHeight = window.innerHeight;
