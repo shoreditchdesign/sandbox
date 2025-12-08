@@ -1,5 +1,5 @@
-// Carousel component with static items support, navigation buttons, heading, and responsive configuration
-import { addPropertyControls, ControlType } from "framer";
+// Carousel component with static slides support, navigation buttons, heading, and responsive configuration
+import { addPropertyControls, ControlType, RenderTarget } from "framer";
 import {
   useEffect,
   useRef,
@@ -10,9 +10,7 @@ import {
 import React from "react";
 
 interface CarouselProps {
-  staticItems?: React.ReactNode;
-  startLayers?: React.ReactNode[];
-  endLayers?: React.ReactNode[];
+  swiperWrapper?: React.ReactNode;
   heading: React.ReactNode;
   previousButton: React.ReactNode;
   nextButton: React.ReactNode;
@@ -33,9 +31,7 @@ interface CarouselProps {
  */
 export default function StaticSwiper(props: CarouselProps) {
   const {
-    staticItems,
-    startLayers = [],
-    endLayers = [],
+    swiperWrapper,
     heading,
     previousButton,
     nextButton,
@@ -58,51 +54,46 @@ export default function StaticSwiper(props: CarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
-  // Extract children from static items
+  const isCanvas = RenderTarget.current() === RenderTarget.canvas;
+
+  // Extract slides from wrapper by looking for children with aria-label="swiper-slide"
   let slides: React.ReactNode[] = [];
 
-  // Add start layers
-  if (startLayers && startLayers.length > 0) {
-    slides = slides.concat(startLayers);
-  }
+  // Handle if swiperWrapper is an array (Framer sometimes wraps in array)
+  const wrapperElement = Array.isArray(swiperWrapper)
+    ? swiperWrapper[0]
+    : swiperWrapper;
 
-  // Extract children from staticItems (Framer Stack/Frame with child cards)
-  if (staticItems) {
-    if (React.isValidElement(staticItems)) {
-      const element = staticItems as React.ReactElement;
+  console.log("Static Swiper - Wrapper element:", wrapperElement);
 
-      // Try to get children from props
-      if (element.props && element.props.children) {
-        const children = React.Children.toArray(element.props.children);
+  if (wrapperElement && React.isValidElement(wrapperElement)) {
+    // Get direct children of the wrapper
+    const children = wrapperElement.props?.children;
 
-        // Filter out empty/null children and add valid ones
-        children.forEach((child) => {
-          if (child && React.isValidElement(child)) {
-            slides.push(child);
-          }
-        });
-      }
+    console.log("Static Swiper - Children:", children);
+
+    if (children) {
+      React.Children.forEach(children, (child) => {
+        if (!React.isValidElement(child)) return;
+
+        const ariaLabel = child.props?.["aria-label"] || child.props?.ariaLabel;
+        console.log(
+          "Static Swiper - Child aria-label:",
+          ariaLabel,
+          "Child:",
+          child,
+        );
+
+        if (ariaLabel === "swiper-slide") {
+          slides.push(child);
+        }
+      });
     }
   }
 
-  // Add end layers
-  if (endLayers && endLayers.length > 0) {
-    slides = slides.concat(endLayers);
-  }
+  // Debug: log what we found
+  console.log("Static Swiper - Total slides found:", slides.length);
 
-  // Debug logging to see what we're receiving
-  console.log("StaticSwiper Debug:", {
-    staticItemsType: typeof staticItems,
-    staticItemsIsArray: Array.isArray(staticItems),
-    staticItemsIsElement: React.isValidElement(staticItems),
-    staticItemsProps: React.isValidElement(staticItems)
-      ? (staticItems as any).props
-      : null,
-    totalSlides: slides.length,
-    slidesPreview: slides.slice(0, 3),
-  });
-
-  // Convert children to array of slides
   const totalSlides = slides.length;
 
   useEffect(() => {
@@ -229,6 +220,7 @@ export default function StaticSwiper(props: CarouselProps) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
         }}
       >
         <div style={{ flex: 1 }}>{heading}</div>
@@ -280,8 +272,8 @@ export default function StaticSwiper(props: CarouselProps) {
               color: "#666",
             }}
           >
-            No slides found. Add a parent div with child divs to the Static
-            Items slot.
+            No slides found. Add components with aria-label="swiper-slide" to
+            the Swiper Wrapper slot.
           </div>
         ) : (
           <div
@@ -349,25 +341,9 @@ export default function StaticSwiper(props: CarouselProps) {
 StaticSwiper.displayName = "Static Swiper";
 
 addPropertyControls(StaticSwiper, {
-  staticItems: {
+  swiperWrapper: {
     type: ControlType.ComponentInstance,
-    title: "Static Items",
-  },
-  startLayers: {
-    type: ControlType.Array,
-    title: "Start Layers",
-    control: {
-      type: ControlType.ComponentInstance,
-    },
-    maxCount: 20,
-  },
-  endLayers: {
-    type: ControlType.Array,
-    title: "End Layers",
-    control: {
-      type: ControlType.ComponentInstance,
-    },
-    maxCount: 20,
+    title: "Swiper Wrapper",
   },
   heading: {
     type: ControlType.ComponentInstance,
