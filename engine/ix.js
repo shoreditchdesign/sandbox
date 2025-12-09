@@ -1222,6 +1222,8 @@ document.addEventListener("DOMContentLoaded", function () {
       992: {
         slidesPerView: 2,
         spaceBetween: 16,
+        allowTouchMove: false,
+        grabCursor: false,
       },
     },
     on: {
