@@ -1533,14 +1533,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevButton = document.querySelector("#timeline-prev");
 
     if (nextButton) {
+      // Capture the flag value BEFORE swiper processes the click
+      let flagAtClickTime = false;
+
+      nextButton.addEventListener("mousedown", function (e) {
+        // Capture flag state at mousedown, before any swiper processing
+        flagAtClickTime = nextButtonFakeEnabled;
+        console.log("=== Next mousedown ===");
+        console.log("flagAtClickTime captured:", flagAtClickTime);
+      });
+
       nextButton.addEventListener("click", function (e) {
         console.log("=== Next click ===");
-        console.log("nextButtonFakeEnabled:", nextButtonFakeEnabled);
+        console.log("flagAtClickTime:", flagAtClickTime);
         console.log("activeIndex:", swiper.activeIndex);
 
-        // Only trigger override if the flag was set BEFORE this click
-        // This prevents race conditions where swiper moves before our handler runs
-        if (nextButtonFakeEnabled) {
+        // Only trigger override if the flag was true BEFORE this click
+        if (flagAtClickTime) {
           console.log("TRIGGERING OVERRIDE");
           // Trigger year override to last year
           const lastYear = getLastYearInNav();
