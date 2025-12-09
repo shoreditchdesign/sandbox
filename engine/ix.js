@@ -1234,10 +1234,12 @@ document.addEventListener("DOMContentLoaded", function () {
         updateYearNavigation(this);
         initializeYearNavigation(this);
         initializeNavigationButtons(this);
+        updateNextButtonState(this);
       },
       slideChange: function () {
         updateSlideAttributes(this);
         updateYearNavigation(this);
+        updateNextButtonState(this);
       },
       resize: function () {
         updateSlideAttributes(this);
@@ -1341,6 +1343,60 @@ document.addEventListener("DOMContentLoaded", function () {
     return indices.length === 1 && indices[0] === lastSlideIndex;
   }
 
+  // Get the last year from the DOM order (last item in year nav)
+  function getLastYearInNav() {
+    const yearItems = document.querySelectorAll("[data-timeline-year]");
+    if (yearItems.length === 0) return null;
+    const lastItem = yearItems[yearItems.length - 1];
+    return lastItem.getAttribute("data-year-target");
+  }
+
+  // Get the currently highlighted year from year nav
+  function getCurrentlyHighlightedYear() {
+    const activeYearItem = document.querySelector(
+      '[data-timeline-year][data-year-state="active"]',
+    );
+    return activeYearItem
+      ? activeYearItem.getAttribute("data-year-target")
+      : null;
+  }
+
+  // Check if we should fake-enable the Next button
+  function shouldFakeEnableNext(swiper) {
+    const isDesktop = window.innerWidth >= 992;
+    if (!isDesktop) return false;
+
+    // Check if swiper is at end position (can't go further)
+    const maxIndex = swiper.slides.length - 2; // Desktop shows 2 slides
+    if (swiper.activeIndex < maxIndex) return false;
+
+    // Check if last year has only 1 card
+    const lastYear = getLastYearInNav();
+    if (!lastYear) return false;
+    if (!isYearOnlyOnLastSlide(swiper, lastYear)) return false;
+
+    // Check if currently highlighted year is NOT the last year
+    const currentYear = getCurrentlyHighlightedYear();
+    if (currentYear === lastYear) return false;
+
+    return true;
+  }
+
+  // Update Next button state (handles fake-enable for year nav illusion)
+  function updateNextButtonState(swiper) {
+    const nextButton = document.querySelector("#timeline-next");
+    if (!nextButton) return;
+
+    if (shouldFakeEnableNext(swiper)) {
+      // Fake-enable: remove disabled class and attributes
+      nextButton.classList.remove("timeline-nav-disabled");
+      nextButton.removeAttribute("disabled");
+      nextButton.setAttribute("aria-disabled", "false");
+      nextButton.setAttribute("tabindex", "0");
+    }
+    // Note: We don't re-disable here - let Swiper handle normal disabled state
+  }
+
   // Manually set year nav state (for year nav clicks)
   function setYearNavState(year) {
     const yearItems = document.querySelectorAll("[data-timeline-year]");
@@ -1376,6 +1432,8 @@ document.addEventListener("DOMContentLoaded", function () {
         manualYearOverride = true;
         manualYearValue = targetYear;
         setYearNavState(targetYear);
+        // Update Next button state after year override
+        updateNextButtonState(swiper);
       } else {
         // Normal navigation - clear override and update year nav
         manualYearOverride = false;
@@ -1385,6 +1443,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // (since slideChange won't fire)
         if (swiper.activeIndex === targetSlideIndex) {
           setYearNavState(targetYear);
+          updateNextButtonState(swiper);
         }
       }
 
@@ -1445,16 +1504,36 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevButton = document.querySelector("#timeline-prev");
 
     if (nextButton) {
-      nextButton.addEventListener("click", function () {
-        // Clear manual override when using Next/Prev buttons
-        manualYearOverride = false;
-        manualYearValue = null;
+      nextButton.addEventListener("click", function (e) {
+        // Check if this is a fake-enabled state (year nav illusion)
+        if (shouldFakeEnableNext(swiper)) {
+          // Prevent default swiper navigation (it can't go further anyway)
+          e.stopPropagation();
+
+          // Trigger year override to last year
+          const lastYear = getLastYearInNav();
+          if (lastYear) {
+            manualYearOverride = true;
+            manualYearValue = lastYear;
+            setYearNavState(lastYear);
+
+            // Now truly disable the button (we're on last year)
+            nextButton.classList.add("timeline-nav-disabled");
+            nextButton.setAttribute("disabled", "");
+            nextButton.setAttribute("aria-disabled", "true");
+            nextButton.setAttribute("tabindex", "-1");
+          }
+        } else {
+          // Normal navigation - clear manual override
+          manualYearOverride = false;
+          manualYearValue = null;
+        }
       });
     }
 
     if (prevButton) {
       prevButton.addEventListener("click", function () {
-        // Clear manual override when using Next/Prev buttons
+        // Clear manual override when using Prev button
         manualYearOverride = false;
         manualYearValue = null;
       });
