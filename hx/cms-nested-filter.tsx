@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ComponentType } from "react";
-import { useFilterContext } from "./cms-filter-context";
 
 // Customizable constants
 
@@ -13,7 +12,7 @@ const FILTER_PREFIX = "filter-";
 
 // Font settings
 const FONT_FAMILY = "FFF Acid Grotesk, sans-serif";
-const TEXT_COLOR = "#1E293B";
+const TEXT_COLOR = "#28323F";
 const TEXT_SIZE = "16px";
 const TEXT_WEIGHT = 400;
 const LINE_HEIGHT = "130%";
@@ -26,15 +25,16 @@ const FILTER_BOTTOM_MARGIN = "20px";
 
 // Colors
 const BORDER_COLOR = "#E9E9E9";
-const BACKGROUND_COLOR = "#FFF";
-const SELECTED_BACKGROUND_COLOR = "#EEEDFD";
-const ACTIVE_BORDER_COLOR = "#594FEE";
-const HOVER_BACKGROUND_COLOR = "#F8FAFC";
-const ACTIVE_TEXT_COLOR = "#594FEE";
+const BACKGROUND_COLOR = "#FFFFFF";
+const SELECTED_BACKGROUND_COLOR = "#FFFFFF";
+const ACTIVE_BORDER_COLOR = "#738FFF";
+const HOVER_BACKGROUND_COLOR = "#FFFFFF";
+const HOVER_BORDER_COLOR = "#CCCCCC";
+const ACTIVE_TEXT_COLOR = "#28323F";
 
 // Borders and dimensions
 const BORDER_RADIUS = "8px";
-const BORDER_WIDTH = "1px";
+const BORDER_WIDTH = "2.5px";
 const ICON_SIZE = "16px";
 
 // Shadow
@@ -105,9 +105,6 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
     const [renderTarget, setRenderTarget] = useState<HTMLElement | null>(null);
     const selectRefs = useRef<{ [key: string]: HTMLSelectElement | null }>({});
     const fallbackContainerRef = useRef<HTMLDivElement | null>(null);
-
-    // Optional: Connect to filter context if available (for swiper integration)
-    const filterContext = useFilterContext();
 
     // Determine where to render the filters
     useEffect(() => {
@@ -191,12 +188,7 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
         );
         wrapper.classList.toggle("hidden", allHidden);
       });
-
-      // Notify any listening swipers that filtering has occurred
-      if (filterContext) {
-        filterContext.notifyFilterChange();
-      }
-    }, [filters, filterContext]);
+    }, [filters]);
 
     // Update URL query parameters when filters change
     const updateURL = (newFilters: { [key: string]: string }) => {
@@ -401,6 +393,8 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
           }
           select:hover {
             background-color: ${HOVER_BACKGROUND_COLOR} !important;
+            color: ${TEXT_COLOR} !important;
+            border-color: ${HOVER_BORDER_COLOR} !important;
           }
           select {
             -webkit-appearance: none;

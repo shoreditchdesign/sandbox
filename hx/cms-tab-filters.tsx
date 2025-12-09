@@ -9,14 +9,14 @@ const ITEMS_PER_PAGE = 6;
 
 // Font settings
 const FONT_FAMILY = "FFF Acid Grotesk, sans-serif";
-const TEXT_COLOR = "#64748B";
-const ACTIVE_TEXT_COLOR = "#0F172A";
+const TEXT_COLOR = "#28323F";
+const ACTIVE_TEXT_COLOR = "#F7F7F7";
 const TEXT_SIZE = "14px";
 const TEXT_WEIGHT = 500;
-const LINE_HEIGHT = "140%";
+const LINE_HEIGHT = "150%";
 
 // Padding and spacing
-const TAB_PADDING_VERTICAL = "10px";
+const TAB_PADDING_VERTICAL = "8px";
 const TAB_PADDING_HORIZONTAL = "16px";
 const TAB_GAP = "8px";
 const CONTAINER_MARGIN_BOTTOM = "24px";
@@ -24,13 +24,14 @@ const CONTAINER_MARGIN_BOTTOM = "24px";
 // Colors
 const BORDER_COLOR = "#E2E8F0";
 const ACTIVE_BORDER_COLOR = "#594FEE";
-const HOVER_BACKGROUND_COLOR = "#F8FAFC";
-const ACTIVE_BACKGROUND_COLOR = "#F1F5F9";
-const BACKGROUND_COLOR = "#FFF";
+const HOVER_BACKGROUND_COLOR = "#132130";
+const ACTIVE_BACKGROUND_COLOR = "#1D2733";
+const BACKGROUND_COLOR = "#F7F7F7";
+const PAGINATION_BACKGROUND_COLOR = "#0F1924";
 const DISABLED_OPACITY = 0.6;
 
 // Borders and dimensions
-const BORDER_RADIUS = "8px";
+const BORDER_RADIUS = "150px";
 const BORDER_WIDTH = "2px";
 
 // Base styles for tab buttons
@@ -48,7 +49,7 @@ const baseTabStyles = {
   transition: "all 0.2s ease",
   whiteSpace: "nowrap" as const,
   position: "relative" as const,
-  borderBottom: `${BORDER_WIDTH} solid transparent`,
+  minWidth: "80px",
 };
 
 export default function tabFilterCMS(Component: ComponentType): ComponentType {
@@ -162,7 +163,6 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
           display: "flex",
           gap: TAB_GAP,
           marginBottom: CONTAINER_MARGIN_BOTTOM,
-          borderBottom: `1px solid ${BORDER_COLOR}`,
           flexWrap: "wrap",
         }}
       >
@@ -172,10 +172,8 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
           style={{
             ...baseTabStyles,
             color: activeTab === "all" ? ACTIVE_TEXT_COLOR : TEXT_COLOR,
-            borderBottomColor:
-              activeTab === "all" ? ACTIVE_BORDER_COLOR : "transparent",
             background:
-              activeTab === "all" ? ACTIVE_BACKGROUND_COLOR : "transparent",
+              activeTab === "all" ? ACTIVE_BACKGROUND_COLOR : BACKGROUND_COLOR,
           }}
         >
           All
@@ -189,10 +187,8 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
             style={{
               ...baseTabStyles,
               color: activeTab === tab ? ACTIVE_TEXT_COLOR : TEXT_COLOR,
-              borderBottomColor:
-                activeTab === tab ? ACTIVE_BORDER_COLOR : "transparent",
               background:
-                activeTab === tab ? ACTIVE_BACKGROUND_COLOR : "transparent",
+                activeTab === tab ? ACTIVE_BACKGROUND_COLOR : BACKGROUND_COLOR,
             }}
           >
             {tab}
@@ -202,6 +198,7 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
         <style>{`
           button:hover {
             background-color: ${HOVER_BACKGROUND_COLOR} !important;
+            color: ${ACTIVE_TEXT_COLOR} !important;
           }
         `}</style>
       </div>
@@ -212,10 +209,8 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
         onClick={handleLoadMore}
         style={{
           ...baseTabStyles,
-          padding: `${TAB_PADDING_VERTICAL} ${TAB_PADDING_HORIZONTAL}`,
-          background: BACKGROUND_COLOR,
-          border: `1px solid ${BORDER_COLOR}`,
-          color: TEXT_COLOR,
+          background: PAGINATION_BACKGROUND_COLOR,
+          color: ACTIVE_TEXT_COLOR,
           cursor: "pointer",
         }}
       >

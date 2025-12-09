@@ -12,7 +12,7 @@ const FILTER_PREFIX = "filter-";
 
 // Font settings
 const FONT_FAMILY = "FFF Acid Grotesk, sans-serif";
-const TEXT_COLOR = "#1E293B";
+const TEXT_COLOR = "#28323F";
 const TEXT_SIZE = "16px";
 const TEXT_WEIGHT = 400;
 const LINE_HEIGHT = "130%";
@@ -31,11 +31,12 @@ const FILTER_BOTTOM_MARGIN = "20px";
 
 // Colors
 const BORDER_COLOR = "#E9E9E9";
-const BACKGROUND_COLOR = "#FFF";
-const SELECTED_BACKGROUND_COLOR = "#0F1924";
-const ACTIVE_BORDER_COLOR = "#0F1924";
-const HOVER_BACKGROUND_COLOR = "#F8FAFC";
-const ACTIVE_TEXT_COLOR = "#FFFFFF";
+const BACKGROUND_COLOR = "#FFFFFF";
+const SELECTED_BACKGROUND_COLOR = "#FFFFFF";
+const ACTIVE_BORDER_COLOR = "#738FFF";
+const HOVER_BACKGROUND_COLOR = "#FFFFFF";
+const HOVER_BORDER_COLOR = "#CCCCCC";
+const ACTIVE_TEXT_COLOR = "#28323F";
 const BUTTON_BACKGROUND_COLOR = "#1B1B1B";
 const BUTTON_HOVER_COLOR = "#000000";
 const BUTTON_TEXT_COLOR = "#FFFFFF";
@@ -44,7 +45,7 @@ const BUTTON_ARROW_COLOR = "#ADADAD";
 // Borders and dimensions
 const BORDER_RADIUS = "8px";
 const BUTTON_BORDER_RADIUS = "32px";
-const BORDER_WIDTH = "1px";
+const BORDER_WIDTH = "2.5px";
 const ICON_SIZE = "16px";
 
 // Shadow
@@ -338,6 +339,8 @@ export function filterRedirectCMS(Component: ComponentType): ComponentType {
         <style>{`
           select:hover {
             background-color: ${HOVER_BACKGROUND_COLOR} !important;
+            color: ${TEXT_COLOR} !important;
+            border-color: ${HOVER_BORDER_COLOR} !important;
           }
           select {
             -webkit-appearance: none;
