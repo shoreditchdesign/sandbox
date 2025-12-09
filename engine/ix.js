@@ -1505,10 +1505,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (nextButton) {
       nextButton.addEventListener("click", function (e) {
-        // Check if this is a fake-enabled state (year nav illusion)
-        if (shouldFakeEnableNext(swiper)) {
+        const isDesktop = window.innerWidth >= 992;
+        const maxIndex = swiper.slides.length - 2;
+        const isAtEnd = isDesktop && swiper.activeIndex >= maxIndex;
+
+        // Only trigger fake override if already at end AND conditions are met
+        if (isAtEnd && shouldFakeEnableNext(swiper)) {
           // Prevent default swiper navigation (it can't go further anyway)
           e.stopPropagation();
+          e.preventDefault();
 
           // Trigger year override to last year
           const lastYear = getLastYearInNav();
@@ -1532,10 +1537,26 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (prevButton) {
-      prevButton.addEventListener("click", function () {
-        // Clear manual override when using Prev button
-        manualYearOverride = false;
-        manualYearValue = null;
+      prevButton.addEventListener("click", function (e) {
+        // If in override state, don't move swiper - just clear override
+        if (manualYearOverride) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          // Clear override - year nav will update to match actual active slide
+          manualYearOverride = false;
+          manualYearValue = null;
+
+          // Update year nav to match current slide
+          updateYearNavigation(swiper);
+
+          // Re-enable Next button (we're back to the "fake-enable" state)
+          updateNextButtonState(swiper);
+        } else {
+          // Normal navigation - just clear any stale override state
+          manualYearOverride = false;
+          manualYearValue = null;
+        }
       });
     }
   }
