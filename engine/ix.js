@@ -1175,6 +1175,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let manualYearOverride = false;
   let manualYearValue = null;
 
+  // Flag to track if Next button is in fake-enabled state
+  let nextButtonFakeEnabled = false;
+
   var mySwiper = new Swiper("#timeline-swiper", {
     direction: "horizontal",
     slidesPerView: 1,
@@ -1388,13 +1391,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!nextButton) return;
 
     if (shouldFakeEnableNext(swiper)) {
+      // Set flag BEFORE enabling button visually
+      nextButtonFakeEnabled = true;
+
       // Fake-enable: remove disabled class and attributes
       nextButton.classList.remove("timeline-nav-disabled");
       nextButton.removeAttribute("disabled");
       nextButton.setAttribute("aria-disabled", "false");
       nextButton.setAttribute("tabindex", "0");
+    } else {
+      // Clear the flag when not fake-enabled
+      nextButtonFakeEnabled = false;
     }
-    // Note: We don't re-disable here - let Swiper handle normal disabled state
   }
 
   // Manually set year nav state (for year nav clicks)
@@ -1510,20 +1518,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (nextButton) {
       nextButton.addEventListener("click", function (e) {
-        const isDesktop = window.innerWidth >= 992;
-        const maxIndex = swiper.slides.length - 2;
-        const isAtEnd = isDesktop && swiper.activeIndex >= maxIndex;
-
-        // Only trigger fake override if already at end AND conditions are met
-        if (isAtEnd && shouldFakeEnableNext(swiper)) {
-          // Swiper can't go further anyway (at max index), no need to prevent
-
+        // Only trigger override if the flag was set BEFORE this click
+        // This prevents race conditions where swiper moves before our handler runs
+        if (nextButtonFakeEnabled) {
           // Trigger year override to last year
           const lastYear = getLastYearInNav();
           if (lastYear) {
             manualYearOverride = true;
             manualYearValue = lastYear;
             setYearNavState(lastYear);
+
+            // Clear the fake-enabled flag
+            nextButtonFakeEnabled = false;
 
             // Block prev navigation while in override state
             swiper.allowSlidePrev = false;
