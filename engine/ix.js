@@ -1183,8 +1183,8 @@ document.addEventListener("DOMContentLoaded", function () {
     slidesPerView: 1,
     slidesPerGroup: 1,
     spaceBetween: 16,
-    grabCursor: true,
-    allowTouchMove: true,
+    grabCursor: false,
+    allowTouchMove: false,
     autoHeight: false,
     watchOverflow: true,
     slidesOffsetBefore: 0,
@@ -1219,6 +1219,10 @@ document.addEventListener("DOMContentLoaded", function () {
     watchSlidesProgress: false,
     watchSlidesVisibility: false,
     breakpoints: {
+      0: {
+        allowTouchMove: true,
+        grabCursor: true,
+      },
       992: {
         slidesPerView: 2,
         spaceBetween: 16,
