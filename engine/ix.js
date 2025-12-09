@@ -1240,9 +1240,25 @@ document.addEventListener("DOMContentLoaded", function () {
         updateNextButtonState(this);
       },
       slideChange: function () {
+        console.log("=== slideChange ===");
+        console.log("activeIndex:", this.activeIndex);
+        console.log("manualYearOverride before:", manualYearOverride);
+
         updateSlideAttributes(this);
+        console.log("after updateSlideAttributes");
+
         updateYearNavigation(this);
+        console.log(
+          "after updateYearNavigation, highlighted year:",
+          getCurrentlyHighlightedYear(),
+        );
+
         updateNextButtonState(this);
+        console.log(
+          "after updateNextButtonState, nextButtonFakeEnabled:",
+          nextButtonFakeEnabled,
+        );
+        console.log("=== end slideChange ===");
       },
       resize: function () {
         updateSlideAttributes(this);
@@ -1518,9 +1534,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (nextButton) {
       nextButton.addEventListener("click", function (e) {
+        console.log("=== Next click ===");
+        console.log("nextButtonFakeEnabled:", nextButtonFakeEnabled);
+        console.log("activeIndex:", swiper.activeIndex);
+
         // Only trigger override if the flag was set BEFORE this click
         // This prevents race conditions where swiper moves before our handler runs
         if (nextButtonFakeEnabled) {
+          console.log("TRIGGERING OVERRIDE");
           // Trigger year override to last year
           const lastYear = getLastYearInNav();
           if (lastYear) {
