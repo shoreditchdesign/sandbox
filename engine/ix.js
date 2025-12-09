@@ -1432,12 +1432,17 @@ document.addEventListener("DOMContentLoaded", function () {
         manualYearOverride = true;
         manualYearValue = targetYear;
         setYearNavState(targetYear);
+
+        // Block prev navigation while in override state
+        swiper.allowSlidePrev = false;
+
         // Update Next button state after year override
         updateNextButtonState(swiper);
       } else {
-        // Normal navigation - clear override and update year nav
+        // Normal navigation - clear override and restore prev navigation
         manualYearOverride = false;
         manualYearValue = null;
+        swiper.allowSlidePrev = true;
 
         // If we're already on the target slide, manually update year nav
         // (since slideChange won't fire)
@@ -1511,9 +1516,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Only trigger fake override if already at end AND conditions are met
         if (isAtEnd && shouldFakeEnableNext(swiper)) {
-          // Prevent default swiper navigation (it can't go further anyway)
-          e.stopPropagation();
-          e.preventDefault();
+          // Swiper can't go further anyway (at max index), no need to prevent
 
           // Trigger year override to last year
           const lastYear = getLastYearInNav();
@@ -1521,6 +1524,9 @@ document.addEventListener("DOMContentLoaded", function () {
             manualYearOverride = true;
             manualYearValue = lastYear;
             setYearNavState(lastYear);
+
+            // Block prev navigation while in override state
+            swiper.allowSlidePrev = false;
 
             // Now truly disable the button (we're on last year)
             nextButton.classList.add("timeline-nav-disabled");
@@ -1532,30 +1538,33 @@ document.addEventListener("DOMContentLoaded", function () {
           // Normal navigation - clear manual override
           manualYearOverride = false;
           manualYearValue = null;
+          swiper.allowSlidePrev = true;
         }
       });
     }
 
     if (prevButton) {
       prevButton.addEventListener("click", function (e) {
-        // If in override state, don't move swiper - just clear override
+        // If in override state, swiper is blocked by allowSlidePrev = false
+        // Just clear override and restore normal navigation
         if (manualYearOverride) {
-          e.stopPropagation();
-          e.preventDefault();
-
-          // Clear override - year nav will update to match actual active slide
+          // Clear override
           manualYearOverride = false;
           manualYearValue = null;
 
-          // Update year nav to match current slide
+          // Re-enable swiper prev navigation
+          swiper.allowSlidePrev = true;
+
+          // Update year nav to match actual active slide
           updateYearNavigation(swiper);
 
           // Re-enable Next button (we're back to the "fake-enable" state)
           updateNextButtonState(swiper);
         } else {
-          // Normal navigation - just clear any stale override state
+          // Normal navigation - ensure override state is clear
           manualYearOverride = false;
           manualYearValue = null;
+          swiper.allowSlidePrev = true;
         }
       });
     }
