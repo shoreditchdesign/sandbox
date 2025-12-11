@@ -101,6 +101,9 @@ const formatFilterLabel = (filterId: string): string => {
 export function nestedFilterCMS(Component: ComponentType): ComponentType {
   return (props) => {
     const [filters, setFilters] = useState<{ [key: string]: string }>({});
+    const [filterOptions, setFilterOptions] = useState<{
+      [key: string]: string[];
+    }>({});
     const [filtersInitialized, setFiltersInitialized] = useState(false);
     const [renderTarget, setRenderTarget] = useState<HTMLElement | null>(null);
     const selectRefs = useRef<{ [key: string]: HTMLSelectElement | null }>({});
@@ -250,6 +253,7 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
     };
 
     // Discover filters from all filter-item elements in the document
+    // This runs once on mount and stores options permanently
     useEffect(() => {
       const items = document.querySelectorAll(`[aria-label="${ITEM_LABEL}"]`);
       const uniqueFilters: { [key: string]: Set<string> } = {};
@@ -281,9 +285,15 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
       });
 
       const initialFilters: { [key: string]: string } = {};
+      const storedOptions: { [key: string]: string[] } = {};
       Object.keys(uniqueFilters).forEach((filterId) => {
         initialFilters[filterId] = "";
+        // Store options as sorted array for consistent ordering
+        storedOptions[filterId] = Array.from(uniqueFilters[filterId]).sort();
       });
+
+      // Store options permanently so they persist through filtering
+      setFilterOptions(storedOptions);
 
       // Merge URL parameters with initial filters
       const urlFilters = getFiltersFromURL();
@@ -336,21 +346,11 @@ export function nestedFilterCMS(Component: ComponentType): ComponentType {
                   style={style}
                 >
                   <option value="">All {formatFilterLabel(filterId)}</option>
-                  {Array.from(
-                    document.querySelectorAll(
-                      `[aria-label="${ITEM_LABEL}"] [aria-label="${FILTER_PREFIX}${filterId}"]`,
-                    ),
-                  )
-                    .map((el) => el.textContent?.trim())
-                    .filter(
-                      (value, index, self) =>
-                        value && self.indexOf(value) === index,
-                    )
-                    .map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                  {(filterOptions[filterId] || []).map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
                 </select>
                 <span
                   style={{
