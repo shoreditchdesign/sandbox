@@ -39,6 +39,8 @@ interface AshbyJobBoardProps {
   loadingContent?: React.ReactNode;
   errorContent?: React.ReactNode;
   style?: CSSProperties;
+  onApplicationSubmitted?: () => void;
+  successRedirectUrl?: string;
 }
 
 // Extend Window interface for Ashby
@@ -74,6 +76,8 @@ export default function CMSFormRender(props: AshbyJobBoardProps) {
     customCssUrl,
     loadingContent,
     errorContent,
+    onApplicationSubmitted,
+    successRedirectUrl,
   } = props;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -81,7 +85,6 @@ export default function CMSFormRender(props: AshbyJobBoardProps) {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [jobPostingId, setJobPostingId] = useState<string | null>(null);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const scriptLoadedRef = useRef(false);
   const isMountedRef = useRef(true);
@@ -196,6 +199,49 @@ export default function CMSFormRender(props: AshbyJobBoardProps) {
       // Note: We don't remove the script on unmount as it might be used by other instances
     };
   }, [ashbyBaseUrl, displayMode, autoScroll, verboseLogging, customCssUrl]);
+
+  // Listen for postMessage events from Ashby iframe
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from Ashby domain
+      if (!event.origin.includes("ashbyhq.com")) return;
+
+      const data = event.data;
+
+      if (verboseLogging) {
+        console.log("Ashby postMessage received:", data);
+      }
+
+      // Check for application submission events
+      // Ashby may send different event types - log them to discover the exact format
+      if (
+        data?.type === "applicationSubmitted" ||
+        data?.type === "application_submitted" ||
+        data?.event === "applicationSubmitted" ||
+        data?.event === "application_submitted" ||
+        data?.action === "submitted" ||
+        (typeof data === "string" && data.includes("submitted"))
+      ) {
+        if (verboseLogging) {
+          console.log("Application submitted detected!");
+        }
+
+        onApplicationSubmitted?.();
+
+        if (successRedirectUrl) {
+          window.location.href = successRedirectUrl;
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [isLoaded, verboseLogging, onApplicationSubmitted, successRedirectUrl]);
 
   // Error state UI
   if (hasError) {
@@ -346,5 +392,11 @@ addPropertyControls(CMSFormRender, {
   errorContent: {
     type: ControlType.ComponentInstance,
     title: "Error Content",
+  },
+  successRedirectUrl: {
+    type: ControlType.String,
+    title: "Success Redirect URL",
+    placeholder: "/thank-you",
+    description: "URL to redirect to after successful application submission",
   },
 });
