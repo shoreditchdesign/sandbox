@@ -22,17 +22,13 @@ const TAB_GAP = "8px";
 const CONTAINER_MARGIN_BOTTOM = "24px";
 
 // Colors
-const BORDER_COLOR = "#E2E8F0";
-const ACTIVE_BORDER_COLOR = "#594FEE";
 const HOVER_BACKGROUND_COLOR = "#132130";
 const ACTIVE_BACKGROUND_COLOR = "#1D2733";
-const BACKGROUND_COLOR = "#F7F7F7";
+const BACKGROUND_COLOR = "#FFFFFF";
 const PAGINATION_BACKGROUND_COLOR = "#0F1924";
-const DISABLED_OPACITY = 0.6;
 
 // Borders and dimensions
 const BORDER_RADIUS = "150px";
-const BORDER_WIDTH = "2px";
 
 // Base styles for tab buttons
 const baseTabStyles = {
@@ -52,9 +48,9 @@ const baseTabStyles = {
   minWidth: "80px",
 };
 
-export default function tabFilterCMS(Component: ComponentType): ComponentType {
+export default function tabToggleCMS(Component: ComponentType): ComponentType {
   return (props) => {
-    const [activeTab, setActiveTab] = useState<string>("all");
+    const [activeTab, setActiveTab] = useState<string>("");
     const [tabs, setTabs] = useState<string[]>([]);
     const [visibleCount, setVisibleCount] = useState<number>(ITEMS_PER_PAGE);
     const [renderTarget, setRenderTarget] = useState<HTMLElement | null>(null);
@@ -64,9 +60,9 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
     // Find the target divs to render tabs and pagination
     useEffect(() => {
       const target = document.querySelector(
-        '[aria-label="tab-buttons"]',
+        '[aria-label="tab-toggle"]',
       ) as HTMLElement;
-      console.log("Tab buttons target:", target);
+      console.log("Tab toggle target:", target);
       setRenderTarget(target);
 
       const pagTarget = document.querySelector(
@@ -92,7 +88,12 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
         });
 
         if (uniqueTabs.size > 0) {
-          setTabs(Array.from(uniqueTabs).sort());
+          const sorted = Array.from(uniqueTabs).sort();
+          setTabs(sorted);
+          // Default to first tab
+          if (!activeTab) {
+            setActiveTab(sorted[0]);
+          }
           return true;
         }
         return false;
@@ -112,6 +113,8 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
 
     // Filter cards based on active tab and visible count
     useEffect(() => {
+      if (!activeTab) return;
+
       const items = document.querySelectorAll('[aria-label="tab-item"]');
 
       // First filter by tab
@@ -120,9 +123,7 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
         const filterTab = item.querySelector('[aria-label="tab-filter"]');
         const tabValue = filterTab?.textContent?.trim();
 
-        const matchesTab = activeTab === "all" || tabValue === activeTab;
-
-        if (matchesTab) {
+        if (tabValue === activeTab) {
           filteredItems.push(item as HTMLElement);
         } else {
           (item as HTMLElement).style.display = "none";
@@ -141,18 +142,20 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
 
     const handleTabClick = (tab: string) => {
       setActiveTab(tab);
-      setVisibleCount(ITEMS_PER_PAGE); // Reset visible count when changing tabs
+      setVisibleCount(ITEMS_PER_PAGE);
     };
 
     // Get total filtered items count
     const getTotalFilteredCount = () => {
+      if (!activeTab) return 0;
+
       const items = document.querySelectorAll('[aria-label="tab-item"]');
       let count = 0;
 
       items.forEach((item) => {
         const filterTab = item.querySelector('[aria-label="tab-filter"]');
         const tabValue = filterTab?.textContent?.trim();
-        if (activeTab === "all" || tabValue === activeTab) {
+        if (tabValue === activeTab) {
           count++;
         }
       });
@@ -163,13 +166,6 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
     const totalCount = getTotalFilteredCount();
     const hasMore = visibleCount < totalCount;
     const remainingCount = totalCount - visibleCount;
-
-    console.log("Pagination stats:", {
-      totalCount,
-      visibleCount,
-      hasMore,
-      remainingCount,
-    });
 
     const handleLoadMore = () => {
       setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
@@ -184,20 +180,6 @@ export default function tabFilterCMS(Component: ComponentType): ComponentType {
           flexWrap: "wrap",
         }}
       >
-        {/* All tab */}
-        <button
-          onClick={() => handleTabClick("all")}
-          style={{
-            ...baseTabStyles,
-            color: activeTab === "all" ? ACTIVE_TEXT_COLOR : TEXT_COLOR,
-            background:
-              activeTab === "all" ? ACTIVE_BACKGROUND_COLOR : BACKGROUND_COLOR,
-          }}
-        >
-          All
-        </button>
-
-        {/* Dynamic tabs */}
         {tabs.map((tab) => (
           <button
             key={tab}
