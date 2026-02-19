@@ -78,17 +78,30 @@ export default function tabToggleCMS(Component: ComponentType): ComponentType {
         const items = document.querySelectorAll('[aria-label="tab-item"]');
         if (items.length === 0) return false;
 
-        const uniqueTabs = new Set<string>();
+        const tabsWithIndex: { name: string; index: number }[] = [];
+        const seenTabs = new Set<string>();
+
         items.forEach((item) => {
           const filterTab = item.querySelector('[aria-label="tab-filter"]');
+          const indexEl = item.querySelector('[aria-label="tab-index"]');
           const text = filterTab?.textContent?.trim();
-          if (text) {
-            uniqueTabs.add(text);
+          const indexValue = indexEl?.textContent?.trim();
+
+          if (text && !seenTabs.has(text)) {
+            seenTabs.add(text);
+            const index = indexValue ? parseInt(indexValue, 10) : Infinity;
+            tabsWithIndex.push({
+              name: text,
+              index: isNaN(index) ? Infinity : index,
+            });
           }
         });
 
-        if (uniqueTabs.size > 0) {
-          const sorted = Array.from(uniqueTabs).sort();
+        if (tabsWithIndex.length > 0) {
+          // Sort by index (ascending), tabs without index go to the end
+          const sorted = tabsWithIndex
+            .sort((a, b) => a.index - b.index)
+            .map((t) => t.name);
           setTabs(sorted);
           // Default to first tab
           if (!activeTab) {
