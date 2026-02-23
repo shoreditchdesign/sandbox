@@ -1,4 +1,5 @@
 // Carousel component with CMS collection list support, navigation buttons, heading, and responsive configuration
+// v2: removes dependency on framer CDN module (CMSSlideshow) to avoid 'use-effect-event' resolution error
 import { addPropertyControls, ControlType, RenderTarget } from "framer";
 import {
   useEffect,
@@ -8,10 +9,32 @@ import {
   type CSSProperties,
 } from "react";
 import React from "react";
-import {
-  CanvasPlaceholder,
-  getCollectionListItems,
-} from "https://framer.com/m/CMSSlideshow-xxTt.js@Gwq5XNGR2fw3oxqNnFeg";
+
+// Replaces getCollectionListItems from the CDN module.
+// Framer CMS lists use a render-prop pattern where children is a function.
+// We call it with an empty object to get the rendered items.
+function getCollectionListItems(
+  node: React.ReactNode,
+  depth = 0,
+): React.ReactElement[] {
+  if (depth > 15 || !React.isValidElement(node)) return [];
+
+  const el = node as React.ReactElement<any>;
+  const children = el.props?.children;
+
+  // Array of items — this is what we want
+  if (Array.isArray(children) && children.length > 0) {
+    const valid = children.filter(React.isValidElement) as React.ReactElement[];
+    if (valid.length > 0) return valid;
+  }
+
+  // Single React element — recurse deeper
+  if (React.isValidElement(children)) {
+    return getCollectionListItems(children, depth + 1);
+  }
+
+  return [];
+}
 
 interface CarouselProps {
   collectionList?: React.ReactNode[];
@@ -35,7 +58,7 @@ interface CarouselProps {
  * @framerSupportedLayoutWidth any
  * @framerSupportedLayoutHeight auto
  */
-export default function CMSSwiper(props: CarouselProps) {
+export default function CMSSwiperV2(props: CarouselProps) {
   const {
     collectionList,
     startLayers = [],
@@ -64,33 +87,43 @@ export default function CMSSwiper(props: CarouselProps) {
 
   const isCanvas = RenderTarget.current() === RenderTarget.canvas;
 
-  // Extract children from collection list wrapper (ONLY CHANGE FROM ORIGINAL)
   let slides: React.ReactNode[] = [];
 
-  // Add start layers
   if (startLayers && startLayers.length > 0) {
     slides = slides.concat(startLayers);
   }
 
-  // Extract CMS List children and filter out hidden items
   if (!isCanvas) {
-    const items = getCollectionListItems(collectionList?.[0]);
+    const raw = collectionList?.[0];
+    console.log(
+      "[CMS Swiper v2] MOUNTED — isCanvas:",
+      isCanvas,
+      "| collectionList:",
+      collectionList,
+    );
+    console.log("[CMS Swiper v2] collectionList[0]:", raw);
+    console.log(
+      "[CMS Swiper v2] collectionList[0] props:",
+      raw && (raw as any).props,
+    );
+    const items = getCollectionListItems(raw);
+    console.log("[CMS Swiper v2] items found:", items.length, items);
+
     if (items && items.length > 0) {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        // Check if the item has the hidden class (from filter)
-        const itemElement = item.props.children;
-        const isHidden = itemElement?.props?.className?.includes("hidden");
-
-        // Only include items that are not hidden
+        const className =
+          item.props?.className ||
+          (item.props?.children as any)?.props?.className ||
+          "";
+        const isHidden = className.includes("hidden");
         if (!isHidden) {
-          slides.push(item.props.children.props.children);
+          slides.push(item);
         }
       }
     }
   }
 
-  // Add end layers
   if (endLayers && endLayers.length > 0) {
     slides = slides.concat(endLayers);
   }
@@ -99,11 +132,9 @@ export default function CMSSwiper(props: CarouselProps) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const checkMobile = () => {
       startTransition(() => setIsMobile(window.innerWidth < 768));
     };
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -123,20 +154,11 @@ export default function CMSSwiper(props: CarouselProps) {
     }
   }, [currentIndex, slidesPerView, slideGap, isMobile]);
 
-  // Autoplay functionality
   useEffect(() => {
     if (!autoplay || isDragging) return;
-
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        // Loop back to start when reaching the end
-        if (prev >= maxIndex) {
-          return 0;
-        }
-        return prev + 1;
-      });
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
     }, autoplayDelay);
-
     return () => clearInterval(interval);
   }, [autoplay, autoplayDelay, maxIndex, isDragging]);
 
@@ -159,21 +181,14 @@ export default function CMSSwiper(props: CarouselProps) {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !enableDrag) return;
-    const diff = e.clientX - startX;
-    setDragOffset(diff);
+    setDragOffset(e.clientX - startX);
   };
 
   const handleMouseUp = () => {
     if (!isDragging || !enableDrag) return;
     setIsDragging(false);
-
-    const threshold = 50;
-    if (Math.abs(dragOffset) > threshold) {
-      if (dragOffset > 0) {
-        handlePrevious();
-      } else {
-        handleNext();
-      }
+    if (Math.abs(dragOffset) > 50) {
+      dragOffset > 0 ? handlePrevious() : handleNext();
     }
     setDragOffset(0);
   };
@@ -187,21 +202,14 @@ export default function CMSSwiper(props: CarouselProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !enableDrag) return;
-    const diff = e.touches[0].clientX - startX;
-    setDragOffset(diff);
+    setDragOffset(e.touches[0].clientX - startX);
   };
 
   const handleTouchEnd = () => {
     if (!isDragging || !enableDrag) return;
     setIsDragging(false);
-
-    const threshold = 50;
-    if (Math.abs(dragOffset) > threshold) {
-      if (dragOffset > 0) {
-        handlePrevious();
-      } else {
-        handleNext();
-      }
+    if (Math.abs(dragOffset) > 50) {
+      dragOffset > 0 ? handlePrevious() : handleNext();
     }
     setDragOffset(0);
   };
@@ -224,13 +232,7 @@ export default function CMSSwiper(props: CarouselProps) {
         }}
       >
         <div style={{ flex: 1 }}>{heading}</div>
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-          }}
-        >
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div
             onClick={handlePrevious}
             style={{
@@ -256,11 +258,7 @@ export default function CMSSwiper(props: CarouselProps) {
 
       <div
         ref={containerRef}
-        style={{
-          width: "100%",
-          overflow: "visible",
-          position: "relative",
-        }}
+        style={{ width: "100%", overflow: "visible", position: "relative" }}
       >
         {totalSlides === 0 ? (
           <div
@@ -337,9 +335,9 @@ export default function CMSSwiper(props: CarouselProps) {
   );
 }
 
-CMSSwiper.displayName = "CMS Swiper";
+CMSSwiperV2.displayName = "CMS Swiper V2";
 
-addPropertyControls(CMSSwiper, {
+addPropertyControls(CMSSwiperV2, {
   collectionList: {
     type: ControlType.ComponentInstance,
     title: "Collection List",
@@ -347,17 +345,13 @@ addPropertyControls(CMSSwiper, {
   startLayers: {
     type: ControlType.Array,
     title: "Start Layers",
-    control: {
-      type: ControlType.ComponentInstance,
-    },
+    control: { type: ControlType.ComponentInstance },
     maxCount: 20,
   },
   endLayers: {
     type: ControlType.Array,
     title: "End Layers",
-    control: {
-      type: ControlType.ComponentInstance,
-    },
+    control: { type: ControlType.ComponentInstance },
     maxCount: 20,
   },
   heading: {
