@@ -13,7 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const grid = document.querySelector("[data-search-grid]");
   const template = document.querySelector("[data-search-card]");
   const loadBtn = document.querySelector("[data-search-load]");
+  const loadWrap = loadBtn ? loadBtn.parentElement : null;
   const emptyEl = document.querySelector("[data-search-empty]");
+  const waitEl = document.querySelector("[data-search-wait]");
 
   if (!grid || !template) return;
 
@@ -79,17 +81,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateLoadBtn() {
-    if (!loadBtn) return;
-    if (renderedCount >= filteredPosts.length) {
-      loadBtn.style.display = "none";
-    } else {
-      loadBtn.style.display = "";
-    }
+    if (!loadWrap) return;
+    loadWrap.style.display = renderedCount >= filteredPosts.length ? "none" : "flex";
   }
 
   function showEmpty() {
+    if (waitEl) waitEl.style.display = "none";
     if (emptyEl) emptyEl.style.display = "block";
-    if (loadBtn) loadBtn.style.display = "none";
   }
 
   // --- Fetch & initialise ---
@@ -122,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Render first page
+      if (waitEl) waitEl.style.display = "none";
       grid.style.display = "grid";
       renderedCount += renderBatch(filteredPosts, 0, PAGE_SIZE);
       updateLoadBtn();
