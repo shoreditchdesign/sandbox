@@ -32,11 +32,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function filterPosts(posts) {
-    const cutoff = Date.now() - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const updateCutoff = Date.now() - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const globalCutoff = new Date("2022-01-01T00:00:00Z").getTime();
     return posts.filter((post) => {
-      if (UPDATE_CATEGORIES.includes(post.cat)) {
-        return new Date(post.timestamp).getTime() >= cutoff;
-      }
+      const ts = new Date(post.timestamp).getTime();
+      if (ts < globalCutoff) return false;
+      if (UPDATE_CATEGORIES.includes(post.cat)) return ts >= updateCutoff;
       return true;
     });
   }
@@ -94,6 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Fetch & initialise ---
 
   async function init() {
+    grid.style.display = "none";
+
     const query = getQuery();
     if (!query) {
       showEmpty();
@@ -121,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Render first page
+      grid.style.display = "";
       renderedCount += renderBatch(filteredPosts, 0, PAGE_SIZE);
       updateLoadBtn();
 
