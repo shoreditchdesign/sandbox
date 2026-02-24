@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     const query = input.value.trim();
     if (!query) return;
-    window.location.href = "/news-search?query=" + encodeURIComponent(query);
+    window.location.href = "/search-results?query=" + encodeURIComponent(query);
   }
 
   form.addEventListener("submit", handleSearch);
