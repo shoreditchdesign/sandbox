@@ -140,3 +140,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   init();
 });
+
+// Search Form
+// Listens for submit on [data-search-form] and redirects to /news-search?query={{input}}
+// Works independently — safe to include on any page with the form present.
+
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("[data-search-form]");
+  const input = document.querySelector("[data-search-input]");
+  const submit = document.querySelector("[data-search-submit]");
+
+  if (!form || !input) return;
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (!query) return;
+    window.location.href = "/news-search?query=" + encodeURIComponent(query);
+  }
+
+  form.addEventListener("submit", handleSearch);
+
+  if (submit) {
+    submit.addEventListener("click", handleSearch);
+  }
+});
