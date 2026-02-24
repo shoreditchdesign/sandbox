@@ -95,8 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Fetch & initialise ---
 
   async function init() {
-    grid.style.display = "none";
-
     const query = getQuery();
     if (!query) {
       showEmpty();
@@ -124,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Render first page
-      grid.style.display = "";
+      grid.style.display = "grid";
       renderedCount += renderBatch(filteredPosts, 0, PAGE_SIZE);
       updateLoadBtn();
 
