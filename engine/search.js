@@ -34,11 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function filterPosts(posts) {
-    const updateCutoff = Date.now() - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const updateCutoff = now - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
     const globalCutoff = new Date("2022-01-01T00:00:00Z").getTime();
+    const syncGrace = now - 2 * 60 * 60 * 1000;
     return posts.filter((post) => {
       const ts = new Date(post.timestamp).getTime();
       if (ts < globalCutoff) return false;
+      if (ts > syncGrace) return false;
       if (UPDATE_CATEGORIES.includes(post.cat)) return ts >= updateCutoff;
       return true;
     });
