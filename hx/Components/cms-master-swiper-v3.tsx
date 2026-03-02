@@ -1,92 +1,17 @@
-// Carousel component with CMS collection list support, navigation buttons, heading, and responsive configuration
-// v2: removes dependency on framer CDN module (CMSSlideshow) to avoid 'use-effect-event' resolution error
+// CMS Swiper v3 — renders the CMS collection list in a hidden div, then reads
+// the DOM after render to clone [aria-label="swiper-slide"] nodes into the swiper.
 import { addPropertyControls, ControlType, RenderTarget } from "framer";
 import {
   useEffect,
   useRef,
   useState,
   startTransition,
-  useCallback,
   type CSSProperties,
 } from "react";
 import React from "react";
 
-// Recursively searches a rendered React subtree for elements with
-// aria-label="swiper-slide" and collects them.
-function findSlides(
-  node: React.ReactNode,
-  found: React.ReactElement[],
-  depth = 0,
-) {
-  if (depth > 20 || !React.isValidElement(node)) return;
-  const el = node as React.ReactElement<any>;
-  if (el.props?.["aria-label"] === "swiper-slide") {
-    found.push(el);
-    return; // don't recurse into the slide itself
-  }
-  const children = el.props?.children;
-  if (Array.isArray(children)) {
-    children.forEach((c) => findSlides(c, found, depth + 1));
-  } else if (React.isValidElement(children)) {
-    findSlides(children, found, depth + 1);
-  }
-}
-
-// Intercepts Framer's render-prop CMS list by cloning the element tree and
-// wrapping the innermost function-children with a passthrough that captures
-// the produced items without calling the function ourselves.
-function cloneWithRenderIntercept(
-  node: React.ReactNode,
-  onCapture: (items: React.ReactElement[]) => void,
-  depth = 0,
-): React.ReactNode {
-  if (depth > 15 || !React.isValidElement(node)) return node;
-
-  const el = node as React.ReactElement<any>;
-  const children = el.props?.children;
-
-  // Found the render-prop function — wrap it
-  if (typeof children === "function") {
-    return React.cloneElement(el, {
-      children: (...args: any[]) => {
-        const result = children(...args);
-        // Walk the rendered output to find aria-label="swiper-slide" elements
-        const slides: React.ReactElement[] = [];
-        const nodes = Array.isArray(result) ? result : [result];
-        nodes.forEach((n) => findSlides(n, slides));
-        if (slides.length > 0) onCapture(slides);
-        return result;
-      },
-    });
-  }
-
-  // Single child — recurse
-  if (React.isValidElement(children)) {
-    return React.cloneElement(el, {
-      children: cloneWithRenderIntercept(children, onCapture, depth + 1),
-    });
-  }
-
-  return node;
-}
-
-// Renders the Framer CMS list element and captures the produced items via
-// render interception. Calls onItems once per render with the current items.
-function CMSListCapture({
-  node,
-  onItems,
-}: {
-  node: React.ReactNode;
-  onItems: (items: React.ReactElement[]) => void;
-}) {
-  const captured = cloneWithRenderIntercept(node, onItems);
-  return <>{captured}</>;
-}
-
 interface CarouselProps {
-  collectionList?: React.ReactNode[];
-  startLayers?: React.ReactNode[];
-  endLayers?: React.ReactNode[];
+  collectionList?: React.ReactNode;
   heading: React.ReactNode;
   previousButton: React.ReactNode;
   nextButton: React.ReactNode;
@@ -105,11 +30,9 @@ interface CarouselProps {
  * @framerSupportedLayoutWidth any
  * @framerSupportedLayoutHeight auto
  */
-export default function CMSSwiperV2(props: CarouselProps) {
+export default function CMSSwiperV3(props: CarouselProps) {
   const {
     collectionList,
-    startLayers = [],
-    endLayers = [],
     heading,
     previousButton,
     nextButton,
@@ -123,35 +46,52 @@ export default function CMSSwiperV2(props: CarouselProps) {
     autoplayDelay = 3000,
   } = props;
 
+  const [slideNodes, setSlideNodes] = useState<HTMLElement[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [cmsItems, setCmsItems] = useState<React.ReactElement[]>([]);
+
+  const hiddenRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
   const isCanvas = RenderTarget.current() === RenderTarget.canvas;
 
-  const handleCapturedItems = useCallback((items: React.ReactElement[]) => {
-    setCmsItems(items);
-  }, []);
+  // Unwrap array wrapper Framer sometimes adds
+  const rawNode = Array.isArray(collectionList)
+    ? collectionList[0]
+    : collectionList;
 
-  const slides: React.ReactNode[] = [
-    ...(startLayers ?? []),
-    ...cmsItems,
-    ...(endLayers ?? []),
-  ];
+  // After the hidden CMS list renders, query for aria-label="swiper-slide" nodes
+  // and clone them into state so the swiper can render them.
+  useEffect(() => {
+    if (!hiddenRef.current) return;
 
-  const totalSlides = slides.length;
+    const read = () => {
+      const found = hiddenRef.current!.querySelectorAll<HTMLElement>(
+        '[aria-label="swiper-slide"]',
+      );
+      if (found.length > 0) {
+        setSlideNodes(Array.from(found));
+      }
+    };
+
+    // Read immediately, then also observe for CMS async renders
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(hiddenRef.current, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [rawNode]);
+
+  const totalSlides = slideNodes.length;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const checkMobile = () => {
+    const checkMobile = () =>
       startTransition(() => setIsMobile(window.innerWidth < 768));
-    };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -166,8 +106,9 @@ export default function CMSSwiperV2(props: CarouselProps) {
       const containerWidth = containerRef.current.offsetWidth;
       const totalGapWidth = slideGap * (slidesPerView - 1);
       const slideWidth = (containerWidth - totalGapWidth) / slidesPerView;
-      const newTranslate = -(currentIndex * (slideWidth + slideGap));
-      startTransition(() => setTranslateX(newTranslate));
+      startTransition(() =>
+        setTranslateX(-(currentIndex * (slideWidth + slideGap))),
+      );
     }
   }, [currentIndex, slidesPerView, slideGap, isMobile]);
 
@@ -179,15 +120,13 @@ export default function CMSSwiperV2(props: CarouselProps) {
     return () => clearInterval(interval);
   }, [autoplay, autoplayDelay, maxIndex, isDragging]);
 
-  const handlePrevious = () => {
+  const handlePrevious = () =>
     startTransition(() => setCurrentIndex((prev) => Math.max(0, prev - 1)));
-  };
 
-  const handleNext = () => {
+  const handleNext = () =>
     startTransition(() =>
       setCurrentIndex((prev) => Math.min(maxIndex, prev + 1)),
     );
-  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!enableDrag) return;
@@ -204,9 +143,7 @@ export default function CMSSwiperV2(props: CarouselProps) {
   const handleMouseUp = () => {
     if (!isDragging || !enableDrag) return;
     setIsDragging(false);
-    if (Math.abs(dragOffset) > 50) {
-      dragOffset > 0 ? handlePrevious() : handleNext();
-    }
+    if (Math.abs(dragOffset) > 50) dragOffset > 0 ? handlePrevious() : handleNext();
     setDragOffset(0);
   };
 
@@ -225,13 +162,9 @@ export default function CMSSwiperV2(props: CarouselProps) {
   const handleTouchEnd = () => {
     if (!isDragging || !enableDrag) return;
     setIsDragging(false);
-    if (Math.abs(dragOffset) > 50) {
-      dragOffset > 0 ? handlePrevious() : handleNext();
-    }
+    if (Math.abs(dragOffset) > 50) dragOffset > 0 ? handlePrevious() : handleNext();
     setDragOffset(0);
   };
-
-  const rawCollectionNode = !isCanvas ? collectionList?.[0] : null;
 
   return (
     <div
@@ -242,19 +175,28 @@ export default function CMSSwiperV2(props: CarouselProps) {
         gap: componentGap,
       }}
     >
-      {/* Hidden render of the CMS list so Framer calls its own render-prop
-          and we intercept the output via CMSListCapture */}
-      {rawCollectionNode && (
-        <div style={{ display: "none" }}>
-          <CMSListCapture node={rawCollectionNode} onItems={handleCapturedItems} />
+      {/* Hidden CMS render — DOM is real, we query it after mount */}
+      {!isCanvas && rawNode && (
+        <div
+          ref={hiddenRef}
+          style={{
+            position: "absolute",
+            visibility: "hidden",
+            pointerEvents: "none",
+            width: "100%",
+          }}
+        >
+          {rawNode}
         </div>
       )}
+
       <div
         style={{
           width: "100%",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
         }}
       >
         <div style={{ flex: 1 }}>{heading}</div>
@@ -296,7 +238,8 @@ export default function CMSSwiperV2(props: CarouselProps) {
               color: "#666",
             }}
           >
-            No slides found. Connect a CMS List to the Collection List slot.
+            No slides found. Connect a CMS List and mark each card with
+            aria-label="swiper-slide".
           </div>
         ) : (
           <div
@@ -322,7 +265,7 @@ export default function CMSSwiperV2(props: CarouselProps) {
               userSelect: "none",
             }}
           >
-            {slides.map((slide, index) => (
+            {slideNodes.map((domNode, index) => (
               <div
                 key={index}
                 style={{
@@ -334,24 +277,22 @@ export default function CMSSwiperV2(props: CarouselProps) {
                 }}
               >
                 <div
+                  ref={(el) => {
+                    if (el && !el.hasChildNodes()) {
+                      const clone = domNode.cloneNode(true) as HTMLElement;
+                      clone.style.width = "100%";
+                      clone.style.height = "100%";
+                      clone.style.flex = "1";
+                      el.appendChild(clone);
+                    }
+                  }}
                   style={{
                     width: "100%",
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
                   }}
-                >
-                  {React.isValidElement(slide)
-                    ? React.cloneElement(slide as React.ReactElement<any>, {
-                        style: {
-                          ...(slide.props.style || {}),
-                          width: "100%",
-                          height: "100%",
-                          flex: 1,
-                        },
-                      })
-                    : slide}
-                </div>
+                />
               </div>
             ))}
           </div>
@@ -361,24 +302,12 @@ export default function CMSSwiperV2(props: CarouselProps) {
   );
 }
 
-CMSSwiperV2.displayName = "CMS Swiper V2";
+CMSSwiperV3.displayName = "CMS Swiper V3";
 
-addPropertyControls(CMSSwiperV2, {
+addPropertyControls(CMSSwiperV3, {
   collectionList: {
     type: ControlType.ComponentInstance,
     title: "Collection List",
-  },
-  startLayers: {
-    type: ControlType.Array,
-    title: "Start Layers",
-    control: { type: ControlType.ComponentInstance },
-    maxCount: 20,
-  },
-  endLayers: {
-    type: ControlType.Array,
-    title: "End Layers",
-    control: { type: ControlType.ComponentInstance },
-    maxCount: 20,
   },
   heading: {
     type: ControlType.ComponentInstance,
