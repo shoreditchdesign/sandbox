@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }
 
-  function buildCard(post) {
+  function buildCard(post, eager) {
     const card = template.cloneNode(true);
 
     card.setAttribute("href", "/news/" + post.slug);
@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
           ? post.featuredImageBig
           : post.featuredImageSmall;
       imgEl.setAttribute("src", src || "");
+      imgEl.setAttribute("loading", eager ? "eager" : "lazy");
     }
     if (titleEl) titleEl.textContent = post.title || "";
     if (catEl) catEl.textContent = post.cat || "";
@@ -73,9 +74,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderBatch(posts, startIndex, count) {
+    const eager = startIndex === 0;
     const slice = posts.slice(startIndex, startIndex + count);
     slice.forEach((post) => {
-      grid.appendChild(buildCard(post));
+      grid.appendChild(buildCard(post, eager));
     });
     return slice.length;
   }
