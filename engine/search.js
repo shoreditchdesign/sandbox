@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getQuery() {
     const match = window.location.href.match(/[?&]query=([^&]+)/);
-    return match ? decodeURIComponent(match[1].replace(/\+/g, " ")).trim() : "";
+    return match ? decodeURIComponent(match[1].replace(/\+/g, " ")).trim().slice(0, 40) : "";
   }
 
   function filterPosts(posts) {
