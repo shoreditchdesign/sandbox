@@ -7,6 +7,7 @@ const PAGE_SIZE = 20;
 const API_BASE = "https://feeds.engine.online/api/EngineNews/SearchPosts";
 const UPDATE_CATEGORIES = ["Availability", "Bunkering Info", "Fuel Quality"];
 const MAX_AGE_DAYS = 59;
+const SYNC_GRACE_HOURS = 2;
 
 document.addEventListener("DOMContentLoaded", function () {
   // --- DOM guards ---
@@ -30,14 +31,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getQuery() {
     const match = window.location.href.match(/[?&]query=([^&]+)/);
-    return match ? decodeURIComponent(match[1].replace(/\+/g, " ")).trim().slice(0, 40) : "";
+    return match
+      ? decodeURIComponent(match[1].replace(/\+/g, " ")).trim().slice(0, 40)
+      : "";
   }
 
   function filterPosts(posts) {
     const now = Date.now();
     const updateCutoff = now - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
     const globalCutoff = new Date("2022-01-01T00:00:00Z").getTime();
-    const syncGrace = now - 2 * 60 * 60 * 1000;
+    const syncGrace = now - SYNC_GRACE_HOURS * 60 * 60 * 1000;
     return posts.filter((post) => {
       const ts = new Date(post.timestamp).getTime();
       if (ts < globalCutoff) return false;
@@ -87,7 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateLoadBtn() {
     if (!loadWrap) return;
-    loadWrap.style.display = renderedCount >= filteredPosts.length ? "none" : "flex";
+    loadWrap.style.display =
+      renderedCount >= filteredPosts.length ? "none" : "flex";
   }
 
   function showEmpty() {
