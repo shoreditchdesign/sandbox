@@ -11,14 +11,26 @@
     "dock": "bottom"
   },
   "agent_servers": {
-    "claude": {
-      "default_mode": "acceptEdits"
+    "claude-acp": {
+      "type": "registry"
+    },
+    "codex-acp": {
+      "type": "registry"
+    }
+  },
+  "context_servers": {
+    "mcp-server-figma": {
+      "enabled": true,
+      "settings": {
+        "figma_api_key": "figd_tlAWbSqaZcFNm2E9gJRJRexgc0Pze3gPUKIk-Nk0"
+      }
     }
   },
   "outline_panel": {
     "dock": "right"
   },
   "edit_predictions": {
+    "provider": "zed",
     "mode": "subtle",
     "copilot": {
       "proxy": null,
@@ -29,12 +41,11 @@
   "project_panel": {
     "dock": "left"
   },
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
   "icon_theme": "Material Icon Theme",
   "agent": {
-    "always_allow_tool_actions": true,
+    "tool_permissions": {
+      "default": "allow"
+    },
     "default_profile": "write",
     "inline_assistant_model": {
       "provider": "openrouter",
