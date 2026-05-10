@@ -1,0 +1,7 @@
+.env
+.DS_Store
+uploads/
+uploads_raw/
+optimise.log
+jobs.csv
+jobs-failed.csv
